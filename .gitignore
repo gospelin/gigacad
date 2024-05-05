@@ -1,2 +1,9 @@
+# Ignore python compiler files
 *.pyc
 *.*.pyc
+
+# Ignore virtual environment
+venv/
+
+# Ignore environment variables file
+.flaskenv
