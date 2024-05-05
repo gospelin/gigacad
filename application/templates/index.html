@@ -1,110 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>School Name - Your Vision. Our Education.</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        .jumbotron {
-            background-image: url('/static/images/globex_it_solutions_multi_services.jpg');
-            background-size: cover;
-            color: #fff;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
+{% extends "layout.html" %}
+  {% block content %}
+      <div class="jumbotron">
+          <div class="container">
+              <h1>Welcome to {{school_name}}</h1>
+              <h2>Where Practical Learning Meets Knowledge and Confidence</h2>
+              <p>
+                We are committed to providing a transformative education experience 
+                that equips students with practical skills, empowers them with knowledge, 
+                and instills the confidence to excel in a rapidly changing world.
+              </p>
+              <a class="btn btn-primary btn-lg" href="#" role="button">Learn More</a>
+          </div>
+      </div>
 
-        .jumbotron h1, .jumbotron h2, .jumbotron p {
-            text-align: center;
-        }
+      <div class="container mt-5">
+          <div class="slideshow-container">
+              <div class="slideshow-text">
+                  <h2>Explore Our Campus</h2>
+                  <p>Take a virtual tour of our state-of-the-art facilities and vibrant learning spaces.</p>
+              </div>
+              <img src="{{ url_for('static', filename='images/images1.jpeg') }}" alt="Image 1">
+              <img src="{{ url_for('static', filename='images/images1.jpeg') }}" alt="Image 2">
+              <img src="{{ url_for('static', filename='images/images1.jpeg') }}" alt="Image 3">
+          </div>
+      </div>
 
-        .slideshow-container {
-            max-width: 100%;
-            position: relative;
-            margin: auto;
-            overflow: hidden;
-            border-radius: 10px;
-        }
-
-        .slideshow-container img {
-            width: 100%;
-            height: auto;
-        }
-
-        .slideshow-text {
-            position: absolute;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            text-align: center;
-            width: 100%;
-            color: #fff;
-        }
-
-        .slideshow-text h2 {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-        }
-
-        .slideshow-text p {
-            font-size: 1.5rem;
-            margin-bottom: 30px;
-        }
-    </style>
-</head>
-<body>
-
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href="#">School Name</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <div class="collapse navbar-collapse" id="navbarNav">
-    <ul class="navbar-nav ml-auto">
-      <li class="nav-item">
-        <a class="nav-link" href={{url_for('index')}}>Home</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="{{url_for('about_us')}}">About Us</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">Registration</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">Result Portal</a>
-      </li>
-    </ul>
-  </div>
-</nav>
-
-<div class="jumbotron">
-    <div class="container">
-        <h1>Welcome to School Name</h1>
-        <h2>Where Practical Learning Meets Knowledge and Confidence</h2>
-        <p>We are committed to providing a transformative education experience that equips students with practical skills, empowers them with knowledge, and instills the confidence to excel in a rapidly changing world.</p>
-        <a class="btn btn-primary btn-lg" href="#" role="button">Learn More</a>
-    </div>
-</div>
-
-<div class="container mt-5">
-    <div class="slideshow-container">
-        <div class="slideshow-text">
-            <h2>Explore Our Campus</h2>
-            <p>Take a virtual tour of our state-of-the-art facilities and vibrant learning spaces.</p>
-        </div>
-        <img src="/static/images/develop-and-design-web-sites-for-you.jpg" alt="Image 1">
-        <img src="/static/images/globex_it_solutions_multi_services.jpg" alt="Image 2">
-        <img src="/static/images/images1.jpeg" alt="Image 3">
-    </div>
-</div>
-
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
-</body>
-</html>
+  {% endblock content %}
