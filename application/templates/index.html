@@ -1,28 +1,30 @@
+{% block title %} <title> {{school_name}} - Practical Knowledge and Confidence </title> {% endblock %}
+
 {% extends "layout.html" %}
-  {% block content %}
-      <div class="jumbotron">
-          <div class="container">
-              <h1>Welcome to {{school_name}}</h1>
-              <h2>Where Practical Learning Meets Knowledge and Confidence</h2>
-              <p>
-                We are committed to providing a transformative education experience 
-                that equips students with practical skills, empowers them with knowledge, 
-                and instills the confidence to excel in a rapidly changing world.
-              </p>
-              <a class="btn btn-primary btn-lg" href="#" role="button">Learn More</a>
-          </div>
-      </div>
+    {% block content %}
+        <div class="jumbotron">
+            <div class="container">
+                <h1>Welcome to {{school_name}}</h1>
+                <h2>Where Practical Learning Meets Knowledge and Confidence</h2>
+                <p>
+                    We are committed to providing a transformative education experience 
+                    that equips students with practical skills, empowers them with knowledge, 
+                    and instills the confidence to excel in a rapidly changing world.
+                </p>
+                <a class="btn btn-primary btn-lg" href="#" role="button">Learn More</a>
+            </div>
+        </div>
 
-      <div class="container mt-5">
-          <div class="slideshow-container">
-              <div class="slideshow-text">
-                  <h2>Explore Our Campus</h2>
-                  <p>Take a virtual tour of our state-of-the-art facilities and vibrant learning spaces.</p>
-              </div>
-              <img src="{{ url_for('static', filename='images/images1.jpeg') }}" alt="Image 1">
-              <img src="{{ url_for('static', filename='images/images1.jpeg') }}" alt="Image 2">
-              <img src="{{ url_for('static', filename='images/images1.jpeg') }}" alt="Image 3">
-          </div>
-      </div>
+        <div class="container mt-5">
+            <div class="slideshow-container">
+                <div class="slideshow-text">
+                    <h2>Explore Our Campus</h2>
+                    <p>Take a virtual tour of our state-of-the-art facilities and vibrant learning spaces.</p>
+                </div>
+                <img src="{{ url_for('static', filename='images/images1.jpeg') }}" alt="Image 1">
+                <img src="{{ url_for('static', filename='images/images1.jpeg') }}" alt="Image 2">
+                <img src="{{ url_for('static', filename='images/images1.jpeg') }}" alt="Image 3">
+            </div>
+        </div>
 
-  {% endblock content %}
+    {% endblock content %}
