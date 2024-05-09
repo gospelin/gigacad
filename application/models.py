@@ -1,7 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-
-db = SQLAlchemy()
-
+from application import db
 
 class Student(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -18,12 +16,8 @@ class Student(db.Model):
     state_of_origin = db.Column(db.String(50), nullable=False)
     local_government_area = db.Column(db.String(50), nullable=False)
     religion = db.Column(db.String(50), nullable=False)
+    date_registered = db.Column(db.DateTime, server_default=db.func.now())
+    approved = db.Column(db.Boolean, default=False)
 
-
-
-class Teacher(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    first_name = db.Column(db.String(50), nullable=False)
-    last_name = db.Column(db.String(50), nullable=False)
-    email = db.Column(db.String(100), unique=True, nullable=False)
-    # Add more fields as needed
+    def __repr__(self):
+        return f"<Student {self.first_name} {self.last_name}>"
