@@ -1,0 +1,120 @@
+ body {
+     font-family: 'Roboto', sans-serif;
+     color: #333;
+ }
+
+ .navbar {
+     background-color: #000;
+     /* Black */
+ }
+
+ .navbar-nav .nav-link {
+     color: #ffd700;
+     /* Golden */
+ }
+
+ .navbar-nav .nav-link:hover {
+     color: #4CAF50;
+     /* Green */
+ }
+
+ .jumbotron {
+     background-color: #000;
+     /* Black */
+     color: #fff;
+     text-align: center;
+     padding: 100px 0;
+ }
+
+ .jumbotron h1,
+ .jumbotron h2 {
+     color: #ffd700;
+     /* Golden */
+ }
+
+ .section {
+     padding: 80px 0;
+ }
+
+ .section-heading {
+     font-size: 2.5rem;
+     color: #333;
+     margin-bottom: 30px;
+     text-align: center;
+ }
+
+ .btn-primary {
+     background-color: #4CAF50;
+     /* Green */
+     border-color: #4CAF50;
+     /* Green */
+ }
+
+ .btn-primary:hover {
+     background-color: #1E88E5;
+     /* Blue */
+     border-color: #1E88E5;
+     /* Blue */
+ }
+
+ .footer {
+     background-color: #000;
+     /* Black */
+     color: #ffd700;
+     /* Golden */
+     text-align: center;
+     padding: 30px 0;
+     font-size: 0.9rem;
+ }
+
+ /* Custom styles for the contact form */
+ .contact-form {
+     max-width: 600px;
+     margin: 0 auto;
+ }
+
+ .form-group {
+     margin-bottom: 20px;
+ }
+
+ .form-control {
+     width: 100%;
+ }
+
+ .map-responsive {
+     overflow: hidden;
+     padding-bottom: 56.25%;
+     position: relative;
+     height: 0;
+ }
+
+ .map-responsive iframe {
+     left: 0;
+     top: 0;
+     height: 100%;
+     width: 100%;
+     position: absolute;
+ }
+
+ .social-media-links {
+     list-style-type: none;
+     padding: 0;
+     display: flex;
+     justify-content: center;
+ }
+
+ .social-media-links li {
+     margin-right: 10px;
+ }
+
+ .social-media-links a {
+     color: #ffd700;
+     /* Golden */
+     font-size: 24px;
+     transition: color 0.3s ease;
+ }
+
+ .social-media-links a:hover {
+     color: #4CAF50;
+     /* Green */
+ }
