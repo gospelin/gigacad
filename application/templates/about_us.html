@@ -1,52 +1,76 @@
+{%block title%} <title> About Us - {{school_name}} </title> {% endblock%}
+
 {% extends "layout.html" %}
-{% block content %}
-    <div class="jumbotron">
-        <div class="container">
-            <h1>About Us</h1>
-            <p class="lead">Welcome to {{school_name}}, where practical learning meets knowledge and confidence.</p>
+    {% block content %}
+        <div class="jumbotron">
+            <div class="container">
+                <h1>About Us</h1>
+                <p class="lead">Welcome to {{school_name}}, where practical learning meets knowledge and confidence.</p>
+            </div>
         </div>
-    </div>
 
-    <div class="container mt-5">
-        <div class="row">
-            <div class="col-lg-8 offset-lg-2">
-                <h2>Our Mission</h2>
-                <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-                    Sed et ligula sed ipsum cursus hendrerit.
-                </p>
+        <div class="container mt-5">
+            <div class="row">
+                <div class="col-lg-8 offset-lg-2">
+                    <h2>Our Mission</h2>
+                    <p>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+                        Sed et ligula sed ipsum cursus hendrerit.
+                    </p>
 
-                <h2>Our Vision</h2>
-                <p>
-                    Nullam et elit non lectus tincidunt ultricies. 
-                    Suspendisse potenti. Sed in lectus vel ligula mollis consequat.
-                </p>
+                    <h2>Our Vision</h2>
+                    <p>
+                        Nullam et elit non lectus tincidunt ultricies. 
+                        Suspendisse potenti. Sed in lectus vel ligula mollis consequat.
+                    </p>
 
-                <h2>Our Values</h2>
-                <ul>
-                    <li>Practical Learning</li>
-                    <li>Knowledge Empowerment</li>
-                    <li>Confidence Building</li>
-                </ul>
+                    <h2>Our Values</h2>
+                    <ul>
+                        <li>Practical Learning</li>
+                        <li>Knowledge Empowerment</li>
+                        <li>Confidence Building</li>
+                    </ul>
 
-                <h2>Our Team</h2>
-                <p>
-                    Meet our dedicated team of administrators, faculty, and staff 
-                    who are committed to shaping a bright future for our students.
-                </p>
+                    <h2>Our Team</h2>
+                    <p>
+                        Meet our dedicated team of administrators, faculty, and staff 
+                        who are committed to shaping a bright future for our students.
+                    </p>
 
-                <h2>Testimonials</h2>
-                    <div class="testimonial">
-                        <blockquote>
-                            <p>
-                                "{{school_name}} has provided me with a nurturing environment to grow both 
-                                academically and personally. I'm grateful for the guidance and support from 
-                                the faculty."
-                            </p>
-                            <footer>- John Doe, Alumni</footer>
-                        </blockquote>
-                    <!-- Add more testimonials as needed -->
+                    <h2>Testimonials</h2>
+                        <div class="testimonial">
+                            <blockquote>
+                                <p>
+                                    "{{school_name}} has provided me with a nurturing environment to grow both 
+                                    academically and personally. I'm grateful for the guidance and support from 
+                                    the faculty."
+                                </p>
+                                <footer>- John Doe, Alumni</footer>
+                            </blockquote>
+                        <!-- Add more testimonials as needed -->
+                        </div>
                     </div>
+                </div>
+            </div>
+
+            <div class="container section">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h2 class="section-heading mb-4">Administration, Faculty, and Staff</h2>
+                        <p>
+                            Information about the school's administration, faculty members, and staff 
+                            can be provided here. You can highlight their qualifications, roles, and 
+                            contributions to the school community.
+                        </p>
+                    </div>
+
+                <div class="col-md-6">
+                    <h2 class="section-heading mb-4">Testimonials</h2>
+                    <p>
+                        Include testimonials from students, parents, and alumni to showcase their experiences 
+                        and successes at School Name. Testimonials add credibility and help prospective students 
+                        and parents understand the value of education provided by the school.
+                    </p>
                 </div>
             </div>
         </div>
@@ -54,49 +78,27 @@
         <div class="container section">
             <div class="row">
                 <div class="col-md-6">
-                    <h2 class="section-heading mb-4">Administration, Faculty, and Staff</h2>
-                    <p>
-                        Information about the school's administration, faculty members, and staff 
-                        can be provided here. You can highlight their qualifications, roles, and 
-                        contributions to the school community.
-                    </p>
+                    <h2 class="section-heading mb-4">Contact Us</h2>
+                    <p>For inquiries or feedback, please use the contact form below:</p>
+                    <form class="contact-form">
+                        <div class="form-group">
+                            <input type="text" class="form-control" placeholder="Your Name" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" class="form-control" placeholder="Your Email" required>
+                        </div>
+                        <div class="form-group">
+                            <textarea class="form-control" rows="4" placeholder="Your Message" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Send Message</button>
+                    </form>
                 </div>
-
-            <div class="col-md-6">
-                <h2 class="section-heading mb-4">Testimonials</h2>
-                <p>
-                    Include testimonials from students, parents, and alumni to showcase their experiences 
-                    and successes at School Name. Testimonials add credibility and help prospective students 
-                    and parents understand the value of education provided by the school.
-                </p>
-            </div>
-        </div>
-    </div>
-
-    <div class="container section">
-        <div class="row">
-            <div class="col-md-6">
-                <h2 class="section-heading mb-4">Contact Us</h2>
-                <p>For inquiries or feedback, please use the contact form below:</p>
-                <form class="contact-form">
-                    <div class="form-group">
-                        <input type="text" class="form-control" placeholder="Your Name" required>
+                <div class="col-md-6">
+                    <h2 class="section-heading mb-4">Location</h2>
+                    <div class="map-responsive">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d993.4329494977746!2d7.3309549798887925!3d5.146810527312397!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x10429b8a252a1025%3A0x9ac7285163476022!2sAunty%20Anne&#39;s%20International%20School%20Aba!5e0!3m2!1sen!2sus!4v1714916226431!5m2!1sen!2sus" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
                     </div>
-                    <div class="form-group">
-                        <input type="email" class="form-control" placeholder="Your Email" required>
-                    </div>
-                    <div class="form-group">
-                        <textarea class="form-control" rows="4" placeholder="Your Message" required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Send Message</button>
-                </form>
-            </div>
-            <div class="col-md-6">
-                <h2 class="section-heading mb-4">Location</h2>
-                <div class="map-responsive">
-                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d993.4329494977746!2d7.3309549798887925!3d5.146810527312397!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x10429b8a252a1025%3A0x9ac7285163476022!2sAunty%20Anne&#39;s%20International%20School%20Aba!5e0!3m2!1sen!2sus!4v1714916226431!5m2!1sen!2sus" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
                 </div>
             </div>
         </div>
-    </div>
-{% endblock content %}
+    {% endblock content %}
