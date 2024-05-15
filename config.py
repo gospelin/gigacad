@@ -6,3 +6,5 @@ class Config(object):
     SQLALCHEMY_DATABASE_URI = "mysql://gigo:password@localhost:3306/school_database"
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    WTF_CSRF_ENABLED = True
