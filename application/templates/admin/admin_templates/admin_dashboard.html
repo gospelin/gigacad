@@ -1,11 +1,9 @@
 {% extends 'layout.html' %}
-
-{% block title %}<title> Admin Dashboard - {{school_name }} </title> {% endblock %}
-
+{% block title %}<title>Admin Dashboard - {{school_name}}</title>{% endblock %}
 {% block content %}
 <div class="container mt-5">
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-6 mb-4">
             <div class="card">
                 <div class="card-header bg-primary text-white">
                     Dashboard Overview
@@ -17,7 +15,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-6 mb-4">
             <div class="card">
                 <div class="card-header bg-success text-white">
                     Recent Registrations
@@ -32,9 +30,6 @@
             </div>
         </div>
     </div>
-</div>
-
-<div class="container mt-5">
     <div class="row">
         <div class="col-md-12">
             <div class="card">

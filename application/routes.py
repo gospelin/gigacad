@@ -1,8 +1,21 @@
 from application import app, db
 from flask import render_template, redirect, url_for, flash, request, jsonify
-from flask_login import login_required, login_user, logout_user
-from .models import Student, User, Result
-from .forms import StudentRegistrationForm, RegistrationForm, LoginForm
+from flask_login import login_required, login_user, logout_user, current_user
+from .models import Student, Result, StudentLogin
+from .forms import StudentRegistrationForm, RegistrationForm, StudentLoginForm, AdminLoginForm
+import random
+import string
+
+
+def generate_unique_username(first_name, last_name):
+    username = f"{first_name.lower()}.{last_name.lower()}"
+    existing_user = Student.query.filter_by(username=username).first()
+    if existing_user:
+        random_suffix = "".join(
+            random.choices(string.ascii_lowercase + string.digits, k=4)
+        )
+        username = f"{username}{random_suffix}"
+    return username
 
 
 @app.route('/')
@@ -20,6 +33,10 @@ def about_us():
 def student_registration():
     form = StudentRegistrationForm()
     if form.validate_on_submit():
+        username = generate_unique_username(form.first_name.data, form.last_name.data)
+        temporary_password = "".join(
+            random.choices(string.ascii_letters + string.digits, k=8)
+        )
         student = Student(
             first_name=form.first_name.data,
             last_name=form.last_name.data,
@@ -33,12 +50,17 @@ def student_registration():
             previous_class=form.previous_class.data,
             state_of_origin=form.state_of_origin.data,
             local_government_area=form.local_government_area.data,
-            religion=form.religion.data
+            religion=form.religion.data,
+            username=username,
         )
+        student.set_password(temporary_password)
         db.session.add(student)
         db.session.commit()
-        flash("Student registration submitted. Pending admin approval.", "alert alert-success")
-        return redirect(url_for("index"))  # Redirect to home or confirmation page
+        flash(
+            f"Student registered successfully. Username: {username}, Password: {temporary_password}",
+            "alert alert-success",
+        )
+        return redirect(url_for("index"))
     return render_template(
         "student_registration.html", form=form, school_name="Aunty Anne's Int'l School"
     )
@@ -47,6 +69,9 @@ def student_registration():
 @app.route("/admin/dashboard")
 @login_required
 def admin_dashboard():
+    if not current_user.is_admin:
+        flash("Access restricted to admins only.", "alert alert-danger")
+        return redirect(url_for("index"))
     # Example logic to fetch and display dashboard data
     try:
         # Get total number of students
@@ -122,20 +147,87 @@ def delete_student(student_id):
     return redirect(url_for("view_students"))
 
 
-@app.route("/login", methods=["GET", "POST"])
-def login():
-    form = LoginForm()
-    if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
-        if user and user.check_password(form.password.data):
-            login_user(user)
-            flash("Logged in successfully!", "success")
-            return redirect(url_for("index"))
+# @app.route("/login", methods=["GET", "POST"])
+# def login():
+#    form = LoginForm()
+#    if form.validate_on_submit():
+#        user = User.query.filter_by(username=form.username.data).first()
+#        if user and user.check_password(form.password.data):
+#            login_user(user)
+#            flash("Logged in successfully!", "success")
+#            return redirect(url_for("index"))
+#        else:
+#            flash("Invalid username or password.", "alert alert-danger")
+#    return render_template(
+#        "login.html", form=form, school_name="Aunty Anne's Int'l School"
+#    )
+
+
+@app.route("/admin/add_student_to_class", methods=["POST"])
+@login_required
+def add_student_to_class():
+    if not current_user.is_admin():
+        flash("Access restricted to admins only.", "alert alert-danger")
+        return redirect(url_for("index"))
+
+    student_id = request.form.get("student_id")
+    entry_class = request.form.get("entry_class")
+    student = Student.query.get_or_404(student_id)
+    student.entry_class = entry_class
+    db.session.commit()
+    flash("Student added to class successfully", "alert alert-success")
+    return redirect(url_for("admin_dashboard"))
+
+
+@app.route("/admin/remove_student_from_class/<int:student_id>", methods=["POST"])
+@login_required
+def remove_student_from_class(student_id):
+    if not current_user.is_admin():
+        flash("Access restricted to admins only.", "alert alert-danger")
+        return redirect(url_for("index"))
+
+    student = Student.query.get_or_404(student_id)
+    student.entry_class = None
+    db.session.commit()
+    flash("Student removed from class successfully", "alert alert-success")
+    return redirect(url_for("admin_dashboard"))
+
+
+@app.route("/admin/manage_results/<int:student_id>", methods=["GET", "POST"])
+@login_required
+def manage_results(student_id):
+    if not current_user.is_admin():
+        flash("Access restricted to admins only.", "alert alert-danger")
+        return redirect(url_for("index"))
+
+    student = Student.query.get_or_404(student_id)
+    if request.method == "POST":
+        class_assessment = request.form.get("class_assessment")
+        summative_test = request.form.get("summative_test")
+        exam = request.form.get("exam")
+        total = float(class_assessment) + float(summative_test) + float(exam)
+
+        if student.results:
+            result = student.results[0]
+            result.class_assessment = class_assessment
+            result.summative_test = summative_test
+            result.exam = exam
+            result.total = total
         else:
-            flash("Invalid username or password.", "alert alert-danger")
-    return render_template(
-        "login.html", form=form, school_name="Aunty Anne's Int'l School"
-    )
+            result = Result(
+                student_id=student.id,
+                class_assessment=class_assessment,
+                summative_test=summative_test,
+                exam=exam,
+                total=total,
+            )
+            db.session.add(result)
+
+        db.session.commit()
+        flash("Result updated successfully", "alert alert-success")
+        return redirect(url_for("admin_dashboard"))
+
+    return render_template("admin/manage_results.html", student=student)
 
 
 @app.route("/logout")
@@ -149,8 +241,11 @@ def logout():
 @app.route("/result_portal", methods=["GET"])
 @login_required
 def result_portal():
-    students = Student.query.all()
-    return render_template("result_portal.html", students=students)
+    if not isinstance(current_user, Student):
+        flash("Access restricted to students only.", "alert alert-danger")
+        return redirect(url_for("index"))
+    student = Student.query.get(current_user.id)
+    return render_template("result_portal.html", student=student)
 
 
 @app.route("/update_result", methods=["POST"])
@@ -188,16 +283,48 @@ def unauthorized(e):
     return redirect(url_for("login"))
 
 
-@app.route("/register", methods=["GET", "POST"])
-def register():
-    form = RegistrationForm()
+#@app.route("/register", methods=["GET", "POST"])
+#def register():
+#    form = RegistrationForm()
+#    if form.validate_on_submit():
+#        user = User(username=form.username.data)
+#        user.set_password(form.password.data)
+#        db.session.add(user)
+#        db.session.commit()
+#        flash("Registration successful! You can now log in.", "alert alert-success")
+#        return redirect(url_for("login"))
+#    return render_template(
+#        "register.html", form=form, school_name="Aunty Anne's Int'l School"
+#    )
+
+
+@app.route("/login/student", methods=["GET", "POST"])
+def student_login():
+    form = StudentLoginForm()
     if form.validate_on_submit():
-        user = User(username=form.username.data)
-        user.set_password(form.password.data)
-        db.session.add(user)
-        db.session.commit()
-        flash("Registration successful! You can now log in.", "alert alert-success")
-        return redirect(url_for("login"))
-    return render_template(
-        "register.html", form=form, school_name="Aunty Anne's Int'l School"
-    )
+        username = form.username.data
+        password = form.password.data
+
+        # Find the student by username
+        student = StudentLogin.query.filter_by(username=username).first()
+
+        # If student is found and password is correct, login the student
+        if student and student.check_password(password):
+            login_user(student)  # Log in the student
+            flash("Logged in successfully!", "success")
+            return redirect(url_for("student_result_portal"))
+        else:
+            flash("Invalid username or password.", "alert alert-danger")
+
+    return render_template("student_login.html", form=form)
+
+
+@app.route("/result_portal/admin", methods=["GET"])
+@login_required
+def admin_result_portal():
+    if not current_user.is_admin:
+        flash("Access restricted to admins only.", "alert alert-danger")
+        return redirect(url_for("index"))
+    # Retrieve and display all students' results
+    all_students = Student.query.all()
+    return render_template("admin_result_portal.html", students=all_students)
