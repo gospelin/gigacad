@@ -1,10 +1,10 @@
 {% extends 'layout.html' %}
-    {% block content %}
-        <div class="container mt-4">
-            <h1 class="mb-4">Result Portal</h1>
-            <div class="table-responsive">
-            <table class="table table-bordered table-hover">
-                <thead class="thead-dark">
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Result Portal</h1>
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead class="table-dark">
                 <tr>
                     <th>Student ID</th>
                     <th>First Name</th>
@@ -13,8 +13,8 @@
                     <th>Science Score</th>
                     <th>Action</th>
                 </tr>
-                </thead>
-                <tbody>
+            </thead>
+            <tbody>
                 {% for student in students %}
                 <tr>
                     <td>{{ student.id }}</td>
@@ -23,44 +23,43 @@
                     <td contenteditable="true" id="math_score_{{ student.id }}">{{ student.results.math_score }}</td>
                     <td contenteditable="true" id="science_score_{{ student.id }}">{{ student.results.science_score }}</td>
                     <td>
-                    <button class="btn btn-primary btn-sm" onclick="saveResult({{ student.id }})">Save</button>
+                        <button class="btn btn-primary btn-sm" onclick="saveResult({{ student.id }})">Save</button>
                     </td>
                 </tr>
                 {% endfor %}
-                </tbody>
-            </table>
-            </div>
-        </div>
+            </tbody>
+        </table>
+    </div>
+</div>
 
-        <script>
-            function saveResult(studentId) {
-            var mathScore = document.getElementById('math_score_' + studentId).innerText;
-            var scienceScore = document.getElementById('science_score_' + studentId).innerText;
-            
-            // Send AJAX request to update student's result
-            fetch('/update_result', {
-                method: 'POST',
-                headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({
-                student_id: studentId,
-                math_score: mathScore,
-                science_score: scienceScore
-                })
-            })
-            .then(response => {
-                if (response.ok) {
-                alert('Result saved successfully!');
-                } else {
-                alert('Failed to save result. Please try again.');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred. Please try again later.');
-            });
-            }
-        </script>
-    {% endblock %}
+<script>
+function saveResult(studentId) {
+    var mathScore = document.getElementById('math_score_' + studentId).innerText;
+    var scienceScore = document.getElementById('science_score_' + studentId).innerText;
+
+    fetch('/update_result', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({
+            student_id: studentId,
+            math_score: mathScore,
+            science_score: scienceScore
+        })
+    })
+    .then(response => {
+        if (response.ok) {
+            alert('Result saved successfully!');
+        } else {
+            alert('Failed to save result. Please try again.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again later.');
+    });
+}
+</script>
+{% endblock %}

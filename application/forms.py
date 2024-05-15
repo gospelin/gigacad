@@ -7,6 +7,10 @@ class StudentRegistrationForm(FlaskForm):
     first_name = StringField("First Name", validators=[DataRequired(), Length(max=50)])
     last_name = StringField("Last Name", validators=[DataRequired(), Length(max=50)])
     email = StringField("Email", validators=[DataRequired(), Email(), Length(max=100)])
+    username = StringField("Username", validators=[DataRequired(), Length(max=50)])
+    password = PasswordField(
+        "Password", validators=[DataRequired(), Length(min=8, max=200)]
+    )
     gender = SelectField(
         "Gender",
         choices=[("male", "Male"), ("female", "Female")],
@@ -71,10 +75,17 @@ class StudentRegistrationForm(FlaskForm):
     submit = SubmitField("Register")
 
 
-class LoginForm(FlaskForm):
+class StudentLoginForm(FlaskForm):
     username = StringField("Username", validators=[DataRequired()])
     password = PasswordField("Password", validators=[DataRequired()])
     submit = SubmitField("Login")
+
+
+class AdminLoginForm(FlaskForm):
+    username = StringField("Username", validators=[DataRequired()])
+    password = PasswordField("Password", validators=[DataRequired()])
+    submit = SubmitField("Login")
+
 
 
 class RegistrationForm(FlaskForm):

@@ -1,25 +1,27 @@
 {% extends "layout.html" %}
-    {% block title %} <title> Register - {{ school_name }} </title> {% endblock %}
-
-        {% block content %}
-            <div class="container">
-                <h2 class="mt-4 mb-4">Register</h2>
-                    <form method="POST">
-                        {{ form.hidden_tag() }}
-                        <div class="form-group">
-                            {{ form.username.label(class="form-label") }}
-                            {{ form.username(class="form-control") }}
-                        </div>
-                        <div class="form-group">
-                            {{ form.password.label(class="form-label") }}
-                            {{ form.password(class="form-control") }}
-                        </div>
-                        <div class="form-group">
-                            {{ form.confirm_password.label(class="form-label") }}
-                            {{ form.confirm_password(class="form-control") }}
-                        </div>
-                        <button type="submit" class="btn btn-primary">Register</button>
-                    </form>
-            </div>
-
-        {% endblock %}
+{% block title %}<title>Register - {{ school_name }}</title>{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <h2 class="mb-4">Register</h2>
+            <form method="POST">
+                {{ form.hidden_tag() }}
+                <div class="form-group mb-3">
+                    {{ form.username.label(class="form-label") }}
+                    {{ form.username(class="form-control") }}
+                </div>
+                <div class="form-group mb-3">
+                    {{ form.password.label(class="form-label") }}
+                    {{ form.password(class="form-control") }}
+                </div>
+                <div class="form-group mb-3">
+                    {{ form.confirm_password.label(class="form-label") }}
+                    {{ form.confirm_password(class="form-control") }}
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Register</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
