@@ -1,4 +1,4 @@
-from flask_sqlalchemy import SQLAlchemy
+# from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from application import db
 from flask_login import UserMixin
@@ -71,6 +71,15 @@ class Admin(UserMixin, db.Model):
         return check_password_hash(self.password_hash, password)
 
 
+class Class(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), unique=True, nullable=False)
+    students = db.relationship("Student", backref="class", lazy=True)
+
+    def __repr__(self):
+        return f"<Class {self.name}>"
+
+
 # class User(UserMixin, db.Model):
 #    id = db.Column(db.Integer, primary_key=True)
 #    username = db.Column(db.String(50), unique=True, nullable=False)
@@ -91,3 +100,11 @@ class Admin(UserMixin, db.Model):
 
 #    def check_password(self, password):
 #        return check_password_hash(self.password_hash, password)
+
+
+class User(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(150), unique=True, nullable=False)
+    password = db.Column(db.String(150), nullable=False)
+    is_admin = db.Column(db.Boolean, default=False)
+    students = db.relationship("Student", backref="user", lazy=True)
