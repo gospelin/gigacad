@@ -1,0 +1,38 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="container">
+    <h1>Results for {{ student.first_name }} {{ student.last_name }}</h1>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Subject</th>
+                <th>Class Assessment</th>
+                <th>Summative Test</th>
+                <th>Exam</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for result in results %}
+            <tr>
+                <td>{{ result.subject }}</td>
+                <td>{{ result.class_assessment }}</td>
+                <td>{{ result.summative_test }}</td>
+                <td>{{ result.exam }}</td>
+                <td>{{ result.total }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <th colspan="4">Grand Total</th>
+                <th>{{ results|sum(attribute='total') }}</th>
+            </tr>
+            <tr>
+                <th colspan="4">Average</th>
+                <th>{{ (results|sum(attribute='total')) / results|length }}</th>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+{% endblock %}

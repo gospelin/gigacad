@@ -1,7 +1,7 @@
 from application import app, db
 from flask import render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_required, login_user, logout_user, current_user
-from .models import Student, Result, StudentLogin
+from .models import Student, Result, StudentLogin, User
 from .forms import StudentRegistrationForm, RegistrationForm, StudentLoginForm, AdminLoginForm
 import random
 import string
@@ -22,11 +22,11 @@ def generate_unique_username(first_name, last_name):
 @app.route('/index')
 @app.route('/home')
 def index():
-    return render_template('index.html', school_name="Aunty Anne's Int'l School")
+    return render_template('index.html', title="Home", school_name="Aunty Anne's Int'l School")
 
 @app.route('/about_us')
 def about_us():
-    return render_template('about_us.html', school_name="Aunty Anne's Int'l School")
+    return render_template('about_us.html', title="About Us", school_name="Aunty Anne's Int'l School")
 
 
 @app.route("/register/student", methods=["GET", "POST"])
@@ -62,7 +62,7 @@ def student_registration():
         )
         return redirect(url_for("index"))
     return render_template(
-        "student_registration.html", form=form, school_name="Aunty Anne's Int'l School"
+        "student_registration.html", title="Register", form=form, school_name="Aunty Anne's Int'l School"
     )
 
 
@@ -101,7 +101,11 @@ def admin_dashboard():
 
 
 @app.route("/admin/pending_registrations")
+@login_required
 def pending_registrations():
+    if not current_user.is_admin:
+        flash("Unauthorized access", "danger")
+        return redirect(url_for("index"))
     pending_students = Student.query.filter_by(approved=False).all()
     return render_template(
         "admin/admin_templates/pending_registration.html",
@@ -110,22 +114,33 @@ def pending_registrations():
 
 
 @app.route("/admin/approve_registration/<int:student_id>", methods=["POST"])
+@login_required
 def approve_registration(student_id):
+    if not current_user.is_admin:
+        flash("Unauthorized access", "danger")
+        return redirect(url_for("index"))
     student = Student.query.get_or_404(student_id)
     student.approved = True
     db.session.commit()
     flash("Registration approved successfully", "alert alert-success")
     return redirect(url_for("pending_registrations"))
 
-
 @app.route("/admin/view_students")
+@login_required
 def view_students():
+    if not current_user.is_admin:
+        flash("Unauthorized access", "danger")
+        return redirect(url_for("index"))
     all_students = Student.query.all()
     return render_template("admin/admin_templates/view_students.html", students=all_students)
 
 
 @app.route("/admin/edit_student/<int:student_id>", methods=["GET", "POST"])
+@login_required
 def edit_student(student_id):
+    if not current_user.is_admin:
+        flash("Unauthorized access", "danger")
+        return redirect(url_for("index"))
     student = Student.query.get_or_404(student_id)
     form = StudentRegistrationForm(obj=student)
     if form.validate_on_submit():
@@ -139,7 +154,11 @@ def edit_student(student_id):
 
 
 @app.route("/admin/delete_student/<int:student_id>", methods=["GET", "POST"])
+@login_required
 def delete_student(student_id):
+    if not current_user.is_admin:
+        flash("Unauthorized access", "danger")
+        return redirect(url_for("index"))
     student = Student.query.get_or_404(student_id)
     db.session.delete(student)
     db.session.commit()
@@ -248,33 +267,33 @@ def result_portal():
     return render_template("result_portal.html", student=student)
 
 
-@app.route("/update_result", methods=["POST"])
-@login_required
-def update_result():
-    data = request.json
-    student_id = data.get("student_id")
-    math_score = data.get("math_score")
-    science_score = data.get("science_score")
+# @app.route("/update_result", methods=["POST"])
+# @login_required
+# def update_result():
+#    data = request.json
+#    student_id = data.get("student_id")
+#    math_score = data.get("math_score")
+#    science_score = data.get("science_score")
 
-    student = Student.query.get(student_id)
-    if student:
-        if student.results:
-            # Update existing result
-            result = student.results
-            result.math_score = math_score
-            result.science_score = science_score
-        else:
-            # Create new result if it doesn't exist
-            result = Result(
-                student_id=student_id,
-                math_score=math_score,
-                science_score=science_score,
-            )
-            db.session.add(result)
-        db.session.commit()
-        return jsonify({"message": "Result updated successfully"}), 200
-    else:
-        return jsonify({"message": "Student not found"}), 404
+#    student = Student.query.get(student_id)
+#    if student:
+#        if student.results:
+#            # Update existing result
+#            result = student.results
+#            result.math_score = math_score
+#            result.science_score = science_score
+#        else:
+#            # Create new result if it doesn't exist
+#            result = Result(
+#                student_id=student_id,
+#                math_score=math_score,
+#                science_score=science_score,
+#            )
+#            db.session.add(result)
+#        db.session.commit()
+#        return jsonify({"message": "Result updated successfully"}), 200
+#    else:
+#        return jsonify({"message": "Student not found"}), 404
 
 
 @app.errorhandler(401)
@@ -283,8 +302,19 @@ def unauthorized(e):
     return redirect(url_for("login"))
 
 
-#@app.route("/register", methods=["GET", "POST"])
-#def register():
+@app.route("/view_result/<int:student_id>")
+@login_required
+def view_result(student_id):
+    student = Student.query.get_or_404(student_id)
+    if current_user.username != student.username and not current_user.is_admin:
+        flash("Unauthorized access", "danger")
+        return redirect(url_for("index"))
+    results = Result.query.filter_by(student_id=student.id).all()
+    return render_template("view_result.html", student=student, results=results)
+
+
+# @app.route("/register", methods=["GET", "POST"])
+# def register():
 #    form = RegistrationForm()
 #    if form.validate_on_submit():
 #        user = User(username=form.username.data)
