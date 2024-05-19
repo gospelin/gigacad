@@ -1,16 +1,12 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, DateField, SubmitField, PasswordField
-from wtforms.validators import DataRequired, Email, Length, EqualTo
+from wtforms.validators import DataRequired, Email, Length
 
 
 class StudentRegistrationForm(FlaskForm):
     first_name = StringField("First Name", validators=[DataRequired(), Length(max=50)])
     last_name = StringField("Last Name", validators=[DataRequired(), Length(max=50)])
     email = StringField("Email", validators=[DataRequired(), Email(), Length(max=100)])
-    username = StringField("Username", validators=[DataRequired(), Length(max=50)])
-    password = PasswordField(
-        "Password", validators=[DataRequired(), Length(min=8, max=200)]
-    )
     gender = SelectField(
         "Gender",
         choices=[("male", "Male"), ("female", "Female")],
@@ -75,25 +71,9 @@ class StudentRegistrationForm(FlaskForm):
     submit = SubmitField("Register")
 
 
-class StudentLoginForm(FlaskForm):
-    username = StringField("Username", validators=[DataRequired()])
-    password = PasswordField("Password", validators=[DataRequired()])
-    submit = SubmitField("Login")
-
-
-class AdminLoginForm(FlaskForm):
-    username = StringField("Username", validators=[DataRequired()])
-    password = PasswordField("Password", validators=[DataRequired()])
-    submit = SubmitField("Login")
-
-
-
-class RegistrationForm(FlaskForm):
+class LoginForm(FlaskForm):
     username = StringField(
-        "Username", validators=[DataRequired(), Length(min=4, max=25)]
+        "Username", validators=[DataRequired(), Length(min=2, max=20)]
     )
-    password = PasswordField("Password", validators=[DataRequired(), Length(min=6)])
-    confirm_password = PasswordField(
-        "Confirm Password", validators=[DataRequired(), EqualTo("password")]
-    )
-    submit = SubmitField("Sign Up")
+    password = PasswordField("Password", validators=[DataRequired()])
+    submit = SubmitField("Login")

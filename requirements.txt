@@ -6,6 +6,7 @@ colorama==0.4.6
 dnspython==2.6.1
 email_validator==2.1.1
 Flask==3.0.3
+Flask-Admin==1.6.1
 Flask-BabelEx==0.9.4
 Flask-Login==0.6.3
 Flask-Mail==0.9.1

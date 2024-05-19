@@ -17,15 +17,15 @@
                     <a class="nav-link" href={{ url_for('student_registration') }}>Registration</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{url_for('result_portal')}}">Result Portal</a>
+                    <a class="nav-link" href="{{ url_for('student_result_portal') }}">Result Portal</a>
                 </li>
                 {% if current_user.is_authenticated %}
                     {% if current_user.is_admin %}
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.index') }}">Admin Dashboard</a></li>
                     {% endif %}
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">Logout</a></li>
                 {% else %}
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Login</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Admin Login</a></li>
                 {% endif %}
             </ul>
         </div>
