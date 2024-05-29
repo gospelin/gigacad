@@ -2,6 +2,9 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 from application import db
 from flask_login import UserMixin
+from datetime import datetime
+
+
 class Student(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(50), nullable=False)
@@ -21,6 +24,9 @@ class Student(db.Model, UserMixin):
     religion = db.Column(db.String(50), nullable=False)
     date_registered = db.Column(db.DateTime, server_default=db.func.now())
     approved = db.Column(db.Boolean, default=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+
+    scores = db.relationship("Score", backref="student", lazy=True)
 
     def __repr__(self):
         return f"<Student {self.first_name} {self.last_name}>"
@@ -31,6 +37,7 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(50), unique=True, nullable=False)
     password_hash = db.Column(db.String(200), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
+    student = db.relationship("Student", backref="user", uselist=False)
 
     def __repr__(self):
         return f"<User {self.username}>"
@@ -40,3 +47,30 @@ class User(db.Model, UserMixin):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+class Subject(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False, unique=True)
+    scores = db.relationship("Score", backref="subject", lazy=True)
+
+    def __repr__(self):
+        return f"<Subject {self.name}>"
+
+
+class Score(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    class_assessment = db.Column(db.Integer, nullable=False)
+    summative_test = db.Column(db.Integer, nullable=False)
+    exam = db.Column(db.Integer, nullable=False)
+    total = db.Column(db.Integer, nullable=False)
+    student_id = db.Column(db.Integer, db.ForeignKey("student.id"), nullable=False)
+    subject_id = db.Column(db.Integer, db.ForeignKey("subject.id"), nullable=False)
+    term = db.Column(db.String(50), nullable=False)
+    session = db.Column(db.String(50), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.now())
+
+    def calculate_total(self):
+        self.total = self.class_assessment + self.summative_test + self.exam
+
+    def __repr__(self):
+        return f"<Score {self.student_id} {self.subject_id}>"

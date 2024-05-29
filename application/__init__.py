@@ -20,19 +20,25 @@ login_manager.init_app(app)
 login_manager.login_view = "login"
 
 # Import the custom admin index view and model view classes
-from application.admin_views import MyAdminIndexView, StudentAdmin
-from application.models import Student
+from application.admin_views import (
+    MyAdminIndexView,
+    StudentAdmin,
+    ScoreAdmin,
+    SubjectAdmin,
+)
+from application.models import Student, Score, Subject
 
 # Initialize Flask-Admin with the custom index view
-admin = Admin(
-    app, index_view=MyAdminIndexView(), template_mode="bootstrap4"
-)
-
-## Set the custom index view for the admin
-# admin.index_view = MyAdminIndexView()
+admin = Admin(app, index_view=MyAdminIndexView(), template_mode="bootstrap4")
 
 # Register the Student model view with the admin
 admin.add_view(StudentAdmin(Student, db.session))
+
+# Register the Score model view with the admin
+admin.add_view(ScoreAdmin(Score, db.session))
+
+# Register the Subject model view with the admin
+admin.add_view(SubjectAdmin(Subject, db.session))
 
 # Import routes after initializing app and extensions
 from application import routes
