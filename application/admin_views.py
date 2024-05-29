@@ -70,3 +70,42 @@ class StudentAdmin(ModelView):
 
     def inaccessible_callback(self, name, **kwargs):
         return redirect(url_for("login", next=request.url))
+
+
+class ScoreAdmin(ModelView):
+    column_list = [
+        "student_id",
+        "subject",
+        "class_assessment",
+        "summative_test",
+        "exam",
+        "total",
+        "term",
+        "session",
+    ]
+    form_columns = [
+        "student_id",
+        "subject_id",
+        "class_assessment",
+        "summative_test",
+        "exam",
+        "term",
+        "session",
+    ]
+
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.is_admin
+
+    def inaccessible_callback(self, name, **kwargs):
+        return redirect(url_for("login", next=request.url))
+
+
+class SubjectAdmin(ModelView):
+    column_list = ["name"]
+    form_columns = ["name"]
+
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.is_admin
+
+    def inaccessible_callback(self, name, **kwargs):
+        return redirect(url_for("login", next=request.url))

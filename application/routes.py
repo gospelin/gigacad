@@ -1,8 +1,8 @@
 from application import app, db
 from flask import render_template, redirect, url_for, flash, request
 from flask_login import login_required, login_user, logout_user, current_user
-from .models import Student, User
-from .forms import StudentRegistrationForm, LoginForm
+from .models import Student, User, Subject, Score
+from .forms import StudentRegistrationForm, LoginForm, ScoreForm
 import random, string
 
 
@@ -59,22 +59,22 @@ def student_registration():
             password = temporary_password
         )
 
+        user = User(username=student.username, is_admin=False)
+        user.set_password(student.password)
+        student.user = user
+
         try:
             db.session.add(student)
+            db.session.add(user)
             db.session.commit()
             flash(
                 f"Student registered successfully. Username: {username}, Password: {temporary_password}",
                 "alert alert-success",
             )
-
-            # Upload student username and password to AdminUser database
-            student_user = User(username=student.username)
-            student_user.set_password(student.password)  # Hash the password
-            db.session.add(student_user)
-            db.session.commit()
         except Exception as e:
             db.session.rollback()
             flash(f"Error: {str(e)}", "alert alert-danger")
+
         return redirect(url_for("index"))
     else:
         for field, errors in form.errors.items():
@@ -83,6 +83,7 @@ def student_registration():
                     f"Error in the {getattr(form, field).label.text} field - {error}",
                     "alert alert-danger",
                 )
+
     return render_template(
         "student_registration.html",
         title="Register",
@@ -124,13 +125,60 @@ def admin_dashboard():
 
 ### Result Management Routes ###
 
-@app.route("/admin/results", methods=["GET", "POST"])
+
+@app.route("/admin/manage_results", methods=["GET", "POST"])
 @login_required
 def manage_results():
-    if not current_user.is_admin:
-        return redirect(url_for("login"))
-    # Add logic to handle result management (e.g., uploading results, viewing all student results)
-    return render_template("admin/manage_results.html", title="Manage Results")
+    form = ScoreForm()
+    form.student_id.choices = [
+        (student.id, f"{student.first_name} {student.last_name}")
+        for student in Student.query.all()
+    ]
+    form.subject_id.choices = [
+        (subject.id, subject.name) for subject in Subject.query.all()
+    ]
+
+    if form.validate_on_submit():
+        # Get form data
+        student_id = form.student_id.data
+        subject_id = form.subject_id.data
+        class_assessment = form.class_assessment.data
+        summative_test = form.summative_test.data
+        exam = form.exam.data
+        term = form.term.data
+        session = form.session.data
+
+        # Check if score already exists for the student and subject
+        score = Score.query.filter_by(
+            student_id=student_id, subject_id=subject_id
+        ).first()
+        if score:
+            # Update existing score
+            score.class_assessment = class_assessment
+            score.summative_test = summative_test
+            score.exam = exam
+            score.term = term
+            score.session = session
+        else:
+            # Create new score entry
+            score = Score(
+                student_id=student_id,
+                subject_id=subject_id,
+                class_assessment=class_assessment,
+                summative_test=summative_test,
+                exam=exam,
+                term=term,
+                session=session,
+            )
+
+        score.calculate_total()  # Assuming you have a method to calculate total in your Score model
+        db.session.add(score)
+        db.session.commit()
+        flash("Score saved successfully!", "success")
+        return redirect(url_for("manage_results"))
+
+    results = Score.query.all()
+    return render_template("admin/manage_results.html", form=form, results=results)
 
 
 @app.route("/results")
@@ -138,7 +186,18 @@ def manage_results():
 def student_result_portal():
     if current_user.is_admin:
         return redirect(url_for("admin_dashboard"))
-    # Add logic to fetch and display the student's results
+
+    student = Student.query.filter_by(user_id=current_user.id).first()
+    if not student:
+        flash("Student not found", "alert alert-danger")
+        return redirect(url_for("index"))
+
+    results = Score.query.filter_by(student_id=student.id).all()
+    if not results:
+        flash("No results found for this student", "alert alert-info")
+        return redirect(url_for("index"))
+
     return render_template(
-        "view_results.html", title="View Results", student=current_user
+        "view_results.html", title="View Results", student=student, results=results, 
+        school_name="Aunty Anne's Int'l School"
     )

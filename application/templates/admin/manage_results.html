@@ -5,32 +5,93 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Results - Aunty Anne's Int'l School</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <style>
+        .school-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .results-table th, .results-table td {
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark">
-        <a class="navbar-brand" href="{{ url_for('index') }}">Admin</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('index') }}">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
-                </li>
-            </ul>
+    <div class="container">
+        <div class="school-header">
+            <img src="{{ url_for('static', filename='images/logo2.png') }}" alt="School Logo" style="width: 100px;">
+            <h1>Aunty Anne's Int'l School</h1>
+            <h2>Student Results</h2>
         </div>
-    </nav>
-
-    <div class="container mt-5">
-        <h1>Manage Results</h1>
-        <p>Here you can upload and manage student results.</p>
-        <!-- Add forms and tables for result management -->
+        <form method="POST" action="{{ url_for('manage_results') }}">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                <label for="student_id">Student Name</label>
+                {{ form.student_id(class_='form-control') }}
+            </div>
+            <div class="form-group">
+                <label for="subject_id">Subject</label>
+                {{ form.subject_id(class_='form-control') }}
+            </div>
+            <div class="form-group">
+                <label for="class_assessment">Class Assessment</label>
+                {{ form.class_assessment(class_='form-control') }}
+            </div>
+            <div class="form-group">
+                <label for="summative_test">Summative Test</label>
+                {{ form.summative_test(class_='form-control') }}
+            </div>
+            <div class="form-group">
+                <label for="exam">Exam</label>
+                {{ form.exam(class_='form-control') }}
+            </div>
+            <div class="form-group">
+                <label for="term">Term</label>
+                {{ form.term(class_='form-control') }}
+            </div>
+            <div class="form-group">
+                <label for="session">Session</label>
+                {{ form.session(class_='form-control') }}
+            </div>
+            <button type="submit" class="btn btn-primary">Save Results</button>
+        </form>
+        <table class="table table-bordered mt-4">
+            <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>Class Assessment</th>
+                    <th>Summative Test</th>
+                    <th>Exam</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody id="results-table">
+                {% for result in results %}
+                <tr>
+                    <td>{{ result.subject.name }}</td>
+                    <td><input type="number" value="{{ result.class_assessment }}" class="form-control class-assessment" data-id="{{ result.id }}"></td>
+                    <td><input type="number" value="{{ result.summative_test }}" class="form-control summative-test" data-id="{{ result.id }}"></td>
+                    <td><input type="number" value="{{ result.exam }}" class="form-control exam" data-id="{{ result.id }}"></td>
+                    <td><input type="number" value="{{ result.total }}" class="form-control total" data-id="{{ result.id }}" readonly></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+<script>
+    document.addEventListener('input', function(event) {
+        if (event.target.classList.contains('class-assessment') ||
+            event.target.classList.contains('summative-test') ||
+            event.target.classList.contains('exam')) {
+            const row = event.target.closest('tr');
+            const classAssessment = parseInt(row.querySelector('.class-assessment').value) || 0;
+            const summativeTest = parseInt(row.querySelector('.summative-test').value) || 0;
+            const exam = parseInt(row.querySelector('.exam').value) || 0;
+            const total = classAssessment + summativeTest + exam;
+            row.querySelector('.total').value = total;
+        }
+    });
+</script>
 </body>
-</html>

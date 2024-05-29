@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, DateField, SubmitField, PasswordField
+from wtforms import StringField, SelectField, DateField, SubmitField, PasswordField, IntegerField
 from wtforms.validators import DataRequired, Email, Length
 
 
@@ -69,6 +69,17 @@ class StudentRegistrationForm(FlaskForm):
     )
     religion = StringField("Religion", validators=[DataRequired(), Length(max=50)])
     submit = SubmitField("Register")
+
+
+class ScoreForm(FlaskForm):
+    student_id = SelectField("Student", coerce=int, validators=[DataRequired()])
+    subject_id = SelectField("Subject", coerce=int, validators=[DataRequired()])
+    class_assessment = IntegerField("Class Assessment", validators=[DataRequired()])
+    summative_test = IntegerField("Summative Test", validators=[DataRequired()])
+    exam = IntegerField("Exam", validators=[DataRequired()])
+    term = StringField("Term", validators=[DataRequired()])
+    session = StringField("Session", validators=[DataRequired()])
+    submit = SubmitField("Save")
 
 
 class LoginForm(FlaskForm):
