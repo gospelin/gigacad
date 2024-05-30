@@ -88,3 +88,24 @@ class LoginForm(FlaskForm):
     )
     password = PasswordField("Password", validators=[DataRequired()])
     submit = SubmitField("Login")
+
+
+class EditStudentForm(FlaskForm):
+    first_name = StringField("First Name", validators=[DataRequired()])
+    last_name = StringField("Last Name", validators=[DataRequired()])
+    username = StringField("Username", validators=[DataRequired()])
+    entry_class = SelectField(
+        "Class",
+        choices=[
+            ("Primary 1", "Primary 1"),
+            ("Primary 2", "Primary 2"),
+            ("Primary 3", "Primary 3"),
+            ("Primary 4", "Primary 4"),
+            ("Primary 5", "Primary 5"),
+            ("Primary 6", "Primary 6"),
+            ("JSS 1", "JSS 1"),
+            ("JSS 2", "JSS 2"),
+            ("JSS 3", "JSS 3"),
+        ],
+    )
+    submit = SubmitField("Save")
