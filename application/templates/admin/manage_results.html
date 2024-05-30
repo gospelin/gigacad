@@ -25,73 +25,109 @@
             <h2>Student Results</h2>
         </div>
         <form method="POST" action="{{ url_for('manage_results') }}">
+            <div class="row mb-3">
+                <div class="col">
+                    <label for="term">Select Term:</label>
+                    <select name="term" id="term" class="form-control">
+                        <option value="First">First</option>
+                        <option value="Second">Second</option>
+                        <option value="Third" selected>Third</option>
+                    </select>
+                </div>
+                <div class="col">
+                    <label for="session">Select Session:</label>
+                    <select name="session" id="session" class="form-control">
+                        <option value="2023/2024">2023/2024</option>
+                        <option value="2024/2025">2024/2025</option>
+                    </select>
+                </div>
+            </div>
             {{ form.hidden_tag() }}
-            <div class="form-group">
-                <label for="student_id">Student Name</label>
-                {{ form.student_id(class_='form-control') }}
-            </div>
-            <div class="form-group">
-                <label for="subject_id">Subject</label>
-                {{ form.subject_id(class_='form-control') }}
-            </div>
-            <div class="form-group">
-                <label for="class_assessment">Class Assessment</label>
-                {{ form.class_assessment(class_='form-control') }}
-            </div>
-            <div class="form-group">
-                <label for="summative_test">Summative Test</label>
-                {{ form.summative_test(class_='form-control') }}
-            </div>
-            <div class="form-group">
-                <label for="exam">Exam</label>
-                {{ form.exam(class_='form-control') }}
-            </div>
-            <div class="form-group">
-                <label for="term">Term</label>
-                {{ form.term(class_='form-control') }}
-            </div>
-            <div class="form-group">
-                <label for="session">Session</label>
-                {{ form.session(class_='form-control') }}
-            </div>
+            <table class="table table-bordered mt-4">
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Subject</th>
+                        <th>Class Assessment</th>
+                        <th>Summative Test</th>
+                        <th>Exam</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody id="results-table">
+                    {% for result in results %}
+                    <tr>
+                        <td>
+                            <select name="student_id_{{ result.id }}" class="form-control">
+                                {% for student in students %}
+                                <option value="{{ student.id }}" {% if student.id == result.student_id %}selected{% endif %}>{{ student.first_name }} {{ student.last_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td>
+                            <select name="subject_id_{{ result.id }}" class="form-control">
+                                {% for subject in subjects %}
+                                <option value="{{ subject.id }}" {% if subject.id == result.subject_id %}selected{% endif %}>{{ subject.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td><input type="number" name="class_assessment_{{ result.id }}" value="{{ result.class_assessment }}" class="form-control class-assessment" data-id="{{ result.id }}"></td>
+                        <td><input type="number" name="summative_test_{{ result.id }}" value="{{ result.summative_test }}" class="form-control summative-test" data-id="{{ result.id }}"></td>
+                        <td><input type="number" name="exam_{{ result.id }}" value="{{ result.exam }}" class="form-control exam" data-id="{{ result.id }}"></td>
+                        <td><input type="number" name="total_{{ result.id }}" value="{{ result.total }}" class="form-control total" data-id="{{ result.id }}" readonly></td>
+                    </tr>
+                    {% endfor %}
+                    <tr id="new-row-template" style="display: none;">
+                        <td>
+                            <select name="student_id_new_X" class="form-control">
+                                {% for student in students %}
+                                <option value="{{ student.id }}">{{ student.first_name }} {{ student.last_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td>
+                            <select name="subject_id_new_X" class="form-control">
+                                {% for subject in subjects %}
+                                <option value="{{ subject.id }}">{{ subject.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td><input type="number" name="class_assessment_new_X" class="form-control class-assessment" data-id="new_X"></td>
+                        <td><input type="number" name="summative_test_new_X" class="form-control summative-test" data-id="new_X"></td>
+                        <td><input type="number" name="exam_new_X" class="form-control exam" data-id="new_X"></td>
+                        <td><input type="number" name="total_new_X" class="form-control total" data-id="new_X" readonly></td>
+                    </tr>
+                </tbody>
+            </table>
+            <button type="button" class="btn btn-secondary" onclick="addRow()">Add Row</button>
             <button type="submit" class="btn btn-primary">Save Results</button>
         </form>
-        <table class="table table-bordered mt-4">
-            <thead>
-                <tr>
-                    <th>Subject</th>
-                    <th>Class Assessment</th>
-                    <th>Summative Test</th>
-                    <th>Exam</th>
-                    <th>Total</th>
-                </tr>
-            </thead>
-            <tbody id="results-table">
-                {% for result in results %}
-                <tr>
-                    <td>{{ result.subject.name }}</td>
-                    <td><input type="number" value="{{ result.class_assessment }}" class="form-control class-assessment" data-id="{{ result.id }}"></td>
-                    <td><input type="number" value="{{ result.summative_test }}" class="form-control summative-test" data-id="{{ result.id }}"></td>
-                    <td><input type="number" value="{{ result.exam }}" class="form-control exam" data-id="{{ result.id }}"></td>
-                    <td><input type="number" value="{{ result.total }}" class="form-control total" data-id="{{ result.id }}" readonly></td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
     </div>
 
-<script>
-    document.addEventListener('input', function(event) {
-        if (event.target.classList.contains('class-assessment') ||
-            event.target.classList.contains('summative-test') ||
-            event.target.classList.contains('exam')) {
-            const row = event.target.closest('tr');
-            const classAssessment = parseInt(row.querySelector('.class-assessment').value) || 0;
-            const summativeTest = parseInt(row.querySelector('.summative-test').value) || 0;
-            const exam = parseInt(row.querySelector('.exam').value) || 0;
-            const total = classAssessment + summativeTest + exam;
-            row.querySelector('.total').value = total;
+    <script>
+        let newRowIdx = 0;
+
+        function addRow() {
+            const template = document.querySelector('#new-row-template');
+            const newRow = template.cloneNode(true);
+            newRow.style.display = '';
+            newRow.innerHTML = newRow.innerHTML.replace(/new_X/g, `new_${newRowIdx}`);
+            document.querySelector('#results-table').appendChild(newRow);
+            newRowIdx++;
         }
-    });
-</script>
+
+        document.addEventListener('input', function(event) {
+            if (event.target.classList.contains('class-assessment') ||
+                event.target.classList.contains('summative-test') ||
+                event.target.classList.contains('exam')) {
+                const row = event.target.closest('tr');
+                const classAssessment = parseInt(row.querySelector('.class-assessment').value) || 0;
+                const summativeTest = parseInt(row.querySelector('.summative-test').value) || 0;
+                const exam = parseInt(row.querySelector('.exam').value) || 0;
+                const total = classAssessment + summativeTest + exam;
+                row.querySelector('.total').value = total;
+            }
+        });
+    </script>
 </body>
+</html>
