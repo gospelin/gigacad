@@ -4,7 +4,7 @@
     }
 
     .navbar {
-        background-color: #000;
+        background-color: #4CAF50;
         /* Black */
     }
 
@@ -19,7 +19,7 @@
     }
 
     .jumbotron {
-        background-color: #000;
+        background-color: #4CAF50;
         /* Black */
         color: #fff;
         text-align: center;
@@ -51,14 +51,14 @@
     }
 
     .btn-primary:hover {
-        background-color: #1E88E5;
+        background-color: #4CAF50;
         /* Blue */
-        border-color: #1E88E5;
+        border-color: #4CAF50;
         /* Blue */
     }
 
     .footer {
-        background-color: #000;
+        background-color: #4CAF50 !important;
         /* Black */
         color: #ffd700;
         /* Golden */

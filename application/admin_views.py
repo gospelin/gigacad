@@ -64,6 +64,7 @@ class StudentAdmin(ModelView):
         "entry_class",
     ]
     column_filters = ["approved", "entry_class"]
+    list_template = "admin/student_admin.html"
 
     def is_accessible(self):
         return current_user.is_authenticated and current_user.is_admin
@@ -103,6 +104,7 @@ class ScoreAdmin(ModelView):
 class SubjectAdmin(ModelView):
     column_list = ["name"]
     form_columns = ["name"]
+    list_template = "admin/subject_admin.html"
 
     def is_accessible(self):
         return current_user.is_authenticated and current_user.is_admin

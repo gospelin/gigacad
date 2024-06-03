@@ -1,0 +1,28 @@
+{% extends 'admin/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 mb-4">
+            <div class="card border-0 shadow-lg">
+                <img src="{{ url_for('static', filename='images/add-student.png') }}" class="card-img-top" alt="Add New Student Image">
+                <div class="card-body">
+                    <h5 class="card-title text-center">Add New Student</h5>
+                    <p class="card-text text-center">Click below to add a new student.</p>
+                    <a href="{{ url_for('add_students') }}" class="btn btn-primary btn-block">Add Student</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card border-0 shadow-lg">
+                <img src="{{ url_for('static', filename='images/add-class.jpg') }}" class="card-img-top" alt="Manage Classes Image">
+                <div class="card-body">
+                    <h5 class="card-title text-center">Manage Classes</h5>
+                    <p class="card-text text-center">Click below to manage students in different classes.</p>
+                    <a href="{{ url_for('manage_classes') }}" class="btn btn-primary btn-block">Classes</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

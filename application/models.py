@@ -68,9 +68,40 @@ class Score(db.Model):
     term = db.Column(db.String(50), nullable=False)
     session = db.Column(db.String(50), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.now())
+    grade = db.Column(db.String(2))
+    remark = db.Column(db.String(100))
 
     def calculate_total(self):
         self.total = self.class_assessment + self.summative_test + self.exam
+
+    def get_remark(self):
+        if self.total >= 95:
+            self.grade = "A+"
+            self.remark = "Outstanding"
+        elif self.total >= 80:
+            self.grade = "A"
+            self.remark = "Excellent"
+        elif self.total >= 70:
+            self.grade = "B+"
+            self.remark = "Very Good"
+        elif self.total >= 65:
+            self.grade = "B"
+            self.remark = "Good"
+        elif self.total >= 60:
+            self.grade = "C+"
+            self.remark = "Credit"
+        elif self.total >= 50:
+            self.grade = "C"
+            self.remark = "Credit"
+        elif self.total >= 40:
+            self.grade = "D"
+            self.remark = "Poor"
+        elif self.total >= 30:
+            self.grade = "E"
+            self.remark = "Very Poor"
+        else:
+            self.grade = "F"
+            self.remark = "Fail"
 
     def __repr__(self):
         return f"<Score {self.student_id} {self.subject_id}>"
