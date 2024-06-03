@@ -1,0 +1,195 @@
+{% extends 'admin/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="school-header text-center">
+        <img src="{{ url_for('static', filename='images/logo2.png') }}" alt="School Logo" style="width: 100px;">
+        <h1>Aunty Anne's Int'l School</h1>
+        <h2>Student Results</h2>
+    </div>
+    <form method="POST" action="{{ url_for('manage_results', student_id=student.id) }}">
+        {{ form.hidden_tag() }}
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text">First Name:</span>
+                    <span class="form-control">{{ student.first_name }}</span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text">Last Name:</span>
+                    <span class="form-control">{{ student.last_name }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col">
+                <label for="term" class="form-label">Select Term:</label>
+                <select name="term" id="term" class="form-control">
+                    <option value="First">First</option>
+                    <option value="Second">Second</option>
+                    <option value="Third" selected>Third</option>
+                </select>
+            </div>
+            <div class="col">
+                <label for="session" class="form-label">Select Session:</label>
+                <select name="session" id="session" class="form-control">
+                    <option value="2023/2024">2023/2024</option>
+                    <option value="2024/2025">2024/2025</option>
+                </select>
+            </div>
+            <div class="col">
+                <label>Average:</label>
+                <span><strong>{{ average_total }}</strong></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <table class="table table-bordered mt-4">
+                    <thead>
+                        <thead>
+                            <tr>
+                                <th>Subject</th>
+                                <th>Class Assessment</th>
+                                <th>Summative Test</th>
+                                <th>Exam</th>
+                                <th>Total</th>
+                                <th>Grade</th>
+                                <th>Remark</th>
+                            </tr>
+                        </thead>
+
+                    </thead>
+                    <tbody id="results-table">
+                        {% for result in results %}
+                        <tr>
+                            <td>
+                                <select name="subject_id_{{ result.id }}" class="form-control">
+                                    {% for subject in subjects %}
+                                    <option value="{{ subject.id }}" {% if subject.id == result.subject_id %}selected{% endif %}>
+                                        {{ subject.name }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                            <td><input type="number" name="class_assessment_{{ result.id }}" value="{{ result.class_assessment }}" class="form-control class-assessment" data-id="{{ result.id }}"></td>
+                            <td><input type="number" name="summative_test_{{ result.id }}" value="{{ result.summative_test }}" class="form-control summative-test" data-id="{{ result.id }}"></td>
+                            <td><input type="number" name="exam_{{ result.id }}" value="{{ result.exam }}" class="form-control exam" data-id="{{ result.id }}"></td>
+                            <td><input type="number" name="total_{{ result.id }}" value="{{ result.total }}" class="form-control total" data-id="{{ result.id }}" readonly></td>
+                            <td>{{ result.grade }}</td>
+                            <td>{{ result.remark }}</td>
+                            <td>
+                                <form action="{{ url_for('delete_result', result_id=result.id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this result?');">
+                                    {{ form.hidden_tag() }}
+                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        <!-- New row template -->
+                        <tr id="new-row-template" style="display: none;">
+                            <td>
+                                <select name="subject_id_new_X" class="form-control">
+                                    {% for subject in subjects %}
+                                    <option value="{{ subject.id }}">{{ subject.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                            <td><input type="number" name="class_assessment_new_X" class="form-control class-assessment" data-id="new_X"></td>
+                            <td><input type="number" name="summative_test_new_X" class="form-control summative-test" data-id="new_X"></td>
+                            <td><input type="number" name="exam_new_X" class="form-control exam" data-id="new_X"></td>
+                            <td><input type="number" name="total_new_X" class="form-control total" data-id="new_X" readonly></td>
+                        </tr>
+                        <!-- Grand Total Row -->
+                        <tr>
+                            <td><strong>Grand Total</strong></td>
+                            <td><strong>{{ grand_total.class_assessment }}</strong></td>
+                            <td><strong>{{ grand_total.summative_test }}</strong></td>
+                            <td><strong>{{ grand_total.exam }}</strong></td>
+                            <td><strong>{{ grand_total.total }}</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <button type="button" class="btn btn-secondary" onclick="addRow()">Add Row</button>
+        <button type="submit" class="btn btn-primary" name="action" value="save">Save Results</button>
+    </form>
+</div>
+
+<script>
+    let newRowIdx = 0;
+
+    function addRow() {
+        const template = document.querySelector('#new-row-template');
+        const newRow = template.cloneNode(true);
+        newRow.style.display = '';
+        newRow.innerHTML = newRow.innerHTML.replace(/new_X/g, `new_${newRowIdx}`);
+        const grandTotalRow = document.querySelector('tbody#results-table tr:last-of-type');
+        grandTotalRow.parentNode.insertBefore(newRow, grandTotalRow);
+        newRowIdx++;
+    }
+
+    document.addEventListener('input', function(event) {
+        if (event.target.classList.contains('class-assessment') ||
+            event.target.classList.contains('summative-test') ||
+            event.target.classList.contains('exam')) {
+            const row = event.target.closest('tr');
+            const classAssessment = parseInt(row.querySelector('.class-assessment').value) || 0;
+            const summativeTest = parseInt(row.querySelector('.summative-test').value) || 0;
+            const exam = parseInt(row.querySelector('.exam').value) || 0;
+            const total = classAssessment + summativeTest + exam;
+            row.querySelector('.total').value = total;
+        }
+    });
+
+
+    // Function to calculate grade based on total score
+    function calculate_grade(total) {
+        if (total >= 95) {
+            return 'A+';
+        } else if (total >= 80) {
+            return 'A';
+        } else if (total >= 70) {
+            return 'B+';
+        } else if (total >= 65) {
+            return 'B';
+        } else if (total >= 60) {
+            return 'C+';
+        } else if (total >= 50) {
+            return 'C';
+        } else if (total >= 40) {
+            return 'D';
+        } else if (total >= 30) {
+            return 'E';
+        } else {
+            return 'F';
+        }
+    }
+
+    // Function to get remark based on total score
+    function get_remark(total) {
+        if (total >= 95) {
+            return 'Outstanding';
+        } else if (total >= 80) {
+            return 'Excellent';
+        } else if (total >= 70) {
+            return 'Very Good';
+        } else if (total >= 65) {
+            return 'Good';
+        } else if (total >= 60) {
+            return 'Credit';
+        } else if (total >= 50) {
+            return 'Credit';
+        } else if (total >= 40) {
+            return 'Poor';
+        } else if (total >= 30) {
+            return 'Very Poor';
+        } else {
+            return 'Failed';
+        }
+    }
+</script>
+{% endblock %}
