@@ -1,45 +1,92 @@
 {% extends "layout.html" %}
-    {% block content %}
-    <div class="jumbotron bg-success text-white text-center py-5">
-        <div class="container">
-            <h1>Welcome to {{school_name}}</h1>
-            <h2>Where Practical Learning Meets Knowledge and Confidence</h2>
-            <p class="lead">
-                We are committed to providing a transformative education experience 
-                that equips students with practical skills, empowers them with knowledge, 
-                and instills the confidence to excel in a rapidly changing world.
-            </p>
-            <a class="btn btn-light btn-lg" href="#" role="button">Learn More</a>
-        </div>
+{% block content %}
+<div class="jumbotron bg-success text-white text-center py-5">
+    <div class="container">
+        <h1 class="display-4">Welcome to {{ school_name }}</h1>
+        <h2 class="my-4">Where Practical Learning Meets Knowledge and Confidence</h2>
+        <p class="lead">
+            We are committed to providing a transformative education experience 
+            that equips students with practical skills, empowers them with knowledge, 
+            and instills the confidence to excel in a rapidly changing world.
+        </p>
+        <a class="btn btn-light btn-lg" href="#" role="button">Learn More</a>
     </div>
+</div>
 
-    <div class="container mt-5">
-        <div class="slideshow-container">
-            <div class="slideshow-text text-center mb-4">
-                <h2>Explore Our Campus</h2>
-                <p>Take a virtual tour of our state-of-the-art facilities and vibrant learning spaces.</p>
-            </div>
-            <div id="campusCarousel" class="carousel slide" data-bs-ride="carousel">
-                <div class="carousel-inner">
-                    <div class="carousel-item active">
-                        <img src="{{ url_for('static', filename='images/images1.jpeg') }}" class="d-block w-100" alt="Campus Image 1">
-                    </div>
-                    <div class="carousel-item">
-                        <img src="{{ url_for('static', filename='images/images1.jpeg') }}" class="d-block w-100" alt="Campus Image 2">
-                    </div>
-                    <div class="carousel-item">
-                        <img src="{{ url_for('static', filename='images/images1.jpeg') }}" class="d-block w-100" alt="Campus Image 3">
+<div class="container mt-5 mb-5">
+    <div class="slideshow-container">
+        <div class="text-center mb-4">
+            <h2 class="display-5">Explore Our Campus</h2>
+            <p>Take a virtual tour of our state-of-the-art facilities and vibrant learning spaces.</p>
+        </div>
+        <div id="campusCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <img src="{{ url_for('static', filename='images/DSC_0184.JPG') }}" class="d-block w-100" alt="Campus Image 1">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>Modern Classrooms</h5>
+                        <p>Our classrooms are equipped with the latest technology to enhance learning.</p>
                     </div>
                 </div>
-                <button class="carousel-control-prev" type="button" data-bs-target="#campusCarousel" data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Previous</span>
-                </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#campusCarousel" data-bs-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Next</span>
-                </button>
+                <div class="carousel-item">
+                    <img src="{{ url_for('static', filename='images/DSC_0249.JPG') }}" class="d-block w-100" alt="Campus Image 2">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>State-of-the-Art Laboratories</h5>
+                        <p>Experience hands-on learning in our advanced science labs.</p>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img src="{{ url_for('static', filename='images/DSC_0233.JPG') }}" class="d-block w-100" alt="Campus Image 3">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>Vibrant Campus Life</h5>
+                        <p>Our campus offers a vibrant community with diverse activities.</p>
+                    </div>
+                </div>
             </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#campusCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#campusCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
         </div>
     </div>
-    {% endblock %}
+</div>
+
+<style>
+
+    .carousel-caption {
+        background-color: rgba(0, 0, 0, 0.5);
+        padding: 1rem;
+        border-radius: 10px;
+    }
+
+    .carousel-inner img {
+        height: 500px;
+        object-fit: cover;
+    }
+
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+        background-color: #000;
+        border-radius: 50%;
+    }
+
+    .btn-light {
+        background-color: #fff;
+        color: #28a745;
+        border: 2px solid #28a745;
+    }
+
+    .btn-light:hover {
+        background-color: #28a745;
+        color: #fff;
+    }
+
+    .container.mb-5 {
+        margin-bottom: 5rem;
+    }
+</style>
+{% endblock %}
