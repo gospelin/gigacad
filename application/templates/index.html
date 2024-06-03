@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+    {% block content %}
+    <div class="jumbotron bg-success text-white text-center py-5">
+        <div class="container">
+            <h1>Welcome to {{school_name}}</h1>
+            <h2>Where Practical Learning Meets Knowledge and Confidence</h2>
+            <p class="lead">
+                We are committed to providing a transformative education experience 
+                that equips students with practical skills, empowers them with knowledge, 
+                and instills the confidence to excel in a rapidly changing world.
+            </p>
+            <a class="btn btn-light btn-lg" href="#" role="button">Learn More</a>
+        </div>
+    </div>
+
+    <div class="container mt-5">
+        <div class="slideshow-container">
+            <div class="slideshow-text text-center mb-4">
+                <h2>Explore Our Campus</h2>
+                <p>Take a virtual tour of our state-of-the-art facilities and vibrant learning spaces.</p>
+            </div>
+            <div id="campusCarousel" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <img src="{{ url_for('static', filename='images/images1.jpeg') }}" class="d-block w-100" alt="Campus Image 1">
+                    </div>
+                    <div class="carousel-item">
+                        <img src="{{ url_for('static', filename='images/images1.jpeg') }}" class="d-block w-100" alt="Campus Image 2">
+                    </div>
+                    <div class="carousel-item">
+                        <img src="{{ url_for('static', filename='images/images1.jpeg') }}" class="d-block w-100" alt="Campus Image 3">
+                    </div>
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#campusCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#campusCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    {% endblock %}

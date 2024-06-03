@@ -1,0 +1,28 @@
+{% extends 'admin/base.html' %}
+
+{% block content %}
+
+
+
+    <div class="main-content">
+        <div class="container mt-5">
+            <div class="row">
+                <div class="col">
+                    <div class="text-center mb-4">
+                        <h1>Admin Dashboard</h1>
+                        <p>Welcome, {{ current_user.username }}</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            Dashboard Overview
+                        </div>
+                        <div class="card-body">
+                            <p>Use the quick links on the sidebar to navigate through the admin functionalities.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
