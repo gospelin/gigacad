@@ -19,7 +19,7 @@
     }
 
     .jumbotron {
-        background-color: #4CAF50;
+        background: linear-gradient(to bottom right, #28a745, #218838);
         /* Black */
         color: #fff;
         text-align: center;
@@ -55,16 +55,6 @@
         /* Blue */
         border-color: #4CAF50;
         /* Blue */
-    }
-
-    .footer {
-        background-color: #4CAF50 !important;
-        /* Black */
-        color: #ffd700;
-        /* Golden */
-        text-align: center;
-        padding: 30px 0;
-        font-size: 0.9rem;
     }
 
     /* Custom styles for the contact form */
@@ -118,3 +108,31 @@
         color: #4CAF50;
         /* Green */
     }
+
+
+/* Testing */
+
+.top-bar {
+    background: linear-gradient(to bottom right, #28a745, #218838);
+    padding: 10px 0;
+}
+
+.top-bar a {
+    color: #000;
+    margin-right: 15px;
+}
+
+.navbar {
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+.sticky-top {
+    position: -webkit-sticky;
+    position: sticky;
+}
+
+.phone-number {
+    margin-right: 15px;
+}
