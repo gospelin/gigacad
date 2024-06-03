@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, DateField, SubmitField, PasswordField, IntegerField
-from wtforms.validators import DataRequired, Email, Length
+from wtforms.validators import DataRequired, Email, Length, NumberRange
+from application.models import Subject
 
 
 class StudentRegistrationForm(FlaskForm):
@@ -72,14 +73,25 @@ class StudentRegistrationForm(FlaskForm):
 
 
 class ScoreForm(FlaskForm):
-    student_id = SelectField("Student", coerce=int, validators=[DataRequired()])
-    subject_id = SelectField("Subject", coerce=int, validators=[DataRequired()])
-    class_assessment = IntegerField("Class Assessment", validators=[DataRequired()])
-    summative_test = IntegerField("Summative Test", validators=[DataRequired()])
-    exam = IntegerField("Exam", validators=[DataRequired()])
     term = StringField("Term", validators=[DataRequired()])
     session = StringField("Session", validators=[DataRequired()])
-    submit = SubmitField("Save")
+    subject_id = SelectField("Subject", choices=[], validators=[DataRequired()])
+    class_assessment = IntegerField(
+        "Class Assessment", validators=[DataRequired(), NumberRange(min=0, max=20)]
+    )
+    summative_test = IntegerField(
+        "Summative Test", validators=[DataRequired(), NumberRange(min=0, max=20)]
+    )
+    exam = IntegerField(
+        "Exam", validators=[DataRequired(), NumberRange(min=0, max=60)]
+    )
+    submit = SubmitField("Submit")
+
+    def __init__(self, *args, **kwargs):
+        super(ScoreForm, self).__init__(*args, **kwargs)
+        self.subject_id.choices = [
+            (subject.id, subject.name) for subject in Subject.query.all()
+        ]
 
 
 class LoginForm(FlaskForm):
@@ -109,3 +121,12 @@ class EditStudentForm(FlaskForm):
         ],
     )
     submit = SubmitField("Save")
+
+
+class SubjectForm(FlaskForm):
+    name = StringField("Name", validators=[DataRequired()])
+    submit = SubmitField("Add Subject")
+
+
+class DeleteForm(FlaskForm):
+    submit = SubmitField("Delete")

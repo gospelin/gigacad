@@ -1,33 +1,79 @@
 {% extends "layout.html" %}
 {% block content %}
-<div class="container mt-5">
+<div class="container mt-5 print-view">
     <div class="student-info mt-3">
-        <h3>{{ student.first_name }} {{ student.last_name }}</h3>
+        <h3 class="text-uppercase">{{ student.first_name }} {{ student.last_name }}</h3>
         <p>Class: {{ student.entry_class }}</p>
         <p>Term: {{ results[0].term }}</p>
         <p>Session: {{ results[0].session }}</p>
+        <p>Average for the Term: {{ average_total }}</p>
     </div>
-    <table class="table table-bordered mt-4">
-        <thead>
-            <tr>
-                <th>Subject</th>
-                <th>Class Assessment</th>
-                <th>Summative Test</th>
-                <th>Exam</th>
-                <th>Total</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for result in results %}
-            <tr>
-                <td>{{ result.subject.name }}</td>
-                <td>{{ result.class_assessment }}</td>
-                <td>{{ result.summative_test }}</td>
-                <td>{{ result.exam }}</td>
-                <td>{{ result.total }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="table-responsive mt-4">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>Class Assessment</th>
+                    <th>Summative Test</th>
+                    <th>Exam</th>
+                    <th>Total</th>
+                    <th>Grade</th>
+                    <th>Remark</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for result in results %}
+                <tr>
+                    <td>{{ result.subject.name }}</td>
+                    <td>{{ result.class_assessment }}</td>
+                    <td>{{ result.summative_test }}</td>
+                    <td>{{ result.exam }}</td>
+                    <td>{{ result.total }}</td>
+                    <td>{{ result.grade }}</td>
+                    <td>{{ result.remark }}</td>
+                </tr>
+                {% endfor %}
+                <tr>
+                    <td class="text-end"><strong>Grand Total:</strong></td>
+                    <td><strong>{{ grand_total.class_assessment }}</strong></td>
+                    <td><strong>{{ grand_total.summative_test }}</strong></td>
+                    <td><strong>{{ grand_total.exam }}</strong></td>
+                    <td><strong>{{ grand_total.total }}</strong></td>
+                        <td colspan="2"></td>
+                    </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
+<style>
+    @media print {
+        .print-view {
+            width: 100%;
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .table-bordered {
+            border: 2px solid #000;
+        }
+
+        .table-bordered th,
+        .table-bordered td {
+            border: 2px solid #000;
+            font-size: 16px;
+        }
+
+        .text-end {
+            text-align: right;
+        }
+
+        /* Hide elements not needed for printing */
+        .navbar,
+        .footer,
+        .btn {
+            display: none;
+        }
+    }
+</style>
 {% endblock %}

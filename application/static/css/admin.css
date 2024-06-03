@@ -16,7 +16,7 @@ body {
     color: #ffc107 !important;
 }
 
-.sidebar {
+/*.sidebar {
     height: 100vh;
     background-color: #343a40;
     color: #fff;
@@ -35,7 +35,7 @@ body {
 
 .sidebar .nav-link:hover {
     background-color: #495057;
-}
+}*/
 
 .main-content {
     margin-right: 270px;
@@ -53,4 +53,43 @@ body {
     color: #fff;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
+}
+
+/* Admin Manage result */
+.school-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.results-table th,
+.results-table td {
+    text-align: center;
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    /* Adjust if your navbar height is different */
+    right: 0;
+    width: 250px;
+    height: 100%;
+    background-color: #343a40;
+    padding-top: 20px;
+    overflow-y: auto;
+}
+
+.sidebar .nav-link {
+    color: #ffffff;
+    padding: 10px 15px;
+    display: block;
+}
+
+.sidebar .nav-link:hover {
+    background-color: #495057;
+    text-decoration: none;
+}
+
+.container {
+    width: 90%;
+    margin-right: 150px;
 }

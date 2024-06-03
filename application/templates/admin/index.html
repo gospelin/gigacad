@@ -1,63 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Aunty Anne's Int'l School</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
-</head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <a class="navbar-brand" href="{{ url_for('index') }}">Admin</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('index') }}">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
-                </li>
-            </ul>
-        </div>
-    </nav>
+{% extends 'admin/base.html' %}
 
-    <div class="sidebar">
-        <h4 class="text-center">Quick Links</h4>
-        <ul class="nav flex-column">
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="classDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Classes
-                </a>
-                <div class="dropdown-menu" aria-labelledby="classDropdown">
-                    <a class="dropdown-item" href="{{ url_for('students_by_class', entry_class='Primary 1') }}">Primary 1</a>
-                    <a class="dropdown-item" href="{{ url_for('students_by_class', entry_class='Primary 2') }}">Primary 2</a>
-                    <a class="dropdown-item" href="{{ url_for('students_by_class', entry_class='Primary 3') }}">Primary 3</a>
-                    <a class="dropdown-item" href="{{ url_for('students_by_class', entry_class='Primary 4') }}">Primary 4</a>
-                    <a class="dropdown-item" href="{{ url_for('students_by_class', entry_class='Primary 5') }}">Primary 5</a>
-                    <a class="dropdown-item" href="{{ url_for('students_by_class', entry_class='Primary 6') }}">Primary 6</a>
-                    <a class="dropdown-item" href="{{ url_for('students_by_class', entry_class='JSS 1') }}">JSS 1</a>
-                    <a class="dropdown-item" href="{{ url_for('students_by_class', entry_class='JSS 2') }}">JSS 2</a>
-                    <a class="dropdown-item" href="{{ url_for('students_by_class', entry_class='JSS 3') }}">JSS 3</a>
-                    <!-- Add more classes as needed -->
-                </div>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Manage Teachers</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">View Reports</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('manage_results') }}">Manage Results</a>
-            </li>
-        </ul>
-    </div>
+{% block content %}
+
+
 
     <div class="main-content">
         <div class="container mt-5">
@@ -80,8 +25,4 @@
         </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"  crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"  crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>
-</body>
-</html>
+{% endblock %}
