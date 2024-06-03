@@ -1,20 +1,39 @@
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+<div class="top-bar">
+    <div class="container d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+            <span class="phone-number"><i class="fas fa-phone-alt"></i> +234-806-967-8968</span>
+            <div class="social-media-links">
+                <a href="https://www.facebook.com/schoolname" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://twitter.com/schoolname" target="_blank"><i class="fab fa-twitter"></i></a>
+                <a href="https://www.instagram.com/schoolname" target="_blank"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+        <div>
+            <a href="{{ url_for('login') }}">Login</a>
+            <a href="#" class="btn btn-success btn-sm">Apply Now</a>
+        </div>
+        
+    </div>
+</div>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
+    <div class="container">
         <a class="navbar-brand" href="{{ url_for('index') }}">
-            <img src="{{ url_for('static', filename='images/logo2.png') }}" alt="School Logo">
+            <img src="{{ url_for('static', filename='images/MY_SCHOOL_LOGO.png') }}" alt="School Logo" height="60">
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ml-auto ">
+            <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href={{url_for('index') }}>Home</a>
+                    <a class="nav-link" href="{{ url_for('index') }}">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href={{url_for('about_us') }}>About Us</a>
+                    <a class="nav-link" href="{{ url_for('about_us') }}">About Us</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href={{ url_for('student_registration') }}>Registration</a>
+                    <a class="nav-link" href="{{ url_for('student_registration') }}">Registration</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{{ url_for('student_result_portal') }}">Result Portal</a>
@@ -29,4 +48,5 @@
                 {% endif %}
             </ul>
         </div>
-    </nav>
+    </div>
+</nav>
