@@ -6,5 +6,4 @@
 venv/
 __pycache__/
 
-# Ignore environment variables file
-.flaskenv
+
