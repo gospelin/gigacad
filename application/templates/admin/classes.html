@@ -10,7 +10,7 @@
                         <h5 class="card-title text-center">Manage {{ entry_class }} Class</h5>
                         <p class="card-text text-center">Click below to manage students in {{ entry_class }}.</p>
                         <a href="{{ url_for('students_by_class', entry_class=entry_class) }}" class="btn btn-primary btn-block">
-                        {% if "Nursery" in entry_class or "Primary" in entry_class %} Pupils {% else %} Students {% endif %} Management
+                            {% if "Nursery" in entry_class or "Primary" in entry_class %} Pupils {% else %} Students {% endif %} Management
                         </a>
                     </div>
                 </div>

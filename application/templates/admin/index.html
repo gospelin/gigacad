@@ -1,28 +1,30 @@
 {% extends 'admin/base.html' %}
 
+{% block title %}Admin Dashboard{% endblock %}
+
 {% block content %}
-
-
-
-    <div class="main-content">
-        <div class="container mt-5">
-            <div class="row">
-                <div class="col">
-                    <div class="text-center mb-4">
-                        <h1>Admin Dashboard</h1>
-                        <p>Welcome, {{ current_user.username }}</p>
-                    </div>
-                    <div class="card">
-                        <div class="card-header">
-                            Dashboard Overview
-                        </div>
-                        <div class="card-body">
-                            <p>Use the quick links on the sidebar to navigate through the admin functionalities.</p>
-                        </div>
-                    </div>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 mb-4">
+            <div class="card border-0 shadow-lg animate__animated animate__fadeIn">
+                <img src="{{ url_for('static', filename='images/add-student.png') }}" class="card-img-top" alt="Add New Student Image">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Add New Student</h5>
+                    <p class="card-text">Click below to add a new student.</p>
+                    <a href="{{ url_for('add_students') }}" class="btn btn-primary btn-block">Add Student</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card border-0 shadow-lg animate__animated animate__fadeIn">
+                <img src="{{ url_for('static', filename='images/add-class.jpg') }}" class="card-img-top" alt="Manage Classes Image">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Manage Classes</h5>
+                    <p class="card-text">Click below to manage students in different classes.</p>
+                    <a href="{{ url_for('manage_classes') }}" class="btn btn-primary btn-block">Classes</a>
                 </div>
             </div>
         </div>
     </div>
-
+</div>
 {% endblock %}
