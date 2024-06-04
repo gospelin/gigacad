@@ -1,95 +1,76 @@
-body {
-    font-family: 'Roboto', sans-serif;
-    background-color: #f8f9fa;
-}
-
-.navbar {
-    background-color: #343a40;
-}
-
-.navbar-brand,
-.nav-link {
-    color: #fff !important;
-}
-
-.nav-link:hover {
-    color: #ffc107 !important;
-}
-
-/*.sidebar {
-    height: 100vh;
-    background-color: #343a40;
-    color: #fff;
-    padding-top: 20px;
-    position: fixed;
-    right: 0;
-    top: 0;
-    width: 250px;
-    overflow-y: auto;
-}
-
-.sidebar .nav-link {
-    color: #fff;
-    padding: 10px 20px;
-}
-
-.sidebar .nav-link:hover {
-    background-color: #495057;
-}*/
-
-.main-content {
-    margin-right: 270px;
-    padding: 20px;
+/* Additional styling for the admin dashboard */
+.container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 0 15px;
+    /* Added for mobile responsiveness */
 }
 
 .card {
-    border: none;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1.5rem;
+    transition: transform 0.3s ease;
 }
 
-.card-header {
-    background-color: #343a40;
-    color: #fff;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
+.card-title {
+    font-size: 1.5rem;
+    font-weight: bold;
 }
 
-/* Admin Manage result */
-.school-header {
-    text-align: center;
-    margin-bottom: 20px;
+.card-text {
+    font-size: 1rem;
+    color: #6c757d;
 }
 
-.results-table th,
-.results-table td {
-    text-align: center;
+.card:hover {
+    transform: scale(1.05);
 }
 
-.sidebar {
-    position: fixed;
-    top: 0;
-    /* Adjust if your navbar height is different */
-    right: 0;
-    width: 250px;
-    height: 100%;
-    background-color: #343a40;
-    padding-top: 20px;
-    overflow-y: auto;
-}
-
-.sidebar .nav-link {
-    color: #ffffff;
-    padding: 10px 15px;
+.btn-block {
     display: block;
+    width: 100%;
 }
 
-.sidebar .nav-link:hover {
-    background-color: #495057;
-    text-decoration: none;
+.table-responsive {
+    overflow-x: auto;
+    margin-bottom: 30px;
+    /* Adjusted for mobile responsiveness */
 }
 
-.container {
-    width: 90%;
-    margin-right: 150px;
+.table thead th {
+    border-bottom: 2px solid #dee2e6;
+}
+
+.table tbody tr td {
+    vertical-align: middle;
+}
+
+.btn-sm {
+    font-size: 0.875rem;
+    padding: 0.25rem 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .card-body {
+        text-align: center;
+    }
+
+    .table-responsive {
+        margin-bottom: 10px;
+        /* Adjusted for mobile responsiveness */
+    }
+
+    /* Added for mobile responsiveness */
+    .input-group-text {
+        width: 100%;
+        text-align: left;
+    }
+
+    .form-control {
+        width: 100%;
+    }
+
+    .btn {
+        width: 100%;
+        margin-bottom: 10px;
+    }
 }
