@@ -1,138 +1,127 @@
-    body {
-        font-family: 'Roboto', sans-serif;
-        color: #333;
-    }
+/* Global Styles */
 
-    .navbar {
-        background-color: #4CAF50;
-        /* Black */
-    }
+body {
+    font-family: 'Roboto', sans-serif;
+    color: #333;
+}
 
-    .navbar-nav .nav-link {
-        color: #ffd700;
-        /* Golden */
-    }
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: 'Montserrat', sans-serif;
+}
 
-    .navbar-nav .nav-link:hover {
-        color: #4CAF50;
-        /* Green */
-    }
+/* Navbar Styles */
 
+.navbar {
+    background-color: #4CAF50;
+}
+
+.navbar-nav .nav-link {
+    color: #ffd700;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #4CAF50;
+}
+
+/* Jumbotron Styles */
+
+.jumbotron {
+    background: linear-gradient(to bottom right, #28a745, #218838);
+    color: #fff;
+    text-align: center;
+    padding: 100px 0;
+}
+
+.jumbotron h1,
+.jumbotron h2 {
+    color: #ffd700;
+}
+
+/* Card Styles */
+
+.card {
+    border-radius: 10px;
+}
+
+.card-header {
+    text-align: center;
+}
+
+/* List Group Styles */
+
+.list-group-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Button Styles */
+
+.btn-primary {
+    background-color: #4CAF50;
+    border-color: #4CAF50;
+}
+
+.btn-primary:hover {
+    background-color: #4CAF50;
+    border-color: #4CAF50;
+}
+
+.btn-light {
+    background-color: #fff;
+    color: #28a745;
+    border: 2px solid #28a745;
+}
+
+.btn-light:hover {
+    background-color: #28a745;
+    color: #fff;
+}
+
+/* Additional Styles */
+
+.container.mb-5 {
+    margin-bottom: 5rem;
+}
+
+.carousel-caption {
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 1rem;
+    border-radius: 10px;
+}
+
+.carousel-inner img {
+    height: 500px;
+    object-fit: cover;
+}
+
+/* Responsive Styles */
+
+@media (max-width: 768px) {
     .jumbotron {
-        background: linear-gradient(to bottom right, #28a745, #218838);
-        /* Black */
-        color: #fff;
-        text-align: center;
-        padding: 100px 0;
-    }
-
-    .jumbotron h1,
-    .jumbotron h2 {
-        color: #ffd700;
-        /* Golden */
-    }
-
-    .section {
         padding: 80px 0;
     }
 
-    .section-heading {
-        font-size: 2.5rem;
-        color: #333;
-        margin-bottom: 30px;
-        text-align: center;
+    .carousel-inner img {
+        height: 300px;
     }
 
-    .btn-primary {
-        background-color: #4CAF50;
-        /* Green */
-        border-color: #4CAF50;
-        /* Green */
+    .list-group-item {
+        flex-direction: column;
+        align-items: flex-start;
     }
 
-    .btn-primary:hover {
-        background-color: #4CAF50;
-        /* Blue */
-        border-color: #4CAF50;
-        /* Blue */
-    }
-
-    /* Custom styles for the contact form */
-    .contact-form {
-        max-width: 600px;
-        margin: 0 auto;
-    }
-
-    .form-group {
-        margin-bottom: 20px;
-    }
-
-    .form-control {
+    .btn-block {
+        display: block;
         width: 100%;
     }
 
-    .map-responsive {
-        overflow: hidden;
-        padding-bottom: 56.25%;
-        position: relative;
-        height: 0;
+    .container.mb-5 {
+        margin-bottom: 3rem;
     }
-
-    .map-responsive iframe {
-        left: 0;
-        top: 0;
-        height: 100%;
-        width: 100%;
-        position: absolute;
-    }
-
-    .social-media-links {
-        list-style-type: none;
-        padding: 0;
-        display: flex;
-        justify-content: center;
-    }
-
-    .social-media-links li {
-        margin-right: 10px;
-    }
-
-    .social-media-links a {
-        color: #ffd700;
-        /* Golden */
-        font-size: 24px;
-        transition: color 0.3s ease;
-    }
-
-    .social-media-links a:hover {
-        color: #4CAF50;
-        /* Green */
-    }
-
-
-/* Testing */
-
-.top-bar {
-    background: linear-gradient(to bottom right, #28a745, #218838);
-    padding: 10px 0;
-}
-
-.top-bar a {
-    color: #000;
-    margin-right: 15px;
-}
-
-.navbar {
-    top: 0;
-    width: 100%;
-    z-index: 1000;
-}
-
-.sticky-top {
-    position: -webkit-sticky;
-    position: sticky;
-}
-
-.phone-number {
-    margin-right: 15px;
 }
