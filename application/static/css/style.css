@@ -1,5 +1,139 @@
-/* Global Styles */
+/* Additional styling for the admin dashboard */
+.container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 0 15px;
+    /* Added for mobile responsiveness */
+}
 
+.card {
+    margin-bottom: 1.5rem;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+.card-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.card-text {
+    font-size: 1rem;
+    color: #6c757d;
+}
+
+.card-header {
+    text-align: center;
+    border-bottom: 0;
+    padding: 1.5rem 1rem;
+}
+
+.card-body {
+    padding: 2rem;
+}
+
+.btn-block {
+    display: block;
+    width: 100%;
+}
+
+.table-responsive {
+    overflow-x: auto;
+    margin-bottom: 30px;
+    /* Adjusted for mobile responsiveness */
+}
+
+.table thead th {
+    border-bottom: 2px solid #dee2e6;
+}
+
+.table tbody tr td {
+    vertical-align: middle;
+}
+
+.btn-sm {
+    font-size: 0.875rem;
+    padding: 0.25rem 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .card-body {
+        text-align: center;
+    }
+
+    .table-responsive {
+        margin-bottom: 10px;
+        /* Adjusted for mobile responsiveness */
+    }
+
+    /* Added for mobile responsiveness */
+    .input-group-text {
+        width: 100%;
+        text-align: left;
+    }
+
+    .form-control {
+        width: 100%;
+    }
+
+    .btn {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}
+
+/* Login Page Styles */
+.card {
+    margin-bottom: 1.5rem;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+.card-header {
+    text-align: center;
+    border-bottom: 0;
+    padding: 1.5rem 1rem;
+}
+
+.card-body {
+    padding: 2rem;
+}
+
+.btn-block {
+    width: 100%;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+/* Responsive Styles for Login Page */
+@media (max-width: 768px) {
+    .card {
+        margin-top: 2rem;
+    }
+
+    .card-header h2 {
+        font-size: 1.5rem;
+    }
+
+    .form-group {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Add animations from animate.css */
+@import url('https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css');
+
+/* Add additional global styles */
 body {
     font-family: 'Roboto', sans-serif;
     color: #333;
@@ -13,54 +147,6 @@ h5,
 h6 {
     font-family: 'Montserrat', sans-serif;
 }
-
-/* Navbar Styles */
-
-.navbar {
-    background-color: #4CAF50;
-}
-
-.navbar-nav .nav-link {
-    color: #ffd700;
-}
-
-.navbar-nav .nav-link:hover {
-    color: #4CAF50;
-}
-
-/* Jumbotron Styles */
-
-.jumbotron {
-    background: linear-gradient(to bottom right, #28a745, #218838);
-    color: #fff;
-    text-align: center;
-    padding: 100px 0;
-}
-
-.jumbotron h1,
-.jumbotron h2 {
-    color: #ffd700;
-}
-
-/* Card Styles */
-
-.card {
-    border-radius: 10px;
-}
-
-.card-header {
-    text-align: center;
-}
-
-/* List Group Styles */
-
-.list-group-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-/* Button Styles */
 
 .btn-primary {
     background-color: #4CAF50;
@@ -83,45 +169,123 @@ h6 {
     color: #fff;
 }
 
-/* Additional Styles */
-
-.container.mb-5 {
-    margin-bottom: 5rem;
+/* Additional container padding */
+.container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 0 15px;
 }
 
-.carousel-caption {
-    background-color: rgba(0, 0, 0, 0.5);
-    padding: 1rem;
-    border-radius: 10px;
+/* Jumbotron styling */
+.jumbotron {
+    background-color: #28a745;
+    color: white;
+    padding: 2rem 1rem;
+    text-align: center;
 }
 
-.carousel-inner img {
-    height: 500px;
-    object-fit: cover;
+.jumbotron h1,
+.jumbotron p {
+    margin: 0;
 }
 
-/* Responsive Styles */
+/* Form styling */
+.form-group {
+    margin-bottom: 1.5rem;
+}
 
+.form-control {
+    border-radius: 0.25rem;
+    padding: 0.5rem 1rem;
+}
+
+/* Button styling */
+.btn {
+    border-radius: 0.25rem;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.btn:hover {
+    transform: scale(1.05);
+}
+
+/* Responsive adjustments */
 @media (max-width: 768px) {
-    .jumbotron {
-        padding: 80px 0;
+    .container {
+        padding: 0 10px;
     }
 
-    .carousel-inner img {
-        height: 300px;
-    }
-
-    .list-group-item {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .btn-block {
-        display: block;
+    .form-group label {
         width: 100%;
     }
 
-    .container.mb-5 {
-        margin-bottom: 3rem;
+    .form-control {
+        width: 100%;
     }
+
+    .btn {
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+
+    .jumbotron {
+        padding: 1rem 0.5rem;
+    }
+
+    .jumbotron h1 {
+        font-size: 2rem;
+    }
+
+    .jumbotron p {
+        font-size: 1rem;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+        margin-bottom: 1rem;
+    }
+
+    .testimonial blockquote {
+        font-size: 0.875rem;
+    }
+
+    .section-heading {
+        font-size: 1.25rem;
+    }
+}
+
+/* Additional styles for better look */
+body {
+    font-family: 'Roboto', sans-serif;
+}
+
+h2 {
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.section {
+    padding: 2rem 0;
+}
+
+.section-heading {
+    margin-bottom: 1rem;
+    font-weight: 700;
+    font-size: 1.75rem;
+}
+
+/* Map responsiveness */
+.map-responsive {
+    overflow: hidden;
+    padding-bottom: 56.25%;
+    position: relative;
+    height: 0;
+}
+
+.map-responsive iframe {
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    position: absolute;
 }
