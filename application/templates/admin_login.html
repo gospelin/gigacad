@@ -1,22 +1,32 @@
 <!-- admin_login.html -->
 
 {% extends "layout.html" %}
-{% block title %}<title> Admin Login </title> {% endblock %}
+{% block title %}<title>Admin Login</title>{% endblock %}
 
 {% block content %}
 <div class="container mt-5">
-    <h2 class="text-center">Admin Login</h2>
-    <form method="POST">
-        {{ form.hidden_tag() }}
-        <div class="form-group">
-            {{ form.username.label(class="form-label") }}
-            {{ form.username(class="form-control") }}
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm animate__animated animate__fadeIn">
+                <div class="card-header bg-primary text-white text-center">
+                    <h2 class="my-0">Admin Login</h2>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        <div class="form-group mb-3">
+                            {{ form.username.label(class="form-label") }}
+                            {{ form.username(class="form-control") }}
+                        </div>
+                        <div class="form-group mb-4">
+                            {{ form.password.label(class="form-label") }}
+                            {{ form.password(class="form-control") }}
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Login</button>
+                    </form>
+                </div>
+            </div>
         </div>
-        <div class="form-group">
-            {{ form.password.label(class="form-label") }}
-            {{ form.password(class="form-control") }}
-        </div>
-        <button type="submit" class="btn btn-primary">Login</button>
-    </form>
+    </div>
 </div>
 {% endblock %}
