@@ -1,78 +1,77 @@
 {% extends "layout.html" %}
 {% block content %}
-<div class="jumbotron bg-success text-white text-center py-5">
+<!-- Jumbotron Section -->
+<div class="jumbotron bg-success text-white text-center py-5" style="background: url('static/images/DSC_0184.JPG') no-repeat center center; background-size: cover;">
     <div class="container">
-        <h1 class="display-4">Welcome to {{ school_name }}</h1>
-        <h2 class="my-4">Where Practical Learning Meets Knowledge and Confidence</h2>
-        <p class="lead">
-            We are committed to providing a transformative education experience 
-            that equips students with practical skills, empowers them with knowledge, 
+        <h1 class="display-4 animated fadeInDown">Welcome to {{ school_name }}</h1>
+        <h2 class="my-4 animated fadeIn">Where Practical Learning Meets Knowledge and Confidence</h2>
+        <p class="lead animated fadeInUp">
+            We are committed to providing a transformative education experience
+            that equips students with practical skills, empowers them with knowledge,
             and instills the confidence to excel in a rapidly changing world.
         </p>
         <a class="btn btn-light btn-lg" href="#" role="button">Learn More</a>
     </div>
 </div>
 
+<!-- About and Vision Section -->
 <div class="container mt-5">
     <div class="row">
         <div class="col-md-6 mb-4">
             <h2 class="display-5">About Us</h2>
             <p>
-                Aunty Anne's International School is dedicated to nurturing young minds 
-                and providing them with a holistic education. Our focus on practical 
-                learning, knowledge, and confidence sets us apart as a leading institution 
+                Aunty Anne's International School is dedicated to nurturing young minds
+                and providing them with a holistic education. Our focus on practical
+                learning, knowledge, and confidence sets us apart as a leading institution
                 for excellence in education.
             </p>
         </div>
         <div class="col-md-6 mb-4">
             <h2 class="display-5">Our Vision</h2>
             <p>
-                Our vision is to empower students to become lifelong learners, critical 
-                thinkers, and responsible global citizens. We strive to create a dynamic 
+                Our vision is to empower students to become lifelong learners, critical
+                thinkers, and responsible global citizens. We strive to create a dynamic
                 learning environment that fosters creativity, innovation, and success.
             </p>
         </div>
     </div>
 </div>
 
-<div class="container mt-5 mb-5">
+<!-- Statistics Section -->
+<div class="container mt-5">
     <div class="row">
-        <div class="col-md-4">
-            <div class="card mb-4 shadow-sm">
-                <div class="card-header bg-primary text-white">
-                    <h4 class="my-0 font-weight-normal">Student Enrollment</h4>
-                </div>
-                <div class="card-body">
-                    <h1 class="card-title pricing-card-title">1,234 <small class="text-muted">students</small></h1>
-                    <p>Number of students currently enrolled.</p>
-                </div>
-            </div>
+        <div class="col-md-6 mb-4">
+            <h2 class="display-5">Achievements</h2>
+            <ul class="list-group">
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    National Science Competition - 1st Place
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    Best School Award 2023
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    100% Graduation Rate in 2022
+                </li>
+            </ul>
         </div>
-        <div class="col-md-4">
-            <div class="card mb-4 shadow-sm">
-                <div class="card-header bg-info text-white">
-                    <h4 class="my-0 font-weight-normal">Courses Offered</h4>
+        <div class="col-md-6 mb-4">
+            <h2 class="display-5">Testimonials</h2>
+            <div class="list-group">
+                <div class="list-group-item">
+                    <p>"Aunty Anne's International School has transformed my child's life. The quality of education is exceptional." - Parent</p>
                 </div>
-                <div class="card-body">
-                    <h1 class="card-title pricing-card-title">56 <small class="text-muted">courses</small></h1>
-                    <p>Total number of courses available.</p>
+                <div class="list-group-item">
+                    <p>"I have learned so much and feel prepared for the future thanks to the dedicated teachers and staff." - Student</p>
                 </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card mb-4 shadow-sm">
-                <div class="card-header bg-success text-white">
-                    <h4 class="my-0 font-weight-normal">Graduation Rate</h4>
-                </div>
-                <div class="card-body">
-                    <h1 class="card-title pricing-card-title">95% <small class="text-muted">rate</small></h1>
-                    <p>Percentage of students who graduate.</p>
+                <div class="list-group-item">
+                    <p>"Graduating from Aunty Anne's gave me the confidence and skills to excel in college." - Alumni</p>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Activities and Administrative Actions Section -->
 <div class="container mt-5">
     <div class="row">
         <div class="col-md-6 mb-4">
@@ -92,15 +91,88 @@
                 </li>
             </ul>
         </div>
-        <div class="col-md-6 mb-4">
-            <h2 class="display-5">Administrative Actions</h2>
-            <div class="list-group">
-                <a href="#" class="list-group-item list-group-item-action">Manage Students</a>
-                <a href="#" class="list-group-item list-group-item-action">Manage Courses</a>
-                <a href="#" class="list-group-item list-group-item-action">View Reports</a>
-                <a href="#" class="list-group-item list-group-item-action">Settings</a>
-            </div>
-        </div>
-    </div>
-</div>
+
+<!-- Custom CSS for better styling -->
+<style>
+    .jumbotron {
+        background: linear-gradient(to right, rgba(76, 175, 80, 0.7), rgba(46, 125, 32, 0.7)), url('static/images/DSC_0184.JPG') no-repeat center center;
+        background-size: cover;
+        color: white;
+    }
+
+    .animated {
+        animation-duration: 1.5s;
+        animation-fill-mode: both;
+    }
+
+    .fadeInDown {
+        animation-name: fadeInDown;
+    }
+
+    .fadeIn {
+        animation-name: fadeIn;
+    }
+
+    .fadeInUp {
+        animation-name: fadeInUp;
+    }
+
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translate3d(0, -100%, 0);
+        }
+
+        to {
+            opacity: 1;
+            transform: none;
+        }
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translate3d(0, 100%, 0);
+        }
+
+        to {
+            opacity: 1;
+            transform: none;
+        }
+    }
+
+    .list-group-item {
+        font-size: 1.1rem;
+    }
+
+    .container h2 {
+        font-weight: 600;
+    }
+
+    .card {
+        transition: transform 0.3s;
+    }
+
+    .card:hover {
+        transform: scale(1.05);
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #1e88e5, #42a5f5);
+    }
+
+    .badge {
+        font-size: 0.9rem;
+    }
+</style>
 {% endblock %}
