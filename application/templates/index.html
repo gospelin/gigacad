@@ -1,99 +1,95 @@
 {% extends "layout.html" %}
 {% block content %}
-<!-- Jumbotron Section -->
-<div class="jumbotron bg-success text-white text-center py-5" style="background: url('static/images/DSC_0184.JPG') no-repeat center center; background-size: cover;">
-    <div class="container">
-        <h1 class="display-4 animated fadeInDown">Welcome to {{ school_name }}</h1>
-        <h2 class="my-4 animated fadeIn">Where Practical Learning Meets Knowledge and Confidence</h2>
-        <p class="lead animated fadeInUp">
-            We are committed to providing a transformative education experience
-            that equips students with practical skills, empowers them with knowledge,
-            and instills the confidence to excel in a rapidly changing world.
-        </p>
-        <a class="btn btn-light btn-lg" href="#" role="button">Learn More</a>
-    </div>
-</div>
-
-<!-- About and Vision Section -->
-<div class="container mt-5">
-    <div class="row">
-        <div class="col-md-6 mb-4">
-            <h2 class="display-5">About Us</h2>
-            <p>
-                Aunty Anne's International School is dedicated to nurturing young minds
-                and providing them with a holistic education. Our focus on practical
-                learning, knowledge, and confidence sets us apart as a leading institution
-                for excellence in education.
-            </p>
-        </div>
-        <div class="col-md-6 mb-4">
-            <h2 class="display-5">Our Vision</h2>
-            <p>
-                Our vision is to empower students to become lifelong learners, critical
-                thinkers, and responsible global citizens. We strive to create a dynamic
-                learning environment that fosters creativity, innovation, and success.
-            </p>
-        </div>
-    </div>
-</div>
-
-<!-- Statistics Section -->
-<div class="container mt-5">
-    <div class="row">
-        <div class="col-md-6 mb-4">
-            <h2 class="display-5">Achievements</h2>
-            <ul class="list-group">
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    National Science Competition - 1st Place
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    Best School Award 2023
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    100% Graduation Rate in 2022
-                </li>
-            </ul>
-        </div>
-        <div class="col-md-6 mb-4">
-            <h2 class="display-5">Testimonials</h2>
-            <div class="list-group">
-                <div class="list-group-item">
-                    <p>"Aunty Anne's International School has transformed my child's life. The quality of education is exceptional." - Parent</p>
-                </div>
-                <div class="list-group-item">
-                    <p>"I have learned so much and feel prepared for the future thanks to the dedicated teachers and staff." - Student</p>
-                </div>
-                <div class="list-group-item">
-                    <p>"Graduating from Aunty Anne's gave me the confidence and skills to excel in college." - Alumni</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Activities and Administrative Actions Section -->
-<div class="container mt-5">
-    <div class="row">
-        <div class="col-md-6 mb-4">
-            <h2 class="display-5">Recent Activities</h2>
-            <ul class="list-group">
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    Science Fair 2024
-                    <span class="badge bg-primary rounded-pill">New</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    Sports Day
-                    <span class="badge bg-success rounded-pill">Upcoming</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    Annual Day
-                    <span class="badge bg-danger rounded-pill">Ongoing</span>
-                </li>
-            </ul>
-        </div>
-
 <!-- Custom CSS for better styling -->
-<style>
+<style>   
+
+    .carousel-caption {
+        background: rgba(0, 0, 0, 0.5);
+        padding: 1rem;
+        border-radius: 10px;
+    }
+
+    /* Carousel Section Styles */
+
+    .carousel-item img {
+        height: 500px;
+        object-fit: cover;
+    }
+
+    .carousel-caption {
+        background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background for better text visibility */
+        padding: 10px;
+        border-radius: 5px;
+    }
+
+    .carousel-caption h5 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #ffffff;
+    }
+
+    .carousel-caption p {
+        font-size: 1.2rem;
+        color: #ffffff;
+    }
+
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+        background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background for control icons */
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+    }
+
+    .carousel-indicators button {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background-color: #ffffff; /* White indicators */
+    }
+
+    .carousel-indicators .active {
+        background-color: #007bff; /* Active indicator color */
+    }
+
+    /* Responsive Styles */
+    @media (max-width: 768px) {
+        .carousel-caption h5 {
+            font-size: 1.5rem;
+        }
+        
+        .carousel-caption p {
+            font-size: 1rem;
+        }
+        
+        .carousel-control-prev-icon,
+        .carousel-control-next-icon {
+            width: 40px;
+            height: 40px;
+        }
+        
+        .carousel-item {
+            height: 300px; /* Adjust height for smaller screens */
+        }
+    }
+
+    /* Additional Custom Styles */
+    .carousel-control-prev,
+    .carousel-control-next {
+        filter: drop-shadow(2px 2px 5px #000); /* Add shadow to controls for better visibility */
+    }
+
+    .carousel-caption h5,
+    .carousel-caption p {
+        text-shadow: 1px 1px 3px #000; /* Text shadow for better readability */
+    }
+
+    .carousel-item:first-of-type img {
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+
+
     .jumbotron {
         background: linear-gradient(to right, rgba(76, 175, 80, 0.7), rgba(46, 125, 32, 0.7)), url('static/images/DSC_0184.JPG') no-repeat center center;
         background-size: cover;
@@ -174,5 +170,246 @@
     .badge {
         font-size: 0.9rem;
     }
+    h2.display-5 {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 500;
+        margin-bottom: 20px;
+    }
+
+    @media (max-width: 768px) {
+        .carousel-item img {
+            height: 300px;
+        }
+        .carousel-item img {
+            height: 300px;
+        }
+
+        .jumbotron {
+            padding: 3rem 1.5rem;
+        }
+
+        .display-4 {
+            font-size: 2.5rem;
+        }
+
+        .display-5 {
+            font-size: 1.75rem;
+        }
+    }
 </style>
+
+<!-- Jumbotron Section -->
+<div class="jumbotron bg-success text-white text-center py-5" style="background: url('static/images/DSC_0184.JPG') no-repeat center center; background-size: cover;">
+    <div class="container">
+        <h1 class="display-4 animated fadeInDown">Welcome to {{ school_name }}</h1>
+        <h2 class="my-4 animated fadeIn">Where Practical Learning Meets Knowledge and Confidence</h2>
+        <p class="lead animated fadeInUp">
+            We are committed to providing a transformative education experience
+            that equips students with practical skills, empowers them with knowledge,
+            and instills the confidence to excel in a rapidly changing world.
+        </p>
+        <a class="btn btn-light btn-lg" href="#" role="button">Learn More</a>
+    </div>
+</div>
+
+<!-- Carousel Section -->
+<h2 class="text-center mt-5 mb-4">Explore our School</h2>
+<div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-indicators">
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="3" aria-label="Slide 4"></button>
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="4" aria-label="Slide 5"></button>
+    </div>
+    <div class="carousel-inner">
+        <!-- Slide 1 -->
+        <div class="carousel-item active">
+            <img src="{{ url_for('static', filename='images/DSC_1384.JPG') }}" class="d-block w-100" alt="Slide 1">
+            <div class="carousel-caption d-none d-md-block">
+                <h5>Welcome to Our School</h5>
+                <p>Experience the best learning environment.</p>
+            </div>
+        </div>
+        <!-- Slide 2 -->
+        <div class="carousel-item">
+            <img src="{{ url_for('static', filename='images/DSC_1391.JPG') }}" class="d-block w-100" alt="Slide 2">
+            <div class="carousel-caption d-none d-md-block">
+                <h5>Our Facilities</h5>
+                <p>State-of-the-art facilities for holistic development.</p>
+            </div>
+        </div>
+        <!-- Slide 3 -->
+        <div class="carousel-item">
+            <img src="{{ url_for('static', filename='images/DSC_2000.jpg') }}" class="d-block w-100" alt="Slide 3">
+            <div class="carousel-caption d-none d-md-block">
+                <h5>Practical Learning</h5>
+                <p>Hands-on experience to prepare students for real-world challenges.</p>
+            </div>
+        </div>
+        <!-- Slide 4 -->
+        <div class="carousel-item">
+            <img src="{{ url_for('static', filename='images/DSC_0312.JPG') }}" class="d-block w-100" alt="Slide 4">
+            <div class="carousel-caption d-none d-md-block">
+                <h5>Extracurricular Activities</h5>
+                <p>A range of activities to develop well-rounded individuals.</p>
+            </div>
+        </div>
+        <!-- Slide 5 -->
+        <div class="carousel-item">
+            <img src="{{ url_for('static', filename='images/DSC_0438.JPG') }}" class="d-block w-100" alt="Slide 5">
+            <div class="carousel-caption d-none d-md-block">
+                <h5>Join Us</h5>
+                <p>Enroll now and become part of our community.</p>
+            </div>
+        </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+</div>
+
+<!-- Content -->
+<!-- About and Vision Section -->
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <h2 class="display-5">About Us</h2>
+            <p>
+                Aunty Anne's International School is dedicated to nurturing young minds
+                and providing them with a holistic education. Our focus on practical
+                learning, knowledge, and confidence sets us apart as a leading institution
+                for excellence in education.
+            </p>
+        </div>
+        <div class="col-md-6 mb-4">
+            <h2 class="display-5">Our Vision</h2>
+            <p>
+                Our vision is to empower students to become lifelong learners, critical
+                thinkers, and responsible global citizens. We strive to create a dynamic
+                learning environment that fosters creativity, innovation, and success.
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="container mt-5 mb-5">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="my-0 font-weight-normal">Student Enrollment</h4>
+                </div>
+                <div class="card-body">
+                    <h1 class="card-title pricing-card-title">1,234 <small class="text-muted">students</small></h1>
+                    <p>Number of students currently enrolled.</p>
+                </div>
+            </div>
+        </div>
+    <div class="col-md-4">
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header bg-info text-white">
+                <h4 class="my-0 font-weight-normal">Courses Offered</h4>
+            </div>
+            <div class="card-body">
+                <h1 class="card-title pricing-card-title">56 <small class="text-muted">courses</small></h1>
+                <p>Total number of courses available.</p>
+            </div>
+        </div>
+    </div>
+        <div class="col-md-4">
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h4 class="my-0 font-weight-normal">Graduation Rate</h4>
+                </div>
+                <div class="card-body">
+                    <h1 class="card-title pricing-card-title">95% <small class="text-muted">rate</small></h1>
+                    <p>Percentage of students who graduate.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Section -->
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <h2 class="display-5">Achievements</h2>
+            <ul class="list-group">
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    National Science Competition - 1st Place
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    Best School Award 2023
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    100% Graduation Rate in 2022
+                </li>
+            </ul>
+        </div>
+        <div class="col-md-6 mb-4">
+            <h2 class="display-5">Testimonials</h2>
+            <div class="list-group">
+                <div class="list-group-item">
+                    <p>"Aunty Anne's International School has transformed my child's life. The quality of education is exceptional." - Parent</p>
+                </div>
+                <div class="list-group-item">
+                    <p>"I have learned so much and feel prepared for the future thanks to the dedicated teachers and staff." - Student</p>
+                </div>
+                <div class="list-group-item">
+                    <p>"Graduating from Aunty Anne's gave me the confidence and skills to excel in college." - Alumni</p>
+                </div>
+                <div class="list-group-item">
+                    <p class="mb-0">"I love coming to school every day. The environment is so welcoming and I've learned so much!"</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Upcoming Events Section -->
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-12 text-center mb-4">
+            <h2 class="display-5">Upcoming Events</h2>
+            <p>Stay updated with our latest events and activities.</p>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <img src="{{ url_for('static', filename='images/science.jpg') }}" class="card-img-top" alt="Event 1">
+                <div class="card-body">
+                    <h5 class="card-title">Science Fair 2024</h5>
+                    <p class="card-text">Join us for an exciting Science Fair showcasing innovative projects by our students.</p>
+                    <a href="#" class="btn btn-primary">Learn More</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <img src="{{ url_for('static', filename='images/sports.jpg') }}" class="card-img-top" alt="Event 2">
+                <div class="card-body">
+                    <h5 class="card-title">Sports Day</h5>
+                    <p class="card-text">Come and support our students in a day of fun and competitive sports activities.</p>
+                    <a href="#" class="btn btn-primary">Learn More</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <img src="{{ url_for('static', filename='images/grad.jpg') }}" class="card-img-top" alt="Event 3">
+                <div class="card-body">
+                    <h5 class="card-title">Annual Day</h5>
+                    <p class="card-text">Celebrate the achievements of our students with performances and awards.</p>
+                    <a href="#" class="btn btn-primary">Learn More</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
