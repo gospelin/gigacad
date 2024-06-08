@@ -19,9 +19,17 @@
                             {{ form.last_name.label(class="form-label") }}
                             {{ form.last_name(class="form-control") }}
                         </div>
-                        <div class="mb-3">
-                            {{ form.email.label(class="form-label") }}
-                            {{ form.email(class="form-control") }}
+                        <div class="form-group mb-3">
+                            {{ form.gender.label(class="form-label") }}
+                            {{ form.gender(class="form-control") }}
+                        </div>
+                        <div class="form-group mb-3">
+                            {{ form.date_of_birth.label(class="form-label") }}
+                            {{ form.date_of_birth(class="form-control") }}
+                        </div>
+                        <div class="form-group mb-3">
+                            {{ form.entry_class.label(class="form-label") }}
+                            {{ form.entry_class(class="form-control") }}
                         </div>
                         <button type="submit" class="btn btn-primary btn-block">Add Student</button>
                     </form>

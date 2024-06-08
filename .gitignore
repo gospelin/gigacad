@@ -5,5 +5,5 @@
 # Ignore virtual environment
 venv/
 __pycache__/
-
+migrations/
 

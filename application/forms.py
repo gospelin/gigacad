@@ -1,25 +1,24 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, DateField, SubmitField, PasswordField, IntegerField
-from wtforms.validators import DataRequired, Email, Length, NumberRange
+from wtforms.validators import DataRequired, Length, NumberRange
 from application.models import Subject
 
 
 class StudentRegistrationForm(FlaskForm):
     first_name = StringField("First Name", validators=[DataRequired(), Length(max=50)])
     last_name = StringField("Last Name", validators=[DataRequired(), Length(max=50)])
-    email = StringField("Email", validators=[DataRequired(), Email(), Length(max=100)])
     gender = SelectField(
         "Gender",
         choices=[("male", "Male"), ("female", "Female")],
         validators=[DataRequired()],
     )
-    date_of_birth = DateField("Date of Birth", validators=[DataRequired()])
+    date_of_birth = DateField("Date of Birth")
     parent_phone_number = StringField(
-        "Parent Phone Number", validators=[DataRequired(), Length(max=20)]
+        "Parent Phone Number", validators=[Length(max=11)]
     )
-    address = StringField("Address", validators=[DataRequired(), Length(max=255)])
+    address = StringField("Address", validators=[Length(max=255)])
     parent_occupation = StringField(
-        "Parent Occupation", validators=[DataRequired(), Length(max=100)]
+        "Parent Occupation", validators=[Length(max=100)]
     )
     entry_class = SelectField(
         "Entry class",
@@ -40,7 +39,6 @@ class StudentRegistrationForm(FlaskForm):
             ("JSS 3"),
         ],
         validate_choice=True,
-        validators=[DataRequired()],
     )
     previous_class = SelectField(
         "Previous Class (if any)",
@@ -63,12 +61,12 @@ class StudentRegistrationForm(FlaskForm):
         validate_choice=True,
     )
     state_of_origin = StringField(
-        "State of Origin", validators=[DataRequired(), Length(max=50)]
+        "State of Origin", validators=[Length(max=50)]
     )
     local_government_area = StringField(
-        "Local Government Area", validators=[DataRequired(), Length(max=50)]
+        "Local Government Area", validators=[Length(max=50)]
     )
-    religion = StringField("Religion", validators=[DataRequired(), Length(max=50)])
+    religion = StringField("Religion", validators=[Length(max=50)])
     submit = SubmitField("Register")
 
 

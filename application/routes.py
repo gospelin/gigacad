@@ -1,12 +1,12 @@
 from . import app, db
-from flask import abort, render_template, redirect, url_for, flash, request
+from flask import render_template, redirect, url_for, flash, request
 from flask_login import login_required, login_user, logout_user, current_user
 from .models import Student, User, Subject, Score
 from .forms import StudentRegistrationForm, LoginForm, ScoreForm, EditStudentForm, SubjectForm, DeleteForm
 import random, string
 
 def generate_unique_username(first_name, last_name):
-    username = f"{first_name.lower()}.{last_name.lower()}"
+    username = f"{first_name.strip().lower()}.{last_name.strip().lower()}"
     existing_user = Student.query.filter_by(username=username).first()
     if existing_user:
         random_suffix = "".join(random.choices(string.ascii_lowercase + string.digits, k=4))
@@ -32,7 +32,6 @@ def student_registration():
         student = Student(
             first_name=form.first_name.data,
             last_name=form.last_name.data,
-            email=form.email.data,
             gender=form.gender.data,
             date_of_birth=form.date_of_birth.data,
             parent_phone_number=form.parent_phone_number.data,
@@ -59,7 +58,7 @@ def student_registration():
             )
         except Exception as e:
             db.session.rollback()
-            flash("An error occurred. Please try again later.", "alert alert-danger")
+            flash("An error occurred. Please try again later.", e, "alert alert-danger")
         return redirect(url_for("student_registration"))
     return render_template(
         "student_registration.html",
@@ -76,7 +75,7 @@ def login():
         if user and user.check_password(form.password.data):
             login_user(user)
             next_page = request.args.get("next")
-            return redirect(next_page) if next_page else redirect(url_for("index"))
+            return redirect(next_page) if next_page else redirect(url_for("student_result_portal"))
         else:
             flash("Login Unsuccessful. Please check username and password", "alert alert-danger")
     return render_template("login.html", title="Login", form=form)
@@ -236,7 +235,7 @@ def student_result_portal():
     student = Student.query.filter_by(user_id=current_user.id).first()
     if not student:
         flash("Student not found", "alert alert-danger")
-        return redirect(url_for("index"))
+        return redirect(url_for("student_result_portal"))
 
     results = Score.query.filter_by(student_id=student.id).all()
     if not results:
@@ -249,16 +248,23 @@ def student_result_portal():
         "exam": sum(result.exam for result in results),
         "total": sum(result.total for result in results),
     }
+    total_obtained = grand_total["total"]
+    total_obtainable = len(results) * 100
+
     average_total = grand_total["total"] / len(results) if results else 0
+    average_total = round(average_total, 1)
+
 
     return render_template(
         "view_results.html",
-        title="View Results",
+        title=f"{student.first_name}_{student.last_name}_Results",
         student=student,
         results=results,
         grand_total=grand_total,
         average_total=average_total,
-        school_name="Aunty Anne's Int'l School"
+        school_name="Aunty Anne's Int'l School",
+        total_obtained=total_obtained,
+        total_obtainable=total_obtainable,
     )
 
 @app.route("/admin/manage_students", methods=["GET", "POST"])
@@ -284,17 +290,9 @@ def add_students():
         student = Student(
             first_name=form.first_name.data,
             last_name=form.last_name.data,
-            email=form.email.data,
             gender=form.gender.data,
             date_of_birth=form.date_of_birth.data,
-            parent_phone_number=form.parent_phone_number.data,
-            address=form.address.data,
-            parent_occupation=form.parent_occupation.data,
             entry_class=form.entry_class.data,
-            previous_class=form.previous_class.data,
-            state_of_origin=form.state_of_origin.data,
-            local_government_area=form.local_government_area.data,
-            religion=form.religion.data,
             username=username,
             password=temporary_password,
         )
@@ -311,7 +309,7 @@ def add_students():
             )
         except Exception as e:
             db.session.rollback()
-            flash("An error occurred. Please try again later.", "alert alert-danger")
+            flash("An error occurred. Please try again later.", e, "alert alert-danger")
         return redirect(url_for("add_students"))
 
     students = Student.query.all()
@@ -338,6 +336,8 @@ def edit_student(student_id):
         form.first_name = student.first_name
         form.last_name = student.last_name
         # Populate other fields as necessary
+        db.session.commit()
+        flash("Student updated successfully!", "alert alert-success")
 
     return render_template("admin/edit_student.html", form=form, student=student)
 
