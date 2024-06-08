@@ -1,203 +1,5 @@
 {% extends "layout.html" %}
 {% block content %}
-<!-- Custom CSS for better styling -->
-<style>   
-
-    .carousel-caption {
-        background: rgba(0, 0, 0, 0.5);
-        padding: 1rem;
-        border-radius: 10px;
-    }
-
-    /* Carousel Section Styles */
-
-    .carousel-item img {
-        height: 500px;
-        object-fit: cover;
-    }
-
-    .carousel-caption {
-        background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background for better text visibility */
-        padding: 10px;
-        border-radius: 5px;
-    }
-
-    .carousel-caption h5 {
-        font-size: 1.75rem;
-        font-weight: 700;
-        color: #ffffff;
-    }
-
-    .carousel-caption p {
-        font-size: 1.2rem;
-        color: #ffffff;
-    }
-
-    .carousel-control-prev-icon,
-    .carousel-control-next-icon {
-        background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background for control icons */
-        border-radius: 50%;
-        width: 50px;
-        height: 50px;
-    }
-
-    .carousel-indicators button {
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        background-color: #ffffff; /* White indicators */
-    }
-
-    .carousel-indicators .active {
-        background-color: #007bff; /* Active indicator color */
-    }
-
-    /* Responsive Styles */
-    @media (max-width: 768px) {
-        .carousel-caption h5 {
-            font-size: 1.5rem;
-        }
-        
-        .carousel-caption p {
-            font-size: 1rem;
-        }
-        
-        .carousel-control-prev-icon,
-        .carousel-control-next-icon {
-            width: 40px;
-            height: 40px;
-        }
-        
-        .carousel-item {
-            height: 300px; /* Adjust height for smaller screens */
-        }
-    }
-
-    /* Additional Custom Styles */
-    .carousel-control-prev,
-    .carousel-control-next {
-        filter: drop-shadow(2px 2px 5px #000); /* Add shadow to controls for better visibility */
-    }
-
-    .carousel-caption h5,
-    .carousel-caption p {
-        text-shadow: 1px 1px 3px #000; /* Text shadow for better readability */
-    }
-
-    .carousel-item:first-of-type img {
-        border-top-left-radius: 10px;
-        border-top-right-radius: 10px;
-    }
-
-
-    .jumbotron {
-        background: linear-gradient(to right, rgba(76, 175, 80, 0.7), rgba(46, 125, 32, 0.7)), url('static/images/DSC_0184.JPG') no-repeat center center;
-        background-size: cover;
-        color: white;
-    }
-
-    .animated {
-        animation-duration: 1.5s;
-        animation-fill-mode: both;
-    }
-
-    .fadeInDown {
-        animation-name: fadeInDown;
-    }
-
-    .fadeIn {
-        animation-name: fadeIn;
-    }
-
-    .fadeInUp {
-        animation-name: fadeInUp;
-    }
-
-    @keyframes fadeInDown {
-        from {
-            opacity: 0;
-            transform: translate3d(0, -100%, 0);
-        }
-
-        to {
-            opacity: 1;
-            transform: none;
-        }
-    }
-
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-        }
-
-        to {
-            opacity: 1;
-        }
-    }
-
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translate3d(0, 100%, 0);
-        }
-
-        to {
-            opacity: 1;
-            transform: none;
-        }
-    }
-
-    .list-group-item {
-        font-size: 1.1rem;
-    }
-
-    .container h2 {
-        font-weight: 600;
-    }
-
-    .card {
-        transition: transform 0.3s;
-    }
-
-    .card:hover {
-        transform: scale(1.05);
-    }
-
-    .card-header {
-        background: linear-gradient(135deg, #1e88e5, #42a5f5);
-    }
-
-    .badge {
-        font-size: 0.9rem;
-    }
-    h2.display-5 {
-        font-family: 'Poppins', sans-serif;
-        font-weight: 500;
-        margin-bottom: 20px;
-    }
-
-    @media (max-width: 768px) {
-        .carousel-item img {
-            height: 300px;
-        }
-        .carousel-item img {
-            height: 300px;
-        }
-
-        .jumbotron {
-            padding: 3rem 1.5rem;
-        }
-
-        .display-4 {
-            font-size: 2.5rem;
-        }
-
-        .display-5 {
-            font-size: 1.75rem;
-        }
-    }
-</style>
-
 <!-- Jumbotron Section -->
 <div class="jumbotron bg-success text-white text-center py-5" style="background: url('static/images/DSC_0184.JPG') no-repeat center center; background-size: cover;">
     <div class="container">
@@ -212,10 +14,31 @@
     </div>
 </div>
 
-<!-- Carousel Section -->
-<div class="text-center mb-4">
-    <h2 class="display-5">Explore our School</h2>
+<!-- Content -->
+<!-- About and Vision Section -->
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <h2 class="display-5">About Us</h2>
+            <p>
+                Aunty Anne's International School is dedicated to nurturing young minds
+                and providing them with a holistic education. Our focus on practical
+                learning, knowledge, and confidence sets us apart as a leading institution
+                for excellence in education.
+            </p>
+        </div>
+        <div class="col-md-6 mb-4">
+            <h2 class="display-5">Our Vision</h2>
+            <p>
+                Our vision is to empower students to become lifelong learners, critical
+                thinkers, and responsible global citizens. We strive to create a dynamic
+                learning environment that fosters creativity, innovation, and success.
+            </p>
+        </div>
+    </div>
 </div>
+
+<!-- Carousel Section -->
 <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
     <div class="carousel-indicators">
         <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
@@ -276,29 +99,6 @@
     </button>
 </div>
 
-<!-- Content -->
-<!-- About and Vision Section -->
-<div class="container mt-5">
-    <div class="row">
-        <div class="col-md-6 mb-4">
-            <h2 class="display-5">About Us</h2>
-            <p>
-                Aunty Anne's International School is dedicated to nurturing young minds
-                and providing them with a holistic education. Our focus on practical
-                learning, knowledge, and confidence sets us apart as a leading institution
-                for excellence in education.
-            </p>
-        </div>
-        <div class="col-md-6 mb-4">
-            <h2 class="display-5">Our Vision</h2>
-            <p>
-                Our vision is to empower students to become lifelong learners, critical
-                thinkers, and responsible global citizens. We strive to create a dynamic
-                learning environment that fosters creativity, innovation, and success.
-            </p>
-        </div>
-    </div>
-</div>
 
 <div class="container mt-5 mb-5">
     <div class="row">

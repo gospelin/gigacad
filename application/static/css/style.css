@@ -1,15 +1,53 @@
-/* Additional styling for the admin dashboard */
+/* Add animations from animate.css */
+@import url('https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css');
+
+/* Global Styles */
+body {
+    font-family: 'Poppins', sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: 'Poppins', sans-serif;
+}
+
 .container {
     max-width: 1200px;
     margin: auto;
     padding: 0 15px;
-    /* Added for mobile responsiveness */
 }
 
+/* Top bar */
+.top-bar {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 0;
+}
+
+.top-bar .phone-number {
+    margin-right: 20px;
+}
+
+.top-bar .social-media-links a {
+    color: white;
+    margin: 0 5px;
+}
+
+.top-bar .social-media-links a:hover {
+    color: #ddd;
+}
+
+/* Card Styles */
 .card {
     margin-bottom: 1.5rem;
     border-radius: 10px;
     transition: transform 0.3s ease;
+    background: linear-gradient(165deg, #ffffff, #f8f9fa);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .card:hover {
@@ -30,6 +68,8 @@
     text-align: center;
     border-bottom: 0;
     padding: 1.5rem 1rem;
+    background: linear-gradient(165deg, #28a745, #ff7f50, #ff4500);
+    color: white;
 }
 
 .card-body {
@@ -41,10 +81,32 @@
     width: 100%;
 }
 
+/* Button Styles */
+.btn-primary {
+    background-color: #4CAF50;
+    border-color: #4CAF50;
+}
+
+.btn-primary:hover {
+    background-color: #218838;
+    border-color: #218838;
+}
+
+.btn-light {
+    background-color: #fff;
+    color: #28a745;
+    border: 2px solid #28a745;
+}
+
+.btn-light:hover {
+    background-color: #28a745;
+    color: #fff;
+}
+
+/* Table Styles */
 .table-responsive {
     overflow-x: auto;
     margin-bottom: 30px;
-    /* Adjusted for mobile responsiveness */
 }
 
 .table thead th {
@@ -60,6 +122,7 @@
     padding: 0.25rem 0.5rem;
 }
 
+/* Responsive Styles */
 @media (max-width: 768px) {
     .card-body {
         text-align: center;
@@ -67,10 +130,8 @@
 
     .table-responsive {
         margin-bottom: 10px;
-        /* Adjusted for mobile responsiveness */
     }
 
-    /* Added for mobile responsiveness */
     .input-group-text {
         width: 100%;
         text-align: left;
@@ -84,133 +145,7 @@
         width: 100%;
         margin-bottom: 10px;
     }
-}
 
-/* Login Page Styles */
-.card {
-    margin-bottom: 1.5rem;
-    border-radius: 10px;
-    transition: transform 0.3s ease;
-}
-
-.card:hover {
-    transform: scale(1.05);
-}
-
-.card-header {
-    text-align: center;
-    border-bottom: 0;
-    padding: 1.5rem 1rem;
-}
-
-.card-body {
-    padding: 2rem;
-}
-
-.btn-block {
-    width: 100%;
-}
-
-.form-group {
-    margin-bottom: 1.5rem;
-}
-
-/* Responsive Styles for Login Page */
-@media (max-width: 768px) {
-    .card {
-        margin-top: 2rem;
-    }
-
-    .card-header h2 {
-        font-size: 1.5rem;
-    }
-
-    .form-group {
-        margin-bottom: 1rem;
-    }
-}
-
-/* Add animations from animate.css */
-@import url('https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css');
-
-/* Add additional global styles */
-body {
-    font-family: 'Poppins', sans-serif;
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-    font-family: 'Poppins', sans-serif;
-    /*font-family: 'Montserrat', sans-serif;*/
-}
-
-.btn-primary {
-    background-color: #4CAF50;
-    border-color: #4CAF50;
-}
-
-.btn-primary:hover {
-    background-color: #4CAF50;
-    border-color: #4CAF50;
-}
-
-.btn-light {
-    background-color: #fff;
-    color: #28a745;
-    border: 2px solid #28a745;
-}
-
-.btn-light:hover {
-    background-color: #28a745;
-    color: #fff;
-}
-
-/* Additional container padding */
-.container {
-    max-width: 1200px;
-    margin: auto;
-    padding: 0 15px;
-}
-
-/* Jumbotron styling */
-.jumbotron {
-    background-color: #28a745;
-    color: white;
-    padding: 2rem 1rem;
-    text-align: center;
-}
-
-.jumbotron h1,
-.jumbotron p {
-    margin: 0;
-}
-
-/* Form styling */
-.form-group {
-    margin-bottom: 1.5rem;
-}
-
-.form-control {
-    border-radius: 0.25rem;
-    padding: 0.5rem 1rem;
-}
-
-/* Button styling */
-.btn {
-    border-radius: 0.25rem;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-}
-
-.btn:hover {
-    transform: scale(1.05);
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
     .container {
         padding: 0 10px;
     }
@@ -254,9 +189,221 @@ h6 {
     }
 }
 
-h2 {
-    font-weight: 600;
+/* Footer Styles */
+.footer {
+    background: linear-gradient(135deg, #28a745, #ff7f50, #ff4500);
+    color: white;
+    padding: 40px 0;
+    font-size: 0.875rem;
+}
+
+.footer .phone-number {
+    margin-right: 20px;
+}
+
+.footer .social-media-links a {
+    color: white;
+    margin: 0 5px;
+}
+
+.footer .social-media-links a:hover {
+    color: #ddd;
+}
+
+.footer h5 {
+    font-size: 1.25rem;
     margin-bottom: 1rem;
+}
+
+.footer p,
+.footer ul {
+    font-size: 0.875rem;
+}
+
+.footer .btn {
+    font-size: 0.875rem;
+}
+
+.footer .list-inline-item a {
+    color: white;
+    margin: 0 10px;
+}
+
+.footer .list-inline-item a:hover {
+    color: #ddd;
+}
+
+/* Navbar Styles */
+.navbar {
+    background: linear-gradient(165deg, #28a745, #ff7f50, #ff4500);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand img {
+    height: 100px;
+}
+
+.navbar-nav .nav-link {
+    margin-right: 20px;
+    font-weight: 500;
+    color: #ffffff;
+    transition: color 0.3s;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #28a745;
+}
+
+.navbar-toggler {
+    border: none;
+}
+
+.navbar-toggler:focus {
+    outline: none;
+}
+
+/* Carousel Section Styles */
+.carousel-item img {
+    height: 500px;
+    object-fit: cover;
+}
+
+.carousel-caption {
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.carousel-caption h5 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #ffffff;
+    text-shadow: 1px 1px 3px #000;
+}
+
+.carousel-caption p {
+    font-size: 1.2rem;
+    color: #ffffff;
+    text-shadow: 1px 1px 3px #000;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+}
+
+.carousel-indicators button {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: #ffffff;
+}
+
+.carousel-indicators .active {
+    background-color: #007bff;
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+    filter: drop-shadow(2px 2px 5px #000);
+}
+
+/* Responsive Carousel Styles */
+@media (max-width: 768px) {
+    .carousel-item img {
+        height: 300px;
+    }
+
+    .carousel-caption h5 {
+        font-size: 1.5rem;
+    }
+
+    .carousel-caption p {
+        font-size: 1rem;
+    }
+
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+/* Jumbotron Styling */
+.jumbotron {
+    background: linear-gradient(to right, rgba(76, 175, 80, 0.7), rgba(46, 125, 32, 0.7)), url('static/images/DSC_0184.JPG') no-repeat center center;
+    background-size: cover;
+    color: white;
+}
+
+.jumbotron h1,
+.jumbotron p {
+    margin: 0;
+}
+
+/* Animated Styles */
+.animated {
+    animation-duration: 1.5s;
+    animation-fill-mode: both;
+}
+
+.fadeInDown {
+    animation-name: fadeInDown;
+}
+
+.fadeIn {
+    animation-name: fadeIn;
+}
+
+.fadeInUp {
+    animation-name: fadeInUp;
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translate3d(0, -100%, 0);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 100%, 0);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+/* List Group Item */
+.list-group-item {
+    font-size: 1.1rem;
+}
+
+/* Section and Heading Styles */
+.container h2 {
+    font-weight: 700;
 }
 
 .section {
@@ -269,7 +416,7 @@ h2 {
     font-size: 1.75rem;
 }
 
-/* Map responsiveness */
+/* Map Responsiveness */
 .map-responsive {
     overflow: hidden;
     padding-bottom: 56.25%;
@@ -283,4 +430,33 @@ h2 {
     height: 100%;
     width: 100%;
     position: absolute;
+}
+
+/* Additional Styles */
+.badge {
+    font-size: 0.9rem;
+}
+
+h2.display-5 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+    .carousel-item img {
+        height: 300px;
+    }
+
+    .jumbotron {
+        padding: 3rem 1.5rem;
+    }
+
+    .display-4 {
+        font-size: 2.5rem;
+    }
+
+    .display-5 {
+        font-size: 1.75rem;
+    }
 }

@@ -1,5 +1,5 @@
 from . import app, db
-from flask import abort, render_template, redirect, url_for, flash, request
+from flask import render_template, redirect, url_for, flash, request
 from flask_login import login_required, login_user, logout_user, current_user
 from .models import Student, User, Subject, Score
 from .forms import StudentRegistrationForm, LoginForm, ScoreForm, EditStudentForm, SubjectForm, DeleteForm
@@ -236,7 +236,7 @@ def student_result_portal():
     student = Student.query.filter_by(user_id=current_user.id).first()
     if not student:
         flash("Student not found", "alert alert-danger")
-        return redirect(url_for("index"))
+        return redirect(url_for("student_result_portal"))
 
     results = Score.query.filter_by(student_id=student.id).all()
     if not results:
@@ -249,16 +249,23 @@ def student_result_portal():
         "exam": sum(result.exam for result in results),
         "total": sum(result.total for result in results),
     }
+    total_obtained = grand_total["total"]
+    total_obtainable = len(results) * 100
+    
     average_total = grand_total["total"] / len(results) if results else 0
+    average_total = round(average_total, 1)
+
 
     return render_template(
         "view_results.html",
-        title="View Results",
+        title=f"{student.first_name}_{student.last_name}_Results",
         student=student,
         results=results,
         grand_total=grand_total,
         average_total=average_total,
-        school_name="Aunty Anne's Int'l School"
+        school_name="Aunty Anne's Int'l School",
+        total_obtained=total_obtained,
+        total_obtainable=total_obtainable,
     )
 
 @app.route("/admin/manage_students", methods=["GET", "POST"])
