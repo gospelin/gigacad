@@ -1,11 +1,83 @@
 {% extends "layout.html" %}
 {% block content %}
+
+<style>
+/* Print View Styles */
+@media print {
+    .print-view {
+        width: 210mm;
+        margin: auto;
+        padding: 5mm; /* Adjusted padding for better spacing */
+        font-family: 'Times New Roman', Times, serif;
+        font-size: 12pt;
+        color: #333;
+    }
+
+    .table-bordered {
+        border: 1px solid #000;
+    }
+
+    .table-bordered th,
+    .table-bordered td {
+        border: 1px solid #000;
+        font-size: 11pt;
+    }
+
+    .details, .text-end {
+        text-align: left;
+    }
+
+    /* Hide elements not needed for printing */
+    .navbar,
+    .footer,
+    .top-bar,
+    .btn {
+        display: none;
+    }
+
+    /* Adjust card layout for printing */
+    .card {
+        margin-bottom: 5mm; /* Adjusted margin to fit content */
+        border: 2px solid #000;
+        box-shadow: none;
+    }
+
+    .card-header {
+        padding: 5mm; /* Adjusted padding for better spacing */
+    }
+
+    .card-body {
+        padding: 5mm; /* Adjusted padding for better spacing */
+    }
+
+    .card-title {
+        font-size: 20px;
+        margin-top: 0;
+    }
+
+    .card-text {
+        font-size: 16px;
+    }
+
+    .card-subtitle {
+        font-size: 20px;
+        margin-bottom: 5mm; /* Adjusted margin to fit content */
+    }
+
+    /* Adjust table layout for printing */
+    .table {
+        margin-bottom: 5mm; /* Adjusted margin to fit content */
+    }
+}
+</style>
+
+
 <div class="container mt-5 print-view">
     <div class="row justify-content-center">
         <div class="col-lg-8">
             <div class="card">
                 <div class="card-header text-center">
-                    <img src="{{url_for('static', filename='images/MY_SCHOOL_LOGO.png')}}" alt="School Logo" class="school-logo" style="width: 60px;">
+                    <img src="{{url_for('static', filename='images/MY_SCHOOL_LOGO.png')}}" alt="School Logo" class="school-logo" style="width: 100px;">
                     <h1 class="card-title text-uppercase">{{ school_name }}</h1>
                     <p class="card-text">6 OOMNNE DRIVE, ABAYI, ABA, ABIA STATE</p>
                     <h2 class="card-subtitle text-uppercase">REPORT SHEET FOR {{ results[0].term }} TERM {{ results[0].session }} SESSION</h2>
@@ -20,21 +92,21 @@
                         </tr>
                         <tr>
                             <td>Student ID</td>
-                            <td>AAIS/00{{student.id}}</td>
+                            <td>AAIS/0559/00{{student.id}}</td>
                             <td>Next Term Begins</td>
                             <td>9th Jan, 2024</td>
                         </tr>
                         <tr>
                             <td>Gender</td>
-                            <td>Male</td>
+                            <td>{{(student.gender).capitalize()}}</td>
                             <td>Average for the Term:</td>
                             <td>{{ average_total }}</td>
                         </tr>
                         <tr>
                             <td>Total Obtained</td>
-                            <td>1726</td>
+                            <td>{{total_obtained}}</td>
                             <td>Total Obtainable</td>
-                            <td>2000</td>
+                            <td>{{total_obtainable}}</td>
                         </tr>
                     </table>
                     <div class="table-responsive">
@@ -63,7 +135,10 @@
                                 </tr>
                                 {% endfor %}
                                 <tr>
-                                    <td class="text-end" colspan="4"><strong>Grand Total:</strong></td>
+                                    <td class="text-end"><strong>Grand Total:</strong></td>
+                                    <td><strong>{{ grand_total.class_assessment }}</strong></td>
+                                    <td><strong>{{ grand_total.summative_test }}</strong></td>
+                                    <td><strong>{{ grand_total.exam }}</strong></td>
                                     <td><strong>{{ grand_total.total }}</strong></td>
                                     <td colspan="2"></td>
                                 </tr>
@@ -135,74 +210,5 @@
         </div>
     </div>
 </div>
-<style>
-/* Print View Styles */
-@media print {
-    .print-view {
-        width: 210mm;
-        margin: auto;
-        padding: 5mm; /* Adjusted padding for better spacing */
-        font-family: 'Times New Roman', Times, serif;
-        font-size: 12pt;
-        color: #333;
-    }
-
-    .table-bordered {
-        border: 1px solid #000;
-    }
-
-    .table-bordered th,
-    .table-bordered td {
-        border: 1px solid #000;
-        font-size: 11pt;
-    }
-
-    .details, .text-end {
-        text-align: left;
-    }
-
-    /* Hide elements not needed for printing */
-    .navbar,
-    .footer,
-    .top-bar,
-    .btn {
-        display: none;
-    }
-
-    /* Adjust card layout for printing */
-    .card {
-        margin-bottom: 5mm; /* Adjusted margin to fit content */
-        border: 2px solid #000;
-        box-shadow: none;
-    }
-
-    .card-header {
-        padding: 5mm; /* Adjusted padding for better spacing */
-    }
-
-    .card-body {
-        padding: 5mm; /* Adjusted padding for better spacing */
-    }
-
-    .card-title {
-        font-size: 24px;
-        margin-top: 0;
-    }
-
-    .card-text {
-        font-size: 16px;
-    }
-
-    .card-subtitle {
-        font-size: 20px;
-        margin-bottom: 5mm; /* Adjusted margin to fit content */
-    }
-
-    /* Adjust table layout for printing */
-    .table {
-        margin-bottom: 5mm; /* Adjusted margin to fit content */
-    }
-}
-</style>
 
 {% endblock %}

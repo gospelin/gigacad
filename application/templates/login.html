@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
+
 <div class="container mt-5">
         <div class="row justify-content-center">
             <div class="col-md-6">
@@ -29,5 +30,40 @@
                 {% endfor %}
             </div>
         </div>
+
+        <style>
+
+    /* Login Card */
+    .login-card {
+        border: none;
+        background: linear-gradient(165deg, #ffffff, #f8f9fa);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .login-card .card-header {
+        background: linear-gradient(165deg, #28a745, #ff7f50, #ff4500);
+        color: white;
+        border-bottom: none;
+    }
+
+    .btn-gradient {
+        background: linear-gradient(165deg, #28a745, #ff7f50, #ff4500);
+        border: none;
+        color: white;
+        transition: background-color 0.3s;
+    }
+
+    .btn-gradient:hover {
+        background: linear-gradient(165deg, #218838, #ff6347, #e63946);
+    }
+
+    .alert-warning {
+        background-color: #fff3cd;
+        color: #856404;
+        border: none;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+</style>
     </div>
 {% endblock %}
