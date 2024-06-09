@@ -1,5 +1,27 @@
 {% extends "admin/base.html" %}
 {% block content %}
+
+
+<!-- Custom CSS for animations -->
+<style>
+.table-row {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.animate-approve, .animate-deactivate, .animate-regenerate {
+    transition: transform 0.2s ease-in-out;
+}
+
+.animate-approve:hover, .animate-deactivate:hover, .animate-regenerate:hover {
+    transform: scale(1.1);
+}
+</style>
+
 <div class="container my-5">
     {% for message in get_flashed_messages() %}
         <div class="alert alert-warning mt-3">{{ message }}</div>
@@ -45,6 +67,11 @@
                                     <button type="submit" class="btn btn-warning btn-sm animate-deactivate">Deactivate</button>
                                     {% endif %}
                                 </form>
+                                <form action="{{ url_for('regenerate_password', student_id=student.id) }}" method="POST" class="d-inline">
+                                    {{ regenerate_form.hidden_tag() }}
+                                    <button type="submit" class="btn btn-primary btn-sm animate-regenerate">Regenerate Password</button>
+                                </form>
+
                             </td>
                         </tr>
                     {% endfor %}
@@ -54,24 +81,5 @@
     {% endfor %}
 </div>
 
-<!-- Custom CSS for animations -->
-<style>
-.table-row {
-    animation: fadeIn 0.5s ease-in-out;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-.animate-approve, .animate-deactivate {
-    transition: transform 0.2s ease-in-out;
-}
-
-.animate-approve:hover, .animate-deactivate: {
-    transform: scale(1.1);
-}
-</style>
 {% endblock %}
 

@@ -3,7 +3,8 @@ from flask import abort, render_template, redirect, url_for, flash, request
 from flask_login import login_required, login_user, logout_user, current_user
 from .models import Student, User, Subject, Score
 from collections import defaultdict
-from .forms import StudentRegistrationForm, LoginForm, ScoreForm, EditStudentForm, SubjectForm, DeleteForm, ApproveForm
+from .forms import StudentRegistrationForm, LoginForm, ScoreForm, EditStudentForm, \
+        SubjectForm, DeleteForm, ApproveForm
 import random, string
 
 def generate_unique_username(first_name, last_name):
@@ -23,6 +24,27 @@ def index():
 @app.route('/about_us')
 def about_us():
     return render_template('about_us.html', title="About Us", school_name="Aunty Anne's Int'l School")
+
+
+""" Manage Student Section 
+
+This section includes functionalities like:
+
+Register Student - Add a new student to the database and generate username and password
+Login - Authenticate a user and log them in
+Logout - Log a user out
+Approve Students - Approve or deactivate students
+Manage Classes - View all students by class
+Manage Results - Add, edit, and delete student results
+View Results - View student results
+Manage Students - View all students
+Add Students - Add a new student
+Edit Student - Edit a student's details
+Delete Student - Delete a student
+Manage Subjects - Add, edit, and delete subjects
+Regenerate Password - Generate a new password for a student
+
+"""
 
 @app.route("/register/student", methods=["GET", "POST"])
 def student_registration():
@@ -118,6 +140,7 @@ def approve_students():
 
     approve_form = ApproveForm()
     deactivate_form = ApproveForm()
+    regenerate_form = ApproveForm()
 
     students = Student.query.all()
     students = Student.query.all()
@@ -130,6 +153,7 @@ def approve_students():
         students_by_class=students_by_class,
         approve_form=approve_form,
         deactivate_form=deactivate_form,
+        regenerate_form=regenerate_form
     )
 
 
@@ -171,6 +195,35 @@ def deactivate_student(student_id):
         )
     else:
         flash("An error occurred. Please try again.", "alert alert-danger")
+    return redirect(url_for("approve_students"))
+
+
+@app.route("/admin/regenerate_password/<int:student_id>", methods=["POST"])
+@login_required
+def regenerate_password(student_id):
+    if not current_user.is_admin:
+        abort(403)  # Forbidden access
+
+    form = ApproveForm()
+    student = Student.query.get_or_404(student_id)
+    if form.validate_on_submit() and student:
+        
+        # Generate a new temporary password
+        new_temporary_password = "".join(
+            random.choices(string.ascii_letters + string.digits, k=8)
+        )
+        # Update student's password
+        student.password = new_temporary_password
+        
+        # Update user's password
+        student.user.set_password(new_temporary_password)
+        db.session.commit()
+        flash(
+            f"New password generated for {student.first_name} {student.last_name}: {new_temporary_password}",
+            "alert alert-success",
+        )
+    else:
+        flash("Student not found.", "alert alert-danger")
     return redirect(url_for("approve_students"))
 
 
