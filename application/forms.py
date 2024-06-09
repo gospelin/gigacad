@@ -1,13 +1,12 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, DateField, SubmitField, PasswordField, IntegerField
-from wtforms.validators import DataRequired, Email, Length, NumberRange
+from wtforms.validators import DataRequired, Length, NumberRange
 from application.models import Subject
 
 
 class StudentRegistrationForm(FlaskForm):
     first_name = StringField("First Name", validators=[DataRequired(), Length(max=50)])
     last_name = StringField("Last Name", validators=[DataRequired(), Length(max=50)])
-    email = StringField("Email", validators=[Email(), Length(max=100)])
     gender = SelectField(
         "Gender",
         choices=[("male", "Male"), ("female", "Female")],
