@@ -4,6 +4,9 @@
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-6">
+            {% for message in get_flashed_messages() %}
+                <div class="alert alert-warning mt-3">{{ message }}</div>
+            {% endfor %}
             <div class="card border-0 shadow-lg animate__animated animate__fadeIn">
                 <img src="{{ url_for('static', filename='images/add-student.png') }}" class="card-img-top" alt="Add New Student Image">
                 <div class="card-body text-center">

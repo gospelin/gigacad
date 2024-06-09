@@ -1,8 +1,9 @@
 from . import app, db
-from flask import render_template, redirect, url_for, flash, request
+from flask import abort, render_template, redirect, url_for, flash, request
 from flask_login import login_required, login_user, logout_user, current_user
 from .models import Student, User, Subject, Score
-from .forms import StudentRegistrationForm, LoginForm, ScoreForm, EditStudentForm, SubjectForm, DeleteForm
+from collections import defaultdict
+from .forms import StudentRegistrationForm, LoginForm, ScoreForm, EditStudentForm, SubjectForm, DeleteForm, ApproveForm
 import random, string
 
 def generate_unique_username(first_name, last_name):
@@ -67,18 +68,33 @@ def student_registration():
         school_name="Aunty Anne's Int'l School",
     )
 
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user and user.check_password(form.password.data):
+            if user.student and not user.student.approved:
+                flash(
+                    "Your account is not approved yet. Please contact admin.",
+                    "alert alert-danger",
+                )
+                return redirect(url_for("login"))
             login_user(user)
             next_page = request.args.get("next")
-            return redirect(next_page) if next_page else redirect(url_for("student_result_portal"))
+            return (
+                redirect(next_page)
+                if next_page
+                else redirect(url_for("student_result_portal"))
+            )
         else:
-            flash("Login Unsuccessful. Please check username and password", "alert alert-danger")
+            flash(
+                "Login Unsuccessful. Please check username and password",
+                "alert alert-danger",
+            )
     return render_template("login.html", title="Login", form=form)
+
 
 @app.route("/logout")
 @login_required
@@ -92,6 +108,70 @@ def admin_dashboard():
     if not current_user.is_authenticated or not current_user.is_admin:
         return redirect(url_for("login"))
     return render_template("/admin/index.html")
+
+
+@app.route("/admin/approve_students", methods=["GET", "POST"])
+@login_required
+def approve_students():
+    if not current_user.is_admin:
+        abort(403)  # Forbidden access
+
+    approve_form = ApproveForm()
+    deactivate_form = ApproveForm()
+
+    students = Student.query.all()
+    students = Student.query.all()
+    students_by_class = defaultdict(list)
+    for student in students:
+        students_by_class[student.entry_class].append(student)
+
+    return render_template(
+        "admin/approve_students.html",
+        students_by_class=students_by_class,
+        approve_form=approve_form,
+        deactivate_form=deactivate_form,
+    )
+
+
+@app.route("/admin/approve_student/<int:student_id>", methods=["POST"])
+@login_required
+def approve_student(student_id):
+    if not current_user.is_admin:
+        abort(403)  # Forbidden access
+
+    form = ApproveForm()
+
+    if form.validate_on_submit():
+        student = Student.query.get_or_404(student_id)
+        student.approved = True
+        db.session.commit()
+        flash(
+            f"Student {student.first_name} {student.last_name} has been approved.",
+            "alert alert-success",
+        )
+    else:
+        flash("An error occurred. Please try again.", "alert alert-danger")
+    return redirect(url_for("approve_students"))
+
+
+@app.route("/admin/deactivate_student/<int:student_id>", methods=["POST"])
+@login_required
+def deactivate_student(student_id):
+    if not current_user.is_admin:
+        abort(403)  # Forbidden access
+
+    form = ApproveForm()
+    if form.validate_on_submit():
+        student = Student.query.get_or_404(student_id)
+        student.approved = False
+        db.session.commit()
+        flash(
+            f"Student {student.first_name} {student.last_name} has been deactivated.",
+            "alert alert-success",
+        )
+    else:
+        flash("An error occurred. Please try again.", "alert alert-danger")
+    return redirect(url_for("approve_students"))
 
 
 @app.route("/admin/students_by_class/<string:entry_class>")

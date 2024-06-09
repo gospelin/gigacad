@@ -25,6 +25,17 @@
                 </div>
             </div>
         </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card border-0 shadow-lg animate__animated animate__fadeIn animate__delay-2s">
+                <img src="{{ url_for('static', filename='images/grad.jpg') }}" class="card-img-top" alt="Approve students Image">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Manage Students</h5>
+                    <p class="card-text">Click below to Manage students</p>
+                    <a href="{{ url_for('approve_students')}}" class="btn btn-primary btn-block">Approve students</a>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

@@ -4,6 +4,9 @@
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-lg-10">
+        {% for message in get_flashed_messages() %}
+                <div class="alert alert-warning mt-3">{{ message }}</div>
+            {% endfor %}
             <div class="card border-0 shadow-lg">
                 <div class="card-body">
                     <div class="school-header text-center mb-4">

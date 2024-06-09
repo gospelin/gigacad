@@ -128,3 +128,7 @@ class SubjectForm(FlaskForm):
 
 class DeleteForm(FlaskForm):
     submit = SubmitField("Delete")
+    
+
+class ApproveForm(FlaskForm):
+    pass
