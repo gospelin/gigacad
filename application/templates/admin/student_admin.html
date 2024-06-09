@@ -41,9 +41,9 @@
             <div class="card border-0 shadow-lg animate__animated animate__fadeInUp animate__delay-3s">
                 <img src="{{ url_for('static', filename='images/view-results.jpg') }}" class="card-img-top" alt="View Results Image">
                 <div class="card-body">
-                    <h5 class="card-title text-center">View Results</h5>
-                    <p class="card-text text-center">Click below to view student results.</p>
-                    <a href="{{ url_for('manage_results', student_id=student.id)}}" class="btn btn-primary btn-block">Results</a>
+                    <h5 class="card-title text-center">Approve Students</h5>
+                    <p class="card-text text-center">Click below to approve registered students</p>
+                    <a href="{{ url_for('approve_students')}}" class="btn btn-primary btn-block">Results</a>
                 </div>
             </div>
         </div>

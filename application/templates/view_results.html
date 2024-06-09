@@ -75,6 +75,9 @@
 <div class="container mt-5 print-view">
     <div class="row justify-content-center">
         <div class="col-lg-8">
+        {% for message in get_flashed_messages() %}
+                <div class="alert alert-warning mt-3">{{ message }}</div>
+            {% endfor %}
             <div class="card">
                 <div class="card-header text-center">
                     <img src="{{url_for('static', filename='images/MY_SCHOOL_LOGO.png')}}" alt="School Logo" class="school-logo" style="width: 100px;">
@@ -92,21 +95,21 @@
                         </tr>
                         <tr>
                             <td>Student ID</td>
-                            <td>AAIS/00{{student.id}}</td>
+                            <td>AAIS/0559/00{{student.id}}</td>
                             <td>Next Term Begins</td>
                             <td>9th Jan, 2024</td>
                         </tr>
                         <tr>
                             <td>Gender</td>
-                            <td>Male</td>
+                            <td>{{(student.gender).capitalize()}}</td>
                             <td>Average for the Term:</td>
                             <td>{{ average_total }}</td>
                         </tr>
                         <tr>
                             <td>Total Obtained</td>
-                            <td>1726</td>
+                            <td>{{total_obtained}}</td>
                             <td>Total Obtainable</td>
-                            <td>2000</td>
+                            <td>{{total_obtainable}}</td>
                         </tr>
                     </table>
                     <div class="table-responsive">
@@ -212,4 +215,3 @@
 </div>
 
 {% endblock %}
-
