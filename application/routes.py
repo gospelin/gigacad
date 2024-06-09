@@ -4,7 +4,7 @@ from flask_login import login_required, login_user, logout_user, current_user
 from .models import Student, User, Subject, Score
 from collections import defaultdict
 from .forms import StudentRegistrationForm, LoginForm, ScoreForm, EditStudentForm, \
-        SubjectForm, DeleteForm, ApproveForm
+        SubjectForm, DeleteForm, ApproveForm, ResultForm
 import random, string
 
 def generate_unique_username(first_name, last_name):
@@ -246,17 +246,141 @@ def manage_classes():
     return render_template("admin/classes.html", students=students)
 
 
+# @app.route("/admin/manage_results/<int:student_id>", methods=["GET", "POST"])
+# @login_required
+# def manage_results(student_id):
+#    if not current_user.is_authenticated or not current_user.is_admin:
+#        return redirect(url_for("login"))
+
+#    student = Student.query.get_or_404(student_id)
+#    form = ScoreForm()
+#    subjects = Subject.query.all()
+
+#    if request.method == "POST":
+#        try:
+#            for key, value in request.form.items():
+#                if key.startswith("subject_id_new_"):
+#                    result_id = key.split("_")[-1]
+#                    subject_id = request.form.get(f"subject_id_new_{result_id}")
+#                    class_assessment = request.form.get(
+#                        f"class_assessment_new_{result_id}"
+#                    )
+#                    summative_test = request.form.get(f"summative_test_new_{result_id}")
+#                    exam = request.form.get(f"exam_new_{result_id}")
+#                    total = request.form.get(f"total_new_{result_id}")
+
+#                    if (
+#                        subject_id
+#                        and class_assessment
+#                        and summative_test
+#                        and exam
+#                        and total
+#                    ):
+#                        new_score = Score(
+#                            student_id=student_id,
+#                            subject_id=subject_id,
+#                            class_assessment=int(class_assessment),
+#                            summative_test=int(summative_test),
+#                            exam=int(exam),
+#                            term=form.term.data,
+#                            session=form.session.data,
+#                        )
+#                        new_score.calculate_total()
+#                        new_score.get_remark()  # Call the get_remark method
+#                        db.session.add(new_score)
+#                elif key.startswith("subject_id_"):
+#                    result_id = key.split("_")[-1]
+#                    subject_id = request.form.get(f"subject_id_{result_id}")
+#                    class_assessment = request.form.get(f"class_assessment_{result_id}")
+#                    summative_test = request.form.get(f"summative_test_{result_id}")
+#                    exam = request.form.get(f"exam_{result_id}")
+#                    total = request.form.get(f"total_{result_id}")
+
+#                    if (
+#                        subject_id
+#                        and class_assessment
+#                        and summative_test
+#                        and exam
+#                        and total
+#                    ):
+#                        score = Score.query.get(result_id)
+#                        if score:
+#                            score.subject_id = subject_id
+#                            score.class_assessment = int(class_assessment)
+#                            score.summative_test = int(summative_test)
+#                            score.exam = int(exam)
+#                            score.total = int(total)
+#                            score.calculate_total()
+#                            score.get_remark()  # Call the get_remark method
+
+#            db.session.commit()
+#            flash("Scores updated successfully!", "alert alert-success")
+#        except Exception as e:
+#            db.session.rollback()
+#            flash(f"Error: {e}", "alert alert-danger")
+
+#        return redirect(url_for("manage_results", student_id=student_id))
+
+#    results = Score.query.filter_by(student_id=student_id).all()
+#    grand_total = {
+#        "class_assessment": sum(result.class_assessment for result in results),
+#        "summative_test": sum(result.summative_test for result in results),
+#        "exam": sum(result.exam for result in results),
+#        "total": sum(result.total for result in results),
+#    }
+#    average_total = grand_total["total"] / len(results) if results else 0
+
+#    return render_template(
+#        "admin/manage_results.html",
+#        form=form,
+#        results=results,
+#        student=student,
+#        subjects=subjects,
+#        grand_total=grand_total,
+#        average_total=average_total,
+#    )
+
+
+def create_empty_results(student, session, term):
+    subjects = Subject.query.all()
+    for subject in subjects:
+        empty_score = Score(
+            student_id=student.id,
+            subject_id=subject.id,
+            class_assessment=0,
+            summative_test=0,
+            exam=0,
+            term=term,
+            session=session,
+            total=0,
+        )
+        db.session.add(empty_score)
+    db.session.commit()
+
+
 @app.route("/admin/manage_results/<int:student_id>", methods=["GET", "POST"])
 @login_required
 def manage_results(student_id):
-    if not current_user.is_authenticated or not current_user.is_admin:
-        return redirect(url_for("login"))
-
     student = Student.query.get_or_404(student_id)
-    form = ScoreForm()
+    form = ResultForm()
     subjects = Subject.query.all()
 
     if request.method == "POST":
+        current_session = form.session.data
+        current_term = form.term.data
+
+        # Check if session or term changed
+        if (
+            current_session != student.current_session
+            or current_term != student.current_term
+        ):
+            # Create new empty result entries for the student
+            create_empty_results(student, current_session, current_term)
+            student.current_session = current_session
+            student.current_term = current_term
+            db.session.commit()
+
+        # Handle form submission and existing results
         try:
             for key, value in request.form.items():
                 if key.startswith("subject_id_new_"):

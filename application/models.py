@@ -24,6 +24,8 @@ class Student(db.Model, UserMixin):
     date_registered = db.Column(db.DateTime, server_default=db.func.now())
     approved = db.Column(db.Boolean, default=False)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    current_session = db.Column(db.String(50))
+    current_term = db.Column(db.String(10))
 
     scores = db.relationship("Score", backref="student", lazy=True)
 
