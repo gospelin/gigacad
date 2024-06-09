@@ -22,7 +22,6 @@ class StudentAdmin(ModelView):
     column_list = [
         "first_name",
         "last_name",
-        "email",
         "username",
         "gender",
         "date_of_birth",
@@ -40,7 +39,6 @@ class StudentAdmin(ModelView):
     form_columns = [
         "first_name",
         "last_name",
-        "email",
         "username",
         "password",
         "gender",
@@ -59,7 +57,6 @@ class StudentAdmin(ModelView):
     column_searchable_list = [
         "first_name",
         "last_name",
-        "email",
         "username",
         "entry_class",
     ]
