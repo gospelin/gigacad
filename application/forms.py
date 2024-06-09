@@ -128,7 +128,13 @@ class SubjectForm(FlaskForm):
 
 class DeleteForm(FlaskForm):
     submit = SubmitField("Delete")
-    
+
 
 class ApproveForm(FlaskForm):
     pass
+
+
+class ResultForm(FlaskForm):
+    session = StringField("Session", validators=[DataRequired()])
+    term = StringField("Term", validators=[DataRequired()])
+    submit = SubmitField("Submit")
