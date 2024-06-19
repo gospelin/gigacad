@@ -68,7 +68,8 @@ h6 {
     text-align: center;
     border-bottom: 0;
     padding: 1.5rem 1rem;
-    background: linear-gradient(165deg, #28a745, #ff7f50, #ff4500);
+    background: linear-gradient(165deg, #006400, #8B0000);
+    /*background: linear-gradient(165deg, #006400, #FFFFFF, #8B0000);*/
     color: white;
 }
 
@@ -191,7 +192,7 @@ h6 {
 
 /* Footer Styles */
 .footer {
-    background: linear-gradient(135deg, #28a745, #ff7f50, #ff4500);
+    background: linear-gradient(165deg, #006400, #8B0000);
     color: white;
     padding: 40px 0;
     font-size: 0.875rem;
@@ -233,9 +234,9 @@ h6 {
     color: #ddd;
 }
 
-/* Navbar Styles */
+/* Navigation bar styling */
 .navbar {
-    background: linear-gradient(165deg, #28a745, #ff7f50, #ff4500);
+    background-color: #FFFFFF;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
@@ -246,7 +247,7 @@ h6 {
 .navbar-nav .nav-link {
     margin-right: 20px;
     font-weight: 500;
-    color: #ffffff;
+    color: #007B0C;
     transition: color 0.3s;
 }
 
@@ -254,12 +255,71 @@ h6 {
     color: #28a745;
 }
 
+.navbar-toggler-icon {
+    color: #007B0C;
+}
+
 .navbar-toggler {
+    color: #007B0C;
     border: none;
 }
 
 .navbar-toggler:focus {
+    color: #007B0C;
     outline: none;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .navbar-brand img {
+        height: 40px;
+        /* Further reduced height for smaller screens */
+    }
+
+    .navbar-nav {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .navbar-nav .nav-link {
+        margin: 10px 0;
+    }
+
+    .navbar-toggler {
+        margin-right: 0;
+        /* Adjust margin for the toggle button */
+    }
+
+    .top-bar {
+        flex-direction: column;
+    }
+
+    .top-bar .phone-number,
+    .top-bar .social-media-links {
+        margin: 5px 0;
+    }
+
+    .top-bar .social-media-links {
+        text-align: center;
+    }
+
+    /* Ensure dropdown menu and submenus are displayed properly */
+    .dropdown-menu {
+        color: #007B0C;
+        position: static;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .dropdown-menu .dropdown-item {
+        padding: 8px 16px;
+        /* Adjust padding for better spacing */
+    }
+
+    .dropdown-item:hover {
+        color: #007B0C !important;
+    }
 }
 
 /* Carousel Section Styles */

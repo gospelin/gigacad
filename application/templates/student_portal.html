@@ -1,0 +1,92 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<style>
+.card {
+    border-radius: 10px;
+}
+
+.card-header {
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.card-body {
+    padding: 2rem;
+}
+
+.btn-lg {
+    font-size: 1.25rem;
+    padding: 0.75rem 1.25rem;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.btn-lg:hover {
+    transform: translateY(-2px);
+}
+
+.card-footer {
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.container {
+    max-width: 960px;
+}
+
+</style>
+
+
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card border-0 shadow-lg">
+                <div class="card-header bg-primary text-white text-center">
+                    <h1>Welcome, {{ student.first_name }} {{ student.last_name }}</h1>
+                </div>
+                <div class="card-body text-center">
+                    <p class="lead">Explore your student portal using the options below:</p>
+                    <div class="row mt-4">
+                        <div class="col-md-4 mb-3">
+                            <a href="{{ url_for('select_results', student_id=student.id) }}" class="btn btn-primary btn-lg btn-block">
+                                View Results
+                            </a>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <a href="#" class="btn btn-secondary btn-lg btn-block">
+                                Profile
+                            </a>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <a href="#" class="btn btn-success btn-lg btn-block">
+                                Resources
+                            </a>
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-md-4 mb-3">
+                            <a href="#" class="btn btn-info btn-lg btn-block">
+                                Schedule
+                            </a>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <a href="#" class="btn btn-warning btn-lg btn-block">
+                                Assignments
+                            </a>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <a href="#" class="btn btn-danger btn-lg btn-block">
+                                Support
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

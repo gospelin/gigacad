@@ -4,11 +4,10 @@
 {% block title %}<title>Admin Login</title>{% endblock %}
 
 {% block content %}
-
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-6">
-        {% for message in get_flashed_messages() %}
+            {% for message in get_flashed_messages() %}
                 <div class="alert alert-warning mt-3">{{ message }}</div>
             {% endfor %}
             <div class="card shadow-sm animate__animated animate__fadeIn">
@@ -26,46 +25,11 @@
                             {{ form.password.label(class="form-label") }}
                             {{ form.password(class="form-control") }}
                         </div>
-                        <button type="submit" class="btn btn-block">Login</button>
+                        <button type="submit" class="btn btn-primary btn-block">Login</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-
-    <style>
-
-    /* Login Card */
-    .login-card {
-        border: none;
-        background: linear-gradient(165deg, #ffffff, #f8f9fa);
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
-
-    .login-card .card-header {
-        background: linear-gradient(165deg, #28a745, #ff7f50, #ff4500);
-        color: white;
-        border-bottom: none;
-    }
-
-    .btn-gradient {
-        background: linear-gradient(165deg, #28a745, #ff7f50, #ff4500);
-        border: none;
-        color: white;
-        transition: background-color 0.3s;
-    }
-
-    .btn-gradient:hover {
-        background: linear-gradient(165deg, #218838, #ff6347, #e63946);
-    }
-
-    .alert-warning {
-        background-color: #fff3cd;
-        color: #856404;
-        border: none;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
-
-</style>
 </div>
 {% endblock %}

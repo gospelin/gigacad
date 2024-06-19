@@ -1,0 +1,36 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            {% for message in get_flashed_messages() %}
+                <div class="alert alert-warning mt-3">{{ message }}</div>
+            {% endfor %}
+            <div class="card border-0 shadow-lg">
+                <div class="card-body">
+                    <div class="school-header text-center mb-4">
+                        <h2>Select Term and Session to View Results</h2>
+                    </div>
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="term" class="form-label">Select Term:</label>
+                                {{ form.term(class_='form-control') }}
+                            </div>
+                            <div class="col">
+                                <label for="session" class="form-label">Select Session:</label>
+                                {{ form.session(class_='form-control' ) }}
+                            </div>
+                            <div class="col d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary">Load Results</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

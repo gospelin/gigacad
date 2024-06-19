@@ -18,12 +18,20 @@
                     {{ form.last_name(class="form-control") }}
                 </div>
                 <div class="form-group mb-3">
+                    {{ form.middle_name.label(class="form-label") }}
+                    {{ form.middle_name(class="form-control") }}
+                </div>
+                <div class="form-group mb-3">
                     {{ form.gender.label(class="form-label") }}
                     {{ form.gender(class="form-control") }}
                 </div>
                 <div class="form-group mb-3">
                     {{ form.date_of_birth.label(class="form-label") }}
                     {{ form.date_of_birth(class="form-control") }}
+                </div>
+                <div class="form-group mb-3">
+                    {{ form.parent_name.label(class="form-label") }}
+                    {{ form.parent_name(class="form-control") }}
                 </div>
                 <div class="form-group mb-3">
                     {{ form.parent_phone_number.label(class="form-label") }}
