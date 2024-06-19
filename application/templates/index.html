@@ -1,11 +1,11 @@
 {% extends "layout.html" %}
 {% block content %}
-<!-- Jumbotron Section -->
 <div class="col-md-12">
-{% for message in get_flashed_messages() %}
-    <div class="alert alert-warning mt-3">{{ message }}</div>
-{% endfor %}
+    {% for message in get_flashed_messages() %}
+                <div class="alert alert-warning mt-3">{{ message }}</div>
+            {% endfor %}
 </div>
+<!-- Jumbotron Section -->
 <div class="jumbotron bg-success text-white text-center py-5" style="background: url('static/images/DSC_0184.JPG') no-repeat center center; background-size: cover;">
     <div class="container">
         <h1 class="display-4 animated fadeInDown">Welcome to {{ school_name }}</h1>

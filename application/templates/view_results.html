@@ -1,13 +1,11 @@
 {% extends "layout.html" %}
 {% block content %}
-
 <style>
-/* Print View Styles */
 @media print {
     .print-view {
         width: 210mm;
         margin: auto;
-        padding: 5mm; /* Adjusted padding for better spacing */
+        padding: 5mm;
         font-family: 'Times New Roman', Times, serif;
         font-size: 12pt;
         color: #333;
@@ -27,7 +25,6 @@
         text-align: left;
     }
 
-    /* Hide elements not needed for printing */
     .navbar,
     .footer,
     .top-bar,
@@ -35,19 +32,18 @@
         display: none;
     }
 
-    /* Adjust card layout for printing */
     .card {
-        margin-bottom: 5mm; /* Adjusted margin to fit content */
+        margin-bottom: 5mm;
         border: 2px solid #000;
         box-shadow: none;
     }
 
     .card-header {
-        padding: 5mm; /* Adjusted padding for better spacing */
+        padding: 5mm;
     }
 
     .card-body {
-        padding: 5mm; /* Adjusted padding for better spacing */
+        padding: 5mm;
     }
 
     .card-title {
@@ -61,29 +57,48 @@
 
     .card-subtitle {
         font-size: 20px;
-        margin-bottom: 5mm; /* Adjusted margin to fit content */
+        margin-bottom: 5mm;
     }
 
-    /* Adjust table layout for printing */
     .table {
-        margin-bottom: 5mm; /* Adjusted margin to fit content */
+        margin-bottom: 5mm;
+    }
+}
+
+/* Mobile Styles */
+@media only screen and (max-width: 600px) {
+    .card-subtitle {
+        font-size: 16px; /* Adjust font size for mobile */
+        margin-bottom: 3mm; /* Adjust margin for mobile */
+    }
+
+    .card-body {
+        padding: 3mm; /* Adjust padding for mobile */
+    }
+
+    .card-title {
+        font-size: 18px; /* Adjust font size for mobile */
+    }
+
+    .table {
+        margin-bottom: 3mm; /* Adjust margin for mobile */
     }
 }
 </style>
 
-
 <div class="container mt-5 print-view">
     <div class="row justify-content-center">
         <div class="col-lg-8">
-        {% for message in get_flashed_messages() %}
+            {% for message in get_flashed_messages() %}
                 <div class="alert alert-warning mt-3">{{ message }}</div>
             {% endfor %}
-            <div class="card">
-                <div class="card-header text-center">
+            <div class="card border-0 shadow-lg">
+                <div class="card-body">
+                <div class="school-header text-center">
                     <img src="{{url_for('static', filename='images/MY_SCHOOL_LOGO.png')}}" alt="School Logo" class="school-logo" style="width: 100px;">
                     <h1 class="card-title text-uppercase">{{ school_name }}</h1>
                     <p class="card-text">6 OOMNNE DRIVE, ABAYI, ABA, ABIA STATE</p>
-                    <h2 class="card-subtitle text-uppercase">REPORT SHEET FOR {{ results[0].term }} TERM {{ results[0].session }} SESSION</h2>
+                    <h2 class="card-subtitle text-uppercase">REPORT SHEET FOR {{ term }} {{ session }} SESSION</h2>
                 </div>
                 <div class="card-body details">
                     <table class="table table-striped">
@@ -101,7 +116,7 @@
                         </tr>
                         <tr>
                             <td>Gender</td>
-                            <td>{{(student.gender).capitalize()}}</td>
+                            <td>{{ student.gender.capitalize() }}</td>
                             <td>Average for the Term:</td>
                             <td>{{ average_total }}</td>
                         </tr>
@@ -138,18 +153,20 @@
                                 </tr>
                                 {% endfor %}
                                 <tr>
-                                    <td class="text-end"><strong>Grand Total:</strong></td>
+                                    <td><strong>Grand Total:</strong></td>
                                     <td><strong>{{ grand_total.class_assessment }}</strong></td>
                                     <td><strong>{{ grand_total.summative_test }}</strong></td>
                                     <td><strong>{{ grand_total.exam }}</strong></td>
                                     <td><strong>{{ grand_total.total }}</strong></td>
                                     <td colspan="2"></td>
                                 </tr>
-    
+                                <tr>
+                                    <td><strong>Grading:</strong></td>
+                                    <td colspan="6"><strong>A+ [95-100], A [80-94], B+ [70-79], B [65-69], C+ [60-64],
+                                        C [50-59], D [40-49], E [30-39], F [0-29]</strong></td>
+                                </tr>
                             </tbody>
                         </table>
-                        <p class="card-text text-center">Grades: A+ [95-100], A [80-94], B+ [70-79], B [65-69], C+ [60-64],</p>
-                        <p class="card-text text-center">C [50-59], D [40-49], E [30-39], F [0-29] </p>
                     </div>
                     <div class="remarks mt-4">
                         <table class="table">
@@ -165,51 +182,17 @@
                             </tbody>
                         </table>
                     </div>
-
-                    {#
-                    <div class="card mt-4 grades">
-                        <div class="card-body">
-                            <p class="card-text text-center">Grades: A+ [95-100], A [80-94], B+ [70-79], B [65-69], C+ [60-64], C [50-59], D [40-49], E [30-39], F [0-29]</p>
-                            <p class="card-text text-center">
-                        </div>
-                    </div>
-                    
-                    <div class="behaviour mt-4">
-                        <h3>Behaviour</h3>
-                        <table class="table table-bordered">
-                            <tbody>
-                                <tr>
-                                    <td>Handwriting</td>
-                                    <td>5</td>
-                                    <td>Punctuality</td>
-                                    <td>5</td>
-                                    <td>Initiative</td>
-                                    <td>5</td>
-                                    <td>Obedience</td>
-                                    <td>5</td>
-                                    <td>Honesty</td>
-                                    <td>5</td>
-                                </tr>
-                                <tr>
-                                    <td>Neatness</td>
-                                    <td>5</td>
-                                    <td>Attentiveness</td>
-                                    <td>5</td>
-                                    <td>Respect</td>
-                                    <td>5</td>
-                                    <td>Attitude</td>
-                                    <td>5</td>
-                                    <td>Creativity</td>
-                                    <td>5</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <p>Key Rating: 5 - Excellent, 4 - Very Good, 3 - Satisfactory, 2 - Poor, 1 - Very Poor</p>
-                    </div>
-                    #}
+                </div>
+                <!-- Download PDF button -->
+            <div class="row mt-3">
+                <div class="col text-center">
+                    <a href="{{ url_for('download_results_pdf', student_id=student.id, term=term, session=session) }}" class="btn btn-secondary">Download PDF</a>
                 </div>
             </div>
-            
+            </div>
+
+        </div>
+
         </div>
     </div>
 </div>

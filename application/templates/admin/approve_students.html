@@ -34,6 +34,7 @@
                 <thead class="table-dark">
                     <tr>
                         <th>First Name</th>
+                        <th>Middle Name</th>
                         <th>Last Name</th>
                         <th>Gender</th>
                         <th>Date of Birth</th>
@@ -47,13 +48,14 @@
                     {% for student in students %}
                         <tr class="table-row">
                             <td>{{ student.first_name }}</td>
+                            <td>{{ student.middle_name }}</td>
                             <td>{{ student.last_name }}</td>
                             <td>{{ student.gender }}</td>
                             <td>{{ student.date_of_birth }}</td>
                             <td>{{ student.entry_class }}</td>
                             <td>{{ student.username }}</td>
                             <td>{{ student.password }}</td>
-                            
+
                             <td>
                                 <form action="{{ url_for('approve_student', student_id=student.id) }}" method="POST" onsubmit="return confirm('Are you sure you want to approve this student?');">
                                     {{ approve_form.hidden_tag() }}

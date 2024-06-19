@@ -22,9 +22,11 @@ class StudentAdmin(ModelView):
     column_list = [
         "first_name",
         "last_name",
+        "middle_name",
         "username",
         "gender",
         "date_of_birth",
+        "parent_name",
         "parent_phone_number",
         "address",
         "parent_occupation",
@@ -39,9 +41,11 @@ class StudentAdmin(ModelView):
     form_columns = [
         "first_name",
         "last_name",
+        "middle_name",
         "username",
         "password",
         "gender",
+        "parent_name",
         "date_of_birth",
         "parent_phone_number",
         "address",
@@ -70,7 +74,7 @@ class StudentAdmin(ModelView):
         return redirect(url_for("login", next=request.url))
 
 
-class ScoreAdmin(ModelView):
+class ResultAdmin(ModelView):
     column_list = [
         "student_id",
         "subject",
