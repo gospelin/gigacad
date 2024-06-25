@@ -42,12 +42,43 @@
                         </div>
 
                         <div class="row mb-3">
-                            <div class="col">
-                                <label>Average:</label>
-                                <span><strong>{{ average_total }}</strong></span>
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-text">Reopening Date:</span>
+                                    <input type="text" name="next_term_begins" class="form-control" value="{{ results[0].next_term_begins if results else '' }}">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-text">Last Term Average:</span>
+                                    <input type="number" name="last_term_average" class="form-control" value="{{ last_term_average }}">
+                                </div>
                             </div>
                         </div>
-                        <div class="row">
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-text">Position:</span>
+                                    <input type="text" name="position" class="form-control" value="{{ results[0].position if results else '' }}">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-text">Cumulative Average:</span>
+                                    <span class="form-control">{{ cumulative_average }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <span class="input-group-text">Average for the Term:</span>
+                                <span class="form-control">{{ average }}</span>
+                            </div>
+                        </div>
+
+                     <div class="row">
                             <div class="col">
                                 <table class="table table-bordered mt-4">
                                     <thead>
@@ -92,6 +123,9 @@
                         </div>
                         <button type="submit" class="btn btn-primary">Save Results</button>
                     </form>
+                        <div class="text-center">
+                            <a href="{{ url_for('students_by_class', entry_class=student.entry_class) }}" class="btn btn-secondary mt-3">Back to Students in {{ student.entry_class }} </a>
+                        </div>
                 </div>
             </div>
         </div>

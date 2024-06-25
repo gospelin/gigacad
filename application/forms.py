@@ -6,8 +6,9 @@ from wtforms import (
     SubmitField,
     PasswordField,
     SelectMultipleField,
+    FloatField,
 )
-from wtforms.validators import DataRequired, Length
+from wtforms.validators import DataRequired, Length, Optional
 
 
 class StudentRegistrationForm(FlaskForm):
@@ -19,7 +20,7 @@ class StudentRegistrationForm(FlaskForm):
         choices=[("male", "Male"), ("female", "Female")],
         validators=[DataRequired()],
     )
-    date_of_birth = DateField("Date of Birth")
+    date_of_birth = DateField("Date of Birth", validators=[Optional()])
     parent_name = StringField("Parent Name", validators=[Length(max=70)])
     parent_phone_number = StringField(
         "Parent Phone Number", validators=[Length(max=11)]
@@ -95,6 +96,9 @@ class ResultForm(FlaskForm):
         validators=[DataRequired()],
         default="2023/2024",
     )
+    next_term_begins = StringField("Next Term Begins", validators=[Optional()])
+    last_term_average = FloatField("Last Term Average", validators=[Optional()])
+    position = StringField("Position", validators=[Optional()])
     submit = SubmitField("Load Results")
 
 
