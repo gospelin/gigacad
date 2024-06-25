@@ -1,0 +1,43 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card border-0 shadow-lg">
+                <div class="card-header bg-primary text-white text-center">
+                    <h1>{{ student.first_name }} {{ student.last_name }}'s Profile</h1>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <p><strong>First Name:</strong> {{ student.first_name }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Middle Name:</strong> {{ student.middle_name }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Last Name:</strong> {{ student.last_name }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Gender:</strong> {{ student.gender }}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <p><strong>Class:</strong> {{ student.entry_class }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Student ID:</strong> AAIS/0559/00{{ student.id }}</p>
+                        </div>
+                    </div>
+                    <!-- Add more fields as needed -->
+                </div>
+                <div class="card-footer text-center">
+                    <a href="{{ url_for('student_portal', student_id=student.id) }}" class="btn btn-secondary">Back to Portal</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

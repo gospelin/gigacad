@@ -60,9 +60,40 @@ def calculate_grand_total(results):
     return sum(result.total for result in results)
 
 
+def get_last_term(current_term):
+    term_sequence = ["First Term", "Second Term", "Third Term"]
+    if current_term in term_sequence:
+        current_index = term_sequence.index(current_term)
+        last_index = current_index - 1 if current_index > 0 else None
+        return term_sequence[last_index] if last_index is not None else None
+    return None
+
+
 def calculate_average(results):
-    total_sum = sum(result.total for result in results)
-    num_subjects = len(results)
-    if num_subjects == 0:
-        return 0
-    return total_sum / num_subjects
+    total = sum(result.total for result in results)
+    return total / len(results) if results else 0
+
+
+def calculate_cumulative_average(results, current_term_average):
+    """
+    Calculate the cumulative average based on the previous term's average and the current term's average.
+
+    Args:
+        results (list): A list of result objects, each having a 'last_term_average' attribute.
+        current_term_average (float): The average for the current term.
+
+    Returns:
+        float: The calculated cumulative average.
+    """
+    last_term_average = 0
+    cumulative_average = current_term_average
+    if results:
+        # Assuming results is a list of objects with a 'last_term_average' attribute
+        last_term_average = (
+            float(results[0].last_term_average) if results[0].last_term_average else 0
+        )
+
+    if last_term_average and current_term_average:
+        cumulative_average = (last_term_average + current_term_average) / 2
+
+    return cumulative_average

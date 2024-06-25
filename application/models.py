@@ -62,7 +62,6 @@ class Subject(db.Model):
         return f"<Subject {self.name}>"
 
 
-# models.py
 class Result(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     student_id = db.Column(db.Integer, db.ForeignKey("student.id"), nullable=False)
@@ -76,6 +75,9 @@ class Result(db.Model):
     grade = db.Column(db.String(5))
     created_at = db.Column(db.DateTime, default=datetime.now())
     remark = db.Column(db.String(100))
+    next_term_begins = db.Column(db.String(100), nullable=True)
+    last_term_average = db.Column(db.Float, nullable=True, default=0.0)
+    position = db.Column(db.String(10), nullable=True)
 
     @property
     def class_assessment_value(self):
