@@ -86,6 +86,7 @@
                 <h2 class="text-center py-3">Admin Dashboard</h2>
                 <a href="#" id="dashboard-link" class="active"><i class="fas fa-tachometer-alt icon"></i>Dashboard</a>
                 <a href="{{ url_for('approve_students') }}" id="students-link"><i class="fas fa-user-graduate icon"></i>Students</a>
+                <a href="{{ url_for('manage_subjects') }}" id="subjects-link"><i class="fas fa-book icon"></i> Subjects</a>
                 <a href="#" id="teachers-link"><i class="fas fa-chalkboard-teacher icon"></i>Teachers</a>
                 <a href="#" id="parents-link"><i class="fas fa-user icon"></i>Parents</a>
                 <a href="{{ url_for('manage_classes') }}" id="classes-link"><i class="fas fa-school icon"></i>Classes</a>
@@ -95,6 +96,10 @@
             </nav>
             <!-- Main content -->
             <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+                {% for message in get_flashed_messages() %}
+                    <div class="alert alert-warning mt-3">{{ message }}</div>
+                {% endfor %}
+
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                     <h1 class="h2">Dashboard</h1>
                 </div>

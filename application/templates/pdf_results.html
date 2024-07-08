@@ -4,19 +4,19 @@
 <style>
     @page {
         size: A4;
-        margin: 3mm;
+        margin: 1mm;
     }
 
     body {
-        font-family: 'Arial', sans-serif;
         font-weight: bolder;
+        position: relative;
     }
 
     .print-view {
         margin: 2mm auto;
         padding: 3mm;
         font-family: 'Arial', sans-serif;
-        font-size: 10pt;
+        font-size: 8pt;
     }
 
     .table-bordered {
@@ -26,7 +26,7 @@
     .table-bordered th,
     .table-bordered td {
         border: 1px solid #28a745;
-        font-size: 10pt;
+        font-size: 8pt;
     }
 
     .details,
@@ -34,12 +34,10 @@
         text-align: left;
     }
 
-    .details {
-        margin-top: -30px;
-        margin-right: 15px;
-        margin-left: -10px;
-        color: #28a745;
-    }
+    /*.details {*/
+    /*    margin: -30px 3px 0px -10px;*/
+    /*    color: #28a745;*/
+    /*}*/
 
     .navbar,
     .footer,
@@ -50,7 +48,7 @@
 
     .school-header {
         margin-top: -50px;
-        margin-bottom: 12px;
+        margin-bottom: 5px;
         display: flex;
         align-items: center;
         justify-content: flex-start;
@@ -58,15 +56,15 @@
     }
 
     .school-logo {
-        margin-top: -30px;
-        width: 100px;
-        margin-left: 10px;
+        margin-top: -15px;
+        width: 80px;
+        margin-left: 15px;
     }
 
     .school-info {
-        margin-top: 5px;
+        margin-top: 0;
         text-align: center;
-        margin-left: 15px;
+        margin-left: 25px;
     }
 
     .card {
@@ -81,33 +79,34 @@
 
     .card-body {
         padding: 1mm;
-        font-size: 10pt;
+       font-size: 8pt;
     }
 
     .card-title {
-        font-size: 18pt;
+        font-size: 16pt;
         margin-top: 0;
         color: #28a745;
     }
 
     .card-text {
-        font-size: 10pt;
-        color: #28a745;
+        font-size: 8pt;
+        color: pink;
+        margin-top: 1mm;
     }
 
     .card-subtitle {
-        font-size: 14pt;
-        margin-bottom: 8mm;
+        font-size: 12pt;
+        margin-top: -5px;
         color: #28a745;
     }
 
     .table {
-        margin-bottom: 3mm;
+        margin-bottom: 1px;
     }
 
     .table-responsive {
         overflow-x: auto;
-        margin-bottom: 3px;
+        margin-bottom: 3mm;
     }
 
     .table tr th {
@@ -124,34 +123,55 @@
     }
 
     .grading td {
-        font-size: 10pt;
+        font-size: 8pt;
         padding-right: 5px;
         white-space: nowrap;
     }
 
     .remarks {
-        margin-top: 20px;
+        margin-top: 10px;
+    }
+
+    /* Watermark styling */
+    body::before {
+        content: "Aunty Anne's Int'l School Approved Result";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(-48deg);
+        font-size: 3.5rem;
+        color: rgba(0, 0, 0, 0.01);
+        white-space: nowrap;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    /* Ensure watermark is behind other content */
+    .print-view,
+    .container {
+        position: relative;
+        z-index: -1;
     }
 </style>
 
 <div class="container mt-5 print-view">
     <div class="row justify-content-center">
         <div class="col-lg-8">
-            <div class="card border-0 shadow-lg">
+            <!--<div class="card border-0 shadow-lg">-->
                 <div class="card-body">
                     <div class="school-header">
-                        <img src="{{ static_url }}" alt="School Logo" class="school-logo">
+                        <img src="{{ static_url }}" alt="School Logo" class="school-logo" width="60">
                         <div class="school-info">
-                            <h1 class="card-title text-uppercase">{{ school_name }}</h1>
-                            <p class="card-text" style="color: pink;">6 OOMNNE DRIVE, ABAYI, ABA, ABIA STATE</p>
-                            <h2 class="card-subtitle text-uppercase">REPORT SHEET FOR {{ term }} {{ session }} SESSION</h2>
+                            <h1 class="card-title text-center text-uppercase">{{ school_name }}</h1>
+                            <p style="color: pink;" class="text-center card-text">6 OOMNNE DRIVE, ABAYI, ABA, ABIA STATE</p>
+                            <h2 class="text-center card-subtitle text-uppercase">REPORT SHEET FOR {{ term }} {{ session }} ACADEMIC SESSION</h2>
                         </div>
                     </div>
                     <div class="card-body details">
                         <table class="table table-striped">
                             <tr class="text-uppercase">
                                 <td>Name</td>
-                                <td>{{ student.first_name }} {{student.middle_name}} {{ student.last_name }}</td>
+                                <td>{{ student.first_name }} &nbsp; {{student.middle_name[0]}}.&nbsp; {{ student.last_name }}</td>
                                 <td>Class</td>
                                 <td>{{ student.entry_class }}</td>
                             </tr>
@@ -178,29 +198,29 @@
                                 <td>{{ average }}</td>
                             </tr>
                             {% if "Creche" in student.entry_class or "Nursery" in student.entry_class or "Basic" in student.entry_class %}
-                            <tr class="text-center">
+                            <tr class="text-uppercase">
                                 <td>Position in class</td>
-                                <td>{{ position }}</td>
+                                <td colspan="3">{{ position }}</td>
                             </tr>
                             {% endif %}
                         </table>
-                        <div class="table-responsive">
-                            <table class="table table-bordered">
+                        <div style="width: 100%;" class="table-responsive">
+                            <table style="width: 100%;" class="table table-bordered">
                                 <thead>
                                     <tr style="font-size: 8pt;">
-                                        <th>Subject</th>
+                                        <th style="width: 40%;">Subjects</th>
                                         <th class="text-center" style="width: 8%;"><span>Class Work</span><br><span>(20)</span></th>
                                         <th class="text-center" style="width: 8%;"><span>Summative Test</span><br><span>(20)</span></th>
                                         <th class="text-center" style="width: 8%;"><span>Exam</span><br><span>(60)</span></th>
                                         <th class="text-center" style="width: 8%;"><span>Total</span><br><span>(100)</span></th>
-                                        <th style="width: 8%;">Grade</th>
-                                        <th class="text-center" style="width: 8%;">Remark</th>
+                                        <th class="text-center" style="width: 8%;">Grade</th>
+                                        <th class="text-center" style="width: 10%;">Remark</th>
                                     </tr>
                                 </thead>
-                                <tbody style="font-size: 10pt;">
-                                     {% for result in results %}
+                                <tbody>
+                                    {% for result in results %}
                                     <tr>
-                                        <td style="color: #28a745;" class="text-uppercase">{{ result.subject.name }}</td>
+                                        <td style="font-size: 8pt; color: #28a745;" class="text-uppercase">{{ result.subject.name }}</td>
                                         {% if result.class_assessment < 10 %}
                                             <td class="text-center" style="color: red;">{{ result.class_assessment }}</td>
                                         {% else %}
@@ -238,29 +258,58 @@
                                         <td class="text-center"><strong>{{ grand_total.total }}</strong></td>
                                         <td colspan="2"></td>
                                     </tr>
-                                    <tr class="grading">
-                                        <td colspan="7" style="color: pink;"><strong>GRADES: A+ [95-100] &nbsp;&nbsp; A [80-94] &nbsp;&nbsp; B+ [70-79] &nbsp;&nbsp; B [65-69] &nbsp;&nbsp; C+ [60-64] &nbsp;&nbsp; C [50-59] &nbsp;&nbsp; D [40-49] &nbsp;&nbsp; E [30-39] &nbsp;&nbsp; F [0-29]</strong></td>
+                                    <!--<tr class="grading">-->
+                                    <!--    <td colspan="7" style="color: pink;"><strong>GRADES: A+ [95-100] &nbsp;&nbsp; A [80-94] &nbsp;&nbsp; B+ [70-79] &nbsp;&nbsp; B [65-69] &nbsp;&nbsp; C+ [60-64] &nbsp;&nbsp; C [50-59] &nbsp;&nbsp; D [40-49] &nbsp;&nbsp; E [30-39] &nbsp;&nbsp; F [0-29]</strong></td>-->
+                                    <!--</tr>-->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div style="width: 100%;" class="table-responsive grading">
+                            <table style="width: 100%;" class="table table-bordered">
+                                <thead>
+                                    <tr class="text-center" style="font-size: 8pt;">
+                                        <th colspan="4">GRADE</th>
+                                    </tr>
+                                    <tr class="text-center" style="font-size: 8pt;">
+                                        <th>100 - 90</th>
+                                        <th>89 - 75</th>
+                                        <th>74 - 60</th>
+                                        <th>59 - 50</th>
+                                        <th>49 - 45</th>
+                                        <th>44 - 40</th>
+                                        <th>39 - 0</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="text-center" style="font-size: 8pt;">
+                                        <td>A+</td>
+                                        <td>A</td>
+                                        <td>B</td>
+                                        <td>C</td>
+                                        <td>D</td>
+                                        <td>E</td>
+                                        <td>F</td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
                         <div class="remarks mt-4">
-                            <table class="table">
+                            <table  style="margin-top: -15px;" class="table">
                                 <tbody>
                                     <tr>
-                                        <td><strong>School Principal Comment:</strong></td>
-                                        <td>VERY IMPRESSIVE WORK, WONDERFULLY DONE! YOU HAVE MADE A DIFFERENCE, YOU ARE NOW A REFERENCE POINT.</td>
+                                        <td><strong>Date Issued:</strong></td>
+                                        <td></td>
                                     </tr>
                                     <tr>
-                                        <td><strong>Class Teacher Comment:</strong></td>
-                                        <td>EXCELLENT RESULT, KEEP IT UP</td>
+                                        <td><strong>Date Printed:</strong></td>
+                                        <td></td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
-            </div>
+            <!--</div>-->
         </div>
     </div>
 </div>

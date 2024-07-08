@@ -10,12 +10,17 @@
 </head>
 <body>
     <div class="container mt-5">
+        {% for message in get_flashed_messages() %}
+                <div class="alert alert-warning mt-3">{{ message }}</div>
+            {% endfor %}
+
         <h1 class="text-center mb-5 animate__animated animate__fadeInDown">Students in {{ entry_class }}</h1>
         <table class="table table-striped table-responsive animate__animated animate__fadeInUp">
             <thead>
                 <tr>
                     <th>ID</th>
                     <th>First Name</th>
+                    <th>Middle Name</th>
                     <th>Last Name</th>
                     <th>Username</th>
                     <th>Password</th>
@@ -27,8 +32,8 @@
                 <tr>
                     <td>{{ student.id }}</td>
                     <td>{{ student.first_name }}</td>
-                    <td>{{ student.last_name }}</td>
                     <td>{{ student.middle_name }}</td>
+                    <td>{{ student.last_name }}</td>
                     <td>{{ student.username }}</td>
                     <td>{{ student.password }}</td>
                     <td>

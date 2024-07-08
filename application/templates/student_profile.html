@@ -1,37 +1,118 @@
-{% extends 'layout.html' %}
+{% extends "base.html" %}
+
+{% block title %}{{ student.first_name }} {{ student.last_name }}'s Profile{% endblock %}
 
 {% block content %}
+<style>
+    .profile-card {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        overflow: hidden;
+        transition: transform 0.2s;
+    }
+    .profile-card:hover {
+        transform: translateY(-10px);
+    }
+    .profile-header {
+        background: linear-gradient(45deg, #007bff, #00c6ff);
+        color: white;
+        text-align: center;
+        padding: 20px;
+    }
+    .profile-picture {
+        font-size: 3rem;
+        color: #fff;
+        background: #6c757d;
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: -75px;
+        transition: transform 0.3s;
+    }
+    .profile-picture:hover {
+        transform: scale(1.1);
+    }
+    .profile-info {
+        padding: 20px;
+    }
+    .profile-info p {
+        font-size: 1.1rem;
+    }
+    .profile-info strong {
+        color: #007bff;
+    }
+    .card-footer {
+        background: #f8f9fa;
+    }
+    .btn-secondary {
+        background: linear-gradient(45deg, #007bff, #00c6ff);
+        border: none;
+        transition: background 0.3s;
+    }
+    .btn-secondary:hover {
+        background: linear-gradient(45deg, #0056b3, #0099cc);
+    }
+    @keyframes slideIn {
+        from {
+            transform: translateY(20px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+    .profile-card {
+        animation: slideIn 0.5s ease-in-out;
+    }
+</style>
+
 <div class="container mt-5 mb-5">
     <div class="row justify-content-center">
         <div class="col-lg-10">
-            <div class="card border-0 shadow-lg">
-                <div class="card-header bg-primary text-white text-center">
-                    <h1>{{ student.first_name }} {{ student.last_name }}'s Profile</h1>
+            <div class="profile-card card">
+                <div class="profile-header">
+                    <i class="bi bi-person-circle profile-picture"></i>
+                    <h2>{{ student.first_name }} {{ student.last_name }}</h2>
+                    <p>Class: {{ student.entry_class }}</p>
                 </div>
-                <div class="card-body">
+                <div class="profile-info">
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <p><strong>First Name:</strong> {{ student.first_name }}</p>
-                        </div>
-                        <div class="col-md-4">
                             <p><strong>Middle Name:</strong> {{ student.middle_name }}</p>
-                        </div>
-                        <div class="col-md-4">
                             <p><strong>Last Name:</strong> {{ student.last_name }}</p>
+                            <p><strong>Gender:</strong> {{ student.gender.capitalize() }}</p>
+                            <p><strong>Date of Birth:</strong> {{ student.date_of_birth }}</p>
                         </div>
-                        <div class="col-md-4">
-                            <p><strong>Gender:</strong> {{ student.gender }}</p>
+                        <div class="col-md-6">
+                            <p><strong>Parent's Name:</strong> {{ student.parent_name }}</p>
+                            <p><strong>Parent's Phone:</strong> {{ student.parent_phone_number }}</p>
+                            <p><strong>Address:</strong> {{ student.address }}</p>
+                            <p><strong>Parent's Occupation:</strong> {{ student.parent_occupation }}</p>
+                            <p><strong>Previous Class:</strong> {{ student.previous_class }}</p>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-4">
-                            <p><strong>Class:</strong> {{ student.entry_class }}</p>
+                        <div class="col-md-6">
+                            <p><strong>State of Origin:</strong> {{ student.state_of_origin }}</p>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-6">
+                            <p><strong>LGA:</strong> {{ student.local_government_area }}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Religion:</strong> {{ student.religion }}</p>
+                        </div>
+                        <div class="col-md-6">
                             <p><strong>Student ID:</strong> AAIS/0559/00{{ student.id }}</p>
                         </div>
                     </div>
-                    <!-- Add more fields as needed -->
                 </div>
                 <div class="card-footer text-center">
                     <a href="{{ url_for('student_portal', student_id=student.id) }}" class="btn btn-secondary">Back to Portal</a>
