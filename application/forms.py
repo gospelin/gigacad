@@ -104,7 +104,7 @@ class ResultForm(FlaskForm):
 
 class LoginForm(FlaskForm):
     username = StringField(
-        "Username", validators=[DataRequired(), Length(min=2, max=20)]
+        "Username", validators=[DataRequired(), Length(min=2, max=50)]
     )
     password = PasswordField("Password", validators=[DataRequired()])
     submit = SubmitField("Login")
@@ -133,11 +133,11 @@ class EditStudentForm(FlaskForm):
             ("JSS 3", "JSS 3"),
         ],
     )
-    submit = SubmitField("Save")
+    submit = SubmitField("Update")
 
 
 class SubjectForm(FlaskForm):
-    name = StringField("Name", validators=[DataRequired()])
+    name = StringField("Name (comma-separated)", validators=[DataRequired()])
     section = SelectMultipleField(
         "Section",
         choices=[
