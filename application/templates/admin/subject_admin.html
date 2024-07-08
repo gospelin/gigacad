@@ -26,28 +26,24 @@
         </ul>
     {% endfor %}
 
-    <!-- Add New Subject Card -->
-    <div class="row">
-        <div class="col">
-            <div class="card mb-4 border-0 shadow-lg animate__animated animate__fadeInUp">
-                <div class="card-header bg-primary text-white">
-                    Add New Subject
+
+
+    <div class="card border-0 shadow-lg animate__animated animate__fadeIn">
+        <div class="card-body">
+            <h5 class="card-title text-center">Add Subjects</h5>
+            <form method="POST" action="{{ url_for('manage_subjects') }}">
+                {{ form.hidden_tag() }}
+                <div class="mb-3">
+                    {{ form.name.label(class="form-label") }}
+                    {{ form.name(class="form-control") }}
+                    <small class="form-text text-muted">Enter multiple subjects separated by commas (e.g., Math, English, Science).</small>
                 </div>
-                <div class="card-body">
-                    <form method="POST" action="{{ url_for('manage_subjects') }}">
-                        {{ form.hidden_tag() }}
-                        <div class="mb-3">
-                            {{ form.name.label(class="form-label") }}
-                            {{ form.name(class="form-control") }}
-                        </div>
-                        <div class="mb-3">
-                            {{ form.section.label(class="form-label") }}
-                            {{ form.section(class="form-control") }}
-                        </div>
-                        <button type="submit" class="btn btn-success">Add Subject</button>
-                    </form>
+                <div class="mb-3">
+                    {{ form.section.label(class="form-label") }}
+                    {{ form.section(class="form-control") }}
                 </div>
-            </div>
+                <button type="submit" class="btn btn-primary btn-block">Add Subjects</button>
+            </form>
         </div>
     </div>
 </div>

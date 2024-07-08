@@ -1,16 +1,13 @@
 {% extends "layout.html" %}
 {% block content %}
-<div class="col-md-12">
-    {% for message in get_flashed_messages() %}
-                <div class="alert alert-warning mt-3">{{ message }}</div>
-            {% endfor %}
-</div>
+
+
 <!-- Jumbotron Section -->
 <div class="jumbotron bg-success text-white text-center py-5" style="background: url('static/images/DSC_0184.JPG') no-repeat center center; background-size: cover;">
     <div class="overlay"></div>
     <div class="container content">
         <h1 class="display-4 animated fadeInDown">Welcome to {{ school_name }}</h1>
-        <h2 class="my-4 animated fadeIn">Where Practical Learning Meets Knowledge and Confidence</h2>
+        <h2 class="lead my-4 animated fadeIn">Where Practical Learning Meets Knowledge and Confidence</h2>
         <p class="lead animated fadeInUp">
             We are committed to providing a transformative education experience
             that equips students with practical skills, empowers them with knowledge,
@@ -25,7 +22,7 @@
     <div class="row">
         <div class="col-md-6 mb-4">
             <h2 class="display-5">About Us</h2>
-            <p>
+            <p class="lead animated fadeInDown">
                 Aunty Anne's International School is dedicated to nurturing young minds
                 and providing them with a holistic education. Our focus on practical
                 learning, knowledge, and confidence sets us apart as a leading institution
@@ -34,7 +31,7 @@
         </div>
         <div class="col-md-6 mb-4">
             <h2 class="display-5">Our Vision</h2>
-            <p>
+            <p class="lead animated fadeInUp">
                 Our vision is to empower students to become lifelong learners, critical
                 thinkers, and responsible global citizens. We strive to create a dynamic
                 learning environment that fosters creativity, innovation, and success.
@@ -55,7 +52,7 @@
     <div class="carousel-inner">
         <!-- Slide 1 -->
         <div class="carousel-item active">
-            <img src="{{ url_for('static', filename='images/DSC_1384.JPG') }}" class="d-block w-100" alt="Slide 1">
+            <img src="{{ url_for('static', filename='images/aais.jpeg') }}" class="d-block w-100" alt="Slide 1">
             <div class="carousel-caption d-none d-md-block">
                 <h5>Welcome to Our School</h5>
                 <p>Experience the best learning environment.</p>
@@ -114,7 +111,7 @@
                 </div>
                 <div class="card-body">
                     <h1 class="card-title pricing-card-title">Our <small class="text-muted">Motto</small></h1>
-                    <p>We believe in hands-on, experiential learning that
+                    <p class="lead animated fadeInUp">We believe in hands-on, experiential learning that
                     prepares students for real-world challenges.</p>
                 </div>
             </div>
@@ -126,7 +123,7 @@
             </div>
             <div class="card-body">
                 <h1 class="card-title pricing-card-title">Our <small class="text-muted">Values</small></h1>
-                <p>We strive to empower our students with a deep
+                <p class="lead animated fadeInUp">We strive to empower our students with a deep
                     understanding of diverse subjects, fostering intellectual curiosity and a love for learning.
                 </p>
             </div>
@@ -139,7 +136,7 @@
                 </div>
                 <div class="card-body">
                     <h1 class="card-title pricing-card-title">Our <small class="text-muted">Vision</small></h1>
-                    <p>We focus on building confidence and resilience in
+                    <p class="lead animated fadeInUp">We focus on building confidence and resilience in
                     our students, ensuring they have the self-assurance to pursue their dreams.</p>
                 </div>
             </div>
@@ -183,6 +180,155 @@
         </div>
     </div>
 </div>
+
+
+
+  <!--News and Announcements -->
+  <!--  <div class="container mt-5">-->
+  <!--      <div class="row">-->
+  <!--          <div class="col-md-12">-->
+  <!--              <h3>Latest News & Announcements</h3>-->
+  <!--              <div class="news-carousel owl-carousel owl-theme">-->
+  <!--                  {% for news in news_list %}-->
+  <!--                      <div class="item">-->
+  <!--                          <div class="card">-->
+  <!--                              <img src="{{ news.image_url }}" class="card-img-top" alt="News Image">-->
+  <!--                              <div class="card-body">-->
+  <!--                                  <h5 class="card-title">{{ news.title }}</h5>-->
+  <!--                                  <p class="card-text">{{ news.summary }}</p>-->
+  <!--                                  <a href="{{ url_for('news_detail', news_id=news.id) }}" class="btn btn-primary">Read More</a>-->
+  <!--                              </div>-->
+  <!--                          </div>-->
+  <!--                      </div>-->
+  <!--                  {% endfor %}-->
+  <!--              </div>-->
+  <!--          </div>-->
+  <!--      </div>-->
+  <!--  </div>-->
+
+  <!--   Academic Programs -->
+  <!--  <div class="container mt-5">-->
+  <!--      <div class="row">-->
+  <!--          <div class="col-md-12 text-center">-->
+  <!--              <h3>Academic Programs</h3>-->
+  <!--              <p>Explore our diverse range of academic programs designed to cater to the needs and interests of our students.</p>-->
+  <!--          </div>-->
+  <!--      </div>-->
+  <!--      <div class="row">-->
+  <!--          {% for program in academic_programs %}-->
+  <!--              <div class="col-md-4">-->
+  <!--                  <div class="card">-->
+  <!--                      <img src="{{ program.image_url }}" class="card-img-top" alt="Program Image">-->
+  <!--                      <div class="card-body">-->
+  <!--                          <h5 class="card-title">{{ program.name }}</h5>-->
+  <!--                          <p class="card-text">{{ program.description }}</p>-->
+  <!--                          <a href="{{ url_for('program_detail', program_id=program.id) }}" class="btn btn-primary">Learn More</a>-->
+  <!--                      </div>-->
+  <!--                  </div>-->
+  <!--              </div>-->
+  <!--          {% endfor %}-->
+  <!--      </div>-->
+  <!--  </div>-->
+
+  <!--   Upcoming Events -->
+  <!--  <div class="container mt-5">-->
+  <!--      <div class="row">-->
+  <!--          <div class="col-md-12 text-center">-->
+  <!--              <h3>Upcoming Events</h3>-->
+  <!--              <p>Stay updated with our upcoming events and activities.</p>-->
+  <!--          </div>-->
+  <!--      </div>-->
+  <!--      <div class="row">-->
+  <!--          <div class="col-md-12">-->
+  <!--              <ul class="list-group">-->
+  <!--                  {% for event in events %}-->
+  <!--                      <li class="list-group-item d-flex justify-content-between align-items-center">-->
+  <!--                          <div>-->
+  <!--                              <h5>{{ event.name }}</h5>-->
+  <!--                              <p>{{ event.date }} - {{ event.location }}</p>-->
+  <!--                          </div>-->
+  <!--                          <a href="{{ url_for('event_detail', event_id=event.id) }}" class="btn btn-primary">More Info</a>-->
+  <!--                      </li>-->
+  <!--                  {% endfor %}-->
+  <!--              </ul>-->
+  <!--          </div>-->
+  <!--      </div>-->
+  <!--  </div>-->
+
+  <!--   Student Life -->
+  <!--  <div class="container mt-5">-->
+  <!--      <div class="row">-->
+  <!--          <div class="col-md-12 text-center">-->
+  <!--              <h3>Student Life</h3>-->
+  <!--              <p>Discover the vibrant and diverse student life at our school.</p>-->
+  <!--          </div>-->
+  <!--      </div>-->
+  <!--      <div class="row">-->
+  <!--          <div class="col-md-12">-->
+  <!--              <div class="student-life-carousel owl-carousel owl-theme">-->
+  <!--                  {% for activity in student_activities %}-->
+  <!--                      <div class="item">-->
+  <!--                          <div class="card">-->
+  <!--                              <img src="{{ activity.image_url }}" class="card-img-top" alt="Activity Image">-->
+  <!--                              <div class="card-body">-->
+  <!--                                  <h5 class="card-title">{{ activity.name }}</h5>-->
+  <!--                                  <p class="card-text">{{ activity.description }}</p>-->
+  <!--                              </div>-->
+  <!--                          </div>-->
+  <!--                      </div>-->
+  <!--                  {% endfor %}-->
+  <!--              </div>-->
+  <!--          </div>-->
+  <!--      </div>-->
+  <!--  </div>-->
+
+  <!--   Testimonials -->
+  <!--  <div class="container mt-5">-->
+  <!--      <div class="row">-->
+  <!--          <div class="col-md-12 text-center">-->
+  <!--              <h3>Testimonials</h3>-->
+  <!--              <p>Hear what our students, parents, and alumni have to say about us.</p>-->
+  <!--          </div>-->
+  <!--      </div>-->
+  <!--      <div class="row">-->
+  <!--          {% for testimonial in testimonials %}-->
+  <!--              <div class="col-md-4">-->
+  <!--                  <div class="card">-->
+  <!--                      <div class="card-body">-->
+  <!--                          <blockquote class="blockquote mb-0">-->
+  <!--                              <p>{{ testimonial.message }}</p>-->
+  <!--                              <footer class="blockquote-footer">{{ testimonial.name }}</footer>-->
+  <!--                          </blockquote>-->
+  <!--                      </div>-->
+  <!--                  </div>-->
+  <!--              </div>-->
+  <!--          {% endfor %}-->
+  <!--      </div>-->
+  <!--  </div>-->
+
+  <!--   Gallery -->
+  <!--  <div class="container mt-5">-->
+  <!--      <div class="row">-->
+  <!--          <div class="col-md-12 text-center">-->
+  <!--              <h3>Photo & Video Gallery</h3>-->
+  <!--              <p>Explore our gallery to get a glimpse of life at our school.</p>-->
+  <!--          </div>-->
+  <!--      </div>-->
+  <!--      <div class="row">-->
+  <!--          {% for photo in gallery_photos %}-->
+  <!--              <div class="col-md-3">-->
+  <!--                  <div class="card">-->
+  <!--                      <img src="{{ photo.image_url }}" class="card-img-top" alt="Gallery Image">-->
+  <!--                  </div>-->
+  <!--              </div>-->
+  <!--          {% endfor %}-->
+  <!--      </div>-->
+  <!--  </div>-->
+
+
+
+
+
 
 <!-- Upcoming Events Section -->
 <div class="container mt-5">

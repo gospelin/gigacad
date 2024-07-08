@@ -1,225 +1,123 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Portal</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-        }
-        .sidebar {
-            height: 100vh;
-            background-color: #343a40;
-            color: #fff;
-            position: fixed;
-            width: 220px;
-            transition: all 0.3s ease;
-        }
-        .sidebar a {
-            color: #fff;
-            text-decoration: none;
-            padding: 15px;
-            display: block;
-            transition: background-color 0.3s ease;
-        }
-        .sidebar a:hover {
-            background-color: #495057;
-        }
-        .sidebar .active {
-            background-color: #007bff;
-            color: #fff;
-        }
-        .sidebar .icon {
-            margin-right: 10px;
-        }
-        .sidebar-toggler {
-            display: none;
-        }
-        main {
-            margin-left: 220px;
-            padding: 20px;
-            transition: all 0.3s ease;
-        }
-        .card {
-            margin-bottom: 20px;
-            animation: fadeInUp 1s;
-        }
-        .card h5 {
-            font-weight: 500;
-        }
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 100%;
-                height: auto;
-                position: relative;
-            }
-            main {
-                margin-left: 0;
-            }
-            .sidebar-toggler {
-                display: block;
-                position: absolute;
-                top: 10px;
-                left: 10px;
-                color: #fff;
-                cursor: pointer;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Sidebar Toggler -->
-            <div class="sidebar-toggler">
-                <i class="fas fa-bars fa-2x"></i>
+{% extends "base.html" %}
+
+{% block title %}Student Portal Dashboard{% endblock %}
+
+{% block content %}
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">Dashboard</h1>
+    </div>
+    <!-- Dashboard cards -->
+    <div class="row">
+        <div class="col-md-3 col-sm-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Overall Performance</h5>
+                    <p class="card-text">Average: <span id="overall-performance">{{ overall_performance }}</span></p>
+                </div>
             </div>
-            <!-- Sidebar -->
-            <nav class="col-md-2 sidebar">
-                <h2 class="text-center py-3">Student Portal</h2>
-                <a href="#" class="active"><i class="fas fa-tachometer-alt icon"></i>Dashboard</a>
-                <a href="{{ url_for('student_profile', student_id=current_user.student.id) }}">
-                    <i class="fas fa-user icon"></i> Profile
-                </a>
-                <a href="{{ url_for('select_results', student_id=student.id) }}"><i class="fas fa-file-alt icon"></i>Results</a>
-                <a href="#"><i class="fas fa-calendar-check icon"></i>Attendance</a>
-                <a href="#"><i class="fas fa-clock icon"></i>Timetable</a>
-                <a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt icon"></i>Logout</a>
-            </nav>
-            <!-- Main content -->
-            <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">Dashboard</h1>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Attendance</h5>
+                    <p class="card-text">Total Days: <span id="total-attendance">{{ total_attendance }}</span></p>
                 </div>
-                <!-- Dashboard cards -->
-                <div class="row">
-                    <div class="col-md-3 col-sm-6">
-                        <div class="card shadow-sm">
-                            <div class="card-body">
-                                <h5 class="card-title">Overall Performance</h5>
-                                <p class="card-text">Average: <span id="overall-performance">{{ overall_performance }}</span></p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3 col-sm-6">
-                        <div class="card shadow-sm">
-                            <div class="card-body">
-                                <h5 class="card-title">Attendance</h5>
-                                <p class="card-text">Total Days: <span id="total-attendance">{{ total_attendance }}</span></p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3 col-sm-6">
-                        <div class="card shadow-sm">
-                            <div class="card-body">
-                                <h5 class="card-title">Subjects</h5>
-                                <p class="card-text">Total: <span id="total-subjects">{{ total_subjects }}</span></p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3 col-sm-6">
-                        <div class="card shadow-sm">
-                            <div class="card-body">
-                                <h5 class="card-title">Grades</h5>
-                                <p class="card-text">Best Grade: <span id="best-grade">{{ best_grade }}</span></p>
-                            </div>
-                        </div>
-                    </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Subjects</h5>
+                    <p class="card-text">Total: <span id="total-subjects">{{ total_subjects }}</span></p>
                 </div>
-                <!-- Charts -->
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="card shadow-sm">
-                            <div class="card-body">
-                                <h5 class="card-title">Performance Overview</h5>
-                                <canvas id="performanceChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card shadow-sm">
-                            <div class="card-body">
-                                <h5 class="card-title">Attendance Overview</h5>
-                                <canvas id="attendanceChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Grades</h5>
+                    <p class="card-text">Best Grade: <span id="best-grade">{{ best_grade }}</span></p>
                 </div>
-            </main>
+            </div>
         </div>
     </div>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        $(document).ready(function() {
-            $('.sidebar-toggler').on('click', function() {
-                $('.sidebar').toggleClass('open');
-            });
-        });
+    <!-- Charts -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Performance Overview</h5>
+                    <canvas id="performanceChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Attendance Overview</h5>
+                    <canvas id="attendanceChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block script %}
 
-        // Dummy data for charts and cards (replace with dynamic data as needed)
-        const overallPerformance = 85;
-        const totalAttendance = 90;
-        const totalSubjects = 8;
-        const bestGrade = 'A';
+    // Dummy data for charts and cards (replace with dynamic data as needed)
+    const overallPerformance = 85;
+    const totalAttendance = 90;
+    const totalSubjects = 8;
+    const bestGrade = 'A';
 
-        $('#overall-performance').text(overallPerformance);
-        $('#total-attendance').text(totalAttendance);
-        $('#total-subjects').text(totalSubjects);
-        $('#best-grade').text(bestGrade);
+    $('#overall-performance').text(overallPerformance);
+    $('#total-attendance').text(totalAttendance);
+    $('#total-subjects').text(totalSubjects);
+    $('#best-grade').text(bestGrade);
 
-        // Performance Overview Chart
-        const performanceChartCtx = document.getElementById('performanceChart').getContext('2d');
-        const performanceChart = new Chart(performanceChartCtx, {
-            type: 'line',
-            data: {
-                labels: ['Term 1', 'Term 2', 'Term 3'],
-                datasets: [{
-                    label: 'Performance',
-                    data: [75, 80, 85],
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
+    // Performance Overview Chart
+    const performanceChartCtx = document.getElementById('performanceChart').getContext('2d');
+    const performanceChart = new Chart(performanceChartCtx, {
+        type: 'line',
+        data: {
+            labels: ['Term 1', 'Term 2', 'Term 3'],
+            datasets: [{
+                label: 'Performance',
+                data: [75, 80, 85],
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
                 }
             }
-        });
+        }
+    });
 
-        // Attendance Overview Chart
-        const attendanceChartCtx = document.getElementById('attendanceChart').getContext('2d');
-        const attendanceChart = new Chart(attendanceChartCtx, {
-            type: 'bar',
-            data: {
-                labels: ['January', 'February', 'March', 'April', 'May'],
-                datasets: [{
-                    label: '# of Days Present',
-                    data: [20, 18, 22, 19, 21],
-                    backgroundColor: 'rgba(255, 206, 86, 0.2)',
-                    borderColor: 'rgba(255, 206, 86, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
+    // Attendance Overview Chart
+    const attendanceChartCtx = document.getElementById('attendanceChart').getContext('2d');
+    const attendanceChart = new Chart(attendanceChartCtx, {
+        type: 'bar',
+        data: {
+            labels: ['January', 'February', 'March', 'April', 'May'],
+            datasets: [{
+                label: '# of Days Present',
+                data: [20, 18, 22, 19, 21],
+                backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                borderColor: 'rgba(255, 206, 86, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
                 }
             }
-        });
-    </script>
-</body>
-</html>
+        }
+    });
+{% endblock script %}
+

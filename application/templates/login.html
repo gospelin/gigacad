@@ -2,7 +2,6 @@
 {% block content %}
 
 <style>
-
 .main-content {
     padding-top: 60px;
     padding-bottom: 60px;
@@ -15,7 +14,7 @@
 }
 
 .card-header {
-
+    background-color: #007bff;
     color: white;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
@@ -27,23 +26,21 @@
 
 .form-control {
     border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .btn-primary {
     border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 @media (max-width: 600px) {
     .main-content {
-        padding-top: 60px;
-        padding-bottom: 60px;
+        padding-top: 30px;
+        padding-bottom: 30px;
     }
-
 }
-
 </style>
-
-
 
 <div class="main-content container">
     <div class="row justify-content-center">
@@ -59,15 +56,15 @@
                     <form method="POST" action="{{ url_for('login') }}">
                         {{ form.hidden_tag() }}
                         <div class="form-group mb-3">
-                            {{ form.username.label(class="form-label") }}
-                            {{ form.username(class="form-control") }}
+                            {{ form.username.label(class="form-label fw-bold") }}
+                            {{ form.username(class="form-control", placeholder="Enter your username") }}
                         </div>
                         <div class="form-group mb-3">
-                            {{ form.password.label(class="form-label") }}
-                            {{ form.password(class="form-control") }}
+                            {{ form.password.label(class="form-label fw-bold") }}
+                            {{ form.password(class="form-control", placeholder="Enter your password") }}
                         </div>
                         <div class="d-grid">
-                            {{ form.submit(class="btn btn-primary btn-block") }}
+                            {{ form.submit(class="btn btn-primary btn-block w-100") }}
                         </div>
                     </form>
                 </div>
