@@ -19,19 +19,19 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('index') }}">Home</a>
+                        <a class="nav-link" href="{{ url_for('main.index') }}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for("approve_students") }}">Manage Students</a>
+                        <a class="nav-link" href="{{ url_for("admins.approve_students") }}">Manage Students</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('manage_classes') }}">Manage Classes</a>
+                        <a class="nav-link" href="{{ url_for('admins.manage_classes') }}">Manage Classes</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('manage_subjects') }}">Manage Subjects</a>
+                        <a class="nav-link" href="{{ url_for('admins.manage_subjects') }}">Manage Subjects</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                        <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
                     </li>
                 </ul>
             </div>

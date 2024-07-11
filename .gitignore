@@ -5,3 +5,33 @@
 # Ignore virtual environment
 venv/
 __pycache__/
+
+
+# Environment Variables
+.env
+.flaskenv
+
+# Other files to ignore
+__pycache__/
+*.py[cod]
+*$py.class
+migrations/
+venv/
+ENV/
+env/
+.venv/
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+Thumbs.db
+*.log
+*.sqlite
+*.sqlite3
+.pytest_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info
