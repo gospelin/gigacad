@@ -35,7 +35,8 @@ from .helpers import (
     string,
     rate_limit,
 )
-#from weasyprint import HTML
+
+# from weasyprint import HTML
 from sqlalchemy.exc import SQLAlchemyError
 
 
@@ -567,9 +568,9 @@ def view_results(student_id):
         return redirect(url_for("index"))
 
 
-#@app.route("/download_results_pdf/<int:student_id>")
-#@login_required
-#def download_results_pdf(student_id):
+# @app.route("/download_results_pdf/<int:student_id>")
+# @login_required
+# def download_results_pdf(student_id):
 #    try:
 #        student = Student.query.get_or_404(student_id)
 
@@ -790,8 +791,6 @@ def edit_subject(subject_id):
     subject = Subject.query.get_or_404(subject_id)
     form = SubjectForm(obj=subject)
     if form.validate_on_submit():
-        old_name = subject.name
-        old_section = subject.section
         subject.name = form.name.data
         subject.section = form.section.data
         db.session.commit()
