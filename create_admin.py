@@ -20,6 +20,5 @@ def create_admin_user():
             print(f"Admin user with username {username} already exists.")
 
 
-
 if __name__ == "__main__":
     create_admin_user()
