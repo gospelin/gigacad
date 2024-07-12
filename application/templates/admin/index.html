@@ -107,12 +107,12 @@
                         ><i class="fas fa-tachometer-alt icon"></i>Dashboard</a
                     >
                     <a
-                        href="{{ url_for('approve_students') }}"
+                        href="{{ url_for('admins.approve_students') }}"
                         id="students-link"
                         ><i class="fas fa-user-graduate icon"></i>Students</a
                     >
                     <a
-                        href="{{ url_for('manage_subjects') }}"
+                        href="{{ url_for('admins.manage_subjects') }}"
                         id="subjects-link"
                         ><i class="fas fa-book icon"></i> Subjects</a
                     >
@@ -123,7 +123,7 @@
                     <a href="#" id="parents-link"
                         ><i class="fas fa-user icon"></i>Parents</a
                     >
-                    <a href="{{ url_for('manage_classes') }}" id="classes-link"
+                    <a href="{{ url_for('admins.manage_classes') }}" id="classes-link"
                         ><i class="fas fa-school icon"></i>Classes</a
                     >
                     <a href="#" id="attendance-link"
@@ -132,7 +132,7 @@
                     <a href="#" id="settings-link"
                         ><i class="fas fa-cogs icon"></i>Settings</a
                     >
-                    <a href="{{ url_for('logout') }}" id="logout-link"
+                    <a href="{{ url_for('auth.logout') }}" id="logout-link"
                         ><i class="fas fa-sign-out-alt icon"></i>Logout</a
                     >
                 </nav>
