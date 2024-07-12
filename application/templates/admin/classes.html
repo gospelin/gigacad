@@ -2,15 +2,19 @@
 
 {% block content %}
 <div class="container mt-5">
+    {% for message in get_flashed_messages() %}
+                <div class="alert alert-warning mt-3">{{ message }}</div>
+            {% endfor %}
+
     <div class="row justify-content-center">
-        {% for entry_class in ['Creche','Pre Nursery', 'Nursery 1', 'Nursery 2', 'Nursery 3', 'Primary 1', 'Primary 2', 'Primary 3', 'Primary 4', 'Primary 5', 'Primary 6', 'JSS 1', 'JSS 2', 'JSS 3'] %}
+        {% for entry_class in ['Creche','Pre-Nursery', 'Nursery 1', 'Nursery 2', 'Nursery 3', 'Basic 1', 'Basic 2', 'Basic 3', 'Basic 4', 'Basic 5', 'Basic 6', 'JSS 1', 'JSS 2', 'JSS 3'] %}
             <div class="col-md-6 mb-4">
                 <div class="card border-0 shadow-lg">
                     <div class="card-body">
                         <h5 class="card-title text-center">Manage {{ entry_class }} Class</h5>
                         <p class="card-text text-center">Click below to manage students in {{ entry_class }}.</p>
                         <a href="{{ url_for('students_by_class', entry_class=entry_class) }}" class="btn btn-primary btn-block">
-                            {% if "Nursery" in entry_class or "Primary" in entry_class or "Creche" in entry_class %} Pupils {% else %} Students {% endif %} Management
+                            {% if "Nursery" in entry_class or "Basic" in entry_class or "Creche" in entry_class %} Pupils {% else %} Students {% endif %} Management
                         </a>
                     </div>
                 </div>

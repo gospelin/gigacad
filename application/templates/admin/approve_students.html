@@ -1,0 +1,87 @@
+{% extends "admin/base.html" %}
+{% block content %}
+
+
+<!-- Custom CSS for animations -->
+<style>
+.table-row {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.animate-approve, .animate-deactivate, .animate-regenerate {
+    transition: transform 0.2s ease-in-out;
+}
+
+.animate-approve:hover, .animate-deactivate:hover, .animate-regenerate:hover {
+    transform: scale(1.1);
+}
+</style>
+
+<div class="container my-5">
+    {% for message in get_flashed_messages() %}
+        <div class="alert alert-warning mt-3">{{ message }}</div>
+    {% endfor %}
+    <h1 class="text-center mb-4">Manage Students</h1>
+    {% for class_name, students in students_by_class.items() %}
+        <h2 class="mt-4">{{ class_name }}</h2>
+        <div class="table-responsive">
+            <table class="table table-hover table-striped align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>First Name</th>
+                        <th>Middle Name</th>
+                        <th>Last Name</th>
+                        <th>Gender</th>
+                        <th>Date of Birth</th>
+                        <th>Class</th>
+                        <th>Username</th>
+                        <th>Password</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                        <tr class="table-row">
+                            <td>{{ student.first_name }}</td>
+                            <td>{{ student.middle_name }}</td>
+                            <td>{{ student.last_name }}</td>
+                            <td>{{ student.gender }}</td>
+                            <td>{{ student.date_of_birth }}</td>
+                            <td>{{ student.entry_class }}</td>
+                            <td>{{ student.username }}</td>
+                            <td>{{ student.password }}</td>
+
+                            <td>
+                                <form action="{{ url_for('approve_student', student_id=student.id) }}" method="POST" onsubmit="return confirm('Are you sure you want to approve this student?');">
+                                    {{ approve_form.hidden_tag() }}
+                                    {% if not student.approved %}
+                                        <button type="submit" class="btn btn-success btn-sm animate-approve">Approve</button>
+                                    {% endif %}
+                                </form>
+                                <form action="{{ url_for('deactivate_student', student_id=student.id) }}" method="POST" class="d-inline">
+                                    {{ deactivate_form.hidden_tag() }}
+                                    {% if student.approved %}
+                                    <button type="submit" class="btn btn-warning btn-sm animate-deactivate">Deactivate</button>
+                                    {% endif %}
+                                </form>
+                                <form action="{{ url_for('regenerate_password', student_id=student.id) }}" method="POST" class="d-inline">
+                                    {{ regenerate_form.hidden_tag() }}
+                                    <button type="submit" class="btn btn-primary btn-sm animate-regenerate">Regenerate Password</button>
+                                </form>
+
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endfor %}
+</div>
+
+{% endblock %}
+

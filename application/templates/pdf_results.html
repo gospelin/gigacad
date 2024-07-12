@@ -2,129 +2,21 @@
 {% block content %}
 
 <style>
-/* General Styles */
+    @page {
+        size: A4;
+        margin: 1mm;
+    }
 
-.school-header {
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-}
+    body {
+        font-weight: bolder;
+        position: relative;
+    }
 
-.table tr th {
-    text-transform: uppercase;
-    color: #fff;
-    vertical-align: middle;
-    background-color: #28a745;
-    border: 1px solid #fff;
-}
-
-.grading td {
-    font-size: 10pt;
-    padding-right: 5px;
-    white-space: nowrap;
-}
-
-.print-view {
-    margin: 2mm;
-    padding: 3mm;
-    font-size: 10pt;
-}
-
-.table-bordered {
-    border: 1px solid #28a745;
-}
-
-.table-bordered th,
-.table-bordered td {
-    border: 1px solid #28a745;
-    font-size: 8pt;
-}
-
-.details,
-.text-end {
-    text-align: left;
-}
-
-.details {
-    margin: -30px 3px 0px -10px;
-    color: #28a745;
-}
-
-.school-logo {
-    margin-top: -30px;
-    width: 100px;
-    margin-left: 10px;
-}
-
-.school-info {
-    margin-top: 5px;
-    text-align: center;
-    margin-left: 30px;
-    font-weight: bolder;
-}
-
-.card {
-    margin-bottom: 5mm;
-    border: 1px solid #28a745;
-    box-shadow: none;
-}
-
-.card-header {
-    padding: 5mm;
-}
-
-.card-body {
-    padding: 5mm;
-}
-
-.card-title {
-    font-size: 18pt;
-    margin-top: 0;
-    color: #28a745;
-}
-
-.card-text {
-    font-size: 10pt;
-    color: #28a745;
-}
-
-.card-subtitle {
-    font-size: 14pt;
-    margin-bottom: 5mm;
-    color: #28a745;
-}
-
-.table {
-    margin-bottom: 3mm;
-}
-
-.table tr th {
-    text-transform: uppercase;
-    color: #fff;
-    vertical-align: middle;
-    background-color: #28a745;
-    border: 1px solid #fff;
-}
-
-.table tr td {
-    vertical-align: middle;
-    color: #28a745;
-}
-
-.grading td {
-    font-size: 10pt;
-    padding-right: 5px;
-    white-space: nowrap;
-}
-
-/* Print Styles */
-@media print {
     .print-view {
         margin: 2mm auto;
         padding: 3mm;
         font-family: 'Arial', sans-serif;
-        font-size: 10pt;
+        font-size: 8pt;
     }
 
     .table-bordered {
@@ -134,13 +26,18 @@
     .table-bordered th,
     .table-bordered td {
         border: 1px solid #28a745;
-        font-size: 10pt;
+        font-size: 8pt;
     }
 
     .details,
     .text-end {
         text-align: left;
     }
+
+    /*.details {*/
+    /*    margin: -30px 3px 0px -10px;*/
+    /*    color: #28a745;*/
+    /*}*/
 
     .navbar,
     .footer,
@@ -150,6 +47,7 @@
     }
 
     .school-header {
+        margin-top: -50px;
         margin-bottom: 5px;
         display: flex;
         align-items: center;
@@ -158,15 +56,15 @@
     }
 
     .school-logo {
-        width: 100px;
-        margin-left: 10px;
+        margin-top: -15px;
+        width: 80px;
+        margin-left: 15px;
     }
 
     .school-info {
-        margin-top: 5px;
+        margin-top: 0;
         text-align: center;
-        margin-left: 30px;
-        font-weight: bolder;
+        margin-left: 25px;
     }
 
     .card {
@@ -176,31 +74,38 @@
     }
 
     .card-header {
-        padding: 5mm;
+        padding: 3mm;
     }
 
     .card-body {
-        padding: 5mm;
+        padding: 1mm;
+       font-size: 8pt;
     }
 
     .card-title {
-        font-size: 20pt;
+        font-size: 16pt;
         margin-top: 0;
         color: #28a745;
     }
 
     .card-text {
-        font-size: 10pt;
+        font-size: 8pt;
         color: pink;
+        margin-top: 1mm;
     }
 
     .card-subtitle {
-        font-size: 14pt;
-        margin-bottom: 5mm;
+        font-size: 12pt;
+        margin-top: -5px;
         color: #28a745;
     }
 
     .table {
+        margin-bottom: 1px;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
         margin-bottom: 3mm;
     }
 
@@ -218,13 +123,13 @@
     }
 
     .grading td {
-        font-size: 10pt;
+        font-size: 8pt;
         padding-right: 5px;
         white-space: nowrap;
     }
 
     .remarks {
-        margin-top: 20px;
+        margin-top: 10px;
     }
 
     /* Watermark styling */
@@ -235,58 +140,31 @@
         left: 50%;
         transform: translate(-50%, -50%) rotate(-48deg);
         font-size: 3.5rem;
-        color: rgba(0, 0, 0, 0.03);
+        color: rgba(0, 0, 0, 0.01);
         white-space: nowrap;
         pointer-events: none;
         z-index: 0;
     }
 
+    /* Ensure watermark is behind other content */
     .print-view,
     .container {
         position: relative;
-        z-index: 1;
+        z-index: -1;
     }
-}
-
-/* Mobile Styles */
-@media only screen and (max-width: 600px) {
-    .card-subtitle {
-        font-size: 16px;
-        margin-bottom: 3mm;
-    }
-
-    .card-body {
-        padding: 3mm;
-    }
-
-    .card-title {
-        font-size: 18px;
-    }
-
-    .table {
-        margin-bottom: 3mm;
-    }
-
-    .details {
-        margin: 0px 3px 0px 0px;
-    }
-}
 </style>
 
 <div class="container mt-5 print-view">
     <div class="row justify-content-center">
         <div class="col-lg-8">
-            {% for message in get_flashed_messages() %}
-                <div class="alert alert-warning mt-3">{{ message }}</div>
-            {% endfor %}
-            <div class="card border-0 shadow-lg">
+            <!--<div class="card border-0 shadow-lg">-->
                 <div class="card-body">
                     <div class="school-header">
-                        <img src="{{url_for('static', filename='images/MY_SCHOOL_LOGO.png')}}" alt="School Logo" class="school-logo" width="60">
+                        <img src="{{ static_url }}" alt="School Logo" class="school-logo" width="60">
                         <div class="school-info">
                             <h1 class="card-title text-center text-uppercase">{{ school_name }}</h1>
                             <p style="color: pink;" class="text-center card-text">6 OOMNNE DRIVE, ABAYI, ABA, ABIA STATE</p>
-                            <h2 class="text-center card-subtitle text-uppercase">REPORT SHEET FOR {{ term }} {{ session }} SESSION</h2>
+                            <h2 class="text-center card-subtitle text-uppercase">REPORT SHEET FOR {{ term }} {{ session }} ACADEMIC SESSION</h2>
                         </div>
                     </div>
                     <div class="card-body details">
@@ -306,7 +184,7 @@
                             <tr class="text-uppercase">
                                 <td>Gender</td>
                                 <td>{{ student.gender }}</td>
-                                <td style="font-size: 9pt;">Last Term Average:</td>
+                                <td>Last Term Average:</td>
                                 {% if last_term_average %}
                                     <td>{{ last_term_average }}</td>
                                 {% else %}
@@ -314,9 +192,9 @@
                                 {% endif %}
                             </tr>
                             <tr class="text-uppercase">
-                                <td style="font-size: 9pt;">Cummulative Average</td>
+                                <td>Cummulative Average</td>
                                 <td>{{ cumulative_average }}</td>
-                                <td style="font-size: 9pt;">Average for the Term </td>
+                                <td>Average for the Term </td>
                                 <td>{{ average }}</td>
                             </tr>
                             {% if "Creche" in student.entry_class or "Nursery" in student.entry_class or "Basic" in student.entry_class %}
@@ -330,7 +208,7 @@
                              <table style="width: 100%;" class="table table-bordered">
                                 <thead>
                                     <tr style="font-size: 8pt;">
-                                        <th style="width: 20%;">Subjects</th>
+                                        <th style="width: 40%;">Subjects</th>
                                         <th class="text-center" style="width: 8%;"><span>Class Work</span><br><span>(20)</span></th>
                                         <th class="text-center" style="width: 8%;"><span>Summative Test</span><br><span>(20)</span></th>
                                         <th class="text-center" style="width: 8%;"><span>Exam</span><br><span>(60)</span></th>
@@ -340,9 +218,9 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                {% for result in results %}
+                                     {% for result in results %}
                                     <tr>
-                                        <td style="color: #28a745;" class="text-uppercase">{{ result.subject.name }}</td>
+                                        <td style="font-size: 8pt; color: #28a745;" class="text-uppercase">{{ result.subject.name }}</td>
                                         {% if result.class_assessment < 10 %}
                                             <td class="text-center" style="color: red;">{{ result.class_assessment }}</td>
                                         {% else %}
@@ -352,13 +230,13 @@
                                         {% if result.summative_test < 10 %}
                                             <td class="text-center" style="color: red;">{{ result.summative_test }}</td>
                                         {% else %}
-                                            <td class="text-center">{{ result.summative_test }}</td>
+                                            <td class="text-center" style="color: #333;">{{ result.summative_test }}</td>
                                         {% endif %}
 
                                         {% if result.exam < 30 %}
                                             <td class="text-center" style="color: red;">{{ result.exam }}</td>
                                         {% else %}
-                                            <td class="text-center">{{ result.exam }}</td>
+                                            <td class="text-center" style="color: #333;">{{ result.exam }}</td>
                                         {% endif %}
 
                                         {% if result.total < 50 %}
@@ -366,16 +244,27 @@
                                             <td class="text-center" style="color: red;">{{ result.grade }}</td>
                                             <td class="text-center" style="color: red;">{{ result.remark }}</td>
                                         {% else %}
-                                            <td class="text-center">{{ result.total }}</td>
-                                            <td class="text-center">{{ result.grade }}</td>
-                                            <td class="text-center">{{ result.remark }}</td>
+                                            <td class="text-center" style="color: #333;">{{ result.total }}</td>
+                                            <td class="text-center" style="color: #333;">{{ result.grade }}</td>
+                                            <td class="text-center" style="color: #333;">{{ result.remark }}</td>
                                         {% endif %}
                                     </tr>
-                                {% endfor %}
+                                    {% endfor %}
+                                    <tr>
+                                        <td><strong>GRAND TOTAL</strong></td>
+                                        <td class="text-center"><strong>{{ grand_total.class_assessment }}</strong></td>
+                                        <td class="text-center"><strong>{{ grand_total.summative_test }}</strong></td>
+                                        <td class="text-center"><strong>{{ grand_total.exam }}</strong></td>
+                                        <td class="text-center"><strong>{{ grand_total.total }}</strong></td>
+                                        <td colspan="2"></td>
+                                    </tr>
+                                    <!--<tr class="grading">-->
+                                    <!--    <td colspan="7" style="color: pink;"><strong>GRADES: A+ [95-100] &nbsp;&nbsp; A [80-94] &nbsp;&nbsp; B+ [70-79] &nbsp;&nbsp; B [65-69] &nbsp;&nbsp; C+ [60-64] &nbsp;&nbsp; C [50-59] &nbsp;&nbsp; D [40-49] &nbsp;&nbsp; E [30-39] &nbsp;&nbsp; F [0-29]</strong></td>-->
+                                    <!--</tr>-->
                                 </tbody>
                             </table>
                         </div>
-                        <div style="width: 100%;" class="table-responsive grading">
+                         <div style="width: 100%;" class="table-responsive grading">
                             <table style="width: 100%;" class="table table-bordered">
                                 <thead>
                                     <tr class="text-center" style="font-size: 8pt;">
@@ -404,26 +293,25 @@
                                 </tbody>
                             </table>
                         </div>
-                    </div>
-                    <div class="remarks mt-4">
-                        <table style="margin-top: -15px;" class="table">
-                            <tbody>
-                                <tr>
-                                    <td><strong>Date Issued:</strong></td>
-                                    <td>{{ date_issued }}</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Date Printed:</strong></td>
-                                    <td>{{ date_printed }}</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <div class="remarks mt-4">
+                            <table style="margin-top: -15px;" class="table">
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Date Issued:</strong></td>
+                                        <td>{{ date_issued }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Date Printed:</strong></td>
+                                        <td>{{ date_printed }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <button onclick="window.print()" class="btn btn-success mt-3">Print</button>
-            <a href="{{ url_for('download_results_pdf', student_id=student.id, term=term, session=session) }}" class="text-center btn btn-success mt-3">Download PDF</a>
+            <!--</div>-->
         </div>
     </div>
 </div>
+
 {% endblock %}

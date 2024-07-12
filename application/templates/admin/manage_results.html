@@ -4,6 +4,9 @@
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-lg-10">
+            {% for message in get_flashed_messages() %}
+                <div class="alert alert-warning mt-3">{{ message }}</div>
+            {% endfor %}
             <div class="card border-0 shadow-lg">
                 <div class="card-body">
                     <div class="school-header text-center mb-4">
@@ -11,7 +14,17 @@
                         <h1>Aunty Anne's Int'l School</h1>
                         <h2>Student Results</h2>
                     </div>
-                    <form method="POST" action="{{ url_for('manage_results', student_id=student.id) }}">
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label for="term" class="form-label">Term:</label>
+                            <input type="text" class="form-control" value="{{ selected_term }}" readonly>
+                        </div>
+                        <div class="col">
+                            <label for="session" class="form-label">Session:</label>
+                            <input type="text" class="form-control" value="{{ selected_session }}" readonly>
+                        </div>
+                    </div>
+                    <form method="POST" action="{{ url_for('manage_results', student_id=student.id, term=selected_term, session=selected_session) }}">
                         {{ form.hidden_tag() }}
                         <div class="row mb-3">
                             <div class="col-md-6">
@@ -29,27 +42,43 @@
                         </div>
 
                         <div class="row mb-3">
-                            <div class="col">
-                                <label for="term" class="form-label">Select Term:</label>
-                                <select name="term" id="term" class="form-control">
-                                    <option value="First">First</option>
-                                    <option value="Second">Second</option>
-                                    <option value="Third" selected>Third</option>
-                                </select>
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-text">Reopening Date:</span>
+                                    <input type="text" name="next_term_begins" class="form-control" value="{{ results[0].next_term_begins if results else '' }}">
+                                </div>
                             </div>
-                            <div class="col">
-                                <label for="session" class="form-label">Select Session:</label>
-                                <select name="session" id="session" class="form-control">
-                                    <option value="2023/2024">2023/2024</option>
-                                    <option value="2024/2025">2024/2025</option>
-                                </select>
-                            </div>
-                            <div class="col">
-                                <label>Average:</label>
-                                <span><strong>{{ average_total }}</strong></span>
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-text">Last Term Average:</span>
+                                    <input type="number" name="last_term_average" class="form-control" value="{{ last_term_average }}">
+                                </div>
                             </div>
                         </div>
-                        <div class="row">
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-text">Position:</span>
+                                    <input type="text" name="position" class="form-control" value="{{ results[0].position if results else '' }}">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-text">Cumulative Average:</span>
+                                    <span class="form-control">{{ cumulative_average }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <span class="input-group-text">Average for the Term:</span>
+                                <span class="form-control">{{ average }}</span>
+                            </div>
+                        </div>
+
+                     <div class="row">
                             <div class="col">
                                 <table class="table table-bordered mt-4">
                                     <thead>
@@ -61,66 +90,42 @@
                                             <th>Total</th>
                                             <th>Grade</th>
                                             <th>Remark</th>
-                                            <th>Actions</th>
+                                            <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody id="results-table">
-                                        {% for result in results %}
+                                        {% for subject in subjects %}
                                         <tr>
-                                            <td>
-                                                <select name="subject_id_{{ result.id }}" class="form-control">
-                                                    {% for subject in subjects %}
-                                                    <option value="{{ subject.id }}" {% if subject.id == result.subject_id %}selected{% endif %}>
-                                                        {{ subject.name }}
-                                                    </option>
-                                                    {% endfor %}
-                                                </select>
-                                            </td>
-                                            <td><input type="number" name="class_assessment_{{ result.id }}" value="{{ result.class_assessment }}" class="form-control class-assessment" data-id="{{ result.id }}"></td>
-                                            <td><input type="number" name="summative_test_{{ result.id }}" value="{{ result.summative_test }}" class="form-control summative-test" data-id="{{ result.id }}"></td>
-                                            <td><input type="number" name="exam_{{ result.id }}" value="{{ result.exam }}" class="form-control exam" data-id="{{ result.id }}"></td>
-                                            <td><input type="number" name="total_{{ result.id }}" value="{{ result.total }}" class="form-control total" data-id="{{ result.id }}" readonly></td>
-                                            <td>{{ result.grade }}</td>
-                                            <td>{{ result.remark }}</td>
+                                            <td>{{ subject.name }}</td>
+                                            <td><input type="number" name="class_assessment_{{ subject.id }}" value="{{ results_dict[subject.id].class_assessment if results_dict[subject.id] else 0 }}" class="form-control class-assessment" data-id="{{ subject.id }}"></td>
+                                            <td><input type="number" name="summative_test_{{ subject.id }}" value="{{ results_dict[subject.id].summative_test if results_dict[subject.id] else 0 }}" class="form-control summative-test" data-id="{{ subject.id }}"></td>
+                                            <td><input type="number" name="exam_{{ subject.id }}" value="{{ results_dict[subject.id].exam if results_dict[subject.id] else 0 }}" class="form-control exam" data-id="{{ subject.id }}"></td>
+                                            <td><input type="number" name="total_{{ subject.id }}" value="{{ results_dict[subject.id].total if results_dict[subject.id] else 0 }}" class="form-control total" data-id="{{ subject.id }}" readonly></td>
+                                            <td>{{ results_dict[subject.id].grade if results_dict[subject.id] else '-' }}</td>
+                                            <td>{{ results_dict[subject.id].remark if results_dict[subject.id] else '-' }}</td>
                                             <td>
                                                 <div class="btn-group" role="group">
-                                                    <form action="{{ url_for('delete_result', result_id=result.id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this result?');">
-                                                        {{ form.hidden_tag() }}
-                                                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                                                    </form>
+                                                    {% if subject.id in results_dict %}
+                                                        <form action="{{ url_for('delete_result', result_id=results_dict[subject.id].id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this result?');">
+                                                            {{ form.hidden_tag() }}
+                                                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                                        </form>
+                                                    {% else %}
+                                                        <span class="text-muted">Not Saved</span>
+                                                    {% endif %}
                                                 </div>
                                             </td>
                                         </tr>
                                         {% endfor %}
-                                        <!-- New row template -->
-                                        <tr id="new-row-template" style="display: none;">
-                                            <td>
-                                                <select name="subject_id_new_X" class="form-control">
-                                                    {% for subject in subjects %}
-                                                    <option value="{{ subject.id }}">{{ subject.name }}</option>
-                                                    {% endfor %}
-                                                </select>
-                                            </td>
-                                            <td><input type="number" name="class_assessment_new_X" class="form-control class-assessment" data-id="new_X"></td>
-                                            <td><input type="number" name="summative_test_new_X" class="form-control summative-test" data-id="new_X"></td>
-                                            <td><input type="number" name="exam_new_X" class="form-control exam" data-id="new_X"></td>
-                                            <td><input type="number" name="total_new_X" class="form-control total" data-id="new_X" readonly></td>
-                                        </tr>
-                                        <!-- Grand Total Row -->
-                                        <tr>
-                                            <td><strong>Grand Total</strong></td>
-                                            <td><strong>{{ grand_total.class_assessment }}</strong></td>
-                                            <td><strong>{{ grand_total.summative_test }}</strong></td>
-                                            <td><strong>{{ grand_total.exam }}</strong></td>
-                                            <td><strong>{{ grand_total.total }}</strong></td>
-                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
                         </div>
-                        <button type="button" class="btn btn-secondary" onclick="addRow()">Add Row</button>
-                        <button type="submit" class="btn btn-primary" name="action" value="save">Save Results</button>
+                        <button type="submit" class="btn btn-primary">Save Results</button>
                     </form>
+                        <div class="text-center">
+                            <a href="{{ url_for('students_by_class', entry_class=student.entry_class) }}" class="btn btn-secondary mt-3">Back to Students in {{ student.entry_class }} </a>
+                        </div>
                 </div>
             </div>
         </div>
@@ -128,76 +133,15 @@
 </div>
 
 <script>
-    let newRowIdx = 0;
-
-    function addRow() {
-        const template = document.querySelector('#new-row-template');
-        const newRow = template.cloneNode(true);
-        newRow.style.display = '';
-        newRow.innerHTML = newRow.innerHTML.replace(/new_X/g, `new_${newRowIdx}`);
-        const grandTotalRow = document.querySelector('tbody#results-table tr:last-of-type');
-        grandTotalRow.parentNode.insertBefore(newRow, grandTotalRow);
-        newRowIdx++;
-    }
-
-    document.addEventListener('input', function(event) {
-        if (event.target.classList.contains('class-assessment') ||
-            event.target.classList.contains('summative-test') ||
-            event.target.classList.contains('exam')) {
-            const row = event.target.closest('tr');
-            const classAssessment = parseInt(row.querySelector('.class-assessment').value) || 0;
-            const summativeTest = parseInt(row.querySelector('.summative-test').value) || 0;
-            const exam = parseInt(row.querySelector('.exam').value) || 0;
+    document.querySelectorAll('.class-assessment, .summative-test, .exam').forEach(input => {
+        input.addEventListener('input', function() {
+            const id = this.getAttribute('data-id');
+            const classAssessment = parseInt(document.querySelector(`input[name="class_assessment_${id}"]`).value) || 0;
+            const summativeTest = parseInt(document.querySelector(`input[name="summative_test_${id}"]`).value) || 0;
+            const exam = parseInt(document.querySelector(`input[name="exam_${id}"]`).value) || 0;
             const total = classAssessment + summativeTest + exam;
-            row.querySelector('.total').value = total;
-        }
+            document.querySelector(`input[name="total_${id}"]`).value = total;
+        });
     });
-
-    // Function to calculate grade based on total score
-    function calculate_grade(total) {
-        if (total >= 95) {
-            return 'A+';
-        } else if (total >= 80) {
-            return 'A';
-        } else if (total >= 70) {
-            return 'B+';
-        } else if (total >= 65) {
-            return 'B';
-        } else if (total >= 60) {
-            return 'C+';
-        } else if (total >= 50) {
-            return 'C';
-        } else if (total >= 40) {
-            return 'D';
-        } else if (total >= 30) {
-            return 'E';
-        } else {
-            return 'F';
-        }
-    }
-
-    // Function to get remark based on total score
-    function get_remark(total) {
-        if (total >= 95) {
-            return 'Outstanding';
-        } else if (total >= 80) {
-            return 'Excellent';
-        } else if (total >= 70) {
-            return 'Very Good';
-        } else if (total >= 65) {
-            return 'Good';
-        } else if (total >= 60) {
-            return 'Credit';
-        } else if (total >= 50) {
-            return 'Credit';
-        } else if (total >= 40) {
-            return 'Poor';
-        } else if (total >= 30) {
-            return 'Very Poor';
-        } else {
-            return 'Failed';
-        }
-    }
 </script>
 {% endblock %}
-

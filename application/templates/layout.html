@@ -63,140 +63,146 @@
     </style>
 </head>
 <body>
-<div class="top-bar">
-    <div class="container d-flex justify-content-between align-items-center">
-        <div class="d-flex align-items-center">
-            <span class="phone-number"><i class="fas fa-phone-alt"></i> +234-806-967-8968</span>
-            <div class="social-media-links">
-                <a href="https://www.facebook.com/schoolname" target="_blank"><i class="fab fa-facebook-f"></i></a>
-                <a href="https://twitter.com/schoolname" target="_blank"><i class="fab fa-twitter"></i></a>
-                <a href="https://www.instagram.com/schoolname" target="_blank"><i class="fab fa-instagram"></i></a>
-            </div>
-        </div>
-        <div>
-            <a href="{{ url_for('login') }}" class="text-white">Login</a>
-            <a href="#" class="btn btn-success btn-sm ml-2">Apply Now</a>
-        </div>
-    </div>
-</div>
-
-<nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
-    <div class="container">
-        <a class="navbar-brand" href="{{ url_for('index') }}">
-            <img src="{{ url_for('static', filename='images/MY_SCHOOL_LOGO.png') }}" alt="School Logo">
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('index') }}">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('about_us') }}">About Us</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('student_registration') }}">Registration</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('student_result_portal') }}">Result Portal</a>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        More
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="#">Academics</a></li>
-                        <li><a class="dropdown-item" href="#">Admissions</a></li>
-                        <li><a class="dropdown-item" href="#">Contact Us</a></li>
-                    </ul>
-                </li>
-                {% if current_user.is_authenticated %}
-                    {% if current_user.is_admin %}
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.index') }}">Admin Dashboard</a></li>
-                    {% endif %}
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">Logout</a></li>
-                {% else %}
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Admin Login</a></li>
-                {% endif %}
-            </ul>
-        </div>
-    </div>
-</nav>
-
-
-        {% block content %}
-        {% endblock %}
-
-<footer class="footer text-white text-center py-5">
-    <div class="container">
-        <div class="row">
-            <!-- Contact Information -->
-            <div class="col-md-4 mb-4">
-                <h5>Contact Us</h5>
-                <p>Address: No 6 Oomnne Drive by winner's bus-stop, Abayi, Aba</p>
+<div class="d-flex flex-column min-vh-100">
+    <div class="top-bar">
+        <div class="container d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
                 <span class="phone-number"><i class="fas fa-phone-alt"></i> +234-806-967-8968</span>
-                <p>Email: <a href="mailto:info@schoolname.edu" class="text-white">info@schoolname.edu</a></p>
+                <div class="social-media-links">
+                    <a href="https://www.facebook.com/schoolname" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://twitter.com/schoolname" target="_blank"><i class="fab fa-twitter"></i></a>
+                    <a href="https://www.instagram.com/schoolname" target="_blank"><i class="fab fa-instagram"></i></a>
+                </div>
             </div>
-
-            <!-- Quick Links -->
-            <div class="col-md-4 mb-4">
-                <h5>Quick Links</h5>
-                <ul class="list-unstyled">
-                    <li><a href="{{ url_for('index') }}" class="text-white">Home</a></li>
-                    <li><a href="{{ url_for('about_us') }}" class="text-white">About Us</a></li>
-                    <li><a href="{{ url_for('student_registration') }}" class="text-white">Registration</a></li>
-                    <li><a href="{{ url_for('student_result_portal') }}" class="text-white">Result Portal</a></li>
-                    <li><a href="#" class="text-white">Contact</a></li>
-                </ul>
-            </div>
-
-            <!-- Newsletter Subscription -->
-            <div class="col-md-4 mb-4">
-                <h5>Newsletter</h5>
-                <form>
-                    <div class="mb-3">
-                        <input type="email" class="form-control" placeholder="Your Email" required>
-                    </div>
-                    <button type="submit" class="btn btn-outline-light">Subscribe</button>
-                </form>
-            </div>
-        </div>
-
-        <!-- Social Media Links -->
-        <div class="row mt-4">
-            <div class="col-12">
-                <ul class="list-inline">
-                    <li class="list-inline-item">
-                        <a href="https://www.facebook.com/schoolname" target="_blank" class="text-white">
-                            <i class="fab fa-facebook-f fa-lg"></i>
-                        </a>
-                    </li>
-                    <li class="list-inline-item">
-                        <a href="https://twitter.com/schoolname" target="_blank" class="text-white">
-                            <i class="fab fa-twitter fa-lg"></i>
-                        </a>
-                    </li>
-                    <li class="list-inline-item">
-                        <a href="https://www.instagram.com/schoolname" target="_blank" class="text-white">
-                            <i class="fab fa-instagram fa-lg"></i>
-                        </a>
-                    </li>
-                    <!-- Add more social media links as needed -->
-                </ul>
-            </div>
-        </div>
-
-        <!-- Footer Bottom -->
-        <div class="row mt-4">
-            <div class="col-12">
-                <p>&copy; 2024 {{ school_name }}. All Rights Reserved.</p>
+            <div>
+                {% if current_user.is_authenticated %}
+                    <a class="btn btn-success btn-sm ml-2" href="{{ url_for('logout') }}" class="text-white">Logout</a>
+                {% else %}
+                    <a class="btn btn-success btn-sm ml-2" href="{{ url_for('login') }}" class="text-white">Login</a>
+                {%endif%}
+                <a href="{{ url_for('student_registration') }}" class="btn btn-success btn-sm ml-2">Register</a>
             </div>
         </div>
     </div>
-</footer>
 
+    <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <img src="{{ url_for('static', filename='images/MY_SCHOOL_LOGO.png') }}" alt="School Logo">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('index') }}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('about_us') }}">About Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('student_registration') }}">Registration</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('student_portal') }}">Student Portal</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            More
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="#">Academics</a></li>
+                            <li><a class="dropdown-item" href="#">Admissions</a></li>
+                            <li><a class="dropdown-item" href="#">Contact Us</a></li>
+                        </ul>
+                    </li>
+                    {% if current_user.is_authenticated %}
+                        {% if current_user.is_admin %}
+                            <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.index') }}">Admin Dashboard</a></li>
+                        {% endif %}
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">Logout</a></li>
+                    {% else %}
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Admin Login</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+        <main class="flex-fill">
+            {% block content %}{% endblock %}
+        </main>
+
+
+    <footer class="footer text-white mt-auto text-center py-5">
+        <div class="container">
+            <div class="row">
+                <!-- Contact Information -->
+                <div class="col-md-4 mb-4">
+                    <h5>Contact Us</h5>
+                    <p>Address: No 6 Oomnne Drive by winner's bus-stop, Abayi, Aba</p>
+                    <span class="phone-number"><i class="fas fa-phone-alt"></i> +234-806-967-8968</span>
+                    <p>Email: <a href="mailto:info@schoolname.edu" class="text-white">info@schoolname.edu</a></p>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="col-md-4 mb-4">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="{{ url_for('index') }}" class="text-white">Home</a></li>
+                        <li><a href="{{ url_for('about_us') }}" class="text-white">About Us</a></li>
+                        <li><a href="{{ url_for('student_registration') }}" class="text-white">Registration</a></li>
+                        <li><a href="{{ url_for('student_portal') }}" class="text-white">Student Portal</a></li>
+                        <li><a href="#" class="text-white">Contact</a></li>
+                    </ul>
+                </div>
+
+                <!-- Newsletter Subscription -->
+                <div class="col-md-4 mb-4">
+                    <h5>Newsletter</h5>
+                    <form>
+                        <div class="mb-3">
+                            <input type="email" class="form-control" placeholder="Your Email" required>
+                        </div>
+                        <button type="submit" class="btn btn-outline-light">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Social Media Links -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <ul class="list-inline">
+                        <li class="list-inline-item">
+                            <a href="https://www.facebook.com/schoolname" target="_blank" class="text-white">
+                                <i class="fab fa-facebook-f fa-lg"></i>
+                            </a>
+                        </li>
+                        <li class="list-inline-item">
+                            <a href="https://twitter.com/schoolname" target="_blank" class="text-white">
+                                <i class="fab fa-twitter fa-lg"></i>
+                            </a>
+                        </li>
+                        <li class="list-inline-item">
+                            <a href="https://www.instagram.com/schoolname" target="_blank" class="text-white">
+                                <i class="fab fa-instagram fa-lg"></i>
+                            </a>
+                        </li>
+                        <!-- Add more social media links as needed -->
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Footer Bottom -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <p>&copy; 2024 {{ school_name }}. All Rights Reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+</div>
 <!-- Bootstrap JS and dependencies -->
 {# <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script> #}
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
@@ -214,5 +220,4 @@
 </script>
 </body>
 </html>
-
 

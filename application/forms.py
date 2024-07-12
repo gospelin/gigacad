@@ -1,25 +1,32 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, DateField, SubmitField, PasswordField, IntegerField
-from wtforms.validators import DataRequired, Length, NumberRange
-from application.models import Subject
+from wtforms import (
+    StringField,
+    SelectField,
+    DateField,
+    SubmitField,
+    PasswordField,
+    SelectMultipleField,
+    FloatField,
+)
+from wtforms.validators import DataRequired, Length, Optional
 
 
 class StudentRegistrationForm(FlaskForm):
     first_name = StringField("First Name", validators=[DataRequired(), Length(max=50)])
     last_name = StringField("Last Name", validators=[DataRequired(), Length(max=50)])
+    middle_name = StringField("Middle Name", validators=[Length(max=50)])
     gender = SelectField(
         "Gender",
         choices=[("male", "Male"), ("female", "Female")],
         validators=[DataRequired()],
     )
-    date_of_birth = DateField("Date of Birth")
+    date_of_birth = DateField("Date of Birth", validators=[Optional()])
+    parent_name = StringField("Parent Name", validators=[Length(max=70)])
     parent_phone_number = StringField(
         "Parent Phone Number", validators=[Length(max=11)]
     )
     address = StringField("Address", validators=[Length(max=255)])
-    parent_occupation = StringField(
-        "Parent Occupation", validators=[Length(max=100)]
-    )
+    parent_occupation = StringField("Parent Occupation", validators=[Length(max=100)])
     entry_class = SelectField(
         "Entry class",
         choices=[
@@ -28,12 +35,12 @@ class StudentRegistrationForm(FlaskForm):
             ("Nursery 1"),
             ("Nursery 2"),
             ("Nursery 3"),
-            ("Primary 1"),
-            ("Primary 2"),
-            ("Primary 3"),
-            ("Primary 4"),
-            ("Primary 5"),
-            ("Primary 6"),
+            ("Basic 1"),
+            ("Basic 2"),
+            ("Basic 3"),
+            ("Basic 4"),
+            ("Basic 5"),
+            ("Basic 6"),
             ("JSS 1"),
             ("JSS 2"),
             ("JSS 3"),
@@ -48,21 +55,19 @@ class StudentRegistrationForm(FlaskForm):
             ("Nursery 1"),
             ("Nursery 2"),
             ("Nursery 3"),
-            ("Primary 1"),
-            ("Primary 2"),
-            ("Primary 3"),
-            ("Primary 4"),
-            ("Primary 5"),
-            ("Primary 6"),
+            ("Basic 1"),
+            ("Basic 2"),
+            ("Basic 3"),
+            ("Basic 4"),
+            ("Basic 5"),
+            ("Basic 6"),
             ("JSS 1"),
             ("JSS 2"),
             ("JSS 3"),
         ],
         validate_choice=True,
     )
-    state_of_origin = StringField(
-        "State of Origin", validators=[Length(max=50)]
-    )
+    state_of_origin = StringField("State of Origin", validators=[Length(max=50)])
     local_government_area = StringField(
         "Local Government Area", validators=[Length(max=50)]
     )
@@ -70,31 +75,37 @@ class StudentRegistrationForm(FlaskForm):
     submit = SubmitField("Register")
 
 
-class ScoreForm(FlaskForm):
-    term = StringField("Term", validators=[DataRequired()])
-    session = StringField("Session", validators=[DataRequired()])
-    subject_id = SelectField("Subject", choices=[], validators=[DataRequired()])
-    class_assessment = IntegerField(
-        "Class Assessment", validators=[DataRequired(), NumberRange(min=0, max=20)]
+class ResultForm(FlaskForm):
+    term = SelectField(
+        "Select Term",
+        choices=[
+            ("First Term", "First Term"),
+            ("Second Term", "Second Term"),
+            ("Third Term", "Third Term"),
+        ],
+        validators=[DataRequired()],
+        default="Third Term"
     )
-    summative_test = IntegerField(
-        "Summative Test", validators=[DataRequired(), NumberRange(min=0, max=20)]
+    session = SelectField(
+        "Select Session",
+        choices=[
+            ("2023/2024", "2023/2024"),
+            ("2024/2025", "2024/2025"),
+            ("2025/2026", "2025/2026"),
+        ],
+        validators=[DataRequired()],
+        default="2023/2024"
     )
-    exam = IntegerField(
-        "Exam", validators=[DataRequired(), NumberRange(min=0, max=60)]
-    )
-    submit = SubmitField("Submit")
+    next_term_begins = StringField("Next Term Begins", validators=[Optional()])
+    last_term_average = FloatField("Last Term Average", validators=[Optional()])
+    position = StringField("Position", validators=[Optional()])
+    submit = SubmitField("Load Results")
 
-    def __init__(self, *args, **kwargs):
-        super(ScoreForm, self).__init__(*args, **kwargs)
-        self.subject_id.choices = [
-            (subject.id, subject.name) for subject in Subject.query.all()
-        ]
 
 
 class LoginForm(FlaskForm):
     username = StringField(
-        "Username", validators=[DataRequired(), Length(min=2, max=20)]
+        "Username", validators=[DataRequired(), Length(min=2, max=50)]
     )
     password = PasswordField("Password", validators=[DataRequired()])
     submit = SubmitField("Login")
@@ -102,29 +113,48 @@ class LoginForm(FlaskForm):
 
 class EditStudentForm(FlaskForm):
     first_name = StringField("First Name", validators=[DataRequired()])
+    middle_name = StringField("Middle Name", validators=[Length(max=50)])
     last_name = StringField("Last Name", validators=[DataRequired()])
     username = StringField("Username", validators=[DataRequired()])
     entry_class = SelectField(
         "Class",
         choices=[
-            ("Primary 1", "Primary 1"),
-            ("Primary 2", "Primary 2"),
-            ("Primary 3", "Primary 3"),
-            ("Primary 4", "Primary 4"),
-            ("Primary 5", "Primary 5"),
-            ("Primary 6", "Primary 6"),
+            ("Creche", "Creche"),
+            ("Nursery 1", "Nursery 1"),
+            ("Nursery 2", "Nursery 2"),
+            ("Nursery 3", "Nursery 3"),
+            ("Basic 1", "Basic 1"),
+            ("Basic 2", "Basic 2"),
+            ("Basic 3", "Basic 3"),
+            ("Basic 4", "Basic 4"),
+            ("Basic 5", "Basic 5"),
+            ("Basic 6", "Basic 6"),
             ("JSS 1", "JSS 1"),
             ("JSS 2", "JSS 2"),
             ("JSS 3", "JSS 3"),
         ],
     )
-    submit = SubmitField("Save")
+    submit = SubmitField("Update")
 
 
 class SubjectForm(FlaskForm):
-    name = StringField("Name", validators=[DataRequired()])
+    name = StringField("Name (comma-separated)", validators=[DataRequired()])
+    section = SelectMultipleField(
+        "Section",
+        choices=[
+            ("Nursery", "Nursery"),
+            ("Basic", "Basic"),
+            ("Secondary", "Secondary"),
+        ],
+        validators=[DataRequired()],
+    )  # Change to SelectMultipleField
     submit = SubmitField("Add Subject")
 
 
 class DeleteForm(FlaskForm):
     submit = SubmitField("Delete")
+
+
+class ApproveForm(FlaskForm):
+    pass
+

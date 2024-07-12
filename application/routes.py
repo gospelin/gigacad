@@ -1,65 +1,122 @@
-from . import app, db
-from flask import render_template, redirect, url_for, flash, request
+from . import app
+import logging, os
+from flask_wtf.csrf import CSRFError
+from flask import abort, render_template, redirect, url_for, flash, request, make_response
 from flask_login import login_required, login_user, logout_user, current_user
-from .models import Student, User, Subject, Score
-from .forms import StudentRegistrationForm, LoginForm, ScoreForm, EditStudentForm, SubjectForm, DeleteForm
-import random, string
+from .models import Student, User, Subject, Result
+from collections import defaultdict
+from .forms import (
+    StudentRegistrationForm,
+    LoginForm,
+    ResultForm,
+    EditStudentForm,
+    SubjectForm,
+    DeleteForm,
+    ApproveForm,
+)
+from .helpers import (
+    get_subjects_by_entry_class,
+    update_results,
+    calculate_results,
+    generate_unique_username,
+    db,
+    get_last_term,
+    calculate_average,
+    calculate_cumulative_average,
+    random, string, rate_limit, datetime
+)
+from weasyprint import HTML
+from sqlalchemy.exc import SQLAlchemyError
 
-def generate_unique_username(first_name, last_name):
-    username = f"{first_name.strip().lower()}.{last_name.strip().lower()}"
-    existing_user = Student.query.filter_by(username=username).first()
-    if existing_user:
-        random_suffix = "".join(random.choices(string.ascii_lowercase + string.digits, k=4))
-        username = f"{username}{random_suffix}"
-    return username
 
-@app.route('/')
-@app.route('/index')
-@app.route('/home')
+@app.route("/")
+@app.route("/index")
+@app.route("/home")
 def index():
-    return render_template('index.html', title="Home", school_name="Aunty Anne's Int'l School")
+    return render_template(
+        "index.html", title="Home", school_name="Aunty Anne's Int'l School"
+    )
 
-@app.route('/about_us')
+
+@app.route("/about_us")
 def about_us():
-    return render_template('about_us.html', title="About Us", school_name="Aunty Anne's Int'l School")
+    return render_template(
+        "about_us.html", title="About Us", school_name="Aunty Anne's Int'l School"
+    )
+
+
+""" Manage Student Section
+
+This section includes functionalities like:
+
+Register Student - Add a new student to the database and generate username and password
+Login - Authenticate a user and log them in
+Logout - Log a user out
+Approve Students - Approve or deactivate students
+Manage Classes - View all students by class
+Manage Results - Add, edit, and delete student results
+View Results - View student results
+Manage Students - View all students
+Add Students - Add a new student
+Edit Student - Edit a student's details
+Delete Student - Delete a student
+Manage Subjects - Add, edit, and delete subjects
+Regenerate Password - Generate a new password for a student
+
+"""
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 @app.route("/register/student", methods=["GET", "POST"])
 def student_registration():
     form = StudentRegistrationForm()
-    if form.validate_on_submit():
-        username = generate_unique_username(form.first_name.data, form.last_name.data)
-        temporary_password = "".join(random.choices(string.ascii_letters + string.digits, k=8))
-        student = Student(
-            first_name=form.first_name.data,
-            last_name=form.last_name.data,
-            gender=form.gender.data,
-            date_of_birth=form.date_of_birth.data,
-            parent_phone_number=form.parent_phone_number.data,
-            address=form.address.data,
-            parent_occupation=form.parent_occupation.data,
-            entry_class=form.entry_class.data,
-            previous_class=form.previous_class.data,
-            state_of_origin=form.state_of_origin.data,
-            local_government_area=form.local_government_area.data,
-            religion=form.religion.data,
-            username=username,
-            password = temporary_password
-        )
-        user = User(username=student.username, is_admin=False)
-        user.set_password(student.password)
-        student.user = user
-        try:
+    try:
+        if form.validate_on_submit():
+            username = generate_unique_username(form.first_name.data, form.last_name.data)
+            temporary_password = "".join(
+                random.choices(string.ascii_letters + string.digits, k=8)
+            )
+
+            student = Student(
+                first_name=form.first_name.data,
+                last_name=form.last_name.data,
+                middle_name=form.middle_name.data,
+                gender=form.gender.data,
+                date_of_birth=form.date_of_birth.data,
+                parent_name=form.parent_name.data,
+                parent_phone_number=form.parent_phone_number.data,
+                address=form.address.data,
+                parent_occupation=form.parent_occupation.data,
+                entry_class=form.entry_class.data,
+                previous_class=form.previous_class.data,
+                state_of_origin=form.state_of_origin.data,
+                local_government_area=form.local_government_area.data,
+                religion=form.religion.data,
+                username=username,
+                password=temporary_password,
+            )
+
+            user = User(username=student.username, is_admin=False)
+            user.set_password(temporary_password)
+            student.user = user
+
             db.session.add(student)
             db.session.add(user)
             db.session.commit()
+
+            logger.info(f"Student registered successfully: {username}")
             flash(
                 f"Student registered successfully. Username: {username}, Password: {temporary_password}",
                 "alert alert-success",
             )
-        except Exception as e:
-            db.session.rollback()
-            flash("An error occurred. Please try again later.", e, "alert alert-danger")
-        return redirect(url_for("student_registration"))
+            return redirect(url_for("student_registration"))
+    except Exception as e:
+        db.session.rollback()
+        logger.error(f"Error registering student: {str(e)}")
+        flash("An error occurred. Please try again later.", "alert alert-danger")
+
     return render_template(
         "student_registration.html",
         title="Register",
@@ -67,17 +124,37 @@ def student_registration():
         school_name="Aunty Anne's Int'l School",
     )
 
+
+# CSRF error handler
+@app.errorhandler(CSRFError)
+def handle_csrf_error(e):
+    logger.warning(f"CSRF error: {e.description}")
+    flash("The form submission has expired. Please try again.", "alert alert-danger")
+    return redirect(url_for("student_registration"))
+
 @app.route("/login", methods=["GET", "POST"])
+@rate_limit(limit=5, per=60)  # Limit to 5 requests per minute per IP
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for("student_portal"))
+
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user and user.check_password(form.password.data):
+            if user.student and not user.student.approved:
+                flash("Your account is not approved yet. Please contact admin.", "alert alert-danger")
+                logger.warning(f"Unapproved login attempt for user: {user.username}")
+                return redirect(url_for("login"))
+
             login_user(user)
             next_page = request.args.get("next")
-            return redirect(next_page) if next_page else redirect(url_for("student_result_portal"))
+            logger.info(f"User {user.username} logged in successfully")
+            return redirect(next_page) if next_page else redirect(url_for("student_portal"))
         else:
             flash("Login Unsuccessful. Please check username and password", "alert alert-danger")
+            logger.warning(f"Failed login attempt for username: {form.username.data}")
+
     return render_template("login.html", title="Login", form=form)
 
 @app.route("/logout")
@@ -86,12 +163,128 @@ def logout():
     logout_user()
     return redirect(url_for("index"))
 
+
 @app.route("/admin")
 @login_required
 def admin_dashboard():
     if not current_user.is_authenticated or not current_user.is_admin:
         return redirect(url_for("login"))
-    return render_template("/admin/index.html")
+
+    # total_students = Student.query.count()
+
+    total_students = 234
+    total_teachers = 30
+    total_parents = 105
+    total_classes = 13
+
+    # Example data for charts (replace with actual dynamic data)
+    student_enrollment_data = [12, 19, 3, 5, 2]  # Example data
+    teacher_distribution_data = [3, 5, 2, 4, 6]  # Example data
+
+    return render_template(
+        "/admin/index.html",
+        total_students=total_students,
+        total_teachers=total_teachers,
+        total_parents=total_parents,
+        total_classes=total_classes,
+        student_enrollment_data=student_enrollment_data,
+        teacher_distribution_data=teacher_distribution_data
+    )
+
+
+@app.route("/admin/approve_students", methods=["GET", "POST"])
+@login_required
+def approve_students():
+    if not current_user.is_admin:
+        abort(403)  # Forbidden access
+
+    approve_form = ApproveForm()
+    deactivate_form = ApproveForm()
+    regenerate_form = ApproveForm()
+
+    students = Student.query.all()
+    students = Student.query.all()
+    students_by_class = defaultdict(list)
+    for student in students:
+        students_by_class[student.entry_class].append(student)
+
+    return render_template(
+        "admin/approve_students.html",
+        students_by_class=students_by_class,
+        approve_form=approve_form,
+        deactivate_form=deactivate_form,
+        regenerate_form=regenerate_form,
+    )
+
+
+@app.route("/admin/approve_student/<int:student_id>", methods=["POST"])
+@login_required
+def approve_student(student_id):
+    if not current_user.is_admin:
+        abort(403)  # Forbidden access
+
+    form = ApproveForm()
+
+    if form.validate_on_submit():
+        student = Student.query.get_or_404(student_id)
+        student.approved = True
+        db.session.commit()
+        flash(
+            f"Student {student.first_name} {student.last_name} has been approved.",
+            "alert alert-success",
+        )
+    else:
+        flash("An error occurred. Please try again.", "alert alert-danger")
+    return redirect(url_for("approve_students"))
+
+
+@app.route("/admin/deactivate_student/<int:student_id>", methods=["POST"])
+@login_required
+def deactivate_student(student_id):
+    if not current_user.is_admin:
+        abort(403)  # Forbidden access
+
+    form = ApproveForm()
+    if form.validate_on_submit():
+        student = Student.query.get_or_404(student_id)
+        student.approved = False
+        db.session.commit()
+        flash(
+            f"Student {student.first_name} {student.last_name} has been deactivated.",
+            "alert alert-success",
+        )
+    else:
+        flash("An error occurred. Please try again.", "alert alert-danger")
+    return redirect(url_for("approve_students"))
+
+
+@app.route("/admin/regenerate_password/<int:student_id>", methods=["POST"])
+@login_required
+def regenerate_password(student_id):
+    if not current_user.is_admin:
+        abort(403)  # Forbidden access
+
+    form = ApproveForm()
+    student = Student.query.get_or_404(student_id)
+    if form.validate_on_submit() and student:
+
+        # Generate a new temporary password
+        new_temporary_password = "".join(
+            random.choices(string.ascii_letters + string.digits, k=8)
+        )
+        # Update student's password
+        student.password = new_temporary_password
+
+        # Update user's password
+        student.user.set_password(new_temporary_password)
+        db.session.commit()
+        flash(
+            f"New password generated for {student.first_name} {student.last_name}: {new_temporary_password}",
+            "alert alert-success",
+        )
+    else:
+        flash("Student not found.", "alert alert-danger")
+    return redirect(url_for("approve_students"))
 
 
 @app.route("/admin/students_by_class/<string:entry_class>")
@@ -100,7 +293,10 @@ def students_by_class(entry_class):
     students = Student.query.filter_by(entry_class=entry_class).all()
     form = DeleteForm()  # Create an instance of the DeleteForm
     return render_template(
-        "admin/students_by_class.html", students=students, entry_class=entry_class, form=form
+        "admin/students_by_class.html",
+        students=students,
+        entry_class=entry_class,
+        form=form,
     )
 
 
@@ -113,108 +309,76 @@ def manage_classes():
     return render_template("admin/classes.html", students=students)
 
 
-@app.route("/admin/manage_results/<int:student_id>", methods=["GET", "POST"])
+@app.route("/select_term_session/<int:student_id>", methods=["GET", "POST"])
+@login_required
+def select_term_session(student_id):
+    student = Student.query.get_or_404(student_id)
+    form = ResultForm()
+    if form.validate_on_submit():
+        term = form.term.data
+        session = form.session.data
+        return redirect(url_for('manage_results', student_id=student.id, term=term, session=session))
+    return render_template("admin/select_term_session.html", form=form, student=student)
+
+
+@app.route("/manage_results/<int:student_id>", methods=["GET", "POST"])
 @login_required
 def manage_results(student_id):
     if not current_user.is_authenticated or not current_user.is_admin:
         return redirect(url_for("login"))
 
-    student = Student.query.get_or_404(student_id)
-    form = ScoreForm()
-    subjects = Subject.query.all()
+    try:
+        student = Student.query.get_or_404(student_id)
+        term = request.args.get('term')
+        session = request.args.get('session')
 
-    if request.method == "POST":
-        try:
-            for key, value in request.form.items():
-                if key.startswith("subject_id_new_"):
-                    result_id = key.split("_")[-1]
-                    subject_id = request.form.get(f"subject_id_new_{result_id}")
-                    class_assessment = request.form.get(
-                        f"class_assessment_new_{result_id}"
-                    )
-                    summative_test = request.form.get(f"summative_test_new_{result_id}")
-                    exam = request.form.get(f"exam_new_{result_id}")
-                    total = request.form.get(f"total_new_{result_id}")
+        if not term or not session:
+            return redirect(url_for('select_term_session', student_id=student.id))
 
-                    if (
-                        subject_id
-                        and class_assessment
-                        and summative_test
-                        and exam
-                        and total
-                    ):
-                        new_score = Score(
-                            student_id=student_id,
-                            subject_id=subject_id,
-                            class_assessment=int(class_assessment),
-                            summative_test=int(summative_test),
-                            exam=int(exam),
-                            term=form.term.data,
-                            session=form.session.data,
-                        )
-                        new_score.calculate_total()
-                        new_score.get_remark()  # Call the get_remark method
-                        db.session.add(new_score)
-                elif key.startswith("subject_id_"):
-                    result_id = key.split("_")[-1]
-                    subject_id = request.form.get(f"subject_id_{result_id}")
-                    class_assessment = request.form.get(f"class_assessment_{result_id}")
-                    summative_test = request.form.get(f"summative_test_{result_id}")
-                    exam = request.form.get(f"exam_{result_id}")
-                    total = request.form.get(f"total_{result_id}")
+        form = ResultForm(term=term, session=session)
+        subjects = get_subjects_by_entry_class(student.entry_class)
 
-                    if (
-                        subject_id
-                        and class_assessment
-                        and summative_test
-                        and exam
-                        and total
-                    ):
-                        score = Score.query.get(result_id)
-                        if score:
-                            score.subject_id = subject_id
-                            score.class_assessment = int(class_assessment)
-                            score.summative_test = int(summative_test)
-                            score.exam = int(exam)
-                            score.total = int(total)
-                            score.calculate_total()
-                            score.get_remark()  # Call the get_remark method
+        if form.validate_on_submit():
+            update_results(student, subjects, term, session, form)
+            flash("Results updated successfully", "alert alert-success")
+            return redirect(url_for("manage_results", student_id=student.id, term=term, session=session))
 
-            db.session.commit()
-            flash("Scores updated successfully!", "alert alert-success")
-        except Exception as e:
-            db.session.rollback()
-            flash(f"Error: {e}", "alert alert-danger")
+        results, grand_total, average, cumulative_average, results_dict = calculate_results(student.id, term, session)
+        return render_template(
+            "admin/manage_results.html",
+            student=student,
+            subjects=subjects,
+            results=results,
+            grand_total=grand_total,
+            average=average,
+            cumulative_average=cumulative_average,
+            results_dict=results_dict,
+            form=form,
+            selected_term=term,
+            selected_session=session,
+        )
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        flash(f"Database error: {str(e)}", "alert alert-danger")
+    except Exception as e:
+        flash(f"An error occurred: {str(e)}", "alert alert-danger")
+    return redirect(url_for("home"))
 
-        return redirect(url_for("manage_results", student_id=student_id))
 
-    results = Score.query.filter_by(student_id=student_id).all()
-    grand_total = {
-        "class_assessment": sum(result.class_assessment for result in results),
-        "summative_test": sum(result.summative_test for result in results),
-        "exam": sum(result.exam for result in results),
-        "total": sum(result.total for result in results),
-    }
-    average_total = grand_total["total"] / len(results) if results else 0
-
-    return render_template(
-        "admin/manage_results.html",
-        form=form,
-        results=results,
-        student=student,
-        subjects=subjects,
-        grand_total=grand_total,
-        average_total=average_total,
-    )
 
 
 @app.route("/admin/delete_result/<int:result_id>", methods=["POST"])
 @login_required
 def delete_result(result_id):
+    form = DeleteForm()
     if not current_user.is_authenticated or not current_user.is_admin:
         return redirect(url_for("login"))
 
-    result = Score.query.get_or_404(result_id)
+    result = Result.query.get_or_404(result_id)
+
+    student_id = result.student_id
+    term = result.term
+    session = result.session
 
     try:
         db.session.delete(result)
@@ -224,48 +388,237 @@ def delete_result(result_id):
         db.session.rollback()
         flash(f"Error deleting result: {e}", "alert alert-danger")
 
-    return redirect(url_for("manage_results", student_id=result.student_id))
+    return redirect(url_for("manage_results", form=form, student_id=student_id, term=term, session=session))
 
 
-@app.route("/results")
+
+
+
+@app.route("/student_portal")
 @login_required
-def student_result_portal():
-    if current_user.is_admin:
-        return redirect(url_for("admin_dashboard"))
-    student = Student.query.filter_by(user_id=current_user.id).first()
-    if not student:
-        flash("Student not found", "alert alert-danger")
-        return redirect(url_for("student_result_portal"))
+def student_portal():
+    try:
+        if current_user.is_admin:
+            return redirect(url_for("admin_dashboard"))
 
-    results = Score.query.filter_by(student_id=student.id).all()
-    if not results:
-        flash("No results found for this student", "alert alert-info")
+        student = Student.query.filter_by(user_id=current_user.id).first()
+
+        if not student:
+            flash("Student not found", "alert alert-danger")
+            logger.warning(f"Student not found for user_id: {current_user.id}")
+            return redirect(url_for("login"))
+
+        logger.info(f"Accessing student portal for student_id: {student.id}")
+        return render_template("student_portal.html", student_id=student.id, student=student)
+
+    except Exception as e:
+        logger.error(f"Error accessing student portal: {str(e)}")
+        flash("An error occurred. Please try again later.", "alert alert-danger")
+        return redirect(url_for("login"))
+
+
+
+@app.route('/student/<int:student_id>/profile')
+@login_required
+def student_profile(student_id):
+    # Fetch the student details from the database
+    student = Student.query.get_or_404(student_id)
+
+    # Ensure the logged-in user is authorized to view this profile
+    if current_user.id != student.user_id and not current_user.is_admin:
+        flash('You are not authorized to view this profile.', 'alert alert-danger')
+        return redirect(url_for('index'))
+
+    return render_template('student_profile.html', student=student)
+
+
+
+@app.route("/select_results/<int:student_id>", methods=["GET", "POST"])
+@login_required
+def select_results(student_id):
+    student = Student.query.get_or_404(student_id)
+    form = ResultForm()
+    if form.validate_on_submit():
+        term = form.term.data
+        session = form.session.data
+        return redirect(url_for("view_results", student_id=student.id, term=term, session=session))
+    return render_template("select_results.html", student=student, form=form)
+
+
+
+@app.route("/view_results/<int:student_id>", methods=["GET", "POST"])
+@login_required
+def view_results(student_id):
+    try:
+        student = Student.query.get_or_404(student_id)
+
+        # Ensure the current user is authorized to view the student's results
+        if current_user.id != student.user_id and not current_user.is_admin:
+            flash("You are not authorized to view this profile.", "alert alert-danger")
+            logger.warning(f"Unauthorized access attempt by user_id: {current_user.id} for student_id: {student_id}")
+            return redirect(url_for("index"))
+
+        term = request.args.get('term')
+        session = request.args.get('session')
+
+        if not term or not session:
+            return redirect(url_for('select_term_session', student_id=student.id))
+
+        results = Result.query.filter_by(student_id=student.id, term=term, session=session).all()
+        if not results:
+            flash("No results found for this term or session", "alert alert-info")
+            logger.info(f"No results found for student_id: {student_id}, term: {term}, session: {session}")
+            return redirect(url_for("select_results", student_id=student.id))
+
+        grand_total = {
+            "class_assessment": sum(result.class_assessment for result in results),
+            "summative_test": sum(result.summative_test for result in results),
+            "exam": sum(result.exam for result in results),
+            "total": sum(result.total for result in results),
+        }
+
+        average = grand_total["total"] / len(results) if results else 0
+        average = round(average, 1)
+
+        last_term = get_last_term(term)
+        last_term_results = Result.query.filter_by(student_id=student.id, term=last_term, session=session).all()
+        last_term_average = calculate_average(last_term_results) if last_term_results else 0
+        last_term_average = round(last_term_average, 1)
+
+        # Add last_term_average to each result in results for cumulative calculation
+        for res in results:
+            res.last_term_average = last_term_average
+
+        cumulative_average = calculate_cumulative_average(results, average)
+        cumulative_average = round(cumulative_average, 1)
+
+        next_term_begins = results[0].next_term_begins if results else None
+        position = results[0].position if results else None
+
+        date_issued = results[0].date_issued
+        if date_issued and isinstance(date_issued, datetime):
+            date_issued = date_issued.strftime('%dth %B, %Y')
+        else:
+            date_issued = 'N/A'
+
+        date_printed = datetime.now().strftime('%dth %B, %Y')
+
+        logger.info(f"Results viewed for student_id: {student_id}, term: {term}, session: {session}")
+        return render_template(
+            "view_results.html",
+            title=f"{student.first_name}_{student.last_name}_{term}_{session}_Result",
+            student=student,
+            results=results,
+            term=term,
+            session=session,
+            grand_total=grand_total,
+            average=average,
+            cumulative_average=cumulative_average,
+            school_name="Aunty Anne's Int'l School",
+            next_term_begins=next_term_begins,
+            last_term_average=last_term_average,
+            date_issued=date_issued,
+            date_printed=date_printed,
+            position=position
+        )
+
+    except Exception as e:
+        logger.error(f"Error viewing results for student_id: {student_id} - {str(e)}")
+        flash("An error occurred. Please try again later.", "alert alert-danger")
         return redirect(url_for("index"))
 
-    grand_total = {
-        "class_assessment": sum(result.class_assessment for result in results),
-        "summative_test": sum(result.summative_test for result in results),
-        "exam": sum(result.exam for result in results),
-        "total": sum(result.total for result in results),
-    }
-    total_obtained = grand_total["total"]
-    total_obtainable = len(results) * 100
 
-    average_total = grand_total["total"] / len(results) if results else 0
-    average_total = round(average_total, 1)
+@app.route("/download_results_pdf/<int:student_id>")
+@login_required
+def download_results_pdf(student_id):
+    try:
+        student = Student.query.get_or_404(student_id)
 
+        # Ensure the current user is authorized to download the student's results PDF
+        if current_user.id != student.user_id and not current_user.is_admin:
+            flash("You are not authorized to view this profile.", "alert alert-danger")
+            logger.warning(f"Unauthorized access attempt by user_id: {current_user.id} for student_id: {student_id}")
+            return redirect(url_for("index"))
 
-    return render_template(
-        "view_results.html",
-        title=f"{student.first_name}_{student.last_name}_Results",
-        student=student,
-        results=results,
-        grand_total=grand_total,
-        average_total=average_total,
-        school_name="Aunty Anne's Int'l School",
-        total_obtained=total_obtained,
-        total_obtainable=total_obtainable,
-    )
+        term = request.args.get('term')
+        session = request.args.get('session')
+
+        if not term or not session:
+            flash("Term and session must be specified.", "alert alert-info")
+            return redirect(url_for("select_term_session", student_id=student.id))
+
+        results = Result.query.filter_by(student_id=student.id, term=term, session=session).all()
+        if not results:
+            flash("No results found for this term or session", "alert alert-info")
+            logger.info(f"No results found for student_id: {student_id}, term: {term}, session: {session}")
+            return redirect(url_for("select_results", student_id=student.id))
+
+        grand_total = {
+            "class_assessment": sum(result.class_assessment for result in results),
+            "summative_test": sum(result.summative_test for result in results),
+            "exam": sum(result.exam for result in results),
+            "total": sum(result.total for result in results),
+        }
+
+        average = grand_total["total"] / len(results) if results else 0
+        average = round(average, 1)
+
+        last_term = get_last_term(term)
+        last_term_results = Result.query.filter_by(student_id=student.id, term=last_term, session=session).all()
+        last_term_average = calculate_average(last_term_results) if last_term_results else 0
+
+        for res in results:
+            res.last_term_average = last_term_average
+
+        cumulative_average = calculate_cumulative_average(results, average)
+
+        next_term_begins = results[0].next_term_begins if results else None
+        position = results[0].position if results else None
+
+        # Get the absolute path to the static directory
+        static_path = os.path.join(app.root_path, 'static', 'images', 'MY_SCHOOL_LOGO.png')
+        static_url = f"file://{static_path}"
+
+        date_issued = results[0].date_issued
+        if date_issued and isinstance(date_issued, datetime):
+            date_issued = date_issued.strftime('%dth %B, %Y')
+        else:
+            date_issued = 'N/A'
+
+        date_printed = datetime.now().strftime('%dth %B, %Y')
+
+        rendered = render_template(
+            "pdf_results.html",
+            title=f"{student.first_name}_{student.last_name}_{term}_{session}_Result",
+            student=student,
+            results=results,
+            term=term,
+            session=session,
+            grand_total=grand_total,
+            school_name="Aunty Anne's Int'l School",
+            average=average,
+            cumulative_average=cumulative_average,
+            next_term_begins=next_term_begins,
+            last_term_average=last_term_average,
+            position=position,
+            date_issued=date_issued,
+            date_printed=date_printed,
+            static_url=static_url
+        )
+
+        pdf = HTML(string=rendered).write_pdf()
+
+        response = make_response(pdf)
+        response.headers['Content-Type'] = 'application/pdf'
+        response.headers['Content-Disposition'] = f'inline; filename={student.first_name}_{student.last_name}_{term}_{session}_Result.pdf'
+
+        logger.info(f"PDF results downloaded for student_id: {student_id}, term: {term}, session: {session}")
+        return response
+
+    except Exception as e:
+        logger.error(f"Error downloading PDF results for student_id: {student_id} - {str(e)}")
+        flash("An error occurred while generating the PDF. Please try again later.", "alert alert-danger")
+        return redirect(url_for("index"))
 
 @app.route("/admin/manage_students", methods=["GET", "POST"])
 @login_required
@@ -274,46 +627,6 @@ def manage_students():
         return redirect(url_for("login"))
     students = Student.query.all()
     return render_template("admin/student_admin.html", students=students)
-
-@app.route("/admin/students", methods=["GET", "POST"])
-@login_required
-def add_students():
-    if not current_user.is_authenticated or not current_user.is_admin:
-        return redirect(url_for("login"))
-
-    form = StudentRegistrationForm()
-    if form.validate_on_submit():
-        username = generate_unique_username(form.first_name.data, form.last_name.data)
-        temporary_password = "".join(
-            random.choices(string.ascii_letters + string.digits, k=8)
-        )
-        student = Student(
-            first_name=form.first_name.data,
-            last_name=form.last_name.data,
-            gender=form.gender.data,
-            date_of_birth=form.date_of_birth.data,
-            entry_class=form.entry_class.data,
-            username=username,
-            password=temporary_password,
-        )
-        user = User(username=student.username, is_admin=False)
-        user.set_password(student.password)
-        student.user = user
-        try:
-            db.session.add(student)
-            db.session.add(user)
-            db.session.commit()
-            flash(
-                f"Student registered successfully. Username: {username}, Password: {temporary_password}",
-                "alert alert-success",
-            )
-        except Exception as e:
-            db.session.rollback()
-            flash("An error occurred. Please try again later.", e, "alert alert-danger")
-        return redirect(url_for("add_students"))
-
-    students = Student.query.all()
-    return render_template("admin/add_student.html", form=form, students=students)
 
 
 @app.route("/admin/edit_student/<int:student_id>", methods=["GET", "POST"])
@@ -326,21 +639,25 @@ def edit_student(student_id):
         student.entry_class = form.entry_class.data
         student.first_name = form.first_name.data
         student.last_name = form.last_name.data
+        student.middle_name = form.middle_name.data
         # Update other fields as needed
+
+        # Update the username in the User model
+        user = User.query.filter_by(id=student.user_id).first()
+        user.username = form.username.data
+
         db.session.commit()
         flash("Student updated successfully!", "alert alert-success")
         return redirect(url_for("students_by_class", entry_class=student.entry_class))
     elif request.method == "GET":
         form.username.data = student.username
         form.entry_class.data = student.entry_class
-        form.first_name = student.first_name
-        form.last_name = student.last_name
+        form.first_name.data = student.first_name
+        form.last_name.data = student.last_name
+        form.middle_name.data = student.middle_name
         # Populate other fields as necessary
-        db.session.commit()
-        flash("Student updated successfully!", "alert alert-success")
 
     return render_template("admin/edit_student.html", form=form, student=student)
-
 
 @app.route("/admin/delete_student/<int:student_id>", methods=["GET", "POST"])
 def delete_student(student_id):
@@ -353,14 +670,19 @@ def delete_student(student_id):
 
         try:
             # Manually delete related results
-            results = Score.query.filter_by(student_id=student.id).all()
+            results = Result.query.filter_by(student_id=student.id).all()
             for result in results:
                 db.session.delete(result)
+
+            # Delete the associated user
+            user = User.query.get(student.user_id)
+            if user:
+                db.session.delete(user)
 
             db.session.delete(student)
             db.session.commit()
             flash(
-                "Student and associated results deleted successfully!",
+                "Student and associated results, along with user details, deleted successfully!",
                 "alert alert-success",
             )
         except Exception as e:
@@ -378,33 +700,59 @@ def manage_subjects():
 
     form = SubjectForm()
     if form.validate_on_submit():
-        subject = Subject(name=form.name.data)
-        db.session.add(subject)
+        subjects_input = form.name.data
+        subject_names = [name.strip() for name in subjects_input.split(",")]
+
+        for subject_name in subject_names:
+            for section in form.section.data:
+                # Check if the subject already exists for the given section
+                existing_subject = Subject.query.filter_by(
+                    name=subject_name, section=section
+                ).first()
+                if existing_subject is None:
+                    subject = Subject(name=subject_name, section=section)
+                    db.session.add(subject)
         db.session.commit()
-        flash("Subject added successfully!", "alert alert-success")
+        flash("Subject(s) added successfully!", "alert alert-success")
         return redirect(url_for("manage_subjects"))
 
-    subjects = Subject.query.all()
-    delete_form = DeleteForm()  # Create an instance of the DeleteForm
+    subjects = Subject.query.order_by(Subject.section).all()
+    subjects_by_section = {}
+    for subject in subjects:
+        if subject.section not in subjects_by_section:
+            subjects_by_section[subject.section] = []
+        subjects_by_section[subject.section].append(subject)
+
+    delete_form = DeleteForm()
     return render_template(
         "admin/subject_admin.html",
         form=form,
-        subjects=subjects,
+        subjects_by_section=subjects_by_section,
         delete_form=delete_form,
     )
 
 
 @app.route("/admin/edit_subject/<int:subject_id>", methods=["GET", "POST"])
+@login_required
 def edit_subject(subject_id):
     subject = Subject.query.get_or_404(subject_id)
     form = SubjectForm(obj=subject)
     if form.validate_on_submit():
         subject.name = form.name.data
+        subject.section = form.section.data
         db.session.commit()
+
+        # Update all related results with the new subject name and section
+        results = Result.query.filter_by(subject_id=subject.id).all()
+        for result in results:
+            result.subject_name = subject.name
+            result.subject_section = subject.section
+        db.session.commit()
+
         flash("Subject updated successfully!", "alert alert-success")
         return redirect(url_for("manage_subjects"))
-    return render_template("admin/edit_subject.html", form=form, subject=subject)
 
+    return render_template("admin/edit_subject.html", form=form, subject=subject)
 
 @app.route("/admin/delete_subject/<int:subject_id>", methods=["POST"])
 def delete_subject(subject_id):
@@ -419,7 +767,7 @@ def delete_subject(subject_id):
             subject = Subject.query.get_or_404(subject_id)
 
             # Delete all scores associated with the subject
-            Score.query.filter_by(subject_id=subject_id).delete()
+            Result.query.filter_by(subject_id=subject_id).delete()
 
             # Delete the subject
             db.session.delete(subject)
