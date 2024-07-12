@@ -40,7 +40,7 @@
                     </div>
                     <form
                         method="POST"
-                        action="{{ url_for('manage_results', student_id=student.id, term=selected_term, session=selected_session) }}"
+                        action="{{ url_for('admins.manage_results', student_id=student.id, term=selected_term, session=selected_session) }}"
                     >
                         {{ form.hidden_tag() }}
                         <div class="row mb-3">

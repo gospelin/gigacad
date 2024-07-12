@@ -64,7 +64,7 @@
 
                     <td>
                         <form
-                            action="{{ url_for('approve_student', student_id=student.id) }}"
+                            action="{{ url_for('admins.approve_student', student_id=student.id) }}"
                             method="POST"
                             onsubmit="return confirm('Are you sure you want to approve this student?');"
                         >
@@ -79,7 +79,7 @@
                             {% endif %}
                         </form>
                         <form
-                            action="{{ url_for('deactivate_student', student_id=student.id) }}"
+                            action="{{ url_for('admins.deactivate_student', student_id=student.id) }}"
                             method="POST"
                             class="d-inline"
                         >
@@ -94,7 +94,7 @@
                             {% endif %}
                         </form>
                         <form
-                            action="{{ url_for('regenerate_password', student_id=student.id) }}"
+                            action="{{ url_for('admins.regenerate_password', student_id=student.id) }}"
                             method="POST"
                             class="d-inline"
                         >

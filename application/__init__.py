@@ -3,30 +3,45 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CSRFProtect
 from flask_migrate import Migrate
 from flask_admin import Admin
-from .auth import login_manager
-from config import Config
+from config import config_by_name, os
+from .authentication import login_manager
 
+# Initialize the app
 app = Flask(__name__)
-app.config.from_object(Config)
 
+# Load configuration based on the environment
+env = os.getenv("FLASK_ENV", "default")
+app.config.from_object(config_by_name[env])
+
+# Initialize extensions
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
-
-# Initialize Flask-WTF's CSRFProtect
 csrf = CSRFProtect(app)
 
-# Initialize Flask-Login's LoginManager
-login_manager.init_app(app)
-login_manager.login_view = "login"
+# Import blueprints
+from application.auth import auth_bp
+from application.admin import admin_bp
+from application.main import main_bp
+from application.student import student_bp
 
-# Import the custom admin index view and model view classes
-from application.admin_views import (
+# Initialize login manager
+login_manager.init_app(app)
+login_manager.login_view = "auth.login"
+
+# Register blueprints
+app.register_blueprint(auth_bp)
+app.register_blueprint(admin_bp, url_prefix="/admin")
+app.register_blueprint(main_bp)
+app.register_blueprint(student_bp)
+
+# Import models and admin views after initializing extensions
+from application.models import Student, Result, Subject, User
+from application.admin.admin_views import (
     MyAdminIndexView,
     ResultAdmin,
     StudentAdmin,
     SubjectAdmin,
 )
-from application.models import Student, Result, Subject
 
 # Initialize Flask-Admin with the custom index view
 admin = Admin(app, index_view=MyAdminIndexView(), template_mode="bootstrap4")
@@ -39,6 +54,3 @@ admin.add_view(ResultAdmin(Result, db.session))
 
 # Register the Subject model view with the admin
 admin.add_view(SubjectAdmin(Subject, db.session))
-
-# Import routes after initializing app and extensions
-from application import routes
