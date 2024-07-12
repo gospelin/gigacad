@@ -12,7 +12,7 @@
                     <h5 class="card-title text-center">Edit Student Details</h5>
                     <form
                         method="POST"
-                        action="{{ url_for('edit_student', student_id=student.id) }}"
+                        action="{{ url_for('admins.edit_student', student_id=student.id) }}"
                     >
                         {{ form.hidden_tag() }}
                         <div class="form-group">
