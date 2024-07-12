@@ -84,7 +84,7 @@ class ResultForm(FlaskForm):
             ("Third Term", "Third Term"),
         ],
         validators=[DataRequired()],
-        default="Third Term"
+        default="Third Term",
     )
     session = SelectField(
         "Select Session",
@@ -94,13 +94,12 @@ class ResultForm(FlaskForm):
             ("2025/2026", "2025/2026"),
         ],
         validators=[DataRequired()],
-        default="2023/2024"
+        default="2023/2024",
     )
     next_term_begins = StringField("Next Term Begins", validators=[Optional()])
     last_term_average = FloatField("Last Term Average", validators=[Optional()])
     position = StringField("Position", validators=[Optional()])
     submit = SubmitField("Load Results")
-
 
 
 class LoginForm(FlaskForm):
@@ -157,4 +156,3 @@ class DeleteForm(FlaskForm):
 
 class ApproveForm(FlaskForm):
     pass
-

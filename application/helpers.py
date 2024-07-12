@@ -6,6 +6,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from functools import wraps
 from datetime import datetime
 
+
 login_attempts = {}
 
 def rate_limit(limit, per):
@@ -23,9 +24,10 @@ def rate_limit(limit, per):
             attempts.append(now)
             login_attempts[ip] = attempts
             return f(*args, **kwargs)
-        return wrapped
-    return decorator
 
+        return wrapped
+
+    return decorator
 
 
 def generate_unique_username(first_name, last_name):
@@ -103,7 +105,9 @@ def calculate_cumulative_average(results, current_term_average):
     last_term_average = 0
     cumulative_average = current_term_average
     if results:
-        last_term_average = float(results[0].last_term_average) if results[0].last_term_average else 0
+        last_term_average = (
+            float(results[0].last_term_average) if results[0].last_term_average else 0
+        )
 
     if last_term_average and current_term_average:
         cumulative_average = (last_term_average + current_term_average) / 2
@@ -149,6 +153,7 @@ def update_results(student, subjects, term, session, form):
                     last_term_average=form.last_term_average.data,
                     position=form.position.data,
                     date_issued=datetime.now(),
+
                 )
                 db.session.add(result)
             else:
@@ -161,7 +166,7 @@ def update_results(student, subjects, term, session, form):
                 result.next_term_begins = form.next_term_begins.data
                 result.last_term_average = form.last_term_average.data
                 result.position = form.position.data
-                date_issued=datetime.now()
+
         db.session.commit()
     except SQLAlchemyError:
         db.session.rollback()
@@ -169,13 +174,19 @@ def update_results(student, subjects, term, session, form):
 
 
 def calculate_results(student_id, term, session):
-    results = Result.query.filter_by(student_id=student_id, term=term, session=session).all()
+    results = Result.query.filter_by(
+        student_id=student_id, term=term, session=session
+    ).all()
     grand_total = calculate_grand_total(results)
     average = round(calculate_average(results), 1)
 
     last_term = get_last_term(term)
-    last_term_results = Result.query.filter_by(student_id=student_id, term=last_term, session=session).all()
-    last_term_average = round(calculate_average(last_term_results) if last_term_results else 0, 1)
+    last_term_results = Result.query.filter_by(
+        student_id=student_id, term=last_term, session=session
+    ).all()
+    last_term_average = round(
+        calculate_average(last_term_results) if last_term_results else 0, 1
+    )
 
     for res in results:
         res.last_term_average = last_term_average
@@ -184,5 +195,3 @@ def calculate_results(student_id, term, session):
     results_dict = {result.subject_id: result for result in results}
 
     return results, grand_total, average, cumulative_average, results_dict
-
-

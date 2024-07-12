@@ -10,7 +10,7 @@
             <div class="card border-0 shadow-lg animate__animated animate__fadeIn">
                 <div class="card-body">
                     <h5 class="card-title text-center">Edit Subject</h5>
-                    <form method="POST" action="{{ url_for('edit_subject', subject_id=subject.id) }}">
+                    <form method="POST" action="{{ url_for('admins.edit_subject', subject_id=subject.id) }}">
                         {{ form.hidden_tag() }}
                         <div class="mb-3">
                             {{ form.name.label(class="form-label") }}

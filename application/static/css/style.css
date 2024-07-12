@@ -272,7 +272,8 @@ h6 {
 /* Responsive styles */
 @media (max-width: 768px) {
     .navbar-brand img {
-        height: 40px; /* Further reduced height for smaller screens */
+        height: 40px;
+        /* Further reduced height for smaller screens */
     }
 
     .navbar-nav {
@@ -286,14 +287,16 @@ h6 {
     }
 
     .navbar-toggler {
-        margin-right: 0; /* Adjust margin for the toggle button */
+        margin-right: 0;
+        /* Adjust margin for the toggle button */
     }
 
     .top-bar {
         flex-direction: column;
     }
 
-    .top-bar .phone-number, .top-bar .social-media-links {
+    .top-bar .phone-number,
+    .top-bar .social-media-links {
         margin: 5px 0;
     }
 
@@ -310,7 +313,8 @@ h6 {
     }
 
     .dropdown-menu .dropdown-item {
-        padding: 8px 16px; /* Adjust padding for better spacing */
+        padding: 8px 16px;
+        /* Adjust padding for better spacing */
     }
 
     .dropdown-item:hover {
@@ -410,6 +414,9 @@ h6 {
 .jumbotron .content {
     position: relative;
     z-index: 2;
+    background: linear-gradient(to right, rgba(76, 175, 80, 0.7), rgba(46, 125, 32, 0.7)), url('static/images/DSC_0184.JPG') no-repeat center center;
+    background-size: cover;
+    color: white;
 }
 
 .jumbotron h1,
@@ -468,7 +475,6 @@ h6 {
         transform: none;
     }
 }
-
 
 /* List Group Item */
 .list-group-item {

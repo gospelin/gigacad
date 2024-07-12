@@ -54,9 +54,10 @@ class Subject(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     section = db.Column(db.String(20), nullable=False)
-    results = db.relationship( "Result", backref="subject", lazy=True)
 
-    __table_args__ = (db.UniqueConstraint('name', 'section', name='_name_section_uc'),)
+    results = db.relationship("Result", backref="subject", lazy=True)
+
+    __table_args__ = (db.UniqueConstraint("name", "section", name="_name_section_uc"),)
 
     def __repr__(self):
         return f"<Subject {self.name}>"
@@ -64,8 +65,8 @@ class Subject(db.Model):
 
 class Result(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    student_id = db.Column(db.Integer, db.ForeignKey('student.id'), nullable=False)
-    subject_id = db.Column(db.Integer, db.ForeignKey('subject.id'), nullable=False)
+    student_id = db.Column(db.Integer, db.ForeignKey("student.id"), nullable=False)
+    subject_id = db.Column(db.Integer, db.ForeignKey("subject.id"), nullable=False)
     term = db.Column(db.String(20), nullable=False)
     session = db.Column(db.String(20), nullable=False)
     class_assessment = db.Column(db.Integer, nullable=True, default=0)
@@ -95,7 +96,3 @@ class Result(db.Model):
     @property
     def total_value(self):
         return self.class_assessment_value + self.summative_test_value + self.exam_value
-
-
-
-
