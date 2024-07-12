@@ -154,7 +154,7 @@ student.last_name }}'s Profile{% endblock %} {% block content %}
                 </div>
                 <div class="card-footer text-center">
                     <a
-                        href="{{ url_for('student_portal', student_id=student.id) }}"
+                        href="{{ url_for('students.student_portal', student_id=student.id) }}"
                         class="btn btn-secondary"
                         >Back to Portal</a
                     >
