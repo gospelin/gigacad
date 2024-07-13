@@ -30,9 +30,9 @@ cp .env.example .env
 
 Edit the `.env` file to include your actual configuration values:
 
-```plaintext
 
-SECRET_KEY="your_secret_key"
+
+`SECRET_KEY="your_secret_key"
    SQLALCHEMY_DATABASE_URI="mysql://user:password@localhost:3306/school_database" 
 ```
 
