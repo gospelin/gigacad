@@ -2,59 +2,60 @@
 
 ## Setup Instructions
 
-1. Clone the repository:
+Clone the repository:
 
-   ```bash
-   git clone <https://github.com/gospelin/AAIS.git>
-   cd your_repository
-    ```
+```bash
+git clone <https://github.com/gospelin/AAIS.git>
+cd AAIS
+```
 
-   Create a virtual environment to manage your dependencies and activate it:
+Create a virtual environment to manage your dependencies and activate it:
 
-   ```bash
-   python -m venv venv
-   source venv/bin/activate # On Windows use `venv\Scripts\activate` 
-    ```
+```bash
+python -m venv venv
+source venv/bin/activate # On Windows use `venv\Scripts\activate` 
+```
 
-   Install the required dependencies using pip:
+Install the required dependencies using pip:
 
-   ```bash
-   pip install -r requirements.txt
-    ```
+```bash
+pip install -r requirements.txt
+```
 
-   Create a `.env` file based on the provided .env.example file:
+Create a `.env` file based on the provided .env.example file:
 
-   ```bash
-   cp .env.example .env
-   ```
+```bash
+cp .env.example .env
+```
 
-   Edit the `.env` file to include your actual configuration values:
+Edit the `.env` file to include your actual configuration values:
 
-    ```plaintext
 
-   SECRET_KEY="your_secret_key"
+
+SECRET_KEY="your_secret_key"
    SQLALCHEMY_DATABASE_URI="mysql://user:password@localhost:3306/school_database" 
-    ```
 
-   Set the `FLASK_ENV` environment variable to specify the configuration you want to use (development, testing, production):
 
-   ```bash
+Set the `FLASK_ENV` environment variable to specify the configuration you want to use (development, testing, production):
 
-    export FLASK_ENV=development # On Windows use `set FLASK_ENV=development` 
-    ```
+```bash
 
-   Run the Flask application:
+export FLASK_ENV=development # On Windows use `set FLASK_ENV=development` 
+```
 
-    ```bash
+Run the Flask application:
 
-    flask run
-    ```
+```bash
+
+flask run
+```
 
 ### Configuration
 
 The application uses different configurations for development, testing, and production environments. These configurations are managed using environment variables and a configuration file `(config.py)`.
 
 Configuration Classes
+
 The `config.py` file defines several configuration classes:
 
 - `Config`: Base configuration.
@@ -70,19 +71,33 @@ Configuration Files
 ### Project Structure
 
 your_repository/
+
 ├── .env
+
 ├── .flaskenv
+
 ├── .gitignore
+
 ├── README.md
+
 ├── application/
+
 │ ├── **init**.py
+
 │ ├── models.py
+
 │ ├── routes.py
+
 │ ├── templates/
+
 │ │ └── ...
+
 │ └── ...
+
 ├── config.py
+
 ├── requirements.txt
+
 └── ...
 
 ### Database Migrations
