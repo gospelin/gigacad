@@ -1,42 +1,21 @@
 from . import main_bp
-import logging, os
+import logging
 from flask_wtf.csrf import CSRFError
 from flask import (
     render_template,
     redirect,
     url_for,
     flash,
-    request,
-    # make_response,
 )
-from flask_login import login_required, login_user, logout_user, current_user
-from ..models import Student, User, Subject, Result
-from collections import defaultdict
-from ..auth.forms import (
-    StudentRegistrationForm,
-    LoginForm,
-    ResultForm,
-    EditStudentForm,
-    SubjectForm,
-    DeleteForm,
-    ApproveForm,
-)
+from ..models import Student, User
+from ..auth.forms import StudentRegistrationForm
+
 from ..helpers import (
-    get_subjects_by_entry_class,
-    update_results,
-    calculate_results,
     generate_unique_username,
     db,
-    get_last_term,
-    calculate_average,
-    calculate_cumulative_average,
     random,
     string,
-    rate_limit,
 )
-
-# from weasyprint import HTML
-from sqlalchemy.exc import SQLAlchemyError
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -50,6 +29,7 @@ def index():
     return render_template(
         "main/index.html", title="Home", school_name="Aunty Anne's Int'l School"
     )
+
 
 @main_bp.route("/about_us")
 def about_us():
