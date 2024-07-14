@@ -1,11 +1,10 @@
 from . import auth_bp
 import logging
-from flask import Blueprint, redirect, url_for, flash, render_template, request
+from flask import redirect, url_for, flash, render_template, request
 from flask_login import login_required, login_user, logout_user, current_user
 from application.models import User
 from application.auth.forms import LoginForm
 from application.helpers import rate_limit
-from sqlalchemy.exc import SQLAlchemyError
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -53,5 +52,3 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for("auth.login"))
-
-
