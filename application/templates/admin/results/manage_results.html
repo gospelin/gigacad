@@ -206,7 +206,7 @@
                                                     {% if subject.id in
                                                     results_dict %}
                                                     <form
-                                                        action="{{ url_for('delete_result', result_id=results_dict[subject.id].id) }}"
+                                                        action="{{ url_for('admins.delete_result', result_id=results_dict[subject.id].id) }}"
                                                         method="POST"
                                                         onsubmit="return confirm('Are you sure you want to delete this result?');"
                                                     >
@@ -237,7 +237,7 @@
                     </form>
                     <div class="text-center">
                         <a
-                            href="{{ url_for('students_by_class', entry_class=student.entry_class) }}"
+                            href="{{ url_for('admins.students_by_class', entry_class=student.entry_class) }}"
                             class="btn btn-secondary mt-3"
                             >Back to Students in {{ student.entry_class }}
                         </a>
