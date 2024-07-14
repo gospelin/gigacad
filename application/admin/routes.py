@@ -1,6 +1,5 @@
 from . import admin_bp
-import logging, os
-from flask_wtf.csrf import CSRFError
+import logging
 from flask import (
     abort,
     render_template,
@@ -10,7 +9,7 @@ from flask import (
     request,
     # make_response,
 )
-from flask_login import login_required, login_user, logout_user, current_user
+from flask_login import login_required, current_user
 from ..models import Student, User, Subject, Result
 from collections import defaultdict
 from ..auth.forms import (
@@ -24,14 +23,9 @@ from ..helpers import (
     get_subjects_by_entry_class,
     update_results,
     calculate_results,
-    generate_unique_username,
     db,
-    get_last_term,
-    calculate_average,
-    calculate_cumulative_average,
     random,
     string,
-    rate_limit,
 )
 
 # from weasyprint import HTML
@@ -181,9 +175,16 @@ def select_term_session(student_id):
         term = form.term.data
         session = form.session.data
         return redirect(
-            url_for("admins.manage_results", student_id=student.id, term=term, session=session)
+            url_for(
+                "admins.manage_results",
+                student_id=student.id,
+                term=term,
+                session=session,
+            )
         )
-    return render_template("admin/results/select_term_session.html", form=form, student=student)
+    return render_template(
+        "admin/results/select_term_session.html", form=form, student=student
+    )
 
 
 @admin_bp.route("/manage_results/<int:student_id>", methods=["GET", "POST"])
@@ -198,7 +199,9 @@ def manage_results(student_id):
         session = request.args.get("session")
 
         if not term or not session:
-            return redirect(url_for("admins.select_term_session", student_id=student.id))
+            return redirect(
+                url_for("admins.select_term_session", student_id=student.id)
+            )
 
         form = ResultForm(term=term, session=session)
         subjects = get_subjects_by_entry_class(student.entry_class)
@@ -208,7 +211,10 @@ def manage_results(student_id):
             flash("Results updated successfully", "alert alert-success")
             return redirect(
                 url_for(
-                    "admins.manage_results", student_id=student.id, term=term, session=session
+                    "admins.manage_results",
+                    student_id=student.id,
+                    term=term,
+                    session=session,
                 )
             )
 
@@ -233,7 +239,7 @@ def manage_results(student_id):
         flash(f"Database error: {str(e)}", "alert alert-danger")
     except Exception as e:
         flash(f"An error occurred: {str(e)}", "alert alert-danger")
-    return redirect(url_for("main.home"))
+    return redirect(url_for("main.index"))
 
 
 @admin_bp.route("/admin/delete_result/<int:result_id>", methods=["POST"])
@@ -296,7 +302,9 @@ def edit_student(student_id):
 
         db.session.commit()
         flash("Student updated successfully!", "alert alert-success")
-        return redirect(url_for("admins.students_by_class", entry_class=student.entry_class))
+        return redirect(
+            url_for("admins.students_by_class", entry_class=student.entry_class)
+        )
     elif request.method == "GET":
         form.username.data = student.username
         form.entry_class.data = student.entry_class
@@ -305,7 +313,9 @@ def edit_student(student_id):
         form.middle_name.data = student.middle_name
         # Populate other fields as necessary
 
-    return render_template("admin/students/edit_student.html", form=form, student=student)
+    return render_template(
+        "admin/students/edit_student.html", form=form, student=student
+    )
 
 
 @admin_bp.route("/admin/delete_student/<int:student_id>", methods=["GET", "POST"])
@@ -338,7 +348,9 @@ def delete_student(student_id):
             db.session.rollback()
             flash(f"Error deleting student: {e}", "alert alert-danger")
 
-    return redirect(url_for("admins.students_by_class", entry_class=student.entry_class))
+    return redirect(
+        url_for("admins.students_by_class", entry_class=student.entry_class)
+    )
 
 
 @admin_bp.route("/admin/manage_subjects", methods=["GET", "POST"])
@@ -401,7 +413,9 @@ def edit_subject(subject_id):
         flash("Subject updated successfully!", "alert alert-success")
         return redirect(url_for("admins.manage_subjects"))
 
-    return render_template("admin/subjects/edit_subject.html", form=form, subject=subject)
+    return render_template(
+        "admin/subjects/edit_subject.html", form=form, subject=subject
+    )
 
 
 @admin_bp.route("/admin/delete_subject/<int:subject_id>", methods=["POST"])
