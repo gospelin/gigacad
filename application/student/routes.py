@@ -6,6 +6,7 @@ from flask import (
     url_for,
     flash,
     request,
+current_app,
     make_response,
 )
 from flask_login import login_required, current_user
@@ -166,7 +167,7 @@ def view_results(student_id):
     except Exception as e:
         logger.error(f"Error viewing results for student_id: {student_id} - {str(e)}")
         flash("An error occurred. Please try again later.", "alert alert-danger")
-        return redirect(url_for("students.select_results"))
+        return redirect(url_for("students.select_results", student_id=student_id))
 
 
 @student_bp.route("/download_results_pdf/<int:student_id>")
@@ -272,4 +273,4 @@ def download_results_pdf(student_id):
             "An error occurred while generating the PDF. Please try again later.",
             "alert alert-danger",
         )
-        return redirect(url_for("students.select_results"))
+        return redirect(url_for("students.select_results", student_id=student_id))
