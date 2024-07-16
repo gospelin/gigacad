@@ -54,6 +54,7 @@ class Subject(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     section = db.Column(db.String(20), nullable=False)
+
     results = db.relationship("Result", backref="subject", lazy=True)
 
     __table_args__ = (db.UniqueConstraint("name", "section", name="_name_section_uc"),)
@@ -78,6 +79,7 @@ class Result(db.Model):
     next_term_begins = db.Column(db.String(100), nullable=True)
     last_term_average = db.Column(db.Float, nullable=True, default=0.0)
     position = db.Column(db.String(10), nullable=True)
+    date_issued = db.Column(db.DateTime, nullable=False, default=datetime.now)
 
     @property
     def class_assessment_value(self):
