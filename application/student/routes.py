@@ -17,7 +17,7 @@ from ..helpers import (
     calculate_cumulative_average,
 )
 
-from weasyprint import HTML
+#from weasyprint import HTML
 
 
 # Configure logging
@@ -169,107 +169,107 @@ def view_results(student_id):
         return redirect(url_for("students.select_results"))
 
 
-@student_bp.route("/download_results_pdf/<int:student_id>")
-@login_required
-def download_results_pdf(student_id):
-    try:
-        student = Student.query.get_or_404(student_id)
+#@student_bp.route("/download_results_pdf/<int:student_id>")
+#@login_required
+#def download_results_pdf(student_id):
+#    try:
+#        student = Student.query.get_or_404(student_id)
 
-        # Ensure the current user is authorized to download the student's results PDF
-        if current_user.id != student.user_id and not current_user.is_admin:
-            flash("You are not authorized to view this profile.", "alert alert-danger")
-            logger.warning(
-                f"Unauthorized access attempt by user_id: {current_user.id} for student_id: {student_id}"
-            )
-            return redirect(url_for("main.index"))
+#        # Ensure the current user is authorized to download the student's results PDF
+#        if current_user.id != student.user_id and not current_user.is_admin:
+#            flash("You are not authorized to view this profile.", "alert alert-danger")
+#            logger.warning(
+#                f"Unauthorized access attempt by user_id: {current_user.id} for student_id: {student_id}"
+#            )
+#            return redirect(url_for("main.index"))
 
-        term = request.args.get("term")
-        session = request.args.get("session")
+#        term = request.args.get("term")
+#        session = request.args.get("session")
 
-        if not term or not session:
-            flash("Term and session must be specified.", "alert alert-info")
-            return redirect(
-                url_for("students.select_term_session", student_id=student.id)
-            )
+#        if not term or not session:
+#            flash("Term and session must be specified.", "alert alert-info")
+#            return redirect(
+#                url_for("students.select_term_session", student_id=student.id)
+#            )
 
-        results = Result.query.filter_by(
-            student_id=student.id, term=term, session=session
-        ).all()
-        if not results:
-            flash("No results found for this term or session", "alert alert-info")
-            logger.info(
-                f"No results found for student_id: {student_id}, term: {term}, session: {session}"
-            )
-            return redirect(url_for("students.select_results", student_id=student.id))
+#        results = Result.query.filter_by(
+#            student_id=student.id, term=term, session=session
+#        ).all()
+#        if not results:
+#            flash("No results found for this term or session", "alert alert-info")
+#            logger.info(
+#                f"No results found for student_id: {student_id}, term: {term}, session: {session}"
+#            )
+#            return redirect(url_for("students.select_results", student_id=student.id))
 
-        grand_total = {
-            "class_assessment": sum(result.class_assessment for result in results),
-            "summative_test": sum(result.summative_test for result in results),
-            "exam": sum(result.exam for result in results),
-            "total": sum(result.total for result in results),
-        }
+#        grand_total = {
+#            "class_assessment": sum(result.class_assessment for result in results),
+#            "summative_test": sum(result.summative_test for result in results),
+#            "exam": sum(result.exam for result in results),
+#            "total": sum(result.total for result in results),
+#        }
 
-        average = grand_total["total"] / len(results) if results else 0
-        average = round(average, 1)
+#        average = grand_total["total"] / len(results) if results else 0
+#        average = round(average, 1)
 
-        last_term = get_last_term(term)
-        last_term_results = Result.query.filter_by(
-            student_id=student.id, term=last_term, session=session
-        ).all()
-        last_term_average = (
-            calculate_average(last_term_results) if last_term_results else 0
-        )
+#        last_term = get_last_term(term)
+#        last_term_results = Result.query.filter_by(
+#            student_id=student.id, term=last_term, session=session
+#        ).all()
+#        last_term_average = (
+#            calculate_average(last_term_results) if last_term_results else 0
+#        )
 
-        for res in results:
-            res.last_term_average = last_term_average
+#        for res in results:
+#            res.last_term_average = last_term_average
 
-        cumulative_average = calculate_cumulative_average(results, average)
+#        cumulative_average = calculate_cumulative_average(results, average)
 
-        next_term_begins = results[0].next_term_begins if results else None
-        position = results[0].position if results else None
+#        next_term_begins = results[0].next_term_begins if results else None
+#        position = results[0].position if results else None
 
-        # Get the absolute path to the static directory
-        static_path = os.path.join(
-            student_bp.root_path, "static", "images", "MY_SCHOOL_LOGO.png"
-        )
-        static_url = f"file://{static_path}"
+#        # Get the absolute path to the static directory
+#        static_path = os.path.join(
+#            student_bp.root_path, "static", "images", "MY_SCHOOL_LOGO.png"
+#        )
+#        static_url = f"file://{static_path}"
 
-        rendered = render_template(
-            "student/pdf_results.html",
-            title=f"{student.first_name}_{student.last_name}_{term}_{session}_Result",
-            student=student,
-            results=results,
-            term=term,
-            session=session,
-            grand_total=grand_total,
-            school_name="Aunty Anne's Int'l School",
-            average=average,
-            cumulative_average=cumulative_average,
-            next_term_begins=next_term_begins,
-            last_term_average=last_term_average,
-            position=position,
-            static_url=static_url,
-        )
+#        rendered = render_template(
+#            "student/pdf_results.html",
+#            title=f"{student.first_name}_{student.last_name}_{term}_{session}_Result",
+#            student=student,
+#            results=results,
+#            term=term,
+#            session=session,
+#            grand_total=grand_total,
+#            school_name="Aunty Anne's Int'l School",
+#            average=average,
+#            cumulative_average=cumulative_average,
+#            next_term_begins=next_term_begins,
+#            last_term_average=last_term_average,
+#            position=position,
+#            static_url=static_url,
+#        )
 
-        pdf = HTML(string=rendered).write_pdf()
+#        pdf = HTML(string=rendered).write_pdf()
 
-        response = make_response(pdf)
-        response.headers["Content-Type"] = "application/pdf"
-        response.headers["Content-Disposition"] = (
-            f"inline; filename={student.first_name}_{student.last_name}_{term}_{session}_Result.pdf"
-        )
+#        response = make_response(pdf)
+#        response.headers["Content-Type"] = "application/pdf"
+#        response.headers["Content-Disposition"] = (
+#            f"inline; filename={student.first_name}_{student.last_name}_{term}_{session}_Result.pdf"
+#        )
 
-        logger.info(
-            f"PDF results downloaded for student_id: {student_id}, term: {term}, session: {session}"
-        )
-        return response
+#        logger.info(
+#            f"PDF results downloaded for student_id: {student_id}, term: {term}, session: {session}"
+#        )
+#        return response
 
-    except Exception as e:
-        logger.error(
-            f"Error downloading PDF results for student_id: {student_id} - {str(e)}"
-        )
-        flash(
-            "An error occurred while generating the PDF. Please try again later.",
-            "alert alert-danger",
-        )
-        return redirect(url_for("students.select_results"))
+#    except Exception as e:
+#        logger.error(
+#            f"Error downloading PDF results for student_id: {student_id} - {str(e)}"
+#        )
+#        flash(
+#            "An error occurred while generating the PDF. Please try again later.",
+#            "alert alert-danger",
+#        )
+#        return redirect(url_for("students.select_results"))
