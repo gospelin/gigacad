@@ -5,6 +5,7 @@ from flask import (
     redirect,
     url_for,
     flash,
+    current_app,
     request,
     current_app,
     #make_response,
@@ -19,7 +20,7 @@ from ..helpers import (
     calculate_cumulative_average,
 )
 
-#from weasyprint import HTML
+# from weasyprint import HTML
 
 
 # Configure logging
