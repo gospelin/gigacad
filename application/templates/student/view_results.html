@@ -1,4 +1,4 @@
-{% extends "layout.html" %} {% block content %}
+{% extends "base.html" %} {% block content %}
 
 <style>
     /* General Styles */
@@ -144,6 +144,7 @@
         .navbar,
         .footer,
         .top-bar,
+        .sidebar,
         .btn {
             display: none;
         }
@@ -284,7 +285,7 @@
                         <img
                             src="{{url_for('static', filename='images/MY_SCHOOL_LOGO.png')}}"
                             alt="School Logo"
-                            class="school-logo"
+                            class="img-fluid school-logo"
                             width="60"
                         />
                         <div class="school-info">
@@ -305,7 +306,7 @@
                             </h2>
                         </div>
                     </div>
-                    <div class="card-body details">
+                    <div class="table-responsive card-body details">
                         <table class="table table-striped">
                             <tr class="text-uppercase">
                                 <td>Name</td>
@@ -533,13 +534,19 @@
                             </table>
                         </div>
                     </div>
-                    <div class="remarks">
-                        <h5 class="text-uppercase">Class Teacher's Remarks:</h5>
-                        <p>Awesome</p>
-                        <h5 class="text-uppercase">
-                            Head of School's Remarks:
-                        </h5>
-                        <p>Great work</p>
+                    <div class="remarks mt-4">
+                        <table style="margin-top: -15px;" class="table">
+                            <tbody>
+                                <tr>
+                                    <td><strong>Date Issued:</strong></td>
+                                    <td>{{ date_issued }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Date Printed:</strong></td>
+                                    <td>{{ date_printed }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
