@@ -65,23 +65,89 @@
                 font-weight: 500;
             }
             @media (max-width: 768px) {
-                .sidebar {
-                    width: 100%;
-                    height: auto;
-                    position: relative;
-                }
-                main {
-                    margin-left: 0;
-                }
-                .sidebar-toggler {
-                    display: block;
-                    position: absolute;
-                    top: 10px;
-                    left: 10px;
-                    color: #fff;
-                    cursor: pointer;
-                }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
             }
+            main {
+                margin-left: 0;
+            }
+            .card-body {
+                text-align: center;
+            }
+
+            .table-responsive {
+                margin-bottom: 10px;
+                /* Adjusted for mobile responsiveness */
+            }
+
+            /* Added for mobile responsiveness */
+            .input-group-text {
+                width: 100%;
+                text-align: left;
+            }
+
+            .form-control {
+                width: 100%;
+            }
+
+            .btn {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+        }
+
+        /* Additional styling for the admin dashboard */
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 0 15px;
+            /* Added for mobile responsiveness */
+        }
+
+        .card {
+            margin-bottom: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .card-text {
+            font-size: 1rem;
+            color: #6c757d;
+        }
+
+        .card:hover {
+            transform: scale(1.02);
+        }
+
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            margin-bottom: 30px;
+            /* Adjusted for mobile responsiveness */
+        }
+
+        .table thead th {
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .table tbody tr td {
+            vertical-align: middle;
+        }
+
+        .btn-sm {
+            font-size: 0.875rem;
+            padding: 0.25rem 0.5rem;
+        }
         </style>
     </head>
     <body>
