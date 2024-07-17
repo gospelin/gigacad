@@ -1,4 +1,4 @@
-# Aunty Anne's International School Website
+# Aunty Anne's International School (AAIS) Website
 
 ## Setup Instructions
 

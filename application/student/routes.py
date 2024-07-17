@@ -6,13 +6,15 @@ from flask import (
     url_for,
     flash,
     request,
-    make_response,
+    current_app,
+    #make_response,
 )
 from flask_login import login_required, current_user
 from ..models import Student, Result
 from ..auth.forms import ResultForm
 from ..helpers import (
     get_last_term,
+    datetime,
     calculate_average,
     calculate_cumulative_average,
 )
@@ -144,6 +146,14 @@ def view_results(student_id):
         next_term_begins = results[0].next_term_begins if results else None
         position = results[0].position if results else None
 
+        date_issued = results[0].date_issued
+        if date_issued and isinstance(date_issued, datetime):
+            date_issued = date_issued.strftime("%dth %B, %Y")
+        else:
+            date_issued = "N/A"
+
+        date_printed = datetime.now().strftime("%dth %B, %Y")
+
         logger.info(
             f"Results viewed for student_id: {student_id}, term: {term}, session: {session}"
         )
@@ -160,13 +170,15 @@ def view_results(student_id):
             school_name="Aunty Anne's Int'l School",
             next_term_begins=next_term_begins,
             last_term_average=last_term_average,
+            date_issued=date_issued,
+            date_printed=date_printed,
             position=position,
         )
 
     except Exception as e:
         logger.error(f"Error viewing results for student_id: {student_id} - {str(e)}")
         flash("An error occurred. Please try again later.", "alert alert-danger")
-        return redirect(url_for("students.select_results"))
+        return redirect(url_for("students.select_results", student_id=student.id))
 
 
 #@student_bp.route("/download_results_pdf/<int:student_id>")
@@ -230,9 +242,17 @@ def view_results(student_id):
 
 #        # Get the absolute path to the static directory
 #        static_path = os.path.join(
-#            student_bp.root_path, "static", "images", "MY_SCHOOL_LOGO.png"
+#            current_app.root_path, "static", "images", "MY_SCHOOL_LOGO.png"
 #        )
 #        static_url = f"file://{static_path}"
+
+#        date_issued = results[0].date_issued
+#        if date_issued and isinstance(date_issued, datetime):
+#            date_issued = date_issued.strftime("%dth %B, %Y")
+#        else:
+#            date_issued = "N/A"
+
+#        date_printed = datetime.now().strftime("%dth %B, %Y")
 
 #        rendered = render_template(
 #            "student/pdf_results.html",
@@ -248,6 +268,8 @@ def view_results(student_id):
 #            next_term_begins=next_term_begins,
 #            last_term_average=last_term_average,
 #            position=position,
+#            date_issued=date_issued,
+#            date_printed=date_printed,
 #            static_url=static_url,
 #        )
 
@@ -272,4 +294,4 @@ def view_results(student_id):
 #            "An error occurred while generating the PDF. Please try again later.",
 #            "alert alert-danger",
 #        )
-#        return redirect(url_for("students.select_results"))
+#        return redirect(url_for("students.select_results", student_id=student.id))
