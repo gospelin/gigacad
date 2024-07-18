@@ -1,5 +1,6 @@
 from . import admin_bp
-import logging
+from io import StringIO
+import logging, csv
 from flask import (
     abort,
     render_template,
@@ -7,7 +8,7 @@ from flask import (
     url_for,
     flash,
     request,
-    # make_response,
+    make_response,
 )
 from flask_login import login_required, current_user
 from ..models import Student, User, Subject, Result
@@ -17,6 +18,7 @@ from ..auth.forms import (
     ResultForm,
     SubjectForm,
     DeleteForm,
+    SelectTermSessionForm,
     ApproveForm,
 )
 from ..helpers import (
@@ -446,3 +448,118 @@ def delete_subject(subject_id):
             flash(f"Error deleting subject: {e}", "alert alert-danger")
 
     return redirect(url_for("admins.manage_subjects"))
+
+
+@admin_bp.route("/broadsheet/<string:entry_class>", methods=["GET", "POST"])
+@login_required
+def broadsheet(entry_class):
+    if not current_user.is_authenticated or not current_user.is_admin:
+        return redirect(url_for("auth.login"))
+
+    form = SelectTermSessionForm()
+    broadsheet_data = None
+    subjects = []
+
+    if form.validate_on_submit():
+        term = form.term.data
+        session = form.session.data
+
+        students = Student.query.filter_by(entry_class=entry_class).all()
+        subjects = get_subjects_by_entry_class(entry_class=entry_class)
+
+        broadsheet_data = []
+
+        for student in students:
+            student_results = {
+                "student": student,
+                "results": {subject.id: None for subject in subjects},
+            }
+            results = Result.query.filter_by(
+                student_id=student.id, term=term, session=session
+            ).all()
+
+            for result in results:
+                student_results["results"][result.subject_id] = result
+
+            broadsheet_data.append(student_results)
+
+    return render_template(
+        "admin/results/broadsheet.html",
+        form=form,
+        entry_class=entry_class,
+        broadsheet_data=broadsheet_data,
+        subjects=subjects,
+    )
+
+
+@admin_bp.route("/download_broadsheet/<string:entry_class>", methods=["GET"])
+@login_required
+def download_broadsheet(entry_class):
+    if not current_user.is_authenticated or not current_user.is_admin:
+        return redirect(url_for("auth.login"))
+
+    term = request.args.get("term")
+    session = request.args.get("session")
+
+    students = Student.query.filter_by(entry_class=entry_class).all()
+    subjects = get_subjects_by_entry_class(entry_class=entry_class)
+
+    broadsheet_data = []
+
+    for student in students:
+        student_results = {
+            "student": student,
+            "results": {subject.id: None for subject in subjects},
+        }
+        results = Result.query.filter_by(
+            student_id=student.id, term=term, session=session
+        ).all()
+
+        for result in results:
+            student_results["results"][result.subject_id] = result
+
+        broadsheet_data.append(student_results)
+
+    # Create CSV
+    si = StringIO()
+    writer = csv.writer(si)
+
+    # Write headers
+    headers = ["Student Name"]
+    for subject in subjects:
+        headers.extend(
+            [
+                f"{subject.name} C/A",
+                f"{subject.name} S/T",
+                f"{subject.name} Exam",
+                f"{subject.name} Total",
+            ]
+        )
+    writer.writerow(headers)
+
+    # Write data
+    for student_data in broadsheet_data:
+        row = [
+            f"{student_data['student'].first_name} {student_data['student'].last_name}"
+        ]
+        for subject in subjects:
+            result = student_data["results"][subject.id]
+            if result:
+                row.extend(
+                    [
+                        result.class_assessment,
+                        result.summative_test,
+                        result.exam,
+                        result.total,
+                    ]
+                )
+            else:
+                row.extend(["-", "-", "-", "-"])
+        writer.writerow(row)
+
+    output = make_response(si.getvalue())
+    output.headers["Content-Disposition"] = (
+        f"attachment; filename=broadsheet_{entry_class}_{term}_{session}.csv"
+    )
+    output.headers["Content-type"] = "text/csv"
+    return output
