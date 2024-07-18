@@ -66,6 +66,11 @@
                     class="btn btn-secondary mt-3"
                     >Back to Dashboard</a
                 >
+                <a
+                    href="{{ url_for('admins.broadsheet', entry_class=entry_class) }}"
+                    class="btn btn-secondary mt-3"
+                    >Generate Broadsheet</a
+                >
             </div>
         </div>
 {%endblock%}
