@@ -97,6 +97,7 @@ class ResultForm(FlaskForm):
         default="2023/2024",
     )
     next_term_begins = StringField("Next Term Begins", validators=[Optional()])
+    date_issued = StringField("Date Issued", validators=[Optional()])
     last_term_average = FloatField("Last Term Average", validators=[Optional()])
     position = StringField("Position", validators=[Optional()])
     submit = SubmitField("Load Results")
@@ -119,6 +120,7 @@ class EditStudentForm(FlaskForm):
         "Class",
         choices=[
             ("Creche", "Creche"),
+            ("Pre-Nursery", "Pre-Nursery"),
             ("Nursery 1", "Nursery 1"),
             ("Nursery 2", "Nursery 2"),
             ("Nursery 3", "Nursery 3"),
