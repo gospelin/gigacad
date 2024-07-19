@@ -153,7 +153,7 @@ def update_results(student, subjects, term, session, form):
                     next_term_begins=form.next_term_begins.data,
                     last_term_average=form.last_term_average.data,
                     position=form.position.data,
-                    date_issued=datetime.now(),
+                    date_issued=form.date_issued.data,
                 )
                 db.session.add(result)
             else:
@@ -166,6 +166,7 @@ def update_results(student, subjects, term, session, form):
                 result.next_term_begins = form.next_term_begins.data
                 result.last_term_average = form.last_term_average.data
                 result.position = form.position.data
+                result.date_issued = form.date_issued.data
 
         db.session.commit()
     except SQLAlchemyError:

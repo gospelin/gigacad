@@ -79,7 +79,7 @@ class Result(db.Model):
     next_term_begins = db.Column(db.String(100), nullable=True)
     last_term_average = db.Column(db.Float, nullable=True, default=0.0)
     position = db.Column(db.String(10), nullable=True)
-    date_issued = db.Column(db.DateTime, nullable=False, default=datetime.now)
+    date_issued = db.Column(db.String(100), nullable=True)
 
     @property
     def class_assessment_value(self):

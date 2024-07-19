@@ -146,12 +146,7 @@ def view_results(student_id):
 
         next_term_begins = results[0].next_term_begins if results else None
         position = results[0].position if results else None
-
-        date_issued = results[0].date_issued
-        if date_issued and isinstance(date_issued, datetime):
-            date_issued = date_issued.strftime("%dth %B, %Y")
-        else:
-            date_issued = "N/A"
+        date_issued = results[0].date_issued if results else None
 
         date_printed = datetime.now().strftime("%dth %B, %Y")
 
@@ -182,9 +177,9 @@ def view_results(student_id):
         return redirect(url_for("students.select_results", student_id=student.id))
 
 
-#@student_bp.route("/download_results_pdf/<int:student_id>")
-#@login_required
-#def download_results_pdf(student_id):
+# @student_bp.route("/download_results_pdf/<int:student_id>")
+# @login_required
+# def download_results_pdf(student_id):
 #    try:
 #        student = Student.query.get_or_404(student_id)
 
