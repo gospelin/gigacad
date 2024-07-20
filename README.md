@@ -30,8 +30,8 @@ cp .env.example .env
 
 Edit the `.env` file to include your actual configuration values:
 
-SECRET_KEY="your_secret_key"
-   SQLALCHEMY_DATABASE_URI="mysql://user:password@localhost:3306/school_database"
+**SECRET_KEY="your_secret_key"**
+   **SQLALCHEMY_DATABASE_URI="mysql://user:password@localhost:3306/school_database"**
 
 Set the `FLASK_ENV` environment variable to specify the configuration you want to use (development, testing, production):
 
