@@ -1,4 +1,5 @@
 {% extends 'admin/base.html' %}
+{% block content %}
 
 <style>
 
@@ -22,7 +23,6 @@
 
 </style>
 
-{% block content %}
 <div class="container mt-5">
     <h1>Broadsheet</h1>
     <form method="POST" action="{{ url_for('admins.broadsheet', entry_class=entry_class) }}">
@@ -43,7 +43,7 @@
     {% if broadsheet_data %}
     <a href="{{ url_for('admins.download_broadsheet', entry_class=entry_class) }}?term={{ form.term.data }}&session={{ form.session.data }}" class="btn btn-success mt-3">Download Broadsheet</a>
 
-    <div class="table-responsive mt-5">
+    <div class="table-responsive mt-3">
         <table class="table table-bordered">
             <thead>
                 <tr>
@@ -51,6 +51,9 @@
                     {% for subject in subjects %}
                     <th colspan="4">{{ subject.name }}</th>
                     {% endfor %}
+                    <th rowspan="2">Grand Total</th>
+                    <th rowspan="2">Average</th>
+                    <th rowspan="2">Position</th>
                 </tr>
                 <tr>
                     {% for subject in subjects %}
@@ -72,12 +75,15 @@
                     <td>{{ student_data.results[subject.id].exam }}</td>
                     <td>{{ student_data.results[subject.id].total }}</td>
                     {% else %}
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
                     {% endif %}
                     {% endfor %}
+                    <td>{{ student_data.grand_total }}</td>
+                    <td>{{ student_data.average }}</td>
+                    <td>{{ student_data.position }}</td>
                 </tr>
                 {% endfor %}
             </tbody>

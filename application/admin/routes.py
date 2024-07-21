@@ -1,5 +1,6 @@
 from . import admin_bp
-from io import StringIO
+# from io import StringIO
+import io
 import logging, csv
 from flask import (
     abort,
@@ -8,6 +9,7 @@ from flask import (
     url_for,
     flash,
     request,
+    Response,
     make_response,
 )
 from flask_login import login_required, current_user
@@ -449,7 +451,6 @@ def delete_subject(subject_id):
 
     return redirect(url_for("admins.manage_subjects"))
 
-
 @admin_bp.route("/broadsheet/<string:entry_class>", methods=["GET", "POST"])
 @login_required
 def broadsheet(entry_class):
@@ -478,10 +479,24 @@ def broadsheet(entry_class):
                 student_id=student.id, term=term, session=session
             ).all()
 
+            grand_total = 0
+            non_zero_subjects = 0
             for result in results:
                 student_results["results"][result.subject_id] = result
+                grand_total += result.total
+                if result.total > 0:
+                    non_zero_subjects += 1
+                student_results["position"] = result.position
 
+            average = grand_total / non_zero_subjects if non_zero_subjects > 0 else 0
+            student_results["grand_total"] = grand_total
+            student_results["average"] = round(average, 1)
             broadsheet_data.append(student_results)
+
+        # Sort students by their average
+        broadsheet_data.sort(key=lambda x: x["average"], reverse=True)
+        # for index, student_data in enumerate(broadsheet_data):
+        #     student_data["position"] = index + 1
 
     return render_template(
         "admin/results/broadsheet.html",
@@ -515,27 +530,37 @@ def download_broadsheet(entry_class):
             student_id=student.id, term=term, session=session
         ).all()
 
+        grand_total = 0
+        non_zero_subjects = 0
         for result in results:
             student_results["results"][result.subject_id] = result
+            grand_total += result.total
+            if result.total > 0:
+                non_zero_subjects += 1
+            student_results["position"] = result.position
 
+        average = grand_total / non_zero_subjects if non_zero_subjects > 0 else 0
+        student_results["grand_total"] = grand_total
+        student_results["average"] = round(average, 1)
         broadsheet_data.append(student_results)
 
-    # Create CSV
-    si = StringIO()
-    writer = csv.writer(si)
+    # Sort students by their average
+    broadsheet_data.sort(key=lambda x: x["average"], reverse=True)
 
-    # Write headers
-    headers = ["Student Name"]
+    # Create CSV
+    output = io.StringIO()
+    writer = csv.writer(output)
+
+    # Write multi-row headers
+    headers1 = ["Student Name"]
+    headers2 = [""]
     for subject in subjects:
-        headers.extend(
-            [
-                f"{subject.name} C/A",
-                f"{subject.name} S/T",
-                f"{subject.name} Exam",
-                f"{subject.name} Total",
-            ]
-        )
-    writer.writerow(headers)
+        headers1.extend([subject.name, "", "", ""])
+        headers2.extend(["C/A", "S/T", "Exam", "Total"])
+    headers1.extend(["Grand Total", "Average", "Position"])
+    headers2.extend(["", "", ""])
+    writer.writerow(headers1)
+    writer.writerow(headers2)
 
     # Write data
     for student_data in broadsheet_data:
@@ -555,11 +580,20 @@ def download_broadsheet(entry_class):
                 )
             else:
                 row.extend(["-", "-", "-", "-"])
+        row.extend(
+            [
+                student_data["grand_total"],
+                student_data["average"],
+                student_data["position"],
+            ]
+        )
         writer.writerow(row)
 
-    output = make_response(si.getvalue())
-    output.headers["Content-Disposition"] = (
-        f"attachment; filename=broadsheet_{entry_class}_{term}_{session}.csv"
+    output.seek(0)
+    return Response(
+        output,
+        mimetype="text/csv",
+        headers={
+            "Content-Disposition": f"attachment;filename=broadsheet_{entry_class}_{term}_{session}.csv"
+        },
     )
-    output.headers["Content-type"] = "text/csv"
-    return output
