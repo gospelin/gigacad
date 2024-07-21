@@ -51,7 +51,7 @@ flask run
 
 The application uses different configurations for development, testing, and production environments. These configurations are managed using environment variables and a configuration file `(config.py)`.
 
-Configuration Classes
+**Configuration Classes**
 
 The `config.py` file defines several configuration classes:
 
@@ -60,7 +60,7 @@ The `config.py` file defines several configuration classes:
 - `TestingConfig`: Testing configuration.
 - `ProductionConfig`: Production configuration.
 
-Configuration Files
+**Configuration Files**
 
 - .env: Stores sensitive configuration details like `SECRET_KEY` and `SQLALCHEMY_DATABASE_URI`.
 - `.flaskenv`: Specifies the Flask environment (`FLASK_ENV`) and the application entry point (`FLASK_APP`).
@@ -135,3 +135,5 @@ If you would like to contribute to this project, please fork the repository and 
 ### License
 
 This project is licensed under the MIT License. See the LICENSE file for details.
+
+Thanks for visiting.
