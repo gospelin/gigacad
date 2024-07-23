@@ -32,6 +32,7 @@ from ..helpers import (
     string,
 )
 
+from datetime import datetime
 # from weasyprint import HTML
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -507,7 +508,7 @@ def broadsheet(entry_class):
     )
 
 
-@admin_bp.route("/download_broadsheet/<string:entry_class>", methods=["GET"])
+@admin_bp.route("/download_broadsheet/<string:entry_class>")
 @login_required
 def download_broadsheet(entry_class):
     if not current_user.is_authenticated or not current_user.is_admin:
@@ -520,11 +521,15 @@ def download_broadsheet(entry_class):
     subjects = get_subjects_by_entry_class(entry_class=entry_class)
 
     broadsheet_data = []
+    subject_averages = {subject.id: {"total": 0, "count": 0} for subject in subjects}
 
     for student in students:
         student_results = {
             "student": student,
             "results": {subject.id: None for subject in subjects},
+            "grand_total": 0,
+            "average": 0,
+            "position": None
         }
         results = Result.query.filter_by(
             student_id=student.id, term=term, session=session
@@ -537,6 +542,8 @@ def download_broadsheet(entry_class):
             grand_total += result.total
             if result.total > 0:
                 non_zero_subjects += 1
+                subject_averages[result.subject_id]["total"] += result.total
+                subject_averages[result.subject_id]["count"] += 1
             student_results["position"] = result.position
 
         average = grand_total / non_zero_subjects if non_zero_subjects > 0 else 0
@@ -544,12 +551,21 @@ def download_broadsheet(entry_class):
         student_results["average"] = round(average, 1)
         broadsheet_data.append(student_results)
 
-    # Sort students by their average
+    # Calculate class averages for each subject
+    for subject_id, values in subject_averages.items():
+        values["average"] = round(values["total"] / values["count"], 1) if values["count"] > 0 else 0
+
+		 # Sort students by their average
     broadsheet_data.sort(key=lambda x: x["average"], reverse=True)
 
-    # Create CSV
+    # Create CSV file
     output = io.StringIO()
-    writer = csv.writer(output)
+    writer = csv.writer(output, delimiter=',')
+
+    # Add context information at the top
+    writer.writerow([f"Broadsheet for {entry_class} - Term: {term}, Session: {session}"])
+    writer.writerow([f"Generated on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"])
+    writer.writerow([])  # Blank row for separation
 
     # Write multi-row headers
     headers1 = ["Student Name"]
@@ -564,36 +580,31 @@ def download_broadsheet(entry_class):
 
     # Write data
     for student_data in broadsheet_data:
-        row = [
-            f"{student_data['student'].first_name} {student_data['student'].last_name}"
-        ]
+        row = [f"{student_data['student'].first_name} {student_data['student'].last_name}"]
         for subject in subjects:
             result = student_data["results"][subject.id]
             if result:
-                row.extend(
-                    [
-                        result.class_assessment,
-                        result.summative_test,
-                        result.exam,
-                        result.total,
-                    ]
-                )
+                row.extend([
+                    result.class_assessment,
+                    result.summative_test,
+                    result.exam,
+                    result.total
+                ])
             else:
                 row.extend(["-", "-", "-", "-"])
-        row.extend(
-            [
-                student_data["grand_total"],
-                student_data["average"],
-                student_data["position"],
-            ]
-        )
+        row.extend([
+            student_data["grand_total"],
+            student_data["average"],
+            student_data["position"]
+        ])
         writer.writerow(row)
 
+    # Write class averages
+    average_row = ["Class Average"]
+    for subject in subjects:
+        average_row.extend(["", "", "", subject_averages[subject.id]["average"]])
+    average_row.extend(["", "", ""])
+    writer.writerow(average_row)
+
     output.seek(0)
-    return Response(
-        output,
-        mimetype="text/csv",
-        headers={
-            "Content-Disposition": f"attachment;filename=broadsheet_{entry_class}_{term}_{session}.csv"
-        },
-    )
+    return Response(output, mimetype="text/csv", headers={"Content-Disposition": f"attachment;filename=broadsheet_{entry_class}_{term}_{session}.csv"})
