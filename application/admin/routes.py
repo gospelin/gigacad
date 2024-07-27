@@ -443,67 +443,60 @@ def broadsheet(entry_class):
         return redirect(url_for("auth.login"))
 
     form = SelectTermSessionForm()
-    students, broadsheet_data, subject_averages, student_totals = [], {}, {}, {}
+    term = form.term.data if form.term.data else request.args.get("term")
+    session = form.session.data if form.session.data else request.args.get("session")
 
-    if form.validate_on_submit():
-        term, session = form.term.data, form.session.data
+    students = Student.query.filter_by(entry_class=entry_class).all()
+    subjects = get_subjects_by_entry_class(entry_class=entry_class)
 
-        students = Student.query.filter_by(entry_class=entry_class).all()
-        subjects = get_subjects_by_entry_class(entry_class=entry_class)
+    broadsheet_data = []
+    subject_averages = {subject.id: {"total": 0, "count": 0} for subject in subjects}
 
-        broadsheet_data = {
-            subject.id: {
-                "subject": subject,
-                "students": {student.id: None for student in students},
-            }
-            for subject in subjects
+    for student in students:
+        student_results = {
+            "student": student,
+            "results": {subject.id: None for subject in subjects},
+            "grand_total": 0,
+            "average": 0,
+            "position": None,
         }
-        subject_averages = {
-            subject.id: {"total": 0, "count": 0, "average": 0} for subject in subjects
-        }
-        student_totals = {
-            student.id: {"grand_total": 0, "average": 0, "position": None}
-            for student in students
-        }
+        results = Result.query.filter_by(
+            student_id=student.id, term=term, session=session
+        ).all()
 
-        for student in students:
-            results = Result.query.filter_by(
-                student_id=student.id, term=term, session=session
-            ).all()
-            grand_total, non_zero_subjects = 0, 0
-            for result in results:
-                broadsheet_data[result.subject_id]["students"][student.id] = result
-                grand_total += result.total
-                if result.total > 0:
-                    non_zero_subjects += 1
-                    subject_averages[result.subject_id]["total"] += result.total
-                    subject_averages[result.subject_id]["count"] += 1
-                student_totals[student.id]["position"] = result.position
-            average = grand_total / non_zero_subjects if non_zero_subjects > 0 else 0
-            student_totals[student.id]["grand_total"] = grand_total
-            student_totals[student.id]["average"] = round(average, 1)
+        grand_total = 0
+        non_zero_subjects = 0
+        for result in results:
+            student_results["results"][result.subject_id] = result
+            grand_total += result.total
+            if result.total > 0:
+                non_zero_subjects += 1
+                subject_averages[result.subject_id]["total"] += result.total
+                subject_averages[result.subject_id]["count"] += 1
+            student_results["position"] = result.position
 
-        # Calculate class averages for each subject
-        for subject_id, values in subject_averages.items():
-            values["average"] = (
-                round(values["total"] / values["count"], 1)
-                if values["count"] > 0
-                else 0
-            )
+        average = grand_total / non_zero_subjects if non_zero_subjects > 0 else 0
+        student_results["grand_total"] = grand_total
+        student_results["average"] = round(average, 1)
+        broadsheet_data.append(student_results)
 
-        # Sort students by their average
-        sorted_students = sorted(
-            student_totals.items(), key=lambda x: x[1]["average"], reverse=True
+    # Calculate class averages for each subject
+    for subject_id, values in subject_averages.items():
+        values["average"] = (
+            round(values["total"] / values["count"], 1) if values["count"] > 0 else 0
         )
+
+    # Sort students by their average
+    broadsheet_data.sort(key=lambda x: x["average"], reverse=True)
 
     return render_template(
         "admin/results/broadsheet.html",
-        entry_class=entry_class,
         form=form,
         students=students,
+        subjects=subjects,
         broadsheet_data=broadsheet_data,
         subject_averages=subject_averages,
-        student_totals=student_totals,
+        entry_class=entry_class,
     )
 
 
@@ -572,7 +565,8 @@ def download_broadsheet(entry_class):
 
     # Write headers
     headers = ["Subjects"]
-    for student in students:
+    for student_data in broadsheet_data:
+        student = student_data["student"]
         headers.extend([f"{student.first_name} {student.last_name}", "", "", ""])
     headers.append("Class Average")
     writer.writerow(headers)
