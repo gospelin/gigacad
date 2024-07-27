@@ -2,7 +2,6 @@
 {% block content %}
 
 <style>
-
     .table-responsive {
         overflow-x: auto;
     }
@@ -20,7 +19,6 @@
             border: 0;
         }
     }
-
 </style>
 
 <div class="container mt-5">
@@ -47,33 +45,32 @@
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th rowspan="2">Student Name</th>
-                    {% for subject in subjects %}
-                    <th colspan="4">{{ subject.name }}</th>
+                    <th rowspan="2">Subjects</th>
+                    {% for student in students %}
+                    <th colspan="4">{{ student.first_name }} {{ student.last_name }}</th>
                     {% endfor %}
-                    <th rowspan="2">Grand Total</th>
-                    <th rowspan="2">Average</th>
-                    <th rowspan="2">Position</th>
+                    <th>Class Average</th>
                 </tr>
                 <tr>
-                    {% for subject in subjects %}
+                    {% for student in students %}
                     <th>C/A</th>
                     <th>S/T</th>
                     <th>Exam</th>
                     <th>Total</th>
                     {% endfor %}
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
-                {% for student_data in broadsheet_data %}
+                {% for subject_id, subject_data in broadsheet_data.items() %}
                 <tr>
-                    <td>{{ student_data.student.first_name }} {{ student_data.student.last_name }}</td>
-                    {% for subject in subjects %}
-                    {% if student_data.results[subject.id] %}
-                    <td>{{ student_data.results[subject.id].class_assessment }}</td>
-                    <td>{{ student_data.results[subject.id].summative_test }}</td>
-                    <td>{{ student_data.results[subject.id].exam }}</td>
-                    <td>{{ student_data.results[subject.id].total }}</td>
+                    <td>{{ subject_data.subject.name }}</td>
+                    {% for student in students %}
+                    {% if subject_data.students[student.id] %}
+                    <td>{{ subject_data.students[student.id].class_assessment }}</td>
+                    <td>{{ subject_data.students[student.id].summative_test }}</td>
+                    <td>{{ subject_data.students[student.id].exam }}</td>
+                    <td>{{ subject_data.students[student.id].total }}</td>
                     {% else %}
                     <td>-</td>
                     <td>-</td>
@@ -81,11 +78,30 @@
                     <td>-</td>
                     {% endif %}
                     {% endfor %}
-                    <td>{{ student_data.grand_total }}</td>
-                    <td>{{ student_data.average }}</td>
-                    <td>{{ student_data.position }}</td>
+                    <td>{{ subject_averages[subject_id].average }}</td>
                 </tr>
                 {% endfor %}
+                <tr>
+                    <td>Grand Total</td>
+                    {% for student in students %}
+                    <td colspan="4">{{ student_totals[student.id].grand_total }}</td>
+                    {% endfor %}
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Average</td>
+                    {% for student in students %}
+                    <td colspan="4">{{ student_totals[student.id].average }}</td>
+                    {% endfor %}
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Position</td>
+                    {% for student in students %}
+                    <td colspan="4">{{ student_totals[student.id].position }}</td>
+                    {% endfor %}
+                    <td></td>
+                </tr>
             </tbody>
         </table>
     </div>

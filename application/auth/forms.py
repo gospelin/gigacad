@@ -116,6 +116,11 @@ class EditStudentForm(FlaskForm):
     middle_name = StringField("Middle Name", validators=[Length(max=50)])
     last_name = StringField("Last Name", validators=[DataRequired()])
     username = StringField("Username", validators=[DataRequired()])
+    gender = SelectField(
+        "Gender",
+        choices=[("male", "Male"), ("female", "Female")],
+        validators=[DataRequired()],
+    )
     entry_class = SelectField(
         "Class",
         choices=[

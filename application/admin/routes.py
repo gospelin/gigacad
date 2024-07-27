@@ -1,6 +1,6 @@
 from . import admin_bp
-# from io import StringIO
-import io
+from io import StringIO
+# import io
 import logging, csv
 from flask import (
     abort,
@@ -10,7 +10,7 @@ from flask import (
     flash,
     request,
     Response,
-    make_response,
+    # make_response,
 )
 from flask_login import login_required, current_user
 from ..models import Student, User, Subject, Result
@@ -31,6 +31,7 @@ from ..helpers import (
     random,
     string,
 )
+from datetime import datetime
 
 # from weasyprint import HTML
 from sqlalchemy.exc import SQLAlchemyError
@@ -179,16 +180,9 @@ def select_term_session(student_id):
         term = form.term.data
         session = form.session.data
         return redirect(
-            url_for(
-                "admins.manage_results",
-                student_id=student.id,
-                term=term,
-                session=session,
-            )
+            url_for("admins.manage_results", student_id=student.id, term=term, session=session)
         )
-    return render_template(
-        "admin/results/select_term_session.html", form=form, student=student
-    )
+    return render_template("admin/results/select_term_session.html", form=form, student=student)
 
 
 @admin_bp.route("/manage_results/<int:student_id>", methods=["GET", "POST"])
@@ -203,9 +197,7 @@ def manage_results(student_id):
         session = request.args.get("session")
 
         if not term or not session:
-            return redirect(
-                url_for("admins.select_term_session", student_id=student.id)
-            )
+            return redirect(url_for("admins.select_term_session", student_id=student.id))
 
         form = ResultForm(term=term, session=session)
         subjects = get_subjects_by_entry_class(student.entry_class)
@@ -215,10 +207,7 @@ def manage_results(student_id):
             flash("Results updated successfully", "alert alert-success")
             return redirect(
                 url_for(
-                    "admins.manage_results",
-                    student_id=student.id,
-                    term=term,
-                    session=session,
+                    "admins.manage_results", student_id=student.id, term=term, session=session
                 )
             )
 
@@ -298,6 +287,7 @@ def edit_student(student_id):
         student.first_name = form.first_name.data
         student.last_name = form.last_name.data
         student.middle_name = form.middle_name.data
+        student.gender = form.gender.data
         # Update other fields as needed
 
         # Update the username in the User model
@@ -306,20 +296,17 @@ def edit_student(student_id):
 
         db.session.commit()
         flash("Student updated successfully!", "alert alert-success")
-        return redirect(
-            url_for("admins.students_by_class", entry_class=student.entry_class)
-        )
+        return redirect(url_for("admins.students_by_class", entry_class=student.entry_class))
     elif request.method == "GET":
         form.username.data = student.username
         form.entry_class.data = student.entry_class
         form.first_name.data = student.first_name
         form.last_name.data = student.last_name
         form.middle_name.data = student.middle_name
+        form.gender.data = student.gender
         # Populate other fields as necessary
 
-    return render_template(
-        "admin/students/edit_student.html", form=form, student=student
-    )
+    return render_template("admin/students/edit_student.html", form=form, student=student)
 
 
 @admin_bp.route("/admin/delete_student/<int:student_id>", methods=["GET", "POST"])
@@ -352,9 +339,7 @@ def delete_student(student_id):
             db.session.rollback()
             flash(f"Error deleting student: {e}", "alert alert-danger")
 
-    return redirect(
-        url_for("admins.students_by_class", entry_class=student.entry_class)
-    )
+    return redirect(url_for("admins.students_by_class", entry_class=student.entry_class))
 
 
 @admin_bp.route("/admin/manage_subjects", methods=["GET", "POST"])
@@ -417,9 +402,7 @@ def edit_subject(subject_id):
         flash("Subject updated successfully!", "alert alert-success")
         return redirect(url_for("admins.manage_subjects"))
 
-    return render_template(
-        "admin/subjects/edit_subject.html", form=form, subject=subject
-    )
+    return render_template("admin/subjects/edit_subject.html", form=form, subject=subject)
 
 
 @admin_bp.route("/admin/delete_subject/<int:subject_id>", methods=["POST"])
@@ -451,6 +434,7 @@ def delete_subject(subject_id):
 
     return redirect(url_for("admins.manage_subjects"))
 
+
 @admin_bp.route("/broadsheet/<string:entry_class>", methods=["GET", "POST"])
 @login_required
 def broadsheet(entry_class):
@@ -458,56 +442,71 @@ def broadsheet(entry_class):
         return redirect(url_for("auth.login"))
 
     form = SelectTermSessionForm()
-    broadsheet_data = None
-    subjects = []
+    students, broadsheet_data, subject_averages, student_totals = [], {}, {}, {}
 
     if form.validate_on_submit():
-        term = form.term.data
-        session = form.session.data
+        term, session = form.term.data, form.session.data
 
         students = Student.query.filter_by(entry_class=entry_class).all()
         subjects = get_subjects_by_entry_class(entry_class=entry_class)
 
-        broadsheet_data = []
+        broadsheet_data = {
+            subject.id: {
+                "subject": subject,
+                "students": {student.id: None for student in students},
+            }
+            for subject in subjects
+        }
+        subject_averages = {
+            subject.id: {"total": 0, "count": 0, "average": 0} for subject in subjects
+        }
+        student_totals = {
+            student.id: {"grand_total": 0, "average": 0, "position": None}
+            for student in students
+        }
 
         for student in students:
-            student_results = {
-                "student": student,
-                "results": {subject.id: None for subject in subjects},
-            }
             results = Result.query.filter_by(
                 student_id=student.id, term=term, session=session
             ).all()
-
-            grand_total = 0
-            non_zero_subjects = 0
+            grand_total, non_zero_subjects = 0, 0
             for result in results:
-                student_results["results"][result.subject_id] = result
+                broadsheet_data[result.subject_id]["students"][student.id] = result
                 grand_total += result.total
                 if result.total > 0:
                     non_zero_subjects += 1
-                student_results["position"] = result.position
-
+                    subject_averages[result.subject_id]["total"] += result.total
+                    subject_averages[result.subject_id]["count"] += 1
+                student_totals[student.id]["position"] = result.position
             average = grand_total / non_zero_subjects if non_zero_subjects > 0 else 0
-            student_results["grand_total"] = grand_total
-            student_results["average"] = round(average, 1)
-            broadsheet_data.append(student_results)
+            student_totals[student.id]["grand_total"] = grand_total
+            student_totals[student.id]["average"] = round(average, 1)
+
+        # Calculate class averages for each subject
+        for subject_id, values in subject_averages.items():
+            values["average"] = (
+                round(values["total"] / values["count"], 1)
+                if values["count"] > 0
+                else 0
+            )
 
         # Sort students by their average
-        broadsheet_data.sort(key=lambda x: x["average"], reverse=True)
-        # for index, student_data in enumerate(broadsheet_data):
-        #     student_data["position"] = index + 1
+        sorted_students = sorted(
+            student_totals.items(), key=lambda x: x[1]["average"], reverse=True
+        )
 
     return render_template(
         "admin/results/broadsheet.html",
-        form=form,
         entry_class=entry_class,
+        form=form,
+        students=students,
         broadsheet_data=broadsheet_data,
-        subjects=subjects,
+        subject_averages=subject_averages,
+        student_totals=student_totals,
     )
 
 
-@admin_bp.route("/download_broadsheet/<string:entry_class>", methods=["GET"])
+@admin_bp.route("/download_broadsheet/<string:entry_class>")
 @login_required
 def download_broadsheet(entry_class):
     if not current_user.is_authenticated or not current_user.is_admin:
@@ -520,11 +519,15 @@ def download_broadsheet(entry_class):
     subjects = get_subjects_by_entry_class(entry_class=entry_class)
 
     broadsheet_data = []
+    subject_averages = {subject.id: {"total": 0, "count": 0} for subject in subjects}
 
     for student in students:
         student_results = {
             "student": student,
             "results": {subject.id: None for subject in subjects},
+            "grand_total": 0,
+            "average": 0,
+            "position": None,
         }
         results = Result.query.filter_by(
             student_id=student.id, term=term, session=session
@@ -537,6 +540,8 @@ def download_broadsheet(entry_class):
             grand_total += result.total
             if result.total > 0:
                 non_zero_subjects += 1
+                subject_averages[result.subject_id]["total"] += result.total
+                subject_averages[result.subject_id]["count"] += 1
             student_results["position"] = result.position
 
         average = grand_total / non_zero_subjects if non_zero_subjects > 0 else 0
@@ -544,30 +549,43 @@ def download_broadsheet(entry_class):
         student_results["average"] = round(average, 1)
         broadsheet_data.append(student_results)
 
+    # Calculate class averages for each subject
+    for subject_id, values in subject_averages.items():
+        values["average"] = (
+            round(values["total"] / values["count"], 1) if values["count"] > 0 else 0
+        )
+
     # Sort students by their average
     broadsheet_data.sort(key=lambda x: x["average"], reverse=True)
 
-    # Create CSV
-    output = io.StringIO()
-    writer = csv.writer(output)
+    # Create CSV file
+    output = StringIO()
+    writer = csv.writer(output, delimiter=",")
 
-    # Write multi-row headers
-    headers1 = ["Student Name"]
-    headers2 = [""]
-    for subject in subjects:
-        headers1.extend([subject.name, "", "", ""])
-        headers2.extend(["C/A", "S/T", "Exam", "Total"])
-    headers1.extend(["Grand Total", "Average", "Position"])
-    headers2.extend(["", "", ""])
-    writer.writerow(headers1)
-    writer.writerow(headers2)
+    # Add context information at the top
+    writer.writerow(
+        [f"Broadsheet for {entry_class} - Term: {term}, Session: {session}"]
+    )
+    writer.writerow([f"Generated on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"])
+    writer.writerow([])  # Blank row for separation
+
+    # Write headers
+    headers = ["Subjects"]
+    for student in students:
+        headers.extend([f"{student.first_name} {student.last_name}", "", "", ""])
+    headers.append("Class Average")
+    writer.writerow(headers)
+
+    sub_headers = [""]
+    for _ in students:
+        sub_headers.extend(["C/A", "S/T", "Exam", "Total"])
+    sub_headers.append("")
+    writer.writerow(sub_headers)
 
     # Write data
-    for student_data in broadsheet_data:
-        row = [
-            f"{student_data['student'].first_name} {student_data['student'].last_name}"
-        ]
-        for subject in subjects:
+    for subject in subjects:
+        row = [subject.name]
+        for student_data in broadsheet_data:
             result = student_data["results"][subject.id]
             if result:
                 row.extend(
@@ -580,18 +598,30 @@ def download_broadsheet(entry_class):
                 )
             else:
                 row.extend(["-", "-", "-", "-"])
-        row.extend(
-            [
-                student_data["grand_total"],
-                student_data["average"],
-                student_data["position"],
-            ]
-        )
+        row.append(subject_averages[subject.id]["average"])
         writer.writerow(row)
+
+    # Write grand totals, averages, and positions
+    grand_totals_row = ["Grand Total"]
+    averages_row = ["Average"]
+    positions_row = ["Position"]
+
+    for student_data in broadsheet_data:
+        grand_totals_row.extend(["", "", "", student_data["grand_total"]])
+        averages_row.extend(["", "", "", student_data["average"]])
+        positions_row.extend(["", "", "", student_data["position"]])
+
+    grand_totals_row.append("")
+    averages_row.append("")
+    positions_row.append("")
+
+    writer.writerow(grand_totals_row)
+    writer.writerow(averages_row)
+    writer.writerow(positions_row)
 
     output.seek(0)
     return Response(
-        output,
+        output.getvalue(),
         mimetype="text/csv",
         headers={
             "Content-Disposition": f"attachment;filename=broadsheet_{entry_class}_{term}_{session}.csv"
