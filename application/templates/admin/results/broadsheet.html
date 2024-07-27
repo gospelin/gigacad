@@ -46,8 +46,8 @@
             <thead>
                 <tr>
                     <th rowspan="2">Subjects</th>
-                    {% for student in students %}
-                    <th colspan="4">{{ student.first_name }} {{ student.last_name }}</th>
+                    {% for student_data in broadsheet_data %}
+                    <th colspan="4">{{ student_data.student.first_name }} {{ student_data.student.last_name }}</th>
                     {% endfor %}
                     <th>Class Average</th>
                 </tr>
@@ -62,15 +62,16 @@
                 </tr>
             </thead>
             <tbody>
-                {% for subject_id, subject_data in broadsheet_data.items() %}
+                {% for subject in subjects %}
                 <tr>
-                    <td>{{ subject_data.subject.name }}</td>
-                    {% for student in students %}
-                    {% if subject_data.students[student.id] %}
-                    <td>{{ subject_data.students[student.id].class_assessment }}</td>
-                    <td>{{ subject_data.students[student.id].summative_test }}</td>
-                    <td>{{ subject_data.students[student.id].exam }}</td>
-                    <td>{{ subject_data.students[student.id].total }}</td>
+                    <td>{{ subject.name }}</td>
+                    {% for student_data in broadsheet_data %}
+                    {% set result = student_data.results[subject.id] %}
+                    {% if result %}
+                    <td>{{ result.class_assessment }}</td>
+                    <td>{{ result.summative_test }}</td>
+                    <td>{{ result.exam }}</td>
+                    <td>{{ result.total }}</td>
                     {% else %}
                     <td>-</td>
                     <td>-</td>
@@ -78,27 +79,27 @@
                     <td>-</td>
                     {% endif %}
                     {% endfor %}
-                    <td>{{ subject_averages[subject_id].average }}</td>
+                    <td>{{ subject_averages[subject.id]['average'] }}</td>
                 </tr>
                 {% endfor %}
                 <tr>
                     <td>Grand Total</td>
-                    {% for student in students %}
-                    <td colspan="4">{{ student_totals[student.id].grand_total }}</td>
+                    {% for student_data in broadsheet_data %}
+                    <td colspan="4">{{ student_data.grand_total }}</td>
                     {% endfor %}
                     <td></td>
                 </tr>
                 <tr>
                     <td>Average</td>
-                    {% for student in students %}
-                    <td colspan="4">{{ student_totals[student.id].average }}</td>
+                    {% for student_data in broadsheet_data %}
+                    <td colspan="4">{{ student_data.average }}</td>
                     {% endfor %}
                     <td></td>
                 </tr>
                 <tr>
                     <td>Position</td>
-                    {% for student in students %}
-                    <td colspan="4">{{ student_totals[student.id].position }}</td>
+                    {% for student_data in broadsheet_data %}
+                    <td colspan="4">{{ student_data.position }}</td>
                     {% endfor %}
                     <td></td>
                 </tr>
@@ -107,4 +108,5 @@
     </div>
     {% endif %}
 </div>
+
 {% endblock %}
