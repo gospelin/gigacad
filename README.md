@@ -192,9 +192,6 @@ Full tech stack [here](/techstack.md)
 |[waitress](https://pypi.org/project/waitress)|v3.0.0|06/09/24|gospelin |ZPL-2.1|N/A|
 
 <br/>
-<div align='center'>
-    GIGO TECHNOLOGIES
-</div>
 
 ## Setup Instructions
 
