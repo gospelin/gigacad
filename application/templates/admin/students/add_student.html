@@ -1,52 +1,33 @@
-{% extends 'admin/base.html' %} {% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-6">
-            {% for message in get_flashed_messages() %}
-            <div class="alert alert-warning mt-3">{{ message }}</div>
-            {% endfor %}
-            <div
-                class="card border-0 shadow-lg animate__animated animate__fadeIn"
-            >
-                <img
-                    src="{{ url_for('static', filename='images/add-student.png') }}"
-                    class="card-img-top"
-                    alt="Add New Student Image"
-                />
-                <div class="card-body text-center">
-                    <h5 class="card-title">Add New Student</h5>
-                    <p class="card-text">
-                        Fill in the details below to add a new student.
-                    </p>
-                    <form method="POST" action="{{ url_for('add_students') }}">
-                        {{ form.hidden_tag() }}
-                        <div class="mb-3">
-                            {{ form.first_name.label(class="form-label") }} {{
-                            form.first_name(class="form-control") }}
-                        </div>
-                        <div class="mb-3">
-                            {{ form.last_name.label(class="form-label") }} {{
-                            form.last_name(class="form-control") }}
-                        </div>
-                        <div class="form-group mb-3">
-                            {{ form.gender.label(class="form-label") }} {{
-                            form.gender(class="form-control") }}
-                        </div>
-                        <div class="form-group mb-3">
-                            {{ form.date_of_birth.label(class="form-label") }}
-                            {{ form.date_of_birth(class="form-control") }}
-                        </div>
-                        <div class="form-group mb-3">
-                            {{ form.entry_class.label(class="form-label") }} {{
-                            form.entry_class(class="form-control") }}
-                        </div>
-                        <button type="submit" class="btn btn-primary btn-block">
-                            Add Student
-                        </button>
-                    </form>
+{% extends 'admin/base.html' %}
+{% block content %}
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                {% for message in get_flashed_messages() %}<div class="alert alert-warning mt-3">{{ message }}</div>{% endfor %}
+                <div class="card border-0 shadow-lg animate__animated animate__fadeIn">
+                    <img src="{{ url_for('static', filename='images/add-student.png') }}"
+                         class="card-img-top"
+                         alt="Add New Student Image" />
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Add New Student</h5>
+                        <p class="card-text">Fill in the details below to add a new student.</p>
+                        <form method="POST" action="{{ url_for("add_students") }}">
+                            {{ form.hidden_tag() }}
+                            <div class="mb-3">{{ form.first_name.label(class="form-label") }} {{ form.first_name(class="form-control") }}</div>
+                            <div class="mb-3">{{ form.last_name.label(class="form-label") }} {{ form.last_name(class="form-control") }}</div>
+                            <div class="form-group mb-3">{{ form.gender.label(class="form-label") }} {{ form.gender(class="form-control") }}</div>
+                            <div class="form-group mb-3">
+                                {{ form.date_of_birth.label(class="form-label") }}
+                                {{ form.date_of_birth(class="form-control") }}
+                            </div>
+                            <div class="form-group mb-3">
+                                {{ form.entry_class.label(class="form-label") }} {{ form.entry_class(class="form-control") }}
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">Add Student</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 {% endblock %}
