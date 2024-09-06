@@ -1,6 +1,10 @@
-{% extends "base.html" %} {% block title %}{{ student.first_name }} {{
-student.last_name }}'s Profile{% endblock %} {% block content %}
-<style>
+{% extends "base.html" %}
+{% block title %}
+    {{ student.first_name }} {{
+    student.last_name }}'s Profile
+{% endblock %}
+{% block content %}
+    <style>
     .profile-card {
         border: none;
         border-radius: 10px;
@@ -66,101 +70,96 @@ student.last_name }}'s Profile{% endblock %} {% block content %}
     .profile-card {
         animation: slideIn 0.5s ease-in-out;
     }
-</style>
-
-<div class="container mt-5 mb-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-10">
-            <div class="profile-card card">
-                <div class="profile-header">
-                    <i class="bi bi-person-circle profile-picture"></i>
-                    <h2>{{ student.first_name }} {{ student.last_name }}</h2>
-                    <p>Class: {{ student.entry_class }}</p>
-                </div>
-                <div class="profile-info">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <p>
-                                <strong>First Name:</strong> {{
-                                student.first_name }}
-                            </p>
-                            <p>
-                                <strong>Middle Name:</strong> {{
-                                student.middle_name }}
-                            </p>
-                            <p>
-                                <strong>Last Name:</strong> {{ student.last_name
-                                }}
-                            </p>
-                            <p>
-                                <strong>Gender:</strong> {{
-                                student.gender.capitalize() }}
-                            </p>
-                            <p>
-                                <strong>Date of Birth:</strong> {{
-                                student.date_of_birth }}
-                            </p>
+    </style>
+    <div class="container mt-5 mb-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="profile-card card">
+                    <div class="profile-header">
+                        <i class="bi bi-person-circle profile-picture"></i>
+                        <h2>{{ student.first_name }} {{ student.last_name }}</h2>
+                        <p>Class: {{ student.entry_class }}</p>
+                    </div>
+                    <div class="profile-info">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p>
+                                    <strong>First Name:</strong> {{
+                                    student.first_name }}
+                                </p>
+                                <p>
+                                    <strong>Middle Name:</strong> {{
+                                    student.middle_name }}
+                                </p>
+                                <p>
+                                    <strong>Last Name:</strong> {{ student.last_name
+                                    }}
+                                </p>
+                                <p>
+                                    <strong>Gender:</strong> {{ student.gender.capitalize() }}
+                                </p>
+                                <p>
+                                    <strong>Date of Birth:</strong> {{
+                                    student.date_of_birth }}
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <p>
+                                    <strong>Parent's Name:</strong> {{
+                                    student.parent_name }}
+                                </p>
+                                <p>
+                                    <strong>Parent's Phone:</strong> {{
+                                    student.parent_phone_number }}
+                                </p>
+                                <p>
+                                    <strong>Address:</strong> {{ student.address }}
+                                </p>
+                                <p>
+                                    <strong>Parent's Occupation:</strong> {{
+                                    student.parent_occupation }}
+                                </p>
+                                <p>
+                                    <strong>Previous Class:</strong> {{
+                                    student.previous_class }}
+                                </p>
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            <p>
-                                <strong>Parent's Name:</strong> {{
-                                student.parent_name }}
-                            </p>
-                            <p>
-                                <strong>Parent's Phone:</strong> {{
-                                student.parent_phone_number }}
-                            </p>
-                            <p>
-                                <strong>Address:</strong> {{ student.address }}
-                            </p>
-                            <p>
-                                <strong>Parent's Occupation:</strong> {{
-                                student.parent_occupation }}
-                            </p>
-                            <p>
-                                <strong>Previous Class:</strong> {{
-                                student.previous_class }}
-                            </p>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p>
+                                    <strong>State of Origin:</strong> {{
+                                    student.state_of_origin }}
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <p>
+                                    <strong>LGA:</strong> {{
+                                    student.local_government_area }}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p>
+                                    <strong>Religion:</strong> {{ student.religion
+                                    }}
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <p>
+                                    <strong>Student ID:</strong> AAIS/0559/00{{
+                                    student.id }}
+                                </p>
+                            </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <p>
-                                <strong>State of Origin:</strong> {{
-                                student.state_of_origin }}
-                            </p>
-                        </div>
-                        <div class="col-md-6">
-                            <p>
-                                <strong>LGA:</strong> {{
-                                student.local_government_area }}
-                            </p>
-                        </div>
+                    <div class="card-footer text-center">
+                        <a href="{{ url_for('students.student_portal', student_id=student.id) }}"
+                           class="btn btn-secondary">Back to Portal</a>
                     </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <p>
-                                <strong>Religion:</strong> {{ student.religion
-                                }}
-                            </p>
-                        </div>
-                        <div class="col-md-6">
-                            <p>
-                                <strong>Student ID:</strong> AAIS/0559/00{{
-                                student.id }}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-footer text-center">
-                    <a
-                        href="{{ url_for('students.student_portal', student_id=student.id) }}"
-                        class="btn btn-secondary"
-                        >Back to Portal</a
-                    >
                 </div>
             </div>
         </div>
     </div>
-</div>
 {% endblock %}
