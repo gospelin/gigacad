@@ -1,6 +1,7 @@
-{% extends "base.html" %} {% block title %}Select Term and Session{% endblock %}
+{% extends "base.html" %}
+{% block title %}Select Term and Session{% endblock %}
 {% block content %}
-<style>
+    <style>
     .select-page-header {
         background-color: #007bff;
         color: white;
@@ -37,56 +38,40 @@
             font-size: 1.5rem;
         }
     }
-</style>
-
-<div class="container-fluid">
-    <div class="select-page-header animate__animated animate__fadeInDown">
-        <h1>Select Term and Session to View Results</h1>
-    </div>
-    <div class="row justify-content-center">
-        <div class="col-lg-10">
-            {% for message in get_flashed_messages() %}
-            <div
-                class="alert alert-warning mt-3 animate__animated animate__fadeIn"
-            >
-                {{ message }}
-            </div>
-            {% endfor %}
-            <div
-                class="card shadow-sm select-page-card animate__animated animate__fadeInUp"
-            >
-                <div class="card-body">
-                    <div class="text-center mb-4">
-                        <h2>Select Term and Session to View Results</h2>
-                    </div>
-                    <form method="POST">
-                        {{ form.hidden_tag() }}
-                        <div class="row mb-3">
-                            <div class="col-md-5 mb-3">
-                                <label for="term" class="form-label"
-                                    >Select Term:</label
-                                >
-                                {{ form.term(class_='form-control') }}
-                            </div>
-                            <div class="col-md-5 mb-3">
-                                <label for="session" class="form-label"
-                                    >Select Session:</label
-                                >
-                                {{ form.session(class_='form-control') }}
-                            </div>
-                            <div class="col-md-2 d-flex align-items-end">
-                                <button
-                                    type="submit"
-                                    class="btn btn-primary w-100"
-                                >
-                                    Load Results
-                                </button>
-                            </div>
+    </style>
+    <div class="container-fluid">
+        <div class="select-page-header animate__animated animate__fadeInDown">
+            <h1>Select Term and Session to View Results</h1>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                {% for message in get_flashed_messages() %}
+                    <div class="alert alert-warning mt-3 animate__animated animate__fadeIn">{{ message }}</div>
+                {% endfor %}
+                <div class="card shadow-sm select-page-card animate__animated animate__fadeInUp">
+                    <div class="card-body">
+                        <div class="text-center mb-4">
+                            <h2>Select Term and Session to View Results</h2>
                         </div>
-                    </form>
+                        <form method="POST">
+                            {{ form.hidden_tag() }}
+                            <div class="row mb-3">
+                                <div class="col-md-5 mb-3">
+                                    <label for="term" class="form-label">Select Term:</label>
+                                    {{ form.term(class_='form-control') }}
+                                </div>
+                                <div class="col-md-5 mb-3">
+                                    <label for="session" class="form-label">Select Session:</label>
+                                    {{ form.session(class_='form-control') }}
+                                </div>
+                                <div class="col-md-2 d-flex align-items-end">
+                                    <button type="submit" class="btn btn-primary w-100">Load Results</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 {% endblock %}

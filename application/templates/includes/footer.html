@@ -8,19 +8,27 @@
                 <span class="phone-number"><i class="fas fa-phone-alt"></i> +234-806-967-8968</span>
                 <p>Email: info@schoolname.edu</p>
             </div>
-
             <!-- Quick Links -->
             <div class="col-md-4 mb-4">
                 <h5>Quick Links</h5>
                 <ul class="list-unstyled">
-                    <li><a href="{{ url_for('index') }}" class="text-white">Home</a></li>
-                    <li><a href="{{ url_for('about_us') }}" class="text-white">About Us</a></li>
-                    <li><a href="{{ url_for('student_registration') }}" class="text-white">Registration</a></li>
-                    <li><a href="{{ url_for('student_result_portal') }}" class="text-white">Result Portal</a></li>
-                    <li><a href="#" class="text-white">Contact</a></li>
+                    <li>
+                        <a href="{{ url_for("index") }}" class="text-white">Home</a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for("about_us") }}" class="text-white">About Us</a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for("student_registration") }}" class="text-white">Registration</a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for("student_result_portal") }}" class="text-white">Result Portal</a>
+                    </li>
+                    <li>
+                        <a href="#" class="text-white">Contact</a>
+                    </li>
                 </ul>
             </div>
-
             <!-- Newsletter Subscription -->
             <div class="col-md-4 mb-4">
                 <h5>Newsletter</h5>
@@ -32,23 +40,28 @@
                 </form>
             </div>
         </div>
-
         <!-- Social Media Links -->
         <div class="row mt-4">
             <div class="col-12">
                 <ul class="list-inline">
                     <li class="list-inline-item">
-                        <a href="https://www.facebook.com/schoolname" target="_blank" class="text-white">
+                        <a href="https://www.facebook.com/schoolname"
+                           target="_blank"
+                           class="text-white">
                             <i class="fab fa-facebook-f fa-lg"></i>
                         </a>
                     </li>
                     <li class="list-inline-item">
-                        <a href="https://twitter.com/schoolname" target="_blank" class="text-white">
+                        <a href="https://twitter.com/schoolname"
+                           target="_blank"
+                           class="text-white">
                             <i class="fab fa-twitter fa-lg"></i>
                         </a>
                     </li>
                     <li class="list-inline-item">
-                        <a href="https://www.instagram.com/schoolname" target="_blank" class="text-white">
+                        <a href="https://www.instagram.com/schoolname"
+                           target="_blank"
+                           class="text-white">
                             <i class="fab fa-instagram fa-lg"></i>
                         </a>
                     </li>
@@ -56,7 +69,6 @@
                 </ul>
             </div>
         </div>
-
         <!-- Footer Bottom -->
         <div class="row mt-4">
             <div class="col-12">
@@ -65,7 +77,6 @@
         </div>
     </div>
 </footer>
-
 <style>
     footer .list-inline-item a {
         color: #ffffff;

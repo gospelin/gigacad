@@ -1,53 +1,48 @@
 <!-- admin/enter_results.html -->
-{% extends "admin/base.html" %} {% block content %}
-<h1>
-    Enter Results for {{ student.first_name }} {{ student.last_name }} - {{
-    session }} - {{ term }}
-</h1>
-<form method="POST">
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Subject</th>
-                <th>Class Assessment</th>
-                <th>Summative Test</th>
-                <th>Exam</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for subject in subjects %}
-            <tr>
-                <td>{{ subject.name }}</td>
-                <td>
-                    <input
-                        type="number"
-                        name="class_assessment_{{ subject.id }}"
-                        value="0"
-                        class="form-control"
-                    />
-                </td>
-                <td>
-                    <input
-                        type="number"
-                        name="summative_test_{{ subject.id }}"
-                        value="0"
-                        class="form-control"
-                    />
-                </td>
-                <td>
-                    <input
-                        type="number"
-                        name="exam_{{ subject.id }}"
-                        value="0"
-                        class="form-control"
-                    />
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <div class="form-group">
-        <input type="submit" value="Save Results" class="btn btn-primary" />
-    </div>
-</form>
+{% extends "admin/base.html" %}
+{% block content %}
+    <h1>
+        Enter Results for {{ student.first_name }} {{ student.last_name }} - {{
+        session }} - {{ term }}
+    </h1>
+    <form method="POST">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>Class Assessment</th>
+                    <th>Summative Test</th>
+                    <th>Exam</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for subject in subjects %}
+                    <tr>
+                        <td>{{ subject.name }}</td>
+                        <td>
+                            <input type="number"
+                                   name="class_assessment_{{ subject.id }}"
+                                   value="0"
+                                   class="form-control" />
+                        </td>
+                        <td>
+                            <input type="number"
+                                   name="summative_test_{{ subject.id }}"
+                                   value="0"
+                                   class="form-control" />
+                        </td>
+                        <td>
+                            <input type="number"
+                                   name="exam_{{ subject.id }}"
+                                   value="0"
+                                   class="form-control" />
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="form-group">
+            <input type="submit" value="Save Results" class="btn btn-primary" />
+        </div>
+    </form>
 {% endblock %}
