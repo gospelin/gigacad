@@ -1,6 +1,7 @@
 {% extends 'admin/base.html' %}
 {% block content %}
-    <style>
+
+<style>
     .table-responsive {
         overflow-x: auto;
     }
@@ -18,86 +19,94 @@
             border: 0;
         }
     }
-    </style>
-    <div class="container mt-5">
-        <h1>Broadsheet</h1>
-        <form method="POST"
-            action="{{ url_for('admins.broadsheet', entry_class=entry_class) }}">
-            {{ form.hidden_tag() }}
-            <div class="row mb-3">
-                <div class="col">
-                    <label for="term" class="form-label">Term:</label>
-                    {{ form.term(class="form-control") }}
-                </div>
-                <div class="col">
-                    <label for="session" class="form-label">Session:</label>
-                    {{ form.session(class="form-control") }}
-                </div>
+</style>
+
+<div class="container mt-5">
+    <h1>Broadsheet</h1>
+    <form method="POST" action="{{ url_for('admins.broadsheet', entry_class=entry_class) }}">
+        {{ form.hidden_tag() }}
+        <div class="row mb-3">
+            <div class="col">
+                <label for="term" class="form-label">Term:</label>
+                {{ form.term(class="form-control") }}
             </div>
-            <button type="submit" class="btn btn-primary">Generate Broadsheet</button>
-        </form>
-        {% if broadsheet_data %}
-            <a href="{{ url_for('admins.download_broadsheet', entry_class=entry_class) }}?term={{ form.term.data }}&session={{ form.session.data }}"
-               class="btn btn-success mt-3">Download Broadsheet</a>
-            <div class="table-responsive mt-3">
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th rowspan="2">Subjects</th>
-                            {% for student_data in broadsheet_data %}
-                                <th colspan="4">{{ student_data.student.first_name }} {{ student_data.student.last_name }}</th>
-                            {% endfor %}
-                            <th>Class Average</th>
-                        </tr>
-                        <tr>
-                            {% for student in students %}
-                                <th>C/A</th>
-                                <th>S/T</th>
-                                <th>Exam</th>
-                                <th>Total</th>
-                            {% endfor %}
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for subject in subjects %}
-                            <tr>
-                                <td>{{ subject.name }}</td>
-                                {% for student_data in broadsheet_data %}
-                                    {% set result = student_data.results[subject.id] %}
-                                    {% if result %}
-                                        <td>{{ result.class_assessment }}</td>
-                                        <td>{{ result.summative_test }}</td>
-                                        <td>{{ result.exam }}</td>
-                                        <td>{{ result.total }}</td>
-                                    {% else %}
-                                        <td>-</td>
-                                        <td>-</td>
-                                        <td>-</td>
-                                        <td>-</td>
-                                    {% endif %}
-                                {% endfor %}
-                                <td>{{ subject_averages[subject.id]['average'] }}</td>
-                            </tr>
-                        {% endfor %}
-                        <tr>
-                            <td>Grand Total</td>
-                            {% for student_data in broadsheet_data %}<td colspan="4">{{ student_data.grand_total }}</td>{% endfor %}
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td>Average</td>
-                            {% for student_data in broadsheet_data %}<td colspan="4">{{ student_data.average }}</td>{% endfor %}
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td>Position</td>
-                            {% for student_data in broadsheet_data %}<td colspan="4">{{ student_data.position }}</td>{% endfor %}
-                            <td></td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="col">
+                <label for="session" class="form-label">Session:</label>
+                {{ form.session(class="form-control") }}
             </div>
-        {% endif %}
+        </div>
+        <button type="submit" class="btn btn-primary">Generate Broadsheet</button>
+    </form>
+
+    {% if broadsheet_data %}
+    <a href="{{ url_for('admins.download_broadsheet', entry_class=entry_class) }}?term={{ form.term.data }}&session={{ form.session.data }}" class="btn btn-success mt-3">Download Broadsheet</a>
+
+    <div class="table-responsive mt-3">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th rowspan="2">Subjects</th>
+                    {% for student_data in broadsheet_data %}
+                    <th colspan="4">{{ student_data.student.first_name }} {{ student_data.student.last_name }}</th>
+                    {% endfor %}
+                    <th>Class Average</th>
+                </tr>
+                <tr>
+                    {% for student in students %}
+                    <th>C/A</th>
+                    <th>S/T</th>
+                    <th>Exam</th>
+                    <th>Total</th>
+                    {% endfor %}
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for subject in subjects %}
+                <tr>
+                    <td>{{ subject.name }}</td>
+                    {% for student_data in broadsheet_data %}
+                    {% set result = student_data.results[subject.id] %}
+                    {% if result %}
+                    <td>{{ result.class_assessment }}</td>
+                    <td>{{ result.summative_test }}</td>
+                    <td>{{ result.exam }}</td>
+                    <td>{{ result.total }}</td>
+                    {% else %}
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    {% endif %}
+                    {% endfor %}
+                    <td>{{ subject_averages[subject.id]['average'] }}</td>
+                </tr>
+                {% endfor %}
+                <tr>
+                    <td>Grand Total</td>
+                    {% for student_data in broadsheet_data %}
+                    <td colspan="4">{{ student_data.grand_total }}</td>
+                    {% endfor %}
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Average</td>
+                    {% for student_data in broadsheet_data %}
+                    <td colspan="4">{{ student_data.average }}</td>
+                    {% endfor %}
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Position</td>
+                    {% for student_data in broadsheet_data %}
+                    <td colspan="4">{{ student_data.position }}</td>
+                    {% endfor %}
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
     </div>
+    {% endif %}
+</div>
+
 {% endblock %}
