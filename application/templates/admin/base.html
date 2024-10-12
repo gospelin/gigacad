@@ -3,38 +3,29 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta
-            name="description"
-            content="Admin Dashboard for managing school data including students, teachers, parents, and classes."
-        />
-        <meta
-            name="keywords"
-            content="Admin Dashboard, School Management, Students, Teachers, Classes"
-        />
+        <meta name="description"
+              content="Admin Dashboard for managing school data including students, teachers, parents, and classes." />
+        <meta name="keywords"
+              content="Admin Dashboard, School Management, Students, Teachers, Classes" />
         <meta name="author" content="Aunty Anne's Int'l School" />
-        <title>{% block title %}Admin Dashboard{% endblock %}</title>
-        <link
-            href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-            rel="stylesheet"
-        />
-        <link
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
-            rel="stylesheet"
-        />
-        <link
-            href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
-            rel="stylesheet"
-        />
-        <link
-            href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
-            rel="stylesheet"
-            onload="this.rel='stylesheet'"
-        />
-        <noscript
-            ><link
-                href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
-                rel="stylesheet"
-        /></noscript>
+        <title>
+            {% block title %}Admin Dashboard{% endblock %}
+        </title>
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+              rel="stylesheet" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+              rel="stylesheet" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+              rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+              rel="stylesheet"
+              onload="this.rel='stylesheet'" />
+        <link rel="stylesheet"
+              href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+        <noscript>
+            <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+                  rel="stylesheet" />
+        </noscript>
         <style>
             body {
                 font-family: "Roboto", sans-serif;
@@ -94,10 +85,8 @@
 
                 .table-responsive {
                     margin-bottom: 10px;
-                    /* Adjusted for mobile responsiveness */
                 }
 
-                /* Added for mobile responsiveness */
                 .input-group-text {
                     width: 100%;
                     text-align: left;
@@ -113,12 +102,10 @@
                 }
             }
 
-            /* Additional styling for the admin dashboard */
             .container {
                 max-width: 1200px;
                 margin: auto;
                 padding: 0 15px;
-                /* Added for mobile responsiveness */
             }
 
             .card {
@@ -148,7 +135,6 @@
             .table-responsive {
                 overflow-x: auto;
                 margin-bottom: 30px;
-                /* Adjusted for mobile responsiveness */
             }
 
             .table thead th {
@@ -164,6 +150,7 @@
                 padding: 0.25rem 0.5rem;
             }
         </style>
+        {% block styles %}{% endblock %}
         {% block head %}{% endblock %}
     </head>
     <body>
@@ -176,46 +163,18 @@
                 <!-- Sidebar -->
                 <nav class="col-md-2 sidebar">
                     <h2 class="text-center py-3">Admin Dashboard</h2>
-                    <a href="{{ url_for('main.index') }}"
-                        ><i class="fas fa-home icon"></i>Home</a
-                    >
-                    <a
-                        href="{{url_for('admin.index')}}"
-                        id="dashboard-link"
-                        class="active"
-                        ><i class="fas fa-tachometer-alt icon"></i>Dashboard</a
-                    >
-                    <a
-                        href="{{ url_for('admins.approve_students') }}"
-                        id="students-link"
-                        ><i class="fas fa-user-graduate icon"></i>Students</a
-                    >
-                    <a
-                        href="{{ url_for('admins.manage_subjects') }}"
-                        id="subjects-link"
-                        ><i class="fas fa-book icon"></i> Subjects</a
-                    >
-                    <a href="#" id="teachers-link"
-                        ><i class="fas fa-chalkboard-teacher icon"></i
-                        >Teachers</a
-                    >
-                    <a href="#" id="parents-link"
-                        ><i class="fas fa-user icon"></i>Parents</a
-                    >
-                    <a
-                        href="{{ url_for('admins.manage_classes') }}"
-                        id="classes-link"
-                        ><i class="fas fa-school icon"></i>Classes</a
-                    >
-                    <a href="#" id="attendance-link"
-                        ><i class="fas fa-calendar-check icon"></i>Attendance</a
-                    >
-                    <a href="#" id="settings-link"
-                        ><i class="fas fa-cogs icon"></i>Settings</a
-                    >
-                    <a href="{{ url_for('auth.logout') }}" id="logout-link"
-                        ><i class="fas fa-sign-out-alt icon"></i>Logout</a
-                    >
+                    <a href="{{ url_for("main.index") }}"><i class="fas fa-home icon"></i>Home</a>
+                    <a href="{{ url_for("admin.index") }}"
+                       id="dashboard-link"
+                       class="active"><i class="fas fa-tachometer-alt icon"></i>Dashboard</a>
+                    <a href="{{ url_for("admins.approve_students") }}" id="students-link"><i class="fas fa-user-graduate icon"></i>Students</a>
+                    <a href="{{ url_for("admins.manage_subjects") }}" id="subjects-link"><i class="fas fa-book icon"></i> Subjects</a>
+                    <a href="#" id="teachers-link"><i class="fas fa-chalkboard-teacher icon"></i>Teachers</a>
+                    <a href="#" id="parents-link"><i class="fas fa-user icon"></i>Parents</a>
+                    <a href="{{ url_for("admins.manage_classes") }}" id="classes-link"><i class="fas fa-school icon"></i>Classes</a>
+                    <a href="#" id="attendance-link"><i class="fas fa-calendar-check icon"></i>Attendance</a>
+                    <a href="#" id="settings-link"><i class="fas fa-cogs icon"></i>Settings</a>
+                    <a href="{{ url_for("auth.logout") }}" id="logout-link"><i class="fas fa-sign-out-alt icon"></i>Logout</a>
                 </nav>
                 <!-- Main content -->
                 <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
@@ -227,6 +186,8 @@
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.6/jquery.inputmask.min.js"></script>
         <script>
             $(document).ready(function () {
                 $(".sidebar-toggler").on("click", function () {

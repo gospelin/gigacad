@@ -3,23 +3,17 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>{% block title %}Student Portal{% endblock %}</title>
-        <link
-            href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-            rel="stylesheet"
-        />
-        <link
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
-            rel="stylesheet"
-        />
-        <link
-            href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
-            rel="stylesheet"
-        />
-        <link
-            href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
-            rel="stylesheet"
-        />
+        <title>
+            {% block title %}Student Portal{% endblock %}
+        </title>
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+              rel="stylesheet" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+              rel="stylesheet" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+              rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+              rel="stylesheet" />
         <style>
             body {
                 font-family: "Roboto", sans-serif;
@@ -108,36 +102,20 @@
                 <!-- Sidebar -->
                 <nav class="col-md-2 sidebar">
                     <h2 class="text-center py-3">Student Portal</h2>
-                    <a href="{{ url_for('main.index') }}"
-                        ><i class="fas fa-home icon"></i>Home</a
-                    >
-                    <a href="{{ url_for('students.student_portal') }}" class="active"
-                        ><i class="fas fa-tachometer-alt icon"></i>Dashboard</a
-                    >
-                    <a
-                        href="{{ url_for('students.student_profile', student_id=current_user.student.id) }}"
-                    >
+                    <a href="{{ url_for("main.index") }}"><i class="fas fa-home icon"></i>Home</a>
+                    <a href="{{ url_for("students.student_portal") }}" class="active"><i class="fas fa-tachometer-alt icon"></i>Dashboard</a>
+                    <a href="{{ url_for('students.student_profile', student_id=current_user.student.id) }}">
                         <i class="fas fa-user icon"></i> Profile
                     </a>
-                    <a
-                        href="{{ url_for('students.select_results', student_id=current_user.student.id) }}"
-                        ><i class="fas fa-file-alt icon"></i>Results</a
-                    >
-                    <a href="#"
-                        ><i class="fas fa-calendar-check icon"></i>Attendance</a
-                    >
+                    <a href="{{ url_for('students.select_results', student_id=current_user.student.id) }}"><i class="fas fa-file-alt icon"></i>Results</a>
+                    <a href="#"><i class="fas fa-calendar-check icon"></i>Attendance</a>
                     <a href="#"><i class="fas fa-clock icon"></i>Timetable</a>
-                    <a href="{{ url_for('auth.logout') }}"
-                        ><i class="fas fa-sign-out-alt icon"></i>Logout</a
-                    >
+                    <a href="{{ url_for("auth.logout") }}"><i class="fas fa-sign-out-alt icon"></i>Logout</a>
                 </nav>
                 <!-- Main content -->
                 <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
-                    {% block content %}
-                    <!-- Content will be inserted here by the child templates -->
-                    {% endblock %}
+                    {% block content %}<!-- Content will be inserted here by the child templates -->{% endblock %}
                 </main>
-
             </div>
         </div>
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
