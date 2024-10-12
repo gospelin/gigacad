@@ -69,7 +69,6 @@ def approve_students():
     regenerate_form = ApproveForm()
 
     students = Student.query.all()
-    students = Student.query.all()
     students_by_class = defaultdict(list)
     for student in students:
         students_by_class[student.entry_class].append(student)
