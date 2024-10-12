@@ -1,248 +1,196 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Admin Dashboard for managing school data including students, teachers, parents, and classes.">
-    <meta name="keywords" content="Admin Dashboard, School Management, Students, Teachers, Classes">
-    <meta name="author" content="Aunty Anne's Int'l School">
-    <title>Admin Dashboard</title>
-
-    <!-- Latest Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Latest FontAwesome CSS -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-    <!-- Boxicons CSS -->
-    <link href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css" rel="stylesheet">
-    <!-- Custom CSS -->
-    <link href="{{ url_for('static', filename='css/admin_base.css') }}" rel="stylesheet">
-</head>
-
-<body>
-    <!-- Sidebar -->
-    <nav class="sidebar">
-        <div class="logo-details">
-            <i class='bx bxl-c-plus-plus icon'></i>
-            <div class="logo_name">Admin Dashboard</div>
-            <i class='bx bx-menu' id="btn"></i>
-        </div>
-        <ul class="nav-list">
-            <li>
-                <i class='bx bx-search'></i>
-                <input type="text" placeholder="Search...">
-                <span class="tooltip">Search</span>
-            </li>
-            <!-- Student Management -->
-            <li>
-                <a href="#" data-bs-toggle="collapse" data-bs-target="#studentMenu" aria-expanded="false">
-                    <i class='bx bx-user'></i>
-                    <span class="links_name">Student Management</span>
-                </a>
-                <ul class="submenu collapse" id="studentMenu">
-                    <li><a href="#">Add New Student</a></li>
-                    <li><a href="{{ url_for('admins.approve_students') }}">View All Students</a></li>
-                    <li><a href="{{ url_for('admins.manage_classes') }}">Edit Student Details</a></li>
-                    <li><a href="#">Delete Student Records</a></li>
-                    <li><a href="#">Bulk Upload Students</a></li>
-                    <li><a href="#">Search and Filter Students</a></li>
-                </ul>
-                <span class="tooltip">Student Management</span>
-            </li>
-            <!-- Class Management -->
-            <li>
-                <a href="#" data-bs-toggle="collapse" data-bs-target="#classMenu" aria-expanded="false">
-                    <i class='bx bx-book'></i>
-                    <span class="links_name">Class Management</span>
-                </a>
-                <ul class="submenu collapse" id="classMenu">
-                    <li><a href="#">Add New Class/Section</a></li>
-                    <li><a href="#">View All Classes/Sections</a></li>
-                    <li><a href="#">Edit Class/Section Details</a></li>
-                    <li><a href="#">Assign Teachers to Classes</a></li>
-                </ul>
-                <span class="tooltip">Class Management</span>
-            </li>
-            <!-- Subject Management -->
-            <li>
-                <a href="#" data-bs-toggle="collapse" data-bs-target="#subjectMenu" aria-expanded="false">
-                    <i class='bx bx-bookmark'></i>
-                    <span class="links_name">Subject Management</span>
-                </a>
-                <ul class="submenu collapse" id="subjectMenu">
-                    <li><a href="#">Add New Subject</a></li>
-                    <li><a href="#">View All Subjects</a></li>
-                    <li><a href="#">Edit Subject Details</a></li>
-                    <li><a href="#">Assign Subjects to Classes/Sections</a></li>
-                </ul>
-                <span class="tooltip">Subject Management</span>
-            </li>
-            <!-- Result Management -->
-            <li>
-                <a href="#" data-bs-toggle="collapse" data-bs-target="#resultMenu" aria-expanded="false">
-                    <i class='bx bx-chart'></i>
-                    <span class="links_name">Result Management</span>
-                </a>
-                <ul class="submenu collapse" id="resultMenu">
-                    <li><a href="#">Add or Upload Results</a></li>
-                    <li><a href="#">View Results by Student</a></li>
-                    <li><a href="#">Edit Results</a></li>
-                    <li><a href="#">Generate and Download Reports</a></li>
-                    <li><a href="#">Notify Students about Results Availability</a></li>
-                </ul>
-                <span class="tooltip">Result Management</span>
-            </li>
-            <!-- Teacher Management -->
-            <li>
-                <a href="#" data-bs-toggle="collapse" data-bs-target="#teacherMenu" aria-expanded="false">
-                    <i class='bx bx-chalkboard-teacher'></i>
-                    <span class="links_name">Teacher Management</span>
-                </a>
-                <ul class="submenu collapse" id="teacherMenu">
-                    <li><a href="#">Add New Teacher</a></li>
-                    <li><a href="#">View All Teachers</a></li>
-                    <li><a href="#">Edit Teacher Details</a></li>
-                    <li><a href="#">Assign Teachers to Classes/Subjects</a></li>
-                </ul>
-                <span class="tooltip">Teacher Management</span>
-            </li>
-            <!-- User Management -->
-            <li>
-                <a href="#" data-bs-toggle="collapse" data-bs-target="#userMenu" aria-expanded="false">
-                    <i class='bx bx-group'></i>
-                    <span class="links_name">User Management</span>
-                </a>
-                <ul class="submenu collapse" id="userMenu">
-                    <li><a href="#">Add New Admin/User</a></li>
-                    <li><a href="#">View All Users</a></li>
-                    <li><a href="#">Edit User Roles and Permissions</a></li>
-                    <li><a href="#">Delete Users</a></li>
-                </ul>
-                <span class="tooltip">User Management</span>
-            </li>
-            <!-- Settings -->
-            <li>
-                <a href="#" data-bs-toggle="collapse" data-bs-target="#settingsMenu" aria-expanded="false">
-                    <i class='bx bx-cog'></i>
-                    <span class="links_name">Settings</span>
-                </a>
-                <ul class="submenu collapse" id="settingsMenu">
-                    <li><a href="#">Configure System Settings</a></li>
-                    <li><a href="#">Manage Email Templates</a></li>
-                    <li><a href="#">Customize Dashboard Layout and Appearance</a></li>
-                </ul>
-                <span class="tooltip">Settings</span>
-            </li>
-            <li class="profile">
-                <div class="profile-details">
-                    <img src="{{ url_for('static', filename='img/profile.jpg') }}" alt="Profile Image">
-                    <div class="name_job">
-                        <div class="name">Admin Name</div>
-                        <div class="job">Administrator</div>
-                    </div>
-                </div>
-                <a href="{{ url_for('auth.logout') }}" id="logout-link">
-                    <i class='bx bx-log-out' id="log_out"></i>
-                </a>
-                    
-            </li>
-        </ul>
-    </nav>
-
-    <!-- Main Section -->
-    <section class="home-section">
-        <main class="col-md-9 ml-sm-auto col-lg-10 px-4 main-content">
-            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1 class="h2">Dashboard</h1>
-            </div>
-            <div class="container mt-4">
-                {% block content %}{% endblock %}
-            </div>
-        </main>
-    </section>
-
-    <!-- JavaScript Libraries -->
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.0/dist/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
-
-    <script>        
-        let sidebar = document.querySelector(".sidebar");
-        let closeBtn = document.querySelector("#btn");
-        let navIcons = document.querySelectorAll(".sidebar i"); // Select all nav links
-        let subMenus = document.querySelectorAll(".submenu"); // Select all submenus
-    
-        // Function to toggle the sidebar and change the menu button icon
-        function toggleSidebar() {
-            sidebar.classList.toggle("open");
-            menuBtnChange();
-    
-            // Toggle submenu visibility based on sidebar state
-            if (!sidebar.classList.contains("open")) {
-                closeSubMenus();
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description"
+              content="Admin Dashboard for managing school data including students, teachers, parents, and classes." />
+        <meta name="keywords"
+              content="Admin Dashboard, School Management, Students, Teachers, Classes" />
+        <meta name="author" content="Aunty Anne's Int'l School" />
+        <title>
+            {% block title %}Admin Dashboard{% endblock %}
+        </title>
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+              rel="stylesheet" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+              rel="stylesheet" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+              rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+              rel="stylesheet"
+              onload="this.rel='stylesheet'" />
+        <link rel="stylesheet"
+              href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+        <noscript>
+            <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+                  rel="stylesheet" />
+        </noscript>
+        <style>
+            body {
+                font-family: "Roboto", sans-serif;
             }
-        }
-    
-        // Close all submenus
-        function closeSubMenus() {
-            subMenus.forEach(menu => {
-                menu.classList.remove("show"); // Ensure submenus are hidden when sidebar is closed
-                $(menu).collapse('hide'); // For Bootstrap collapse functionality
-            });
-        }
-    
-        // Change the icon of the menu button when the sidebar is opened or closed
-        function menuBtnChange() {
-            if (sidebar.classList.contains("open")) {
-                closeBtn.classList.replace("bx-menu", "bx-menu-alt-right");
-            } else {
-                closeBtn.classList.replace("bx-menu-alt-right", "bx-menu");
+            .sidebar {
+                height: 100vh;
+                background-color: #343a40;
+                color: #fff;
+                position: fixed;
+                width: 220px;
+                transition: all 0.3s ease;
             }
-        }
-    
-        // Add event listener to the close button
-        closeBtn.addEventListener("click", toggleSidebar);
-    
-        // Add event listener to each navigation icon
-        navIcons.forEach(icon => {
-            icon.addEventListener("click", toggleSidebar);
-        });
-    
-        // Optional: Add event listener to the search button if it should also toggle the sidebar
-        let searchBtn = document.querySelector(".bx-search");
-        if (searchBtn) {
-            searchBtn.addEventListener("click", toggleSidebar);
-        }
-    
-        // Ensure submenus are closed when sidebar closes
-        $(document).ready(function () {
-            // Handle collapsing of submenus only if the sidebar is open
-            $(".nav-list li a").on("click", function () {
-                if (!sidebar.classList.contains("open")) {
-                    $(this).next(".submenu").collapse('hide');
+            .sidebar a {
+                color: #fff;
+                text-decoration: none;
+                padding: 15px;
+                display: block;
+                transition: background-color 0.3s ease;
+            }
+            .sidebar a:hover {
+                background-color: #495057;
+            }
+            .sidebar .active {
+                background-color: #007bff;
+                color: #fff;
+            }
+            .sidebar .icon {
+                margin-right: 10px;
+            }
+            .sidebar-toggler {
+                display: none;
+            }
+            main {
+                margin-left: 220px;
+                padding: 20px;
+                transition: all 0.3s ease;
+            }
+            .card {
+                margin-bottom: 20px;
+                animation: fadeInUp 1s;
+            }
+            .card h5 {
+                font-weight: 500;
+            }
+            @media (max-width: 768px) {
+                .sidebar {
+                    width: 100%;
+                    height: auto;
+                    position: relative;
                 }
-            });
-        });
-    
-    
-        function menuBtnChange() {
-            if (sidebar.classList.contains("open")) {
-                closeBtn.classList.replace("bx-menu", "bx-menu-alt-right");
-            } else {
-                closeBtn.classList.replace("bx-menu-alt-right", "bx-menu");
+                main {
+                    margin-left: 0;
+                }
+                .card-body {
+                    text-align: center;
+                }
+
+                .table-responsive {
+                    margin-bottom: 10px;
+                }
+
+                .input-group-text {
+                    width: 100%;
+                    text-align: left;
+                }
+
+                .form-control {
+                    width: 100%;
+                }
+
+                .btn {
+                    width: 100%;
+                    margin-bottom: 10px;
+                }
             }
-        }
 
-        $(document).ready(function () {
-            $(".sidebar-toggler").on("click", function () {
-                $(".sidebar").toggleClass("open");
-            });
-        });
-    </script>
-    
-    {% block scripts %}{% endblock %}
-</body>
+            .container {
+                max-width: 1200px;
+                margin: auto;
+                padding: 0 15px;
+            }
 
+            .card {
+                margin-bottom: 1.5rem;
+                transition: transform 0.3s ease;
+            }
+
+            .card-title {
+                font-size: 1.2rem;
+                font-weight: bold;
+            }
+
+            .card-text {
+                font-size: 1rem;
+                color: #6c757d;
+            }
+
+            .card:hover {
+                transform: scale(1.02);
+            }
+
+            .btn-block {
+                display: block;
+                width: 100%;
+            }
+
+            .table-responsive {
+                overflow-x: auto;
+                margin-bottom: 30px;
+            }
+
+            .table thead th {
+                border-bottom: 2px solid #dee2e6;
+            }
+
+            .table tbody tr td {
+                vertical-align: middle;
+            }
+
+            .btn-sm {
+                font-size: 0.875rem;
+                padding: 0.25rem 0.5rem;
+            }
+        </style>
+        {% block styles %}{% endblock %}
+        {% block head %}{% endblock %}
+    </head>
+    <body>
+        <div class="container-fluid">
+            <div class="row">
+                <!-- Sidebar Toggler -->
+                <div class="sidebar-toggler">
+                    <i class="fas fa-bars fa-2x"></i>
+                </div>
+                <!-- Sidebar -->
+                <nav class="col-md-2 sidebar">
+                    <h2 class="text-center py-3">Admin Dashboard</h2>
+                    <a href="{{ url_for("main.index") }}"><i class="fas fa-home icon"></i>Home</a>
+                    <a href="{{ url_for("admin.index") }}"
+                       id="dashboard-link"
+                       class="active"><i class="fas fa-tachometer-alt icon"></i>Dashboard</a>
+                    <a href="{{ url_for("admins.approve_students") }}" id="students-link"><i class="fas fa-user-graduate icon"></i>Students</a>
+                    <a href="{{ url_for("admins.manage_subjects") }}" id="subjects-link"><i class="fas fa-book icon"></i> Subjects</a>
+                    <a href="#" id="teachers-link"><i class="fas fa-chalkboard-teacher icon"></i>Teachers</a>
+                    <a href="#" id="parents-link"><i class="fas fa-user icon"></i>Parents</a>
+                    <a href="{{ url_for("admins.manage_classes") }}" id="classes-link"><i class="fas fa-school icon"></i>Classes</a>
+                    <a href="#" id="attendance-link"><i class="fas fa-calendar-check icon"></i>Attendance</a>
+                    <a href="#" id="settings-link"><i class="fas fa-cogs icon"></i>Settings</a>
+                    <a href="{{ url_for("auth.logout") }}" id="logout-link"><i class="fas fa-sign-out-alt icon"></i>Logout</a>
+                </nav>
+                <!-- Main content -->
+                <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+                    {% block content %}{% endblock %}
+                </main>
+            </div>
+        </div>
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.6/jquery.inputmask.min.js"></script>
+        <script>
+        </script>
+        {% block scripts %}{% endblock %}
+    </body>
 </html>
 

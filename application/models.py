@@ -69,30 +69,14 @@ class Result(db.Model):
     subject_id = db.Column(db.Integer, db.ForeignKey("subject.id"), nullable=False)
     term = db.Column(db.String(20), nullable=False)
     session = db.Column(db.String(20), nullable=False)
-    class_assessment = db.Column(db.Integer, nullable=True, default=0)
-    summative_test = db.Column(db.Integer, nullable=True, default=0)
-    exam = db.Column(db.Integer, nullable=True, default=0)
-    total = db.Column(db.Integer, nullable=False, default=0)
+    class_assessment = db.Column(db.Integer, nullable=True)
+    summative_test = db.Column(db.Integer, nullable=True)
+    exam = db.Column(db.Integer, nullable=True)
+    total = db.Column(db.Integer, nullable=False)
     grade = db.Column(db.String(5))
     created_at = db.Column(db.DateTime, default=datetime.now())
     remark = db.Column(db.String(100))
     next_term_begins = db.Column(db.String(100), nullable=True)
-    last_term_average = db.Column(db.Float, nullable=True, default=0.0)
+    last_term_average = db.Column(db.Float, nullable=True)
     position = db.Column(db.String(10), nullable=True)
     date_issued = db.Column(db.String(100), nullable=True)
-
-    @property
-    def class_assessment_value(self):
-        return self.class_assessment or 0
-
-    @property
-    def summative_test_value(self):
-        return self.summative_test or 0
-
-    @property
-    def exam_value(self):
-        return self.exam or 0
-
-    @property
-    def total_value(self):
-        return self.class_assessment_value + self.summative_test_value + self.exam_value
