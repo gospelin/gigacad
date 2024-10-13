@@ -19,7 +19,7 @@ class StudentRegistrationForm(FlaskForm):
         "Gender",
         choices=[("male", "Male"), ("female", "Female")],
         validators=[DataRequired()],
-    )
+    )   
     date_of_birth = DateField("Date of Birth", validators=[Optional()])
     parent_name = StringField("Parent Name", validators=[Length(max=70)])
     parent_phone_number = StringField(
@@ -87,14 +87,9 @@ class ResultForm(FlaskForm):
         default="Third Term",
     )
     session = SelectField(
-        "Select Session",
-        choices=[
-            ("2023/2024", "2023/2024"),
-            ("2024/2025", "2024/2025"),
-            ("2025/2026", "2025/2026"),
-        ],
+        "Select Session",  # This will be populated dynamically
+        choices=[],  # Start with an empty list, to be populated in the route
         validators=[DataRequired()],
-        default="2023/2024",
     )
     next_term_begins = StringField("Next Term Begins", validators=[Optional()])
     date_issued = StringField("Date Issued", validators=[Optional()])

@@ -17,7 +17,7 @@ from flask import (
     # make_response,
 )
 from flask_login import login_required, current_user
-from ..models import Student, User, Subject, Result
+from ..models import Student, User, Subject, Result, Session, StudentClassHistory
 from collections import defaultdict
 from ..auth.forms import (
     EditStudentForm,
@@ -37,7 +37,7 @@ from ..helpers import (
 )
 from datetime import datetime
 
-# from weasyprint import HTML
+from weasyprint import HTML
 from sqlalchemy.exc import SQLAlchemyError
 
 # Configure logging
@@ -180,9 +180,16 @@ def manage_classes():
 def select_term_session(student_id):
     student = Student.query.get_or_404(student_id)
     form = ResultForm()
+
+    # Fetch available sessions from the database
+    sessions = Session.query.all()
+    form.session.choices = [(s.year, s.year) for s in sessions]
+
     if form.validate_on_submit():
         term = form.term.data
         session = form.session.data
+        print(f"Term: {term}, Session: {session}")  # Debugging output
+
         return redirect(
             url_for(
                 "admins.manage_results",
@@ -191,8 +198,14 @@ def select_term_session(student_id):
                 session=session,
             )
         )
+    else:
+        print(f"Form errors: {form.errors}")  # Log validation errors
+
     return render_template(
-        "admin/results/select_term_session.html", form=form, student=student
+        "admin/results/select_term_session.html",
+        form=form,
+        student=student,
+        sessions=sessions,
     )
 
 
@@ -205,30 +218,46 @@ def manage_results(student_id):
     try:
         student = Student.query.get_or_404(student_id)
         term = request.args.get("term")
-        session = request.args.get("session")
+        session_year = request.args.get("session")  # Renaming to avoid confusion
 
-        if not term or not session:
+        if not term or not session_year:
             return redirect(
                 url_for("admins.select_term_session", student_id=student.id)
             )
 
-        form = ResultForm(term=term, session=session)
-        subjects = get_subjects_by_entry_class(student.entry_class)
+        # Retrieve the session object from the database
+        session = Session.query.filter_by(year=session_year).first()
+        #if not session:
+        #    flash("No session found for the selected year", "alert alert-danger")
+        #    return redirect(
+        #        url_for("admins.select_term_session", student_id=student.id)
+        #    )
+
+        # Get the class for the selected session
+        student_class = StudentClassHistory.get_class_by_session(student.id, session)
+        if not student_class:
+            flash("No class found for the selected session", "alert alert-danger")
+            return redirect(
+                url_for("admins.select_term_session", student_id=student.id)
+            )
+
+        form = ResultForm(term=term, session=session_year)
+        subjects = get_subjects_by_entry_class(student_class)
 
         if form.validate_on_submit():
-            update_results(student, subjects, term, session, form)
+            update_results(student, subjects, term, session_year, form)
             flash("Results updated successfully", "alert alert-success")
             return redirect(
                 url_for(
                     "admins.manage_results",
                     student_id=student.id,
                     term=term,
-                    session=session,
+                    session=session_year,
                 )
             )
 
         results, grand_total, average, cumulative_average, results_dict = (
-            calculate_results(student.id, term, session)
+            calculate_results(student.id, term, session_year)
         )
         return render_template(
             "admin/results/manage_results.html",
@@ -241,7 +270,8 @@ def manage_results(student_id):
             results_dict=results_dict,
             form=form,
             selected_term=term,
-            selected_session=session,
+            selected_session=session_year,
+            student_class=student_class,  # Pass the class to the template
         )
     except SQLAlchemyError as e:
         db.session.rollback()
@@ -249,38 +279,6 @@ def manage_results(student_id):
     except Exception as e:
         flash(f"An error occurred: {str(e)}", "alert alert-danger")
     return redirect(url_for("main.index"))
-
-
-@admin_bp.route("/admin/delete_result/<int:result_id>", methods=["POST"])
-@login_required
-def delete_result(result_id):
-    form = DeleteForm()
-    if not current_user.is_authenticated or not current_user.is_admin:
-        return redirect(url_for("auth.login"))
-
-    result = Result.query.get_or_404(result_id)
-
-    student_id = result.student_id
-    term = result.term
-    session = result.session
-
-    try:
-        db.session.delete(result)
-        db.session.commit()
-        flash("Result deleted successfully!", "alert alert-success")
-    except Exception as e:
-        db.session.rollback()
-        flash(f"Error deleting result: {e}", "alert alert-danger")
-
-    return redirect(
-        url_for(
-            "admins.manage_results",
-            form=form,
-            student_id=student_id,
-            term=term,
-            session=session,
-        )
-    )
 
 
 @admin_bp.route("/admin/manage_students", methods=["GET", "POST"])

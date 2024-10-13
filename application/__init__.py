@@ -5,6 +5,8 @@ from flask_migrate import Migrate
 from flask_admin import Admin
 from config import config_by_name, os
 from .authentication import login_manager
+import logging
+from logging.handlers import RotatingFileHandler
 
 # Initialize the app
 app = Flask(__name__)
@@ -54,3 +56,22 @@ admin.add_view(ResultAdmin(Result, db.session))
 
 # Register the Subject model view with the admin
 admin.add_view(SubjectAdmin(Subject, db.session))
+
+# Set up logging
+if not app.debug:
+    # Create a file handler for logging
+    file_handler = RotatingFileHandler(
+        "logs/flask_app.log", maxBytes=10240, backupCount=10
+    )
+    file_handler.setLevel(logging.INFO)
+
+    # Create a formatter and attach it to the handler
+    formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+    file_handler.setFormatter(formatter)
+
+    # Add the handler to the app's logger
+    app.logger.addHandler(file_handler)
+    app.logger.setLevel(logging.INFO)
+
+    # Log that the application has started
+    app.logger.info("Flask application startup")
