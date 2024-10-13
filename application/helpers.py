@@ -249,6 +249,7 @@ def update_results(student, subjects, term, session, form):
 
 
 def calculate_results(student_id, term, session):
+    student_class = Student.query.get(student_id).get_class_by_session(session)
     results = Result.query.filter_by(
         student_id=student_id, term=term, session=session
     ).all()

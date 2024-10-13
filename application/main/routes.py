@@ -7,7 +7,7 @@ from flask import (
     url_for,
     flash,
 )
-from ..models import Student, User
+from ..models import Student, User, StudentClassHistory, Session
 from ..auth.forms import StudentRegistrationForm
 
 from ..helpers import (
@@ -56,12 +56,20 @@ def about_us():
 # Manage Subjects - Add, edit, and delete subjects
 # Regenerate Password - Generate a new password for a student
 
+
 # """
+def get_current_session():
+    current_session = Session.query.filter_by(is_current=True).first()
+    return current_session.year if current_session else None
 
 
 @main_bp.route("/register/student", methods=["GET", "POST"])
 def student_registration():
     form = StudentRegistrationForm()
+    current_session = (
+        get_current_session()
+    )  # Call the function to get the current session
+
     try:
         if form.validate_on_submit():
             username = generate_unique_username(
@@ -96,6 +104,15 @@ def student_registration():
 
             db.session.add(student)
             db.session.add(user)
+            db.session.flush()  # Ensure student gets an ID before creating the class history
+
+            # Add entry to class history
+            class_history = StudentClassHistory(
+                student_id=student.id,
+                session=current_session,  # Use the current session
+                entry_class=form.entry_class.data,
+            )
+            db.session.add(class_history)
             db.session.commit()
 
             logger.info(f"Student registered successfully: {username}")
