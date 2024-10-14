@@ -288,8 +288,8 @@ Manage Results
                         <button type="submit" class="btn btn-primary mt-3">Save Results</button>
                     </form>
                     <div class="text-center">
-                        <a href="{{ url_for('admins.students_by_class', entry_class=student.entry_class) }}" class="btn btn-secondary mt-3">
-                            Back to Students in {{ student.entry_class }}
+                        <a href="{{ url_for('admins.students_by_class', class_name=student.class_name) }}" class="btn btn-secondary mt-3">
+                            Back to Students in {{ student.class_name }}
                         </a>
                     </div>
                 </div>

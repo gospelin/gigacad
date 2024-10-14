@@ -22,10 +22,14 @@ class StudentClassHistory(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     student_id = db.Column(db.Integer, db.ForeignKey("student.id"), nullable=False)
     session_id = db.Column(db.Integer, db.ForeignKey("session.id"), nullable=False)
-    entry_class = db.Column(db.String(50), nullable=False)
+    class_name = db.Column(db.String(50), nullable=False)
 
     student = db.relationship("Student", backref="class_history", lazy=True)
     session = db.relationship("Session", backref="class_history", lazy=True)
+    
+    #@staticmethod
+    #def get_class_by_session(student_id, session):
+    #    return StudentClassHistory.query.filter_by(student_id=student_id, session_id=session.id).first()
 
     @classmethod
     def get_class_by_session(cls, student_id, session):
@@ -35,21 +39,24 @@ class StudentClassHistory(db.Model):
         """
         # If session is passed as a string (e.g., "2023/2024"), get the session object
         if isinstance(session, str):
-            session = Session.query.filter_by(year=session).first()
+            session_year = Session.query.filter_by(year=session).first()
+        else:
+            session_year = session  # Assume session is an object
 
-        if not session:
+        if not session_year:
             # Log or handle the case where the session doesn't exist
             return None
 
         # Query the class history for the student in the specified session
         class_history = cls.query.filter_by(
-            student_id=student_id, session_id=session.id
+            student_id=student_id, session_id=session_year.id
         ).first()
 
-        return class_history.entry_class if class_history else None
+        return class_history.class_name if class_history else None
+
 
     def __repr__(self):
-        return f"<StudentClassHistory Student: {self.student_id}, Class: {self.entry_class}, Session: {self.session.year}>"
+        return f"<StudentClassHistory Student: {self.student_id}, Class: {self.class_name}, Session: {self.session.year}>"
 
 
 class Student(db.Model, UserMixin):
@@ -62,7 +69,6 @@ class Student(db.Model, UserMixin):
     gender = db.Column(db.String(10), nullable=False)
     date_of_birth = db.Column(db.Date, nullable=True)
     parent_name = db.Column(db.String(70), nullable=True)
-    entry_class = db.Column(db.String(50), nullable=False)
     previous_class = db.Column(db.String(50), nullable=True)
     parent_phone_number = db.Column(db.String(11), nullable=True)
     address = db.Column(db.String(255), nullable=True)

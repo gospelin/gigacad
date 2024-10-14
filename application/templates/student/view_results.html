@@ -307,7 +307,7 @@
                                     &nbsp; {{ student.last_name }}
                                 </td>
                                 <td>Class</td>
-                                <td>{{ student.entry_class }}</td>
+                                <td>{{ student.class_name }}</td>
                             </tr>
                             <tr class="text-uppercase">
                                 <td>Student ID</td>
@@ -331,7 +331,7 @@
                                 <td style="font-size: 9pt;">Average for the Term </td>
                                 <td>{{ average }}</td>
                             </tr>
-                            {% if "Creche" in student.entry_class or "Nursery" in student.entry_class or "Basic" in student.entry_class %}
+                            {% if "Creche" in student.class_name or "Nursery" in student.class_name or "Basic" in student.class_name %}
                             <tr class="text-uppercase">
                                 <td>Position in class</td>
                                 <td colspan="3">{{ position }}</td>

@@ -27,8 +27,8 @@ class StudentRegistrationForm(FlaskForm):
     )
     address = StringField("Address", validators=[Length(max=255)])
     parent_occupation = StringField("Parent Occupation", validators=[Length(max=100)])
-    entry_class = SelectField(
-        "Entry class",
+    class_name = SelectField(
+        "Current class",
         choices=[
             ("Creche"),
             ("Pre-Nursery"),
@@ -116,8 +116,8 @@ class EditStudentForm(FlaskForm):
         choices=[("male", "Male"), ("female", "Female")],
         validators=[DataRequired()],
     )
-    entry_class = SelectField(
-        "Class",
+    class_name = SelectField(
+        "Current Class",
         choices=[
             ("Creche", "Creche"),
             ("Pre-Nursery", "Pre-Nursery"),
@@ -181,3 +181,27 @@ class SelectTermSessionForm(FlaskForm):
         default="2023/2024",
     )
     submit = SubmitField("Generate Broadsheet")
+
+
+class classForm(FlaskForm):
+    session = SelectField("Select Session", choices=[], coerce=int)
+    class_name = SelectField(
+        "Class",
+        choices=[
+            ("Creche", "Creche"),
+            ("Pre-Nursery", "Pre-Nursery"),
+            ("Nursery 1", "Nursery 1"),
+            ("Nursery 2", "Nursery 2"),
+            ("Nursery 3", "Nursery 3"),
+            ("Basic 1", "Basic 1"),
+            ("Basic 2", "Basic 2"),
+            ("Basic 3", "Basic 3"),
+            ("Basic 4", "Basic 4"),
+            ("Basic 5", "Basic 5"),
+            ("Basic 6", "Basic 6"),
+            ("JSS 1", "JSS 1"),
+            ("JSS 2", "JSS 2"),
+            ("JSS 3", "JSS 3"),
+        ],
+    )
+    submit = SubmitField("View Classes")
