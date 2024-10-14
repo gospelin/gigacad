@@ -58,20 +58,16 @@ def about_us():
 
 
 # """
-def get_current_session():
-    current_session = Session.query.filter_by(is_current=True).first()
-    return current_session.year if current_session else None
-
 
 @main_bp.route("/register/student", methods=["GET", "POST"])
 def student_registration():
     form = StudentRegistrationForm()
     current_session = (
-        get_current_session()
-    )  # Call the function to get the current session
-
+        Session.get_current_session()
+    )  
     try:
         if form.validate_on_submit():
+            # Generate a unique username and temporary password
             username = generate_unique_username(
                 form.first_name.data, form.last_name.data
             )
@@ -79,6 +75,7 @@ def student_registration():
                 random.choices(string.ascii_letters + string.digits, k=8)
             )
 
+            # Create the Student object
             student = Student(
                 first_name=form.first_name.data,
                 last_name=form.last_name.data,
@@ -89,40 +86,45 @@ def student_registration():
                 parent_phone_number=form.parent_phone_number.data,
                 address=form.address.data,
                 parent_occupation=form.parent_occupation.data,
-                entry_class=form.entry_class.data,
-                previous_class=form.previous_class.data,
                 state_of_origin=form.state_of_origin.data,
                 local_government_area=form.local_government_area.data,
                 religion=form.religion.data,
                 username=username,
                 password=temporary_password,
+                approved=False,  
             )
 
+            # Create a User object for login credentials
             user = User(username=student.username, is_admin=False)
-            user.set_password(temporary_password)
-            student.user = user
+            user.set_password(temporary_password)  # Hash the temporary password
+            student.user = user  # Link user to the student
 
+            # Add the student and user to the session
             db.session.add(student)
             db.session.add(user)
             db.session.flush()  # Ensure student gets an ID before creating the class history
 
-            # Add entry to class history
+            # Add entry to StudentClassHistory to track class for the current session
             class_history = StudentClassHistory(
                 student_id=student.id,
-                session=current_session,  # Use the current session
-                entry_class=form.entry_class.data,
+                session_id=current_session.id,  # Store session ID from current session
+                class_name=form.class_name.data,  # Store the class entered during registration
             )
             db.session.add(class_history)
+
+            # Commit all changes (student, user, class history)
             db.session.commit()
 
+            # Log success and inform the user
             logger.info(f"Student registered successfully: {username}")
             flash(
                 f"Student registered successfully. Username: {username}, Password: {temporary_password}",
                 "alert alert-success",
             )
             return redirect(url_for("main.student_registration"))
+
     except Exception as e:
-        db.session.rollback()
+        db.session.rollback()  # Rollback the session on error
         logger.error(f"Error registering student: {str(e)}")
         flash("An error occurred. Please try again later.", "alert alert-danger")
 

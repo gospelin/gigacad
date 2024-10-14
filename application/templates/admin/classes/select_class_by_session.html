@@ -1,0 +1,18 @@
+{% extends 'admin/base.html' %} 
+{% block content %}
+
+<form method="POST" action="{{ url_for('admins.view_class_by_session') }}">
+    {{ form.hidden_tag() }}
+    <div class="form-group">
+        {{ form.session.label }} 
+        {{ form.session(class="form-control") }}
+    </div>
+    <div class="form-group">
+        {{ form.class_name.label }}
+        {{ form.class_name(class="form-control") }}
+    </div>
+    <div class="form-group">
+        {{ form.submit(class="btn btn-primary") }}
+    </div>
+</form>
+{% endblock content %}

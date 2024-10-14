@@ -26,16 +26,16 @@ Manage Classes
     </div>
 
     <div class="row justify-content-center">
-        {% for entry_class in ['Creche', 'Pre-Nursery', 'Nursery 1', 'Nursery 2', 'Nursery 3', 'Basic 1', 'Basic 2', 'Basic 3', 'Basic 4', 'Basic 5', 'Basic 6', 'JSS 1', 'JSS 2', 'JSS 3'] %}
+        {% for class_name in ['Creche', 'Pre-Nursery', 'Nursery 1', 'Nursery 2', 'Nursery 3', 'Basic 1', 'Basic 2', 'Basic 3', 'Basic 4', 'Basic 5', 'Basic 6', 'JSS 1', 'JSS 2', 'JSS 3'] %}
         <div class="col-md-4 mb-4 class-card">
             <div class="card h-100 border-0 shadow-lg">
                 <div class="card-body d-flex flex-column">
-                    <h5 class="card-title text-center">Manage {{ entry_class }} Class</h5>
+                    <h5 class="card-title text-center">Manage {{ class_name }} Class</h5>
                     <p class="card-text text-center">Total Students: 50</p>
                     <p class="card-text text-center">Average Grade: 84.5</p>
                     <div class="mt-auto">
-                        <a href="{{ url_for('admins.students_by_class', entry_class=entry_class) }}" class="btn btn-primary btn-block mb-2">
-                            {% if "Nursery" in entry_class or "Basic" in entry_class or "Creche" in entry_class %}
+                        <a href="{{ url_for('admins.students_by_class', class_name=class_name) }}" class="btn btn-primary btn-block mb-2">
+                            {% if "Nursery" in class_name or "Basic" in class_name or "Creche" in class_name %}
                                 Pupils Management
                             {% else %}
                                 Students Management

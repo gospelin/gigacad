@@ -46,7 +46,6 @@
                     <th>Date of Birth</th>
                     <th>Class</th>
                     <th>Username</th>
-                    <th>Password</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -58,9 +57,11 @@
                     <td>{{ student.last_name }}</td>
                     <td>{{ student.gender }}</td>
                     <td>{{ student.date_of_birth }}</td>
-                    <td>{{ student.entry_class }}</td>
+                    <td>
+                        {% set latest_class_history = student.class_history|sort(attribute='id', reverse=True)|first %}
+                        {{ latest_class_history.class_name if latest_class_history else 'N/A' }}
+                    </td>
                     <td>{{ student.username }}</td>
-                    <td>{{ student.password }}</td>
 
                     <td>
                         <form
@@ -68,12 +69,9 @@
                             method="POST"
                             onsubmit="return confirm('Are you sure you want to approve this student?');"
                         >
-                            {{ approve_form.hidden_tag() }} {% if not
-                            student.approved %}
-                            <button
-                                type="submit"
-                                class="btn btn-success btn-sm animate-approve"
-                            >
+                            {{ approve_form.hidden_tag() }} 
+                            {% if not student.approved %}
+                            <button type="submit" class="btn btn-success btn-sm animate-approve">
                                 Approve
                             </button>
                             {% endif %}
@@ -83,12 +81,9 @@
                             method="POST"
                             class="d-inline"
                         >
-                            {{ deactivate_form.hidden_tag() }} {% if
-                            student.approved %}
-                            <button
-                                type="submit"
-                                class="btn btn-warning btn-sm animate-deactivate"
-                            >
+                            {{ deactivate_form.hidden_tag() }} 
+                            {% if student.approved %}
+                            <button type="submit" class="btn btn-warning btn-sm animate-deactivate">
                                 Deactivate
                             </button>
                             {% endif %}
@@ -99,10 +94,7 @@
                             class="d-inline"
                         >
                             {{ regenerate_form.hidden_tag() }}
-                            <button
-                                type="submit"
-                                class="btn btn-primary btn-sm animate-regenerate"
-                            >
+                            <button type="submit" class="btn btn-primary btn-sm animate-regenerate">
                                 Regenerate Password
                             </button>
                         </form>
