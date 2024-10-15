@@ -25,7 +25,8 @@ from ..auth.forms import (
     ResultForm,
     SubjectForm,
     DeleteForm,
-    SelectTermSessionForm,
+    #SelectTermSessionForm,
+    SessionForm,
     ApproveForm,
     classForm
 )
@@ -81,9 +82,6 @@ def approve_students():
     # Group students by their class name
     students_by_class = defaultdict(list)
     for student, class_name in students:
-        # If class_name is None, you can handle it based on your needs
-        if class_name is None:
-            class_name = "Unassigned"  # Or skip appending the student
 
         # Add student to the appropriate class group
         students_by_class[class_name].append(student)
@@ -145,75 +143,68 @@ def deactivate_student(student_id):
     return redirect(url_for("admins.approve_students"))
 
 
-@admin_bp.route("/admin/regenerate_password/<int:student_id>", methods=["POST"])
+@admin_bp.route("/admin/regenerate_credentials/<int:student_id>", methods=["POST"])
 @login_required
 def regenerate_password(student_id):
     if not current_user.is_admin:
         abort(403)  # Forbidden access
 
-    form = ApproveForm()
-    student = Student.query.get_or_404(student_id)
-    if form.validate_on_submit() and student:
+    form = ApproveForm(prefix="regenerate")
 
-        # Generate a new temporary password
-        new_temporary_password = "".join(
-            random.choices(string.ascii_letters + string.digits, k=8)
-        )
-        # Update student's password
-        student.password = new_temporary_password
-
-        # Update user's password
-        student.user.set_password(new_temporary_password)
+    if form.validate_on_submit():
+        student = Student.query.get_or_404(student_id)
+        new_password = "".join(random.choices(string.ascii_letters + string.digits, k=8))
+        student.user.set_password(new_password)
         db.session.commit()
+
         flash(
-            f"New password generated for {student.first_name} {student.last_name}: {new_temporary_password}",
+            f"Credentials regenerated for {student.first_name} {student.last_name}. New password: {new_password}",
             "alert alert-success",
         )
     else:
-        flash("Student not found.", "alert alert-danger")
+        flash("Form validation failed. Please try again.", "alert alert-danger")
+
     return redirect(url_for("admins.approve_students"))
 
 
-# @admin_bp.route("/admin/students_by_class/<string:class_name>")
-# @login_required
-# def students_by_class(class_name):
-#    students = Student.query.filter_by(class_name=class_name).all()
-#    form = DeleteForm()  # Create an instance of the DeleteForm
-#    return render_template(
-#        "admin/classes/students_by_class.html",
-#        students=students,
-#        class_name=class_name,
-#        form=form,
-#    )
+@admin_bp.route("/manage_sessions", methods=["GET", "POST"])
+@login_required
+def manage_sessions():
+    if not current_user.is_admin:
+        abort(403)  # Restrict access for non-admins
+
+    form = SessionForm()
+
+    # Fetch all sessions and populate the choices for the form
+    sessions = Session.query.all()
+    form.session.choices = [(s.id, s.year) for s in sessions]
+
+    if form.validate_on_submit():
+        selected_session_id = form.session.data
+        return redirect(
+            url_for("admins.change_session", session_id=selected_session_id)
+        )
+
+    return render_template("admin/manage_sessions.html", form=form)
 
 
-# @admin_bp.route("/admin/students_by_class/<string:session_year>")
-# @login_required
-# def students_by_class(session_year):
-#    # Retrieve the session object based on the provided year
-#    session = Session.query.filter_by(year=session_year).first()
+@admin_bp.route("/change_session/<int:session_id>", methods=["GET", "POST"])
+@login_required
+def change_session(session_id):
+    if not current_user.is_admin:
+        abort(403)  # Restrict access for non-admins
 
-#    if not session:
-#        flash("Session not found.", "alert alert-danger")
-#        return redirect(url_for("admins.approve_students"))  # Redirect as appropriate
+    new_session = Session.set_current_session(session_id)
 
-#    # Get all students and their current classes for the specified session
-#    students_with_classes = []
-#    students = Student.query.all()
+    if new_session:
+        flash(
+            f"The current session has been updated to {new_session.year}.",
+            "alert alert-success",
+        )
+    else:
+        flash("Failed to update the current session.", "alert alert-danger")
 
-#    for student in students:
-#        current_class = student.get_class_by_session(session)
-#        if current_class:
-#            students_with_classes.append((student, current_class))
-
-#    form = DeleteForm()  # Create an instance of the DeleteForm
-#    return render_template(
-#        "admin/classes/students_by_class.html",
-#        students=students_with_classes,
-#        session_year=session_year,
-#        current_class=current_class,
-#        form=form,
-#    )
+    return redirect(url_for("admins.manage_sessions"))
 
 
 @admin_bp.route("/admin/manage_classes")
@@ -254,34 +245,6 @@ def select_term_session(student_id):
         sessions=sessions,
     )
 
-# @admin_bp.route("/admin/select_session", methods=['GET', 'POST'])
-# @login_required
-# def select_session():
-#    form = SessionSelectionForm()
-#    form.session.choices = [(s.id, s.year) for s in Session.query.all()]
-#    if form.validate_on_submit():
-#        session_id = form.session.data
-#        return redirect(url_for('admins.view_classes_by_session', session_id=session_id))
-#    return render_template("admin/classes/select_session.html", form=form)
-
-
-# @admin_bp.route("/admin/view_classes_by_session/<int:session_id>")
-# @login_required
-# def view_classes_by_session(session_id):
-#    session = Session.query.get_or_404(session_id)
-#    class_history = StudentClassHistory.query.filter_by(session_id=session.id).all()
-
-#    # Group students by class
-#    classes = {}
-#    for history in class_history:
-#        if history.class_name not in classes:
-#            classes[history.class_name] = []
-#        classes[history.class_name].append(history.student)
-
-#    return render_template(
-#        "admin/classes/view_classes_by_session.html", session=session, classes=classes
-#    )
-
 
 @admin_bp.route("/select_class", methods=["GET", "POST"])
 @login_required
@@ -311,7 +274,7 @@ def view_class_by_session():
 @login_required
 def students_by_class(session_id, class_name):
     # Get the selected session
-    session = Session.query.get(session_id)
+    session = Session.query.get_or_404(session_id)
 
     # Get the student history filtered by session and class
     student_histories = StudentClassHistory.query.filter_by(
@@ -427,7 +390,7 @@ def promote_student(student_id):
 
     if not current_session:
         flash("No current session available for promotion.", "alert alert-danger")
-        return redirect(url_for("admin.manage_students"))
+        return redirect(url_for("admins.manage_students"))
 
     # Define the class hierarchy
     class_hierarchy = [
@@ -456,7 +419,7 @@ def promote_student(student_id):
 
     if not latest_class_history:
         flash("No class history found for the student.", "alert alert-danger")
-        return redirect(url_for("admin.manage_students"))
+        return redirect(url_for("admins.manage_students"))
 
     current_class = latest_class_history.class_name
 
@@ -471,7 +434,7 @@ def promote_student(student_id):
             )
             return redirect(
                 url_for(
-                    "admin.students_by_class",
+                    "admins.students_by_class",
                     session_id=current_session.id,
                     class_name=current_class,
                 )
@@ -480,13 +443,13 @@ def promote_student(student_id):
         flash("Current class not found in the hierarchy.", "alert alert-danger")
         return redirect(
             url_for(
-                "admin.students_by_class",
+                "admins.students_by_class",
                 session_id=current_session.id,
                 class_name=current_class,
             )
         )
 
-    # Add a new StudentClassHistory record for the promotion
+    # Add a new StudentClassHistory record for the promotion, only for the current session
     new_class_history = StudentClassHistory(
         student_id=student.id, session_id=current_session.id, class_name=new_class
     )
@@ -498,7 +461,7 @@ def promote_student(student_id):
     )
     return redirect(
         url_for(
-            "admin.students_by_class",
+            "admins.students_by_class",
             session_id=current_session.id,
             class_name=new_class,
         )
@@ -506,75 +469,123 @@ def promote_student(student_id):
 
 
 @admin_bp.route("/admin/edit_student/<int:student_id>", methods=["GET", "POST"])
+@login_required
 def edit_student(student_id):
+    if not current_user.is_admin:
+        abort(403)  # Restrict access for non-admins
+
     student = Student.query.get_or_404(student_id)
+    session_id = Session.query.filter_by(is_current=True).first().id
     form = EditStudentForm()
 
+    # Retrieve the latest class history for the student
+    student_class_history = (
+        StudentClassHistory.query.filter_by(student_id=student.id)
+        .order_by(StudentClassHistory.id.desc())
+        .first()
+    )
+
     if form.validate_on_submit():
+        # Update student fields
         student.username = form.username.data
-        student.class_name = form.class_name.data
         student.first_name = form.first_name.data
         student.last_name = form.last_name.data
         student.middle_name = form.middle_name.data
         student.gender = form.gender.data
-        # Update other fields as needed
+        # Update other fields as necessary
 
-        # Update the username in the User model
+        # Update class in StudentClassHistory (create new entry if necessary)
+        if student_class_history:
+            student_class_history.class_name = form.class_name.data
+        else:
+            # If no history exists, create a new entry
+            new_class_history = StudentClassHistory(
+                student_id=student.id, session_id=session_id,  # Assuming current session is tracked
+                class_name=form.class_name.data,
+            )
+            db.session.add(new_class_history)
+
+        # Update username in the User model
         user = User.query.filter_by(id=student.user_id).first()
         user.username = form.username.data
 
         db.session.commit()
         flash("Student updated successfully!", "alert alert-success")
         return redirect(
-            url_for("admins.students_by_class", class_name=student.class_name)
+            url_for("admins.students_by_class", session_id=session_id, class_name=form.class_name.data)
         )
+
     elif request.method == "GET":
+        # Pre-fill form with student data
         form.username.data = student.username
-        form.class_name.data = student.class_name
         form.first_name.data = student.first_name
         form.last_name.data = student.last_name
         form.middle_name.data = student.middle_name
         form.gender.data = student.gender
-        # Populate other fields as necessary
+
+        # Pre-fill the class name from StudentClassHistory if available
+        if student_class_history:
+            form.class_name.data = student_class_history.class_name
+        else:
+            form.class_name.data = "Unassigned"  # Default or handle no class case
 
     return render_template(
         "admin/students/edit_student.html", form=form, student=student
     )
 
 
-@admin_bp.route("/admin/delete_student/<int:student_id>", methods=["GET", "POST"])
+@admin_bp.route("/admin/delete_student/<int:student_id>", methods=["POST"])
+@login_required
 def delete_student(student_id):
-    form = DeleteForm()
-    if form.validate_on_submit():
-        if not current_user.is_authenticated or not current_user.is_admin:
-            return redirect(url_for("auth.login"))
+    if not current_user.is_admin:
+        abort(403)  # Restrict access for non-admins
 
+    form = DeleteForm()
+    session_id = Session.query.filter_by(is_current=True).first().id
+
+    if form.validate_on_submit():
         student = Student.query.get_or_404(student_id)
+        student_class_history = (
+            StudentClassHistory.query.filter_by(student_id=student.id)
+            .order_by(StudentClassHistory.id.desc())
+            .first()
+        )
 
         try:
-            # Manually delete related results
+            # Delete all related results
             results = Result.query.filter_by(student_id=student.id).all()
             for result in results:
                 db.session.delete(result)
 
-            # Delete the associated user
+            # Delete the associated User account
             user = User.query.get(student.user_id)
             if user:
                 db.session.delete(user)
 
+            # Delete all class history for the student
+            class_history_records = StudentClassHistory.query.filter_by(
+                student_id=student.id
+            ).all()
+            for history in class_history_records:
+                db.session.delete(history)
+
+            # Delete the student record itself
             db.session.delete(student)
             db.session.commit()
+
             flash(
-                "Student and associated results, along with user details, deleted successfully!",
+                "Student and associated records deleted successfully!",
                 "alert alert-success",
             )
         except Exception as e:
             db.session.rollback()
             flash(f"Error deleting student: {e}", "alert alert-danger")
 
-    return redirect(
-        url_for("admins.students_by_class", class_name=student.class_name)
+    # Redirect to the student's class page, using the latest class from history or default if not found
+    class_name = (
+        student_class_history.class_name if student_class_history else "Unassigned"
     )
+    return redirect(url_for("admins.students_by_class", session_id=session_id, class_name=class_name))
 
 
 @admin_bp.route("/admin/manage_subjects", methods=["GET", "POST"])

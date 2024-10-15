@@ -17,6 +17,22 @@ class Session(db.Model):
         current_session = Session.query.filter_by(is_current=True).first()
         return current_session
 
+    @staticmethod
+    def set_current_session(session_id):
+        # Deactivate the current session
+        current_session = Session.query.filter_by(is_current=True).first()
+        if current_session:
+            current_session.is_current = False
+
+        # Set the new session as current
+        new_session = Session.query.get(session_id)
+        if new_session:
+            new_session.current = True
+            db.session.commit()
+            return new_session
+        else:
+            return None
+
 
 class StudentClassHistory(db.Model):
     id = db.Column(db.Integer, primary_key=True)
