@@ -1,4 +1,4 @@
-% extends 'admin/base.html' %} {% block content %}
+{% extends 'admin/base.html' %} {% block content %}
 <div class="container mt-5">
     {% for message in get_flashed_messages() %}
     <div class="alert alert-warning mt-3">{{ message }}</div>

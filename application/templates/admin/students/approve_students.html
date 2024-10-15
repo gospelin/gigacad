@@ -43,7 +43,7 @@
                     <th>Middle Name</th>
                     <th>Last Name</th>
                     <th>Gender</th>
-                    <th>Date of Birth</th>
+                    <th>Password</th>
                     <th>Class</th>
                     <th>Username</th>
                     <th>Action</th>
@@ -56,7 +56,7 @@
                     <td>{{ student.middle_name }}</td>
                     <td>{{ student.last_name }}</td>
                     <td>{{ student.gender }}</td>
-                    <td>{{ student.date_of_birth }}</td>
+                    <td>{{ student.password }}</td>
                     <td>
                         {% set latest_class_history = student.class_history|sort(attribute='id', reverse=True)|first %}
                         {{ latest_class_history.class_name if latest_class_history else 'N/A' }}

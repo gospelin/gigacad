@@ -172,7 +172,7 @@
                     <a href="#" id="teachers-link"><i class="fas fa-chalkboard-teacher icon"></i>Teachers</a>
                     <a href="#" id="parents-link"><i class="fas fa-user icon"></i>Parents</a>
                     <a href="{{ url_for('admins.view_class_by_session') }}" id="classes-link"><i class="fas fa-school icon"></i>Classes</a>
-                    <a href="#" id="attendance-link"><i class="fas fa-calendar-check icon"></i>Attendance</a>
+                    <a href="{{ url_for('admins.manage_sessions') }}" id="sessions-link"><i class="fas fa-calendar-alt icon"></i>Manage Sessions</a>
                     <a href="#" id="settings-link"><i class="fas fa-cogs icon"></i>Settings</a>
                     <a href="{{ url_for("auth.logout") }}" id="logout-link"><i class="fas fa-sign-out-alt icon"></i>Logout</a>
                 </nav>
