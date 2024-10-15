@@ -177,15 +177,18 @@ def manage_sessions():
 
     # Fetch all sessions and populate the choices for the form
     sessions = Session.query.all()
-    form.session.choices = [(s.id, s.year) for s in sessions]
+    form.session.choices = [(session.id, session.year) for session in sessions]
+
+    # Set the default session to the current session
+    current_session = Session.get_current_session()
 
     if form.validate_on_submit():
-        selected_session_id = form.session.data
+        selected_session = form.session.data
         return redirect(
-            url_for("admins.change_session", session_id=selected_session_id)
+            url_for("admins.change_session", session_id=selected_session)
         )
 
-    return render_template("admin/manage_sessions.html", form=form)
+    return render_template("admin/manage_sessions.html", current_session=current_session.year, form=form)
 
 
 @admin_bp.route("/change_session/<int:session_id>", methods=["GET", "POST"])
@@ -258,7 +261,7 @@ def view_class_by_session():
 
     if form.validate_on_submit():
         selected_session = form.session.data
-        print(f"\n\n{selected_session=}\n\n")
+
         selected_class = form.class_name.data
         return redirect(
             url_for(

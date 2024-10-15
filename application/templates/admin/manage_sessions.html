@@ -5,6 +5,8 @@
     {% for message in get_flashed_messages() %}
         <div class="alert alert-warning mt-3">{{ message }}</div>
     {% endfor %}
+        <h1 class="text-center">Manage Sessions</h1>
+        <h2 class="text-center">Current Session - {{current_session}} </h2>
         <form method="POST" action="{{ url_for('admins.manage_sessions') }}">
             {{ form.hidden_tag() }}
             <div class="form-group">
