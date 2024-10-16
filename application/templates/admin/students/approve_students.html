@@ -32,7 +32,21 @@
     {% for message in get_flashed_messages() %}
     <div class="alert alert-warning mt-3">{{ message }}</div>
     {% endfor %}
-    <h1 class="text-center mb-4">Manage Students</h1>
+    
+    <!-- Session Form -->
+    <form method="POST" action="{{ url_for('admins.approve_students') }}">
+        {{ session_form.hidden_tag() }}
+        <div class="form-group">
+            {{ session_form.session.label }}
+            {{ session_form.session(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ session_form.submit(class="btn btn-primary") }}
+        </div>
+    </form>
+
+    <h1 class="text-center mb-4 animate__animated animate__fadeInDown">Manage Students</h1>
+    
     {% for class_name, students in students_by_class.items() %}
     <h2 class="mt-4">{{ class_name }}</h2>
     <div class="table-responsive">
@@ -57,46 +71,25 @@
                     <td>{{ student.last_name }}</td>
                     <td>{{ student.gender }}</td>
                     <td>{{ student.password }}</td>
-                    <td>
-                        {% set latest_class_history = student.class_history|sort(attribute='id', reverse=True)|first %}
-                        {{ latest_class_history.class_name if latest_class_history else 'N/A' }}
-                    </td>
+                    <td>{{ student.class_history[-1].class_name if student.class_history else 'N/A' }}</td>
                     <td>{{ student.username }}</td>
 
                     <td>
-                        <form
-                            action="{{ url_for('admins.approve_student', student_id=student.id) }}"
-                            method="POST"
-                            onsubmit="return confirm('Are you sure you want to approve this student?');"
-                        >
-                            {{ approve_form.hidden_tag() }} 
+                        <form action="{{ url_for('admins.approve_student', student_id=student.id) }}" method="POST">
+                            {{ approve_form.hidden_tag() }}
                             {% if not student.approved %}
-                            <button type="submit" class="btn btn-success btn-sm animate-approve">
-                                Approve
-                            </button>
+                            <button type="submit" class="btn btn-success btn-sm animate-approve">Approve</button>
                             {% endif %}
                         </form>
-                        <form
-                            action="{{ url_for('admins.deactivate_student', student_id=student.id) }}"
-                            method="POST"
-                            class="d-inline"
-                        >
-                            {{ deactivate_form.hidden_tag() }} 
+                        <form action="{{ url_for('admins.deactivate_student', student_id=student.id) }}" method="POST" class="d-inline">
+                            {{ deactivate_form.hidden_tag() }}
                             {% if student.approved %}
-                            <button type="submit" class="btn btn-warning btn-sm animate-deactivate">
-                                Deactivate
-                            </button>
+                            <button type="submit" class="btn btn-warning btn-sm animate-deactivate">Deactivate</button>
                             {% endif %}
                         </form>
-                        <form
-                            action="{{ url_for('admins.regenerate_password', student_id=student.id) }}"
-                            method="POST"
-                            class="d-inline"
-                        >
+                        <form action="{{ url_for('admins.regenerate_password', student_id=student.id) }}" method="POST" class="d-inline">
                             {{ regenerate_form.hidden_tag() }}
-                            <button type="submit" class="btn btn-primary btn-sm animate-regenerate">
-                                Regenerate Password
-                            </button>
+                            <button type="submit" class="btn btn-primary btn-sm animate-regenerate">Regenerate Password</button>
                         </form>
                     </td>
                 </tr>
@@ -106,5 +99,4 @@
     </div>
     {% endfor %}
 </div>
-
 {% endblock %}
