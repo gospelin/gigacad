@@ -109,7 +109,8 @@ def generate_remark(total):
 
 def calculate_grand_total(results):
     """Calculate the total score from all results."""
-    return sum(result.total for result in results if result.total is not None)
+    # return sum(result.total for result in results if result.total is not None)
+    return sum(result.total for result in results)
 
 
 def get_last_term(current_term):
@@ -163,16 +164,28 @@ def calculate_cumulative_average(results, current_term_average):
         float: The calculated cumulative average.
 
     """
-    last_term_average = (
-        float(results[0].last_term_average)
-        if results and results[0].last_term_average
-        else 0
-    )
+    # last_term_average = (
+    #    float(results[0].last_term_average)
+    #    if results and results[0].last_term_average
+    #    else 0
+    # )
+
+    # if last_term_average and current_term_average:
+    #    cumulative_average = (last_term_average + current_term_average) / 2
+    # else:
+    #    cumulative_average = current_term_average
+
+    # return cumulative_average
+    
+    last_term_average = 0
+    cumulative_average = current_term_average
+    if results:
+        last_term_average = (
+            float(results[0].last_term_average) if results[0].last_term_average else 0
+        )
 
     if last_term_average and current_term_average:
         cumulative_average = (last_term_average + current_term_average) / 2
-    else:
-        cumulative_average = current_term_average
 
     return cumulative_average
 
@@ -212,27 +225,30 @@ def update_results(student, subjects, term, session_year, form):
 
     Raises:
         Exception: If an error occurs while updating the results.
-
     """
     try:
         for subject in subjects:
-            class_assessment = request.form.get(f"class_assessment_{subject.id}", "0")
-            summative_test = request.form.get(f"summative_test_{subject.id}", "0")
-            exam = request.form.get(f"exam_{subject.id}", "0")
+            class_assessment = request.form.get(f"class_assessment_{subject.id}", "")
+            summative_test = request.form.get(f"summative_test_{subject.id}", "")
+            exam = request.form.get(f"exam_{subject.id}", "")
 
-            class_assessment_value = int(class_assessment) if class_assessment else 0
-            summative_test_value = int(summative_test) if summative_test else 0
-            exam_value = int(exam) if exam else 0
-            total = class_assessment_value + summative_test_value + exam_value
+            class_assessment_value = int(class_assessment) if class_assessment else None
+            summative_test_value = int(summative_test) if summative_test else None
+            exam_value = int(exam) if exam else None
+            total = (
+                (class_assessment_value or 0)
+                + (summative_test_value or 0)
+                + (exam_value or 0)
+            )
 
-            grade = calculate_grade(total)  # Make sure you have this function
-            remark = generate_remark(total)  # Make sure you have this function
+            grade = calculate_grade(total)
+            remark = generate_remark(total)
 
             result = Result.query.filter_by(
                 student_id=student.id,
                 subject_id=subject.id,
                 term=term,
-                session=session_year,
+                session_year=session_year,  # Use session_year directly
             ).first()
 
             if result:
@@ -251,7 +267,7 @@ def update_results(student, subjects, term, session_year, form):
                     student_id=student.id,
                     subject_id=subject.id,
                     term=term,
-                    session=session_year,
+                    session_year=session_year,  # Use session_year directly
                     class_assessment=class_assessment_value,
                     summative_test=summative_test_value,
                     exam=exam_value,
@@ -271,13 +287,13 @@ def update_results(student, subjects, term, session_year, form):
         raise e
 
 
-def calculate_results(student_id, term, session):
+def calculate_results(student_id, term, session_year):
     """Calculate student results and averages.
 
     Args:
         student_id (int): The ID of the student.
         term (str): The current term.
-        session (Session): The session object.
+        session_year (str): The session year.
 
     Returns:
         tuple: A tuple containing the following values:
@@ -287,11 +303,11 @@ def calculate_results(student_id, term, session):
             - cumulative_average (float): The cumulative average of all results.
             - results_dict (dict): A dictionary mapping subject IDs to Result objects.
     """
-    session_id = session.id
-
     # Fetch results for the current term and session
     results = Result.query.filter_by(
-        student_id=student_id, term=term, session_id=session_id
+        student_id=student_id,
+        term=term,
+        session_year=session_year,  # Use session_year directly
     ).all()
 
     grand_total = calculate_grand_total(results)
@@ -299,15 +315,19 @@ def calculate_results(student_id, term, session):
 
     last_term = get_last_term(term)
     last_term_results = Result.query.filter_by(
-        student_id=student_id, term=last_term, session_id=session_id
+        student_id=student_id,
+        term=last_term,
+        session_year=session_year,  # Use session_year directly
     ).all()
 
     last_term_average = (
         round(calculate_average(last_term_results), 1) if last_term_results else 0
     )
 
-    cumulative_average = round(calculate_cumulative_average(results, average), 1)
+    for res in results:
+        res.last_term_average = last_term_average
 
+    cumulative_average = round(calculate_cumulative_average(results, average), 1)
     results_dict = {result.subject_id: result for result in results}
 
     return results, grand_total, average, cumulative_average, results_dict

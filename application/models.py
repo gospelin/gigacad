@@ -38,22 +38,18 @@ class StudentClassHistory(db.Model):
 
     student = db.relationship("Student", backref="class_history", lazy=True)
     session = db.relationship("Session", backref="class_history", lazy=True)
-    
-    #@staticmethod
-    #def get_class_by_session(student_id, session):
-    #    return StudentClassHistory.query.filter_by(student_id=student_id, session_id=session.id).first()
 
     @classmethod
-    def get_class_by_session(cls, student_id, session):
+    def get_class_by_session(cls, student_id, session_year_str):
         """
         Get the student's class for a given academic session.
         If the session is a string, retrieve the session object first.
         """
         # If session is passed as a string (e.g., "2023/2024"), get the session object
-        if isinstance(session, str):
-            session_year = Session.query.filter_by(year=session).first()
+        if isinstance(session_year_str, str):
+            session_year = Session.query.filter_by(year=session_year_str).first()
         else:
-            session_year = session  # Assume session is an object
+            session_year = session_year_str  # Assume session is an object
 
         if not session_year:
             # Log or handle the case where the session doesn't exist
@@ -150,15 +146,11 @@ class Subject(db.Model):
 
 
 class Result(db.Model):
-    __tablename__ = "results"
-
     id = db.Column(db.Integer, primary_key=True)
     student_id = db.Column(db.Integer, db.ForeignKey("student.id"), nullable=False)
     subject_id = db.Column(db.Integer, db.ForeignKey("subject.id"), nullable=False)
     term = db.Column(db.String(20), nullable=False)
-    session_id = db.Column(
-        db.Integer, db.ForeignKey("session.id"), nullable=False
-    )  # Updated to reference Session
+    session_year = db.Column(db.String(20), nullable=False)
     class_assessment = db.Column(db.Integer, nullable=True)
     summative_test = db.Column(db.Integer, nullable=True)
     exam = db.Column(db.Integer, nullable=True)
@@ -170,8 +162,6 @@ class Result(db.Model):
     last_term_average = db.Column(db.Float, nullable=True)
     position = db.Column(db.String(10), nullable=True)
     date_issued = db.Column(db.String(100), nullable=True)
-
-    session = db.relationship("Session", backref="results")
 
     def __repr__(self):
         return f"<Result Student ID: {self.student_id}, Subject ID: {self.subject_id}>"

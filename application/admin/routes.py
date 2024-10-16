@@ -823,7 +823,6 @@ It also provides the ability to generate broadsheets and download results
 """
 
 
-
 @admin_bp.route("/select_term_session/<int:student_id>", methods=["GET", "POST"])
 @login_required
 def select_term_session(student_id):
@@ -846,16 +845,17 @@ def select_term_session(student_id):
 
     if form.validate_on_submit():
         term = form.term.data
-        session = form.session.data
+        session_year = form.session.data
 
         return redirect(
             url_for(
                 "admins.manage_results",
                 student_id=student.id,
                 term=term,
-                session=session,
+                session_year=session_year,
             )
         )
+
     return render_template(
         "admin/results/select_term_session.html",
         form=form,
@@ -867,43 +867,33 @@ def select_term_session(student_id):
 @admin_bp.route("/manage_results/<int:student_id>", methods=["GET", "POST"])
 @login_required
 def manage_results(student_id):
-    """
-    Manage the results for a specific student.
-
-    Args:
-        student_id (int): The ID of the student.
-
-    Returns:
-        The rendered template for managing results or a redirect to the login page.
-
-    Raises:
-        SQLAlchemyError: If there is an error with the database.
-        Exception: If an unexpected error occurs.
-    """
-
     if not current_user.is_authenticated or not current_user.is_admin:
         return redirect(url_for("auth.login"))
 
     try:
         student = Student.query.get_or_404(student_id)
         term = request.args.get("term")
-        session_year = request.args.get("session")
+        session_year = request.args.get("session")  # this is a string from the form
 
+        # Ensure both term and session_year are provided
         if not term or not session_year:
             return redirect(
                 url_for("admins.select_term_session", student_id=student.id)
             )
 
-        # Retrieve the session object from the database
+        # Query the Session table to get the session object using session_year (string)
         session = Session.query.filter_by(year=session_year).first()
+
+        # If session is not found, return an error
         if not session:
-            flash("No session found for the selected year", "alert alert-danger")
+            flash("Invalid session year selected", "alert alert-danger")
             return redirect(
                 url_for("admins.select_term_session", student_id=student.id)
             )
 
-        # Get the class for the selected session
-        student_class = StudentClassHistory.get_class_by_session(student.id, session)
+        # Now get the class for the selected session using session.id
+        student_class = StudentClassHistory.get_class_by_session(student.id, session.id)
+
         if not student_class:
             flash("No class found for the selected session", "alert alert-danger")
             return redirect(
@@ -912,9 +902,11 @@ def manage_results(student_id):
 
         # Initialize the result form with the term and session pre-filled
         form = ResultForm(term=term, session=session_year)
+
         student_class_history = StudentClassHistory.query.filter_by(
-            student_id=student.id, session_id=session.id
+            student_id=student.id, session_id=session.id  # Use session.id here
         ).first()
+
         subjects = get_subjects_by_class_name(student_class_history)
 
         if form.validate_on_submit():
@@ -931,7 +923,7 @@ def manage_results(student_id):
 
         # Calculate and display results
         results, grand_total, average, cumulative_average, results_dict = (
-            calculate_results(student.id, term, session)
+            calculate_results(student.id, term, session_year)
         )
 
         return render_template(
@@ -946,7 +938,6 @@ def manage_results(student_id):
             form=form,
             selected_term=term,
             selected_session=session_year,
-            session_id=session.id,
             student_class=student_class,  # Pass the class to the template
         )
 

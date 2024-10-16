@@ -184,7 +184,7 @@ class SelectTermSessionForm(FlaskForm):
 
 class SessionForm(FlaskForm):
     session = SelectField("Select Session", choices=[], coerce=int)
-    submit = SubmitField("Set as Current Session")
+    submit = SubmitField("Choose an Academic Session")
 
 
 class classForm(FlaskForm):
