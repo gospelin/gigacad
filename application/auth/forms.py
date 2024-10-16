@@ -160,27 +160,27 @@ class ApproveForm(FlaskForm):
     pass
 
 
-# class SelectTermSessionForm(FlaskForm):
-#    term = SelectField(
-#        "Term",
-#        choices=[
-#            ("First Term", "First Term"),
-#            ("Second Term", "Second Term"),
-#            ("Third Term", "Third Term"),
-#        ],
-#        validators=[DataRequired()],
-#    )
-#    session = SelectField(
-#        "Select Session",
-#        choices=[
-#            ("2023/2024", "2023/2024"),
-#            ("2024/2025", "2024/2025"),
-#            ("2025/2026", "2025/2026"),
-#        ],
-#        validators=[DataRequired()],
-#        default="2023/2024",
-#    )
-#    submit = SubmitField("Generate Broadsheet")
+class SelectTermSessionForm(FlaskForm):
+    term = SelectField(
+        "Term",
+        choices=[
+            ("First Term", "First Term"),
+            ("Second Term", "Second Term"),
+            ("Third Term", "Third Term"),
+        ],
+        validators=[DataRequired()],
+    )
+    session = SelectField(
+        "Select Session",
+        choices=[
+            ("2023/2024", "2023/2024"),
+            ("2024/2025", "2024/2025"),
+            ("2025/2026", "2025/2026"),
+        ],
+        validators=[DataRequired()],
+        default="2023/2024",
+    )
+    submit = SubmitField("Generate Broadsheet")
 
 class SessionForm(FlaskForm):
     session = SelectField("Select Session", choices=[], coerce=int)

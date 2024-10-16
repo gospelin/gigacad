@@ -1,18 +1,32 @@
 {% extends 'admin/base.html' %} 
 {% block content %}
 
-<form method="POST" action="{{ url_for('admins.view_class_by_session') }}">
-    {{ form.hidden_tag() }}
-    <div class="form-group">
-        {{ form.session.label }} 
-        {{ form.session(class="form-control") }}
+    <div class="container mt-5">
+        {% for message in get_flashed_messages() %}
+        <div class="alert alert-warning mt-3">{{ message }}</div>
+        {% endfor %}
+
+        <h1 class="text-center mb-5 animate__animated animate__fadeInDown">
+            View Class By Session
+        </h1>
+        <h2 class="text-center mb-5 animate__animated animate__fadeInUp">Enter the session and class name to view the class</h2>
+        <h3 class="text-center mb-5 animate__animated animate__fadeInUp">Current Session: {{current_session}}</h3>
+
+        <form method="POST" action="{{ url_for('admins.view_class_by_session') }}">
+            {{ form.hidden_tag() }}
+            
+            
+            <div class="form-group">
+                {{ form.session.label }} 
+                {{ form.session(class="form-control") }}
+            </div>
+            <div class="form-group">
+                {{ form.class_name.label }}
+                {{ form.class_name(class="form-control") }}
+            </div>
+            <div class="form-group">
+                {{ form.submit(class="btn btn-primary") }}
+            </div>
+        </form>
     </div>
-    <div class="form-group">
-        {{ form.class_name.label }}
-        {{ form.class_name(class="form-control") }}
-    </div>
-    <div class="form-group">
-        {{ form.submit(class="btn btn-primary") }}
-    </div>
-</form>
 {% endblock content %}
