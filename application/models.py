@@ -150,7 +150,7 @@ class Result(db.Model):
     student_id = db.Column(db.Integer, db.ForeignKey("student.id"), nullable=False)
     subject_id = db.Column(db.Integer, db.ForeignKey("subject.id"), nullable=False)
     term = db.Column(db.String(20), nullable=False)
-    session_year = db.Column(db.String(20), nullable=False)
+    session = db.Column(db.String(20), nullable=False)
     class_assessment = db.Column(db.Integer, nullable=True)
     summative_test = db.Column(db.Integer, nullable=True)
     exam = db.Column(db.Integer, nullable=True)

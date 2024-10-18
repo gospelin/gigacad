@@ -845,14 +845,14 @@ def select_term_session(student_id):
 
     if form.validate_on_submit():
         term = form.term.data
-        session_year = form.session.data
+        session = form.session.data
 
         return redirect(
             url_for(
                 "admins.manage_results",
                 student_id=student.id,
                 term=term,
-                session_year=session_year,
+                session=session,
             )
         )
 
@@ -873,57 +873,51 @@ def manage_results(student_id):
     try:
         student = Student.query.get_or_404(student_id)
         term = request.args.get("term")
-        session_year = request.args.get("session")  # this is a string from the form
+        session_year = request.args.get("session")
 
-        # Ensure both term and session_year are provided
         if not term or not session_year:
             return redirect(
                 url_for("admins.select_term_session", student_id=student.id)
             )
 
-        # Query the Session table to get the session object using session_year (string)
+        # Query the session
         session = Session.query.filter_by(year=session_year).first()
-
-        # If session is not found, return an error
         if not session:
-            flash("Invalid session year selected", "alert alert-danger")
+            flash("Session not found", "alert alert-danger")
             return redirect(
                 url_for("admins.select_term_session", student_id=student.id)
             )
 
-        # Now get the class for the selected session using session.id
-        student_class = StudentClassHistory.get_class_by_session(student.id, session.id)
-
+        # Fetch the student's class for the current session using StudentClassHistory
+        student_class = StudentClassHistory.get_class_by_session(
+            student_id=student.id, session_year_str=session.year
+        )
         if not student_class:
-            flash("No class found for the selected session", "alert alert-danger")
+            flash(
+                f"No class history found for the session {session.year}",
+                "alert alert-danger",
+            )
             return redirect(
                 url_for("admins.select_term_session", student_id=student.id)
             )
 
-        # Initialize the result form with the term and session pre-filled
-        form = ResultForm(term=term, session=session_year)
-
-        student_class_history = StudentClassHistory.query.filter_by(
-            student_id=student.id, session_id=session.id  # Use session.id here
-        ).first()
-
-        subjects = get_subjects_by_class_name(student_class_history)
+        form = ResultForm(term=term, session=session.year)
+        subjects = get_subjects_by_class_name(student_class)  # Fetch subjects by current class
 
         if form.validate_on_submit():
-            update_results(student, subjects, term, session_year, form)
+            update_results(student, subjects, term, session.year, form)
             flash("Results updated successfully", "alert alert-success")
             return redirect(
                 url_for(
                     "admins.manage_results",
                     student_id=student.id,
                     term=term,
-                    session=session_year,
+                    session=session.year,
                 )
             )
 
-        # Calculate and display results
         results, grand_total, average, cumulative_average, results_dict = (
-            calculate_results(student.id, term, session_year)
+            calculate_results(student.id, term, session.year)
         )
 
         return render_template(
@@ -937,17 +931,16 @@ def manage_results(student_id):
             results_dict=results_dict,
             form=form,
             selected_term=term,
-            selected_session=session_year,
-            student_class=student_class,  # Pass the class to the template
+            selected_session=session.year,
+            session_id=session.id,
+            class_name=student_class,
         )
-
     except SQLAlchemyError as e:
         db.session.rollback()
         flash(f"Database error: {str(e)}", "alert alert-danger")
     except Exception as e:
         flash(f"An error occurred: {str(e)}", "alert alert-danger")
-
-    return redirect(url_for("admin.index"))
+    return redirect(url_for("admins.admin_dashboard"))
 
 
 # @admin_bp.route("/broadsheet/<string:class_name>", methods=["GET", "POST"])

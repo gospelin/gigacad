@@ -178,6 +178,9 @@
                 </nav>
                 <!-- Main content -->
                 <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+                    {% for message in get_flashed_messages() %}
+                        <div class="alert alert-warning mt-3">{{ message }}</div>
+                    {% endfor %}
                     {% block content %}{% endblock %}
                 </main>
             </div>

@@ -80,7 +80,7 @@ class ResultAdmin(ModelView):
         "exam",
         "total",
         "term",
-        "session_year",
+        "session",
     ]
     form_columns = [
         "student_id",
@@ -89,7 +89,7 @@ class ResultAdmin(ModelView):
         "summative_test",
         "exam",
         "term",
-        "session_year",
+        "session",
     ]
 
     def is_accessible(self):
