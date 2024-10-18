@@ -1,7 +1,7 @@
 import random, string, time
 from . import db
 from flask import request, abort, flash
-from .models import Student, Subject, Result
+from .models import Student, Subject, Result, StudentClassHistory
 from sqlalchemy.exc import SQLAlchemyError
 from functools import wraps
 from datetime import datetime
@@ -109,8 +109,8 @@ def generate_remark(total):
 
 def calculate_grand_total(results):
     """Calculate the total score from all results."""
-    # return sum(result.total for result in results if result.total is not None)
-    return sum(result.total for result in results)
+    return sum(result.total for result in results if result.total is not None)
+    #return sum(result.total for result in results)
 
 
 def get_last_term(current_term):
@@ -176,7 +176,7 @@ def calculate_cumulative_average(results, current_term_average):
     #    cumulative_average = current_term_average
 
     # return cumulative_average
-    
+
     last_term_average = 0
     cumulative_average = current_term_average
     if results:
@@ -190,19 +190,15 @@ def calculate_cumulative_average(results, current_term_average):
     return cumulative_average
 
 
-def get_subjects_by_class_name(student_class_history):
-    """Get subjects based on the student's entry class.
+def get_subjects_by_class_name(class_name):
+    """Get subjects based on the student's class name from history.
 
     Args:
         student_class_history (object): The student's class history object.
 
     Returns:
-        list: A list of subjects based on the student's entry class.
+        list: A list of subjects based on the student's class name.
     """
-    # Assuming 'student_class_history' has an attribute 'class_name' that contains the class name
-    class_name = (
-        student_class_history.class_name
-    )  # Adjust this if the attribute name is different
 
     if "Nursery" in class_name:
         return Subject.query.filter_by(section="Nursery").all()
@@ -212,26 +208,15 @@ def get_subjects_by_class_name(student_class_history):
         return Subject.query.filter_by(section="Secondary").all()
 
 
-def update_results(student, subjects, term, session_year, form):
-    """
-    Update or create results for the student based on form data.
-
-    Args:
-        student (Student): The student object for which the results are being updated.
-        subjects (list): A list of subject objects for which the results are being updated.
-        term (str): The term for which the results are being updated.
-        session_year (str): The session year for which the results are being updated.
-        form (Form): The form object containing the data for updating the results.
-
-    Raises:
-        Exception: If an error occurs while updating the results.
-    """
+def update_results(student, subjects, term, session, form):
     try:
+        # Proceed with updating results for each subject
         for subject in subjects:
             class_assessment = request.form.get(f"class_assessment_{subject.id}", "")
             summative_test = request.form.get(f"summative_test_{subject.id}", "")
             exam = request.form.get(f"exam_{subject.id}", "")
 
+            # Convert empty values to zero for calculations
             class_assessment_value = int(class_assessment) if class_assessment else None
             summative_test_value = int(summative_test) if summative_test else None
             exam_value = int(exam) if exam else None
@@ -240,15 +225,15 @@ def update_results(student, subjects, term, session_year, form):
                 + (summative_test_value or 0)
                 + (exam_value or 0)
             )
-
             grade = calculate_grade(total)
             remark = generate_remark(total)
 
+            # Query existing result
             result = Result.query.filter_by(
                 student_id=student.id,
                 subject_id=subject.id,
                 term=term,
-                session_year=session_year,  # Use session_year directly
+                session=session,
             ).first()
 
             if result:
@@ -267,7 +252,7 @@ def update_results(student, subjects, term, session_year, form):
                     student_id=student.id,
                     subject_id=subject.id,
                     term=term,
-                    session_year=session_year,  # Use session_year directly
+                    session=session,
                     class_assessment=class_assessment_value,
                     summative_test=summative_test_value,
                     exam=exam_value,
@@ -287,47 +272,51 @@ def update_results(student, subjects, term, session_year, form):
         raise e
 
 
-def calculate_results(student_id, term, session_year):
-    """Calculate student results and averages.
-
-    Args:
-        student_id (int): The ID of the student.
-        term (str): The current term.
-        session_year (str): The session year.
-
-    Returns:
-        tuple: A tuple containing the following values:
-            - results (list): A list of Result objects for the current term and session.
-            - grand_total (float): The grand total of all results.
-            - average (float): The average of all results.
-            - cumulative_average (float): The cumulative average of all results.
-            - results_dict (dict): A dictionary mapping subject IDs to Result objects.
+def calculate_results(student_id, term, session):
     """
+    Calculate student results and averages.
+    """
+
     # Fetch results for the current term and session
     results = Result.query.filter_by(
         student_id=student_id,
         term=term,
-        session_year=session_year,  # Use session_year directly
+        session=session,  # Use session_year directly
     ).all()
+
+    flash(
+        f"Fetched {len(results)} results for the current term and session",
+        "alert alert-info",
+    )
 
     grand_total = calculate_grand_total(results)
     average = round(calculate_average(results), 1)
+    flash(f"Grand total: {grand_total}, Average: {average}", "alert alert-info")
 
     last_term = get_last_term(term)
     last_term_results = Result.query.filter_by(
         student_id=student_id,
         term=last_term,
-        session_year=session_year,  # Use session_year directly
+        session=session,
     ).all()
 
-    last_term_average = (
-        round(calculate_average(last_term_results), 1) if last_term_results else 0
-    )
+    if last_term_results:
+        flash(
+            f"Fetched {len(last_term_results)} results for the last term",
+            "alert alert-info",
+        )
+    else:
+        flash("No results found for the last term", "alert alert-warning")
+
+    last_term_average = round(calculate_average(last_term_results), 1) if last_term_results else 0
+    
+    flash(f"Last term average: {last_term_average}", "alert alert-info")
 
     for res in results:
         res.last_term_average = last_term_average
 
     cumulative_average = round(calculate_cumulative_average(results, average), 1)
-    results_dict = {result.subject_id: result for result in results}
+    flash(f"Cumulative average: {cumulative_average}", "alert alert-info")
 
+    results_dict = {result.subject_id: result for result in results}
     return results, grand_total, average, cumulative_average, results_dict

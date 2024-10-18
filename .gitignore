@@ -1,4 +1,4 @@
-# Ignore python bytecode files
+p# Ignore python bytecode files
 *.pyc
 *.*.pyc
 

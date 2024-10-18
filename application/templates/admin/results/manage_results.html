@@ -206,6 +206,15 @@ Manage Results
                                 </div>
                             </div>
                         </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-text">Class:</span>
+                                    <span class="form-control">{{ class_name }}</span>
+                                </div>
+                            </div>
+                        </div>
+
 
                         <div style="width: 100%;" class="table-responsive">
                             <table class="table table-bordered mt-4">
@@ -288,8 +297,8 @@ Manage Results
                         <button type="submit" class="btn btn-primary mt-3">Save Results</button>
                     </form>
                     <div class="text-center">
-                        <a href="{{ url_for('admins.students_by_class', session_id=session_id, class_name=student_class) }}" class="btn btn-secondary mt-3">
-                            Back to Students in {{ student_class }}
+                        <a href="{{ url_for('admins.students_by_class', session_id=session_id, class_name=class_name) }}" class="btn btn-secondary mt-3">
+                            Back to Students in {{ class_name }}
                         </a>
                     </div>
                 </div>
