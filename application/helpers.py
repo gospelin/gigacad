@@ -109,8 +109,8 @@ def generate_remark(total):
 
 def calculate_grand_total(results):
     """Calculate the total score from all results."""
-    return sum(result.total for result in results if result.total is not None)
-    #return sum(result.total for result in results)
+    #return sum(result.total for result in results if result.total is not None)
+    return sum(result.total for result in results)
 
 
 def get_last_term(current_term):
@@ -145,11 +145,12 @@ def calculate_average(results):
     non_zero_subjects = 0
 
     for result in results:
-        if result.total and result.total > 0:  # Ensure total is valid
+        if result.total > 0
             grand_total += result.total
             non_zero_subjects += 1
 
-    return grand_total / non_zero_subjects if non_zero_subjects > 0 else 0
+    average grand_total / non_zero_subjects if non_zero_subjects > 0 else 0
+    return average 
 
 
 def calculate_cumulative_average(results, current_term_average):
