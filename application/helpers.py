@@ -145,11 +145,11 @@ def calculate_average(results):
     non_zero_subjects = 0
 
     for result in results:
-        if result.total > 0
+        if result.total > 0:
             grand_total += result.total
             non_zero_subjects += 1
 
-    average grand_total / non_zero_subjects if non_zero_subjects > 0 else 0
+    average = grand_total / non_zero_subjects if non_zero_subjects > 0 else 0
     return average 
 
 
@@ -213,9 +213,9 @@ def update_results(student, subjects, term, session, form):
     try:
         # Proceed with updating results for each subject
         for subject in subjects:
-            class_assessment = request.form.get(f"class_assessment_{subject.id}", "")
-            summative_test = request.form.get(f"summative_test_{subject.id}", "")
-            exam = request.form.get(f"exam_{subject.id}", "")
+            class_assessment = request.form.get(f"class_assessment_{subject.id}", '')
+            summative_test = request.form.get(f"summative_test_{subject.id}", '')
+            exam = request.form.get(f"exam_{subject.id}", '')
 
             # Convert empty values to zero for calculations
             class_assessment_value = int(class_assessment) if class_assessment else None
