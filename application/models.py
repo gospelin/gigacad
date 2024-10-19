@@ -90,22 +90,31 @@ class Student(db.Model, UserMixin):
 
     results = db.relationship("Result", backref="student", lazy=True)
 
-    def get_class_by_session(self, session):
+    @staticmethod
+    def get_class_by_session(student_id, session):
         """
         Delegate to StudentClassHistory to fetch the student's class
         in the specified session.
         """
-        return StudentClassHistory.get_class_by_session(self.id, session)
+        return StudentClassHistory.get_class_by_session(student_id, session)
 
-    def get_latest_class(self):
-        """Get the student's latest class by finding the latest session."""
-        latest_session = self.get_latest_session()
-        return self.get_class_by_session(latest_session)
+    @staticmethod
+    def get_latest_class(student_id):
+        """
+        Get the student's latest class by finding the latest session.
+        Requires student_id to be passed since this is a static method.
+        """
+        latest_session = Student.get_latest_session(student_id)
+        return Student.get_class_by_session(student_id, latest_session)
 
-    def get_latest_session(self):
-        """Get the most recent session from the class history."""
+    @staticmethod
+    def get_latest_session(student_id):
+        """
+        Get the most recent session from the class history.
+        Requires student_id to be passed since this is a static method.
+        """
         latest_class_history = (
-            StudentClassHistory.query.filter_by(student_id=self.id)
+            StudentClassHistory.query.filter_by(student_id=student_id)
             .order_by(StudentClassHistory.id.desc())
             .first()
         )

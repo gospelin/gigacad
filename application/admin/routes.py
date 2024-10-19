@@ -901,25 +901,26 @@ def manage_results(student_id):
                 url_for("admins.select_term_session", student_id=student.id)
             )
 
-        form = ResultForm(term=term, session=session.year)
+        form = ResultForm(term=term, session=session_year)
         subjects = get_subjects_by_class_name(student_class)  # Fetch subjects by current class
 
         if form.validate_on_submit():
-            update_results(student, subjects, term, session.year, form)
+            update_results(student, subjects, term, session_year, form)
             flash("Results updated successfully", "alert alert-success")
             return redirect(
                 url_for(
                     "admins.manage_results",
                     student_id=student.id,
                     term=term,
-                    session=session.year,
+                    session=session_year,
                 )
             )
 
         results, grand_total, average, cumulative_average, results_dict = (
-            calculate_results(student.id, term, session.year)
+            calculate_results(student.id, term, session_year)
         )
-
+        db.session.commit()
+        
         return render_template(
             "admin/results/manage_results.html",
             student=student,
@@ -931,7 +932,7 @@ def manage_results(student_id):
             results_dict=results_dict,
             form=form,
             selected_term=term,
-            selected_session=session.year,
+            selected_session=session_year,
             session_id=session.id,
             class_name=student_class,
         )
@@ -941,6 +942,55 @@ def manage_results(student_id):
     except Exception as e:
         flash(f"An error occurred: {str(e)}", "alert alert-danger")
     return redirect(url_for("admins.admin_dashboard"))
+
+    #try:
+    #    student = Student.query.get_or_404(student_id)
+    #    term = request.args.get("term")
+    #    session = request.args.get("session")
+
+    #    if not term or not session:
+    #        return redirect(
+    #            url_for("admins.select_term_session", student_id=student.id)
+    #        )
+
+    #    form = ResultForm(term=term, session=session)
+    #    class_name = Student.get_class_by_session(student.id, session)
+    #    subjects = get_subjects_by_class_name(class_name)
+
+    #    if form.validate_on_submit():
+    #        update_results(student, subjects, term, session, form)
+    #        flash("Results updated successfully", "alert alert-success")
+    #        return redirect(
+    #            url_for(
+    #                "admins.manage_results",
+    #                student_id=student.id,
+    #                term=term,
+    #                session=session,
+    #            )
+    #        )
+
+    #    results, grand_total, average, cumulative_average, results_dict = (
+    #        calculate_results(student.id, term, session)
+    #    )
+    #    return render_template(
+    #        "admin/results/manage_results.html",
+    #        student=student,
+    #        subjects=subjects,
+    #        results=results,
+    #        grand_total=grand_total,
+    #        average=average,
+    #        cumulative_average=cumulative_average,
+    #        results_dict=results_dict,
+    #        form=form,
+    #        selected_term=term,
+    #        selected_session=session,
+    #    )
+    #except SQLAlchemyError as e:
+    #    db.session.rollback()
+    #    flash(f"Database error: {str(e)}", "alert alert-danger")
+    #except Exception as e:
+    #    flash(f"An error occurred: {str(e)}", "alert alert-danger")
+    #return redirect(url_for("main.index"))
 
 
 # @admin_bp.route("/broadsheet/<string:class_name>", methods=["GET", "POST"])
