@@ -1,12 +1,12 @@
 from . import student_bp
-import logging, os
+import os
 from flask import (
     render_template,
     redirect,
     url_for,
     flash,
     request,
-    current_app,
+    current_app as app,
     make_response,
 )
 from flask_login import login_required, current_user
@@ -21,12 +21,6 @@ from ..helpers import (
 
 from weasyprint import HTML
 
-
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-
 @student_bp.route("/student_portal")
 @login_required
 def student_portal():
@@ -38,16 +32,16 @@ def student_portal():
 
         if not student:
             flash("Student not found", "alert alert-danger")
-            logger.warning(f"Student not found for user_id: {current_user.id}")
+            app.logger.warning(f"Student not found for user_id: {current_user.id}")
             return redirect(url_for("auth.login"))
 
-        logger.info(f"Accessing student portal for student_id: {student.id}")
+        app.logger.info(f"Accessing student portal for student_id: {student.id}")
         return render_template(
             "student/student_portal.html", student_id=student.id, student=student
         )
 
     except Exception as e:
-        logger.error(f"Error accessing student portal: {str(e)}")
+        app.logger.error(f"Error accessing student portal: {str(e)}")
         flash("An error occurred. Please try again later.", "alert alert-danger")
         return redirect(url_for("auth.login"))
 
@@ -183,7 +177,7 @@ def view_results(student_id):
         # Ensure the current user is authorized to view the student's results
         if current_user.id != student.user_id and not current_user.is_admin:
             flash("You are not authorized to view this profile.", "alert alert-danger")
-            logger.warning(
+            app.logger.warning(
                 f"Unauthorized access attempt by user_id: {current_user.id} for student_id: {student_id}"
             )
             return redirect(url_for("main.index"))
@@ -202,7 +196,7 @@ def view_results(student_id):
 
         if not results:
             flash("No results found for this term or session", "alert alert-info")
-            logger.info(
+            app.logger.info(
                 f"No results found for student_id: {student_id}, term: {term}, session: {session}"
             )
             return redirect(url_for("students.select_results", student_id=student.id))
@@ -244,7 +238,7 @@ def view_results(student_id):
 
         date_printed = datetime.now().strftime("%dth %B, %Y")
 
-        logger.info(
+        app.logger.info(
             f"Results viewed for student_id: {student_id}, term: {term}, session: {session}"
         )
         return render_template(
@@ -266,7 +260,7 @@ def view_results(student_id):
         )
 
     except Exception as e:
-        logger.error(f"Error viewing results for student_id: {student_id} - {str(e)}")
+        app.logger.error(f"Error viewing results for student_id: {student_id} - {str(e)}")
         flash("An error occurred. Please try again later.", "alert alert-danger")
         return redirect(url_for("students.select_results", student_id=student.id))
 
@@ -280,7 +274,7 @@ def download_results_pdf(student_id):
         # Ensure the current user is authorized to download the student's results PDF
         if current_user.id != student.user_id and not current_user.is_admin:
             flash("You are not authorized to view this profile.", "alert alert-danger")
-            logger.warning(
+            app.logger.warning(
                 f"Unauthorized access attempt by user_id: {current_user.id} for student_id: {student_id}"
             )
             return redirect(url_for("main.index"))
@@ -299,7 +293,7 @@ def download_results_pdf(student_id):
         ).all()
         if not results:
             flash("No results found for this term or session", "alert alert-info")
-            logger.info(
+            app.logger.info(
                 f"No results found for student_id: {student_id}, term: {term}, session: {session}"
             )
             return redirect(url_for("students.select_results", student_id=student.id))
@@ -341,7 +335,7 @@ def download_results_pdf(student_id):
 
         # Get the absolute path to the static directory
         static_path = os.path.join(
-            current_app.root_path, "static", "images", "MY_SCHOOL_LOGO.png"
+            app.root_path, "static", "images", "MY_SCHOOL_LOGO.png"
         )
         static_url = f"file://{static_path}"
 
@@ -374,13 +368,13 @@ def download_results_pdf(student_id):
             f"inline; filename={student.first_name}_{student.last_name}_{term}_{session}_Result.pdf"
         )
 
-        logger.info(
+        app.logger.info(
             f"PDF results downloaded for student_id: {student_id}, term: {term}, session: {session}"
         )
         return response
 
     except Exception as e:
-        logger.error(
+        app.logger.error(
             f"Error downloading PDF results for student_id: {student_id} - {str(e)}"
         )
         flash(
