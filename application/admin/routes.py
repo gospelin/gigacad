@@ -886,80 +886,80 @@ def manage_results(student_id):
     if not current_user.is_authenticated or not current_user.is_admin:
         return redirect(url_for("auth.login"))
 
+    try:
+        student = Student.query.get_or_404(student_id)
+        term = request.args.get("term")
+        session_year = request.args.get("session")
 
-    if request.method == 'POST' and form.validate_on_submit():
-        try:
-            student = Student.query.get_or_404(student_id)
-            term = request.args.get("term")
-            session_year = request.args.get("session")
-
-            #if not term or not session_year:
-            #    return redirect(
-            #        url_for("admins.select_term_session", student_id=student.id)
-            #    )
-
-            # Query the session
-            session_obj = Session.query.filter_by(year=session_year).first()
-            if not session_obj:
-                flash("Session not found", "alert alert-danger")
-                return redirect(
-                    url_for("admins.select_term_session", student_id=student.id)
-                )
-
-            # Fetch the student's class for the current session using StudentClassHistory
-            student_class = StudentClassHistory.get_class_by_session(
-                student_id=student.id, year=session_obj
+        if not term or not session_year:
+            return redirect(
+                url_for("admins.select_term_session", student_id=student.id)
             )
-            if not student_class:
-                flash(
-                    f"No class history found for the session {session_obj.year}",
-                    "alert alert-danger",
-                )
-                return redirect(
-                    url_for("admins.select_term_session", student_id=student.id)
-                )
 
-            form = ResultForm(term=term, session=session_year)
-            subjects = get_subjects_by_class_name(student_class)  # Fetch subjects by current class
-
-            if form.validate_on_submit():
-                update_results(student, subjects, term, session_year, form)
-                flash("Results updated successfully", "alert alert-success")
-                return redirect(
-                    url_for(
-                        "admins.manage_results",
-                        student_id=student.id,
-                        term=term,
-                        session=session_year,
-                    )
-                )
-
-            results, grand_total, average, cumulative_average, results_dict = (
-                calculate_results(student.id, term, session_year)
+        # Query the session
+        session = Session.query.filter_by(year=session_year).first()
+        if not session:
+            flash("Session not found", "alert alert-danger")
+            return redirect(
+                url_for("admins.select_term_session", student_id=student.id)
             )
-            db.session.commit()
 
-            return render_template(
-                "admin/results/manage_results.html",
-                student=student,
-                subjects=subjects,
-                results=results,
-                grand_total=grand_total,
-                average=average,
-                cumulative_average=cumulative_average,
-                results_dict=results_dict,
-                form=form,
-                selected_term=term,
-                selected_session=session_year,
-                session_id=session.id,
-                class_name=student_class,
+        # Fetch the student's class for the current session using StudentClassHistory
+        student_class = StudentClassHistory.get_class_by_session(
+            student_id=student.id, session_year_str=session.year
+        )
+        if not student_class:
+            flash(
+                f"No class history found for the session {session.year}",
+                "alert alert-danger",
             )
-        except SQLAlchemyError as e:
-            db.session.rollback()
-            flash(f"Database error: {str(e)}", "alert alert-danger")
-        except Exception as e:
-            flash(f"An error occurred: {str(e)}", "alert alert-danger")
-        return redirect(url_for("admins.admin_dashboard"))
+            return redirect(
+                url_for("admins.select_term_session", student_id=student.id)
+            )
+
+        form = ResultForm(term=term, session=session_year)
+        subjects = get_subjects_by_class_name(
+            student_class
+        )  # Fetch subjects by current class
+
+        if form.validate_on_submit():
+            update_results(student, subjects, term, session_year, form)
+            flash("Results updated successfully", "alert alert-success")
+            return redirect(
+                url_for(
+                    "admins.manage_results",
+                    student_id=student.id,
+                    term=term,
+                    session=session_year,
+                )
+            )
+
+        results, grand_total, average, cumulative_average, results_dict = (
+            calculate_results(student.id, term, session_year)
+        )
+        db.session.commit()
+
+        return render_template(
+            "admin/results/manage_results.html",
+            student=student,
+            subjects=subjects,
+            results=results,
+            grand_total=grand_total,
+            average=average,
+            cumulative_average=cumulative_average,
+            results_dict=results_dict,
+            form=form,
+            selected_term=term,
+            selected_session=session_year,
+            session_id=session.id,
+            class_name=student_class,
+        )
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        flash(f"Database error: {str(e)}", "alert alert-danger")
+    except Exception as e:
+        flash(f"An error occurred: {str(e)}", "alert alert-danger")
+    return redirect(url_for("admins.admin_dashboard"))
 
     # try:
     #    student = Student.query.get_or_404(student_id)
