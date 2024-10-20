@@ -1,11 +1,11 @@
 from . import main_bp
-import logging
 from flask_wtf.csrf import CSRFError
 from flask import (
     render_template,
     redirect,
     url_for,
     flash,
+    current_app as app
 )
 from ..models import Student, User, StudentClassHistory, Session
 from ..auth.forms import StudentRegistrationForm
@@ -16,11 +16,6 @@ from ..helpers import (
     random,
     string,
 )
-
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
 
 @main_bp.route("/")
 @main_bp.route("/index")
@@ -37,27 +32,6 @@ def about_us():
         "main/about_us.html", title="About Us", school_name="Aunty Anne's Int'l School"
     )
 
-
-# """ Manage Student Section
-
-# This section includes functionalities like:
-
-# Register Student - Add a new student to the database and generate username and password
-# Login - Authenticate a user and log them in
-# Logout - Log a user out
-# Approve Students - Approve or deactivate students
-# Manage Classes - View all students by class
-# Manage Results - Add, edit, and delete student results
-# View Results - View student results
-# Manage Students - View all students
-# Add Students - Add a new student
-# Edit Student - Edit a student's details
-# Delete Student - Delete a student
-# Manage Subjects - Add, edit, and delete subjects
-# Regenerate Password - Generate a new password for a student
-
-
-# """
 
 @main_bp.route("/register/student", methods=["GET", "POST"])
 def student_registration():
@@ -116,7 +90,7 @@ def student_registration():
             db.session.commit()
 
             # Log success and inform the user
-            logger.info(f"Student registered successfully: {username}")
+            app.logger.info(f"Student registered successfully: {username}")
             flash(
                 f"Student registered successfully. Username: {username}, Password: {temporary_password}",
                 "alert alert-success",
@@ -125,7 +99,7 @@ def student_registration():
 
     except Exception as e:
         db.session.rollback()  # Rollback the session on error
-        logger.error(f"Error registering student: {str(e)}")
+        app.logger.error(f"Error registering student: {str(e)}")
         flash("An error occurred. Please try again later.", "alert alert-danger")
 
     return render_template(
@@ -139,6 +113,6 @@ def student_registration():
 # CSRF error handler
 @main_bp.errorhandler(CSRFError)
 def handle_csrf_error(e):
-    logger.warning(f"CSRF error: {e.description}")
+    app.logger.warning(f"CSRF error: {e.description}")
     flash("The form submission has expired. Please try again.", "alert alert-danger")
     return redirect(url_for("main.student_registration"))

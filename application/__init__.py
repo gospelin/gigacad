@@ -57,21 +57,29 @@ admin.add_view(ResultAdmin(Result, db.session))
 # Register the Subject model view with the admin
 admin.add_view(SubjectAdmin(Subject, db.session))
 
-# Set up logging
-if not app.debug:
-    # Create a file handler for logging
+
+# Set up logging regardless of debug mode
+def setup_logging(app):
+    # Ensure the logs directory exists
+    log_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)), "../logs")
+    if not os.path.exists(log_dir):
+        os.makedirs(log_dir)
+
+    # Create a rotating file handler
     file_handler = RotatingFileHandler(
-        "logs/flask_app.log", maxBytes=10240, backupCount=10
+        os.path.join(log_dir, "flask_app.log"), maxBytes=10240, backupCount=10
     )
     file_handler.setLevel(logging.INFO)
 
-    # Create a formatter and attach it to the handler
-    formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+    # Set formatter for the logs
+    formatter = logging.Formatter(
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    )
     file_handler.setFormatter(formatter)
 
     # Add the handler to the app's logger
     app.logger.addHandler(file_handler)
     app.logger.setLevel(logging.INFO)
 
-    # Log that the application has started
-    app.logger.info("Flask application startup")
+# Call the logging setup function after app initialization
+setup_logging(app)
