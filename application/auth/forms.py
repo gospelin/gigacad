@@ -7,8 +7,12 @@ from wtforms import (
     PasswordField,
     SelectMultipleField,
     FloatField,
+    IntegerField, 
+    HiddenField, 
+    FieldList, 
+    FormField
 )
-from wtforms.validators import DataRequired, Length, Optional
+from wtforms.validators import DataRequired, Length, Optional, NumberRange, InputRequired
 
 
 class StudentRegistrationForm(FlaskForm):
@@ -209,3 +213,31 @@ class classForm(FlaskForm):
         ],
     )
     submit = SubmitField("View Classes")
+
+    # Create a form for each subject's result entry
+
+
+class SubjectResultForm(FlaskForm):
+    subject_id = HiddenField("Subject ID")  # Hidden field to store subject ID
+    class_assessment = IntegerField(
+        "Class Assessment", validators=[Optional(), NumberRange(min=0, max=20)]
+    )
+    summative_test = IntegerField(
+        "Summative Test", validators=[Optional(), NumberRange(min=0, max=20)]
+    )
+    exam = IntegerField(
+        "Exam", validators=[Optional(), NumberRange(min=0, max=60)]
+    )
+    total = IntegerField(
+        "Total", validators=[Optional(), NumberRange(min=0, max=100)]
+    )
+    grade = StringField("Grade", validators=[Optional()])
+    remark = StringField("Remark", validators=[Optional()])
+
+
+# Main form to handle all subjects
+class ManageResultsForm(FlaskForm):
+    subjects = FieldList(
+        FormField(SubjectResultForm)
+    )  # FieldList to handle multiple subjects dynamically
+    submit = SubmitField("Save Results")

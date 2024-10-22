@@ -42,7 +42,7 @@
                         {{ form.hidden_tag() }}
                         <button type="submit" class="btn btn-success">Promote Student</button>
                     </form>
-                    <a href="{{ url_for('admins.manage_results', student_id=student.id) }}" class="btn btn-info btn-sm">
+                    <a href="{{ url_for('admins.manage_results', session=session, term=term, student_id=student.id) }}" class="btn btn-info btn-sm">
                         Manage Result
                     </a>
                 </td>
