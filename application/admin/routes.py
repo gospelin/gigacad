@@ -25,7 +25,6 @@ import openpyxl
 from flask_wtf.csrf import CSRFError
 from openpyxl.styles import Font, Border, Side, Alignment
 from openpyxl.utils import get_column_letter
-import logging
 from flask import (
     abort,
     render_template,
@@ -48,7 +47,9 @@ from ..auth.forms import (
     SelectTermSessionForm,
     SessionForm,
     ApproveForm,
-    classForm
+    classForm,
+    ManageResultsForm,
+    SubjectResultForm,
 )
 from ..helpers import (
     get_subjects_by_class_name,
@@ -880,135 +881,276 @@ def select_term_session(student_id):
     )
 
 
-@admin_bp.route("/manage_results/<int:student_id>", methods=["GET", "POST"])
-@login_required
-def manage_results(student_id):
-    if not current_user.is_authenticated or not current_user.is_admin:
-        return redirect(url_for("auth.login"))
+# @admin_bp.route("/manage_results/<int:student_id>", methods=["GET", "POST"])
+# @login_required
+# def manage_results(student_id):
+#    if not current_user.is_authenticated or not current_user.is_admin:
+#        return redirect(url_for("auth.login"))
 
-    try:
-        student = Student.query.get_or_404(student_id)
-        term = request.args.get("term")
-        session_year = request.args.get("session")
 
-        if not term or not session_year:
-            return redirect(
-                url_for("admins.select_term_session", student_id=student.id)
-            )
+#    student = Student.query.get_or_404(student_id)
+#    term = request.args.get("term")
+#    session_year = request.args.get("session")
 
-        # Query the session
-        session = Session.query.filter_by(year=session_year).first()
-        if not session:
-            flash("Session not found", "alert alert-danger")
-            return redirect(
-                url_for("admins.select_term_session", student_id=student.id)
-            )
+#    if not term or not session_year:
+#        return redirect(
+#            url_for("admins.select_term_session", student_id=student.id)
+#        )
 
-        # Fetch the student's class for the current session using StudentClassHistory
-        student_class = StudentClassHistory.get_class_by_session(
-            student_id=student.id, session_year_str=session.year
-        )
-        if not student_class:
-            flash(
-                f"No class history found for the session {session.year}",
-                "alert alert-danger",
-            )
-            return redirect(
-                url_for("admins.select_term_session", student_id=student.id)
-            )
+#    # Query the session
+#    session = Session.query.filter_by(year=session_year).first()
+#    if not session:
+#        flash("Session not found", "alert alert-danger")
+#        return redirect(
+#            url_for("admins.select_term_session", student_id=student.id)
+#        )
 
-        form = ResultForm(term=term, session=session_year)
-        subjects = get_subjects_by_class_name(
-            student_class
-        )  # Fetch subjects by current class
+#    # Fetch the student's class for the current session using StudentClassHistory
+#    student_class = StudentClassHistory.get_class_by_session(
+#        student_id=student.id, session_year_str=session.year
+#    )
+#    if not student_class:
+#        flash(
+#            f"No class history found for the session {session.year}",
+#            "alert alert-danger",
+#        )
+#        return redirect(
+#            url_for("admins.select_term_session", student_id=student.id)
+#        )
 
-        if form.validate_on_submit():
-            update_results(student, subjects, term, session_year, form)
-            flash("Results updated successfully", "alert alert-success")
-            return redirect(
-                url_for(
-                    "admins.manage_results",
-                    student_id=student.id,
-                    term=term,
-                    session=session_year,
-                )
-            )
+#    form = ResultForm(term=term, session=session_year)
+#    subjects = get_subjects_by_class_name(
+#        student_class
+#    )
 
-        results, grand_total, average, cumulative_average, results_dict = (
-            calculate_results(student.id, term, session_year)
-        )
-        db.session.commit()
+#    if form.validate_on_submit():
+#        update_results(student, subjects, term, session_year, form)
+#        flash("Results updated successfully", "alert alert-success")
+#        return redirect(
+#            url_for(
+#                "admins.manage_results",
+#                student_id=student.id,
+#                term=term,
+#                session=session_year,
+#            )
+#        )
 
-        return render_template(
-            "admin/results/manage_results.html",
-            student=student,
-            subjects=subjects,
-            results=results,
-            grand_total=grand_total,
-            average=average,
-            cumulative_average=cumulative_average,
-            results_dict=results_dict,
-            form=form,
-            selected_term=term,
-            selected_session=session_year,
-            session_id=session.id,
-            class_name=student_class,
-        )
-    except SQLAlchemyError as e:
-        db.session.rollback()
-        flash(f"Database error: {str(e)}", "alert alert-danger")
-    except Exception as e:
-        flash(f"An error occurred: {str(e)}", "alert alert-danger")
-    return redirect(url_for("admins.admin_dashboard"))
+#    results, grand_total, average, cumulative_average, results_dict = (
+#        calculate_results(student.id, term, session_year)
+#    )
 
-    # try:
-    #    student = Student.query.get_or_404(student_id)
-    #    term = request.args.get("term")
-    #    session = request.args.get("session")
+#    return render_template(
+#        "admin/results/manage_results.html",
+#        student=student,
+#        subjects=subjects,
+#        results=results,
+#        grand_total=grand_total,
+#        average=average,
+#        cumulative_average=cumulative_average,
+#        results_dict=results_dict,
+#        form=form,
+#        selected_term=term,
+#        selected_session=session_year,
+#        session_id=session.id,
+#        class_name=student_class,
+#    )
 
-    #    if not term or not session:
-    #        return redirect(
-    #            url_for("admins.select_term_session", student_id=student.id)
-    #        )
 
-    #    form = ResultForm(term=term, session=session)
-    #    class_name = Student.get_class_by_session(student.id, session)
-    #    subjects = get_subjects_by_class_name(class_name)
+# @admin_bp.route("/manage_results/<int:student_id>", methods=["GET", "POST"])
+# @login_required
+# def manage_results(student_id):
+#    student = Student.query.get_or_404(student_id)
+#    term = request.args.get("term")
+#    session_year = request.args.get("session")
 
-    #    if form.validate_on_submit():
-    #        update_results(student, subjects, term, session, form)
-    #        flash("Results updated successfully", "alert alert-success")
-    #        return redirect(
-    #            url_for(
-    #                "admins.manage_results",
-    #                student_id=student.id,
-    #                term=term,
-    #                session=session,
-    #            )
-    #        )
+#    if not term or not session_year:
+#        return redirect(url_for("admins.select_term_session", student_id=student.id))
 
-    #    results, grand_total, average, cumulative_average, results_dict = (
-    #        calculate_results(student.id, term, session)
-    #    )
-    #    return render_template(
-    #        "admin/results/manage_results.html",
-    #        student=student,
-    #        subjects=subjects,
-    #        results=results,
-    #        grand_total=grand_total,
-    #        average=average,
-    #        cumulative_average=cumulative_average,
-    #        results_dict=results_dict,
-    #        form=form,
-    #        selected_term=term,
-    #        selected_session=session,
-    #    )
-    # except SQLAlchemyError as e:
-    #    db.session.rollback()
-    #    flash(f"Database error: {str(e)}", "alert alert-danger")
-    # except Exception as e:
-    #    flash(f"An error occurred: {str(e)}", "alert alert-danger")
-    # return redirect(url_for("main.index"))
+#    # Query the session
+#    session = Session.query.filter_by(year=session_year).first()
+#    if not session:
+#        flash("Session not found", "alert alert-danger")
+#        return redirect(url_for("admins.select_term_session", student_id=student.id))
+
+#    # Fetch the student's class for the current session using StudentClassHistory
+#    student_class = StudentClassHistory.get_class_by_session(
+#        student_id=student.id, session_year_str=session.year
+#    )
+#    if not student_class:
+#        flash(
+#            f"No class history found for the session {session.year}",
+#            "alert alert-danger",
+#        )
+#        return redirect(url_for("admins.select_term_session", student_id=student.id))
+
+#    subjects = get_subjects_by_class_name(student_class)
+
+#    # Initialize the main form
+#    form = ManageResultsForm()
+
+#    # Handling form submission
+#    if form.validate_on_submit():
+#        update_results(
+#            student, subjects, term, session_year, form
+#        )  # Use the helper function
+
+#        # Calculate results after saving
+#        results, grand_total, average, cumulative_average, results_dict = (
+#            calculate_results(student_id=student_id, term=term, session=session_year)
+#        )
+
+#        flash("Results saved successfully!", "alert alert-success")
+
+#        return render_template(
+#            "admin/results/manage_results.html",
+#            form=form,
+#            subjects=subjects,
+#            student_id=student_id,
+#            term=term,
+#            session=session,
+#            student=student,
+#            session_year=session_year,
+#            selected_term=term,
+#            selected_session=session_year,
+#            session_id=session.id,
+#            class_name=student_class,
+#            results=results,
+#            grand_total=grand_total,
+#            average=average,
+#            cumulative_average=cumulative_average,
+#            results_dict=results_dict,  # Pass results_dict here
+#        )
+
+#    # For GET requests, populate the form with existing results data
+#    if request.method == "GET":
+#        for subject in subjects:
+#            result = Result.query.filter_by(
+#                student_id=student_id,
+#                subject_id=subject.id,
+#                term=term,
+#                session=session_year,
+#            ).first()
+
+#            subject_form = SubjectResultForm()
+#            subject_form.subject_id.data = subject.id
+#            subject_form.class_assessment.data = (
+#                result.class_assessment if result else ""
+#            )
+#            subject_form.summative_test.data = result.summative_test if result else ""
+#            subject_form.exam.data = result.exam if result else ""
+#            subject_form.total.data = result.total if result else ""
+#            form.subjects.append_entry(subject_form)
+
+#    # Ensure results_dict is initialized for the GET request
+#    results_dict = {}  # Initialize as empty if not a POST request
+#    results = Result.query.filter_by(
+#        student_id=student_id,
+#        term=term,
+#        session=session_year,  # Use session_year directly
+#    ).all()
+
+#    return render_template(
+#        "admin/results/manage_results.html",
+#        form=form,
+#        subjects=subjects,
+#        student_id=student_id,
+#        term=term,
+#        session=session,
+#        student=student,
+#        session_year=session_year,
+#        selected_term=term,
+#        results=results,
+#        selected_session=session_year,
+#        session_id=session.id,
+#        class_name=student_class,
+#        results_dict=results_dict,  # Pass empty dict for GET requests
+#    )
+
+# Dynamically add subject fields to the form
+# if request.method == 'GET':
+#    for subject in subjects:
+#        result = Result.query.filter_by(student_id=student_id, subject_id=subject.id, term=term, session=session).first()
+#        # Populate the form with existing data or placeholders
+#        subject_form = SubjectResultForm()
+#        subject_form.subject_id.data = subject.id
+#        subject_form.class_assessment.data = result.class_assessment if result else ''
+#        subject_form.summative_test.data = result.summative_test if result else ''
+#        subject_form.exam.data = result.exam if result else ''
+#        subject_form.total.data = result.total if result else ''
+#        form.subjects.append_entry(subject_form)
+
+## Handling form submission
+# if form.validate_on_submit():
+#    for subject_form in form.subjects:
+#        subject_id = subject_form.subject_id.data
+#        class_assessment = subject_form.class_assessment.data
+#        summative_test = subject_form.summative_test.data
+#        exam = subject_form.exam.data
+#        total = class_assessment + summative_test + exam  # You can modify this logic as needed
+
+#        # Save or update result in the database
+#        result = Result.query.filter_by(student_id=student_id, subject_id=subject_id, term=term, session=session).first()
+#        if not result:
+#            result = Result(student_id=student_id, subject_id=subject_id, term=term, session=session)
+#        result.class_assessment = class_assessment
+#        result.summative_test = summative_test
+#        result.exam = exam
+#        result.total = total
+#        db.session.add(result)
+
+#    db.session.commit()
+#    flash('Results saved successfully!', 'success')
+
+# return render_template('manage_results.html', form=form, subjects=subjects, student_id=student_id, term=term, session=session)
+
+# try:
+#    student = Student.query.get_or_404(student_id)
+#    term = request.args.get("term")
+#    session = request.args.get("session")
+
+#    if not term or not session:
+#        return redirect(
+#            url_for("admins.select_term_session", student_id=student.id)
+#        )
+
+#    form = ResultForm(term=term, session=session)
+#    class_name = Student.get_class_by_session(student.id, session)
+#    subjects = get_subjects_by_class_name(class_name)
+
+#    if form.validate_on_submit():
+#        update_results(student, subjects, term, session, form)
+#        flash("Results updated successfully", "alert alert-success")
+#        return redirect(
+#            url_for(
+#                "admins.manage_results",
+#                student_id=student.id,
+#                term=term,
+#                session=session,
+#            )
+#        )
+
+#    results, grand_total, average, cumulative_average, results_dict = (
+#        calculate_results(student.id, term, session)
+#    )
+#    return render_template(
+#        "admin/results/manage_results.html",
+#        student=student,
+#        subjects=subjects,
+#        results=results,
+#        grand_total=grand_total,
+#        average=average,
+#        cumulative_average=cumulative_average,
+#        results_dict=results_dict,
+#        form=form,
+#        selected_term=term,
+#        selected_session=session,
+#    )
+# except SQLAlchemyError as e:
+#    db.session.rollback()
+#    flash(f"Database error: {str(e)}", "alert alert-danger")
+# except Exception as e:
+#    flash(f"An error occurred: {str(e)}", "alert alert-danger")
+# return redirect(url_for("main.index"))
 
 
 # @admin_bp.route("/broadsheet/<string:class_name>", methods=["GET", "POST"])
@@ -1296,3 +1438,121 @@ def manage_results(student_id):
 #            "Content-Disposition": f"attachment;filename=Broadsheet_{class_name}_{term}_{session}.xlsx"
 #        },
 #    )
+
+
+@admin_bp.route("/manage_results/<int:student_id>", methods=["GET", "POST"])
+@login_required
+def manage_results(student_id):
+    student = Student.query.get_or_404(student_id)
+    term = request.args.get("term")
+    session_year = request.args.get("session")
+
+    if not term or not session_year:
+        return redirect(url_for("admins.select_term_session", student_id=student.id))
+
+    # Query the session
+    session = Session.query.filter_by(year=session_year).first()
+    if not session:
+        flash("Session not found", "alert alert-danger")
+        return redirect(url_for("admins.select_term_session", student_id=student.id))
+    else:
+        app.logger.info(f"Session found: {session.year}")
+
+    # Fetch the student's class for the current session using StudentClassHistory
+    student_class = StudentClassHistory.get_class_by_session(
+        student_id=student.id, session_year_str=session.year
+    )
+    if not student_class:
+        flash(
+            f"No class history found for the session {session.year}",
+            "alert alert-danger",
+        )
+        return redirect(url_for("admins.select_term_session", student_id=student.id))
+    else:
+        app.logger.info(f"Student class found: {student_class}")
+
+    subjects = get_subjects_by_class_name(student_class)
+    app.logger.info(f"Subjects found: {subjects}")
+    
+    # Initialize the result form
+    result_form = ResultForm(term=term, session=session_year)
+
+    # Initialize the main form
+    form = ManageResultsForm()
+    
+    # Step 1: Query results from the database
+    results = Result.query.filter_by(
+        student_id=student.id,
+        term=term,
+        session=session_year,
+    ).all()
+    
+    # Step 2: Map results to a dictionary by subject_id
+    results_dict = {result.subject_id: result for result in results}
+
+    # If the request method is GET, populate the form with existing results
+    if request.method == "GET":
+        for subject in subjects:
+            # Safely get the result for the current subject.id
+            result = results_dict.get(subject.id)
+            
+            
+            subject_form = SubjectResultForm()
+            subject_form.subject_id.data = subject.id
+            
+            
+            subject_form.class_assessment.data = (
+                result.class_assessment if result else 0
+            )
+            subject_form.summative_test.data = result.summative_test if result else 0
+            subject_form.exam.data = result.exam if result else 0
+            subject_form.total.data = (
+                result.total if result else 0
+            )
+            subject_form.grade.data = result.grade if result else ""
+            subject_form.remark.data = result.remark if result else ""
+            
+            form.subjects.append_entry(subject_form)
+            app.logger.info(f"Subject form added: {subject_form}")
+
+    # If it's a POST request, handle the form submission and validation
+    if form.validate_on_submit():
+        update_results(student, term, session_year, form, result_form)
+        flash("Results updated successfully", "alert alert-success")
+        return redirect(
+            url_for(
+                "admins.manage_results",
+                student_id=student.id,
+                term=term,
+                session=session_year,
+            )
+        )
+
+    # Log form errors if POST request fails
+    if request.method == "POST" and not form.validate_on_submit():
+        app.logger.error(f"Form validation failed: {form.errors}")
+        app.logger.info(f"Form data: {form.data}")
+        
+    grand_total, average, cumulative_average = (
+            calculate_results(student.id, term, session_year)
+        )
+    return render_template(
+        "admin/results/manage_results.html",
+        student=student,
+        subjects=subjects,
+        form=form,
+        selected_term=term,
+        selected_session=session_year,
+        subject_results=zip(subjects, form.subjects),
+        session=session_year,
+        session_id=session.id,
+        term=term,
+        student_id=student.id,
+        class_name=student_class,
+        session_year=session_year,
+        results_dict=results_dict,
+        grand_total=grand_total,
+        average=average,
+        cumulative_average=cumulative_average,
+        results=results
+    )

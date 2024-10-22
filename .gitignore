@@ -19,6 +19,7 @@ migrations/
 venv/
 ENV/
 env/
+logs/
 .venv/
 .vscode/
 .idea/
@@ -27,6 +28,7 @@ env/
 .DS_Store
 Thumbs.db
 *.log
+*.log.*
 *.sqlite
 *.sqlite3
 .pytest_cache/
