@@ -1,4 +1,9 @@
 from . import admin_bp
+from io import BytesIO
+# import io
+import openpyxl
+from openpyxl.styles import Font, Border, Side, Alignment
+from openpyxl.utils import get_column_letter
 import logging
 from flask import (
     abort,
@@ -7,6 +12,7 @@ from flask import (
     url_for,
     flash,
     request,
+    Response,
     # make_response,
 )
 from flask_login import login_required, current_user
@@ -17,6 +23,7 @@ from ..auth.forms import (
     ResultForm,
     SubjectForm,
     DeleteForm,
+    SelectTermSessionForm,
     ApproveForm,
 )
 from ..helpers import (
@@ -27,6 +34,7 @@ from ..helpers import (
     random,
     string,
 )
+from datetime import datetime
 
 # from weasyprint import HTML
 from sqlalchemy.exc import SQLAlchemyError
@@ -227,7 +235,7 @@ def manage_results(student_id):
         flash(f"Database error: {str(e)}", "alert alert-danger")
     except Exception as e:
         flash(f"An error occurred: {str(e)}", "alert alert-danger")
-    return redirect(url_for("main.home"))
+    return redirect(url_for("main.index"))
 
 
 @admin_bp.route("/admin/delete_result/<int:result_id>", methods=["POST"])
@@ -282,6 +290,7 @@ def edit_student(student_id):
         student.first_name = form.first_name.data
         student.last_name = form.last_name.data
         student.middle_name = form.middle_name.data
+        student.gender = form.gender.data
         # Update other fields as needed
 
         # Update the username in the User model
@@ -297,6 +306,7 @@ def edit_student(student_id):
         form.first_name.data = student.first_name
         form.last_name.data = student.last_name
         form.middle_name.data = student.middle_name
+        form.gender.data = student.gender
         # Populate other fields as necessary
 
     return render_template("admin/students/edit_student.html", form=form, student=student)
@@ -426,3 +436,274 @@ def delete_subject(subject_id):
             flash(f"Error deleting subject: {e}", "alert alert-danger")
 
     return redirect(url_for("admins.manage_subjects"))
+
+
+@admin_bp.route("/broadsheet/<string:entry_class>", methods=["GET", "POST"])
+@login_required
+def broadsheet(entry_class):
+    if not current_user.is_authenticated or not current_user.is_admin:
+        return redirect(url_for("auth.login"))
+
+    form = SelectTermSessionForm()
+    term = form.term.data if form.term.data else request.args.get("term")
+    session = form.session.data if form.session.data else request.args.get("session")
+
+    students = Student.query.filter_by(entry_class=entry_class).all()
+    subjects = get_subjects_by_entry_class(entry_class=entry_class)
+
+    broadsheet_data = []
+    subject_averages = {subject.id: {"total": 0, "count": 0} for subject in subjects}
+
+    for student in students:
+        student_results = {
+            "student": student,
+            "results": {subject.id: {
+                "class_assessment": "",
+                "summative_test": "",
+                "exam": "",
+                "total": "",
+                "grade": "",
+                "remark": ""
+            } for subject in subjects},
+            "grand_total": "",
+            "average": "",
+            "position": "",
+        }
+        results = Result.query.filter_by(
+            student_id=student.id, term=term, session=session
+        ).all()
+
+        grand_total = 0
+        non_zero_subjects = 0
+        for result in results:
+            if result.subject_id in student_results["results"]:
+                student_results["results"][result.subject_id] = {
+                    "class_assessment": result.class_assessment if result.class_assessment is not None else "",
+                    "summative_test": result.summative_test if result.summative_test is not None else "",
+                    "exam": result.exam if result.exam is not None else "",
+                    "total": result.total if result.total is not None and result.total > 0 else "",
+                    "grade": result.grade if result.grade is not None else "",
+                    "remark": result.remark if result.remark is not None else ""
+                }
+                if result.total > 0:
+                    grand_total += result.total
+                    non_zero_subjects += 1
+                    subject_averages[result.subject_id]["total"] += result.total
+                    subject_averages[result.subject_id]["count"] += 1
+                student_results["position"] = result.position
+
+        # Set grand_total and average with blank space if they are zero
+        student_results["grand_total"] = grand_total if grand_total > 0 else ""
+        average = grand_total / non_zero_subjects if non_zero_subjects > 0 else 0
+        student_results["average"] = round(average, 1) if average > 0 else float('-inf')
+
+        # student_results["average"] = round(average, 1) if average > 0 else ""
+
+        # average = grand_total / non_zero_subjects if non_zero_subjects > 0 else 0
+        # student_results["grand_total"] = grand_total
+        # student_results["average"] = round(average, 1)
+        broadsheet_data.append(student_results)
+
+    # Calculate class averages for each subject
+    for subject_id, values in subject_averages.items():
+        values["average"] = (
+            round(values["total"] / values["count"], 1) if values["count"] > 0 else 0
+        )
+
+    # Sort students by their average
+    broadsheet_data.sort(key=lambda x: x["average"], reverse=True)
+
+    return render_template(
+        "admin/results/broadsheet.html",
+        form=form,
+        students=students,
+        subjects=subjects,
+        broadsheet_data=broadsheet_data,
+        subject_averages=subject_averages,
+        entry_class=entry_class,
+    )
+
+@admin_bp.route("/download_broadsheet/<string:entry_class>")
+@login_required
+def download_broadsheet(entry_class):
+    if not current_user.is_authenticated or not current_user.is_admin:
+        return redirect(url_for("auth.login"))
+
+    term = request.args.get("term")
+    session = request.args.get("session")
+
+    students = Student.query.filter_by(entry_class=entry_class).all()
+    subjects = get_subjects_by_entry_class(entry_class=entry_class)
+
+    broadsheet_data = []
+    subject_averages = {subject.id: {"total": 0, "count": 0} for subject in subjects}
+
+    for student in students:
+        student_results = {
+            "student": student,
+            "results": {subject.id: None for subject in subjects},
+            "grand_total": 0,
+            "average": 0,
+            "position": None,
+        }
+        results = Result.query.filter_by(
+            student_id=student.id, term=term, session=session
+        ).all()
+
+        grand_total = 0
+        non_zero_subjects = 0
+        for result in results:
+            student_results["results"][result.subject_id] = result
+            grand_total += result.total
+            if result.total > 0:
+                non_zero_subjects += 1
+                subject_averages[result.subject_id]["total"] += result.total
+                subject_averages[result.subject_id]["count"] += 1
+            student_results["position"] = result.position
+
+        average = grand_total / non_zero_subjects if non_zero_subjects > 0 else 0
+        student_results["grand_total"] = grand_total
+        student_results["average"] = round(average, 1)
+        broadsheet_data.append(student_results)
+
+    # Calculate class averages for each subject
+    for subject_id, values in subject_averages.items():
+        values["average"] = (
+            round(values["total"] / values["count"], 1) if values["count"] > 0 else 0
+        )
+
+    # Sort students by their average in descending order
+    broadsheet_data.sort(key=lambda x: x["average"], reverse=True)
+
+    # Create Excel file
+    workbook = openpyxl.Workbook()
+    sheet = workbook.active
+    sheet.title = f"Broadsheet_{entry_class}_{term}"
+
+    # Define styles
+    header_font = Font(bold=True, size=14, name="Times New Roman")
+    sub_header_font = Font(bold=True, size=12, name="Times New Roman")
+    cell_font = Font(size=12, name="Times New Roman")
+    border = Border(
+        left=Side(style="thin"),
+        right=Side(style="thin"),
+        top=Side(style="thin"),
+        bottom=Side(style="thin"),
+    )
+    alignment = Alignment(horizontal="left", vertical="center")
+
+    # Add context information at the top
+    sheet.append([f"Broadsheet for {entry_class} - Term: {term}, Session: {session}"])
+    sheet.append([f"Generated on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"])
+    sheet.append([])  # Blank row for separation
+
+    # Write headers
+    headers = ["Subjects"]
+    for student_data in broadsheet_data:
+        student = student_data["student"]
+        headers.extend([f"{student.first_name} {student.last_name}", "", "", ""])
+    headers.append("Class Average")
+    sheet.append(headers)
+
+    sub_headers = [""]
+    for _ in broadsheet_data:
+        sub_headers.extend(["C/A", "S/T", "Exam", "Total"])
+    sub_headers.append("")
+    sheet.append(sub_headers)
+
+    for cell in sheet["1:1"]:
+        cell.font = header_font
+    for cell in sheet["2:2"]:
+        cell.font = sub_header_font
+    for cell in sheet["3:3"]:
+        cell.font = cell_font
+    sheet.merge_cells("A1:A2")
+
+    # Write data
+    for subject in subjects:
+        row = [subject.name]
+        for student_data in broadsheet_data:
+            result = student_data["results"][subject.id]
+            if result:
+                row.extend(
+                    [
+                        result.class_assessment,
+                        result.summative_test,
+                        result.exam,
+                        result.total,
+                    ]
+                )
+            else:
+                row.extend(["-", "-", "-", "-"])
+        row.append(subject_averages[subject.id]["average"])
+        sheet.append(row)
+
+    # Write grand totals, averages, and positions
+    sheet.append(
+        ["Grand Total"]
+        + sum(
+            [
+                ["", "", "", student_data["grand_total"]]
+                for student_data in broadsheet_data
+            ],
+            [],
+        )
+        + [""]
+    )
+    sheet.append(
+        ["Average"]
+        + sum(
+            [["", "", "", student_data["average"]] for student_data in broadsheet_data],
+            [],
+        )
+        + [""]
+    )
+    sheet.append(
+        ["Position"]
+        + sum(
+            [
+                ["", "", "", student_data["position"]]
+                for student_data in broadsheet_data
+            ],
+            [],
+        )
+        + [""]
+    )
+
+    # Set page orientation to landscape
+    sheet.page_setup.orientation = sheet.ORIENTATION_LANDSCAPE
+
+    # Apply styles
+    for row in sheet.iter_rows(
+        min_row=1, max_row=sheet.max_row, min_col=1, max_col=sheet.max_column
+    ):
+        for cell in row:
+            cell.border = border
+            cell.alignment = alignment
+            cell.font = cell_font
+
+    # Adjust column widths
+    for col in sheet.columns:
+        max_length = 0
+        column = col[0].column_letter
+        for cell in col:
+            try:
+                if len(str(cell.value)) > max_length:
+                    max_length = len(cell.value)
+            except:
+                pass
+        adjusted_width = max_length + 2
+        sheet.column_dimensions[column].width = adjusted_width
+
+    # Save to a bytes buffer
+    output = BytesIO()
+    workbook.save(output)
+    output.seek(0)
+
+    return Response(
+        output,
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={
+            "Content-Disposition": f"attachment;filename=Broadsheet_{entry_class}_{term}_{session}.xlsx"
+        },
+)

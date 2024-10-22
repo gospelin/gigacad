@@ -1,4 +1,88 @@
-{% extends 'admin/base.html' %} {% block content %}
+{% extends 'admin/base.html' %}
+
+{% block title %}
+Manage Results
+{% endblock %}
+
+<style>
+    .container {
+        max-width: 1200px;
+        margin: auto;
+        padding: 0 15px;
+        /* Added for mobile responsiveness */
+    }
+
+    .card {
+        margin-bottom: 1.5rem;
+        transition: transform 0.3s ease;
+    }
+
+    .card-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+
+    .card-text {
+        font-size: 1rem;
+        color: #6c757d;
+    }
+
+    .card:hover {
+        transform: scale(1.05);
+    }
+
+    .btn-block {
+        display: block;
+        width: 100%;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+        margin-bottom: 30px;
+        /* Adjusted for mobile responsiveness */
+    }
+
+    .table thead th {
+        border-bottom: 2px solid #dee2e6;
+    }
+
+    .table tbody tr td {
+        vertical-align: middle;
+    }
+
+    .btn-sm {
+        font-size: 0.875rem;
+        padding: 0.25rem 0.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .card-body {
+            text-align: center;
+        }
+
+        .table-responsive {
+            margin-bottom: 10px;
+            /* Adjusted for mobile responsiveness */
+        }
+
+        /* Added for mobile responsiveness */
+        .input-group-text {
+            width: 100%;
+            text-align: left;
+        }
+
+        .form-control {
+            width: 100%;
+        }
+
+        .btn {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+    }
+</style>
+
+{% block content %}
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-lg-10">
@@ -12,6 +96,7 @@
                             src="{{ url_for('static', filename='images/school_logo.png') }}"
                             alt="School Logo"
                             style="width: 100px"
+                            class="img-fluid"
                         />
                         <h1>Aunty Anne's Int'l School</h1>
                         <h2>Student Results</h2>
@@ -27,9 +112,7 @@
                             />
                         </div>
                         <div class="col">
-                            <label for="session" class="form-label"
-                                >Session:</label
-                            >
+                            <label for="session" class="form-label">Session:</label>
                             <input
                                 type="text"
                                 class="form-control"
@@ -46,22 +129,14 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <div class="input-group">
-                                    <span class="input-group-text"
-                                        >First Name:</span
-                                    >
-                                    <span class="form-control"
-                                        >{{ student.first_name }}</span
-                                    >
+                                    <span class="input-group-text">First Name:</span>
+                                    <span class="form-control">{{ student.first_name }}</span>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="input-group">
-                                    <span class="input-group-text"
-                                        >Last Name:</span
-                                    >
-                                    <span class="form-control"
-                                        >{{ student.last_name }}</span
-                                    >
+                                    <span class="input-group-text">Last Name:</span>
+                                    <span class="form-control">{{ student.last_name }}</span>
                                 </div>
                             </div>
                         </div>
@@ -69,27 +144,23 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <div class="input-group">
-                                    <span class="input-group-text"
-                                        >Reopening Date:</span
-                                    >
+                                    <span class="input-group-text">Reopening Date:</span>
                                     <input
                                         type="text"
                                         name="next_term_begins"
                                         class="form-control"
-                                        value="{{ results[0].next_term_begins if results else '' }}"
+                                        value="{{ results[0].next_term_begins if results and results[0].next_term_begins else '' }}"
                                     />
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="input-group">
-                                    <span class="input-group-text"
-                                        >Last Term Average:</span
-                                    >
+                                    <span class="input-group-text">Last Term Average:</span>
                                     <input
                                         type="number"
                                         name="last_term_average"
                                         class="form-control"
-                                        value="{{ last_term_average }}"
+                                        value="{{ last_term_average if last_term_average else '' }}"
                                     />
                                 </div>
                             </div>
@@ -98,148 +169,127 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <div class="input-group">
-                                    <span class="input-group-text"
-                                        >Position:</span
-                                    >
+                                    <span class="input-group-text">Position:</span>
                                     <input
                                         type="text"
                                         name="position"
                                         class="form-control"
-                                        value="{{ results[0].position if results else '' }}"
+                                        value="{{ results[0].position if results and results[0].position else '' }}"
                                     />
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="input-group">
-                                    <span class="input-group-text"
-                                        >Cumulative Average:</span
-                                    >
-                                    <span class="form-control"
-                                        >{{ cumulative_average }}</span
-                                    >
+                                    <span class="input-group-text">Cumulative Average:</span>
+                                    <span class="form-control">{{ cumulative_average }}</span>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="col-md-6">
-                            <div class="input-group">
-                                <span class="input-group-text"
-                                    >Average for the Term:</span
-                                >
-                                <span class="form-control">{{ average }}</span>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-text">Average for the Term:</span>
+                                    <span class="form-control">{{ average }}</span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-text">Date Issued:</span>
+                                    <input
+                                        type="text"
+                                        name="date_issued"
+                                        class="form-control"
+                                        value="{{ results[0].date_issued if results and results[0].date_issued else '' }}"
+                                    />
+                                </div>
                             </div>
                         </div>
 
-                        <div class="row">
-                            <div class="col">
-                                <table class="table table-bordered mt-4">
-                                    <thead>
-                                        <tr>
-                                            <th>Subject</th>
-                                            <th>Class Assessment</th>
-                                            <th>Summative Test</th>
-                                            <th>Exam</th>
-                                            <th>Total</th>
-                                            <th>Grade</th>
-                                            <th>Remark</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="results-table">
-                                        {% for subject in subjects %}
-                                        <tr>
-                                            <td>{{ subject.name }}</td>
-                                            <td>
-                                                <input
-                                                    type="number"
-                                                    name="class_assessment_{{ subject.id }}"
-                                                    value="{{ results_dict[subject.id].class_assessment if results_dict[subject.id] else 0 }}"
-                                                    class="form-control class-assessment"
-                                                    data-id="{{ subject.id }}"
-                                                />
-                                            </td>
-                                            <td>
-                                                <input
-                                                    type="number"
-                                                    name="summative_test_{{ subject.id }}"
-                                                    value="{{ results_dict[subject.id].summative_test if results_dict[subject.id] else 0 }}"
-                                                    class="form-control summative-test"
-                                                    data-id="{{ subject.id }}"
-                                                />
-                                            </td>
-                                            <td>
-                                                <input
-                                                    type="number"
-                                                    name="exam_{{ subject.id }}"
-                                                    value="{{ results_dict[subject.id].exam if results_dict[subject.id] else 0 }}"
-                                                    class="form-control exam"
-                                                    data-id="{{ subject.id }}"
-                                                />
-                                            </td>
-                                            <td>
-                                                <input
-                                                    type="number"
-                                                    name="total_{{ subject.id }}"
-                                                    value="{{ results_dict[subject.id].total if results_dict[subject.id] else 0 }}"
-                                                    class="form-control total"
-                                                    data-id="{{ subject.id }}"
-                                                    readonly
-                                                />
-                                            </td>
-                                            <td>
-                                                {{
-                                                results_dict[subject.id].grade
-                                                if results_dict[subject.id] else
-                                                '-' }}
-                                            </td>
-                                            <td>
-                                                {{
-                                                results_dict[subject.id].remark
-                                                if results_dict[subject.id] else
-                                                '-' }}
-                                            </td>
-                                            <td>
-                                                <div
-                                                    class="btn-group"
-                                                    role="group"
+                        <div style="width: 100%;" class="table-responsive">
+                            <table class="table table-bordered mt-4">
+                                <thead>
+                                    <tr>
+                                        <th>Subject</th>
+                                        <th>Class Assessment</th>
+                                        <th>Summative Test</th>
+                                        <th>Examination</th>
+                                        <th>Subject Total Score</th>
+                                        <th>Grade</th>
+                                        <th>Remark</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="results-table">
+                                    {% for subject in subjects %}
+                                    <tr>
+                                        <td>{{ subject.name }}</td>
+                                        <td>
+                                            <input
+                                                type="number"
+                                                name="class_assessment_{{ subject.id }}"
+                                                value="{{ results_dict.get(subject.id, {}).class_assessment if results_dict.get(subject.id) else '' }}"
+                                                class="form-control class-assessment"
+                                                data-id="{{ subject.id }}"
+                                            />
+                                        </td>
+                                        <td>
+                                            <input
+                                                type="number"
+                                                name="summative_test_{{ subject.id }}"
+                                                value="{{ results_dict.get(subject.id, {}).summative_test if results_dict.get(subject.id) else '' }}"
+                                                class="form-control summative-test"
+                                                data-id="{{ subject.id }}"
+                                            />
+                                        </td>
+                                        <td>
+                                            <input
+                                                type="number"
+                                                name="exam_{{ subject.id }}"
+                                                value="{{ results_dict.get(subject.id, {}).exam if results_dict.get(subject.id) else '' }}"
+                                                class="form-control exam"
+                                                data-id="{{ subject.id }}"
+                                            />
+                                        </td>
+                                        <td>
+                                            <input
+                                                type="number"
+                                                name="total_{{ subject.id }}"
+                                                value="{{ results_dict.get(subject.id, {}).total if results_dict.get(subject.id) else '' }}"
+                                                class="form-control total"
+                                                data-id="{{ subject.id }}"
+                                                readonly
+                                            />
+                                        </td>
+                                        <td>{{ results_dict.get(subject.id, {}).grade if results_dict.get(subject.id) else '-' }}</td>
+                                        <td>{{ results_dict.get(subject.id, {}).remark if results_dict.get(subject.id) else '-' }}</td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                {% if results_dict.get(subject.id) %}
+                                                <form
+                                                    action="{{ url_for('admins.delete_result', result_id=results_dict[subject.id].id) }}"
+                                                    method="POST"
+                                                    onsubmit="return confirm('Are you sure you want to delete this result?');"
                                                 >
-                                                    {% if subject.id in
-                                                    results_dict %}
-                                                    <form
-                                                        action="{{ url_for('delete_result', result_id=results_dict[subject.id].id) }}"
-                                                        method="POST"
-                                                        onsubmit="return confirm('Are you sure you want to delete this result?');"
-                                                    >
-                                                        {{ form.hidden_tag() }}
-                                                        <button
-                                                            type="submit"
-                                                            class="btn btn-danger btn-sm"
-                                                        >
-                                                            Delete
-                                                        </button>
-                                                    </form>
-                                                    {% else %}
-                                                    <span class="text-muted"
-                                                        >Not Saved</span
-                                                    >
-                                                    {% endif %}
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
+                                                    {{ form.hidden_tag() }}
+                                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                                </form>
+                                                {% else %}
+                                                <span class="text-muted">Not Saved</span>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
                         </div>
-                        <button type="submit" class="btn btn-primary">
-                            Save Results
-                        </button>
+                        <button type="submit" class="btn btn-primary mt-3">Save Results</button>
                     </form>
                     <div class="text-center">
-                        <a
-                            href="{{ url_for('students_by_class', entry_class=student.entry_class) }}"
-                            class="btn btn-secondary mt-3"
-                            >Back to Students in {{ student.entry_class }}
+                        <a href="{{ url_for('admins.students_by_class', entry_class=student.entry_class) }}" class="btn btn-secondary mt-3">
+                            Back to Students in {{ student.entry_class }}
                         </a>
                     </div>
                 </div>
@@ -249,31 +299,15 @@
 </div>
 
 <script>
-    document
-        .querySelectorAll(".class-assessment, .summative-test, .exam")
-        .forEach((input) => {
-            input.addEventListener("input", function () {
-                const id = this.getAttribute("data-id");
-                const classAssessment =
-                    parseInt(
-                        document.querySelector(
-                            `input[name="class_assessment_${id}"]`
-                        ).value
-                    ) || 0;
-                const summativeTest =
-                    parseInt(
-                        document.querySelector(
-                            `input[name="summative_test_${id}"]`
-                        ).value
-                    ) || 0;
-                const exam =
-                    parseInt(
-                        document.querySelector(`input[name="exam_${id}"]`).value
-                    ) || 0;
-                const total = classAssessment + summativeTest + exam;
-                document.querySelector(`input[name="total_${id}"]`).value =
-                    total;
-            });
+    document.querySelectorAll(".class-assessment, .summative-test, .exam").forEach((input) => {
+        input.addEventListener("input", function () {
+            const id = this.getAttribute("data-id");
+            const classAssessment = parseInt(document.querySelector(`input[name="class_assessment_${id}"]`).value) || 0;
+            const summativeTest = parseInt(document.querySelector(`input[name="summative_test_${id}"]`).value) || 0;
+            const exam = parseInt(document.querySelector(`input[name="exam_${id}"]`).value) || 0;
+            const total = classAssessment + summativeTest + exam;
+            document.querySelector(`input[name="total_${id}"]`).value = total;
         });
+    });
 </script>
 {% endblock %}

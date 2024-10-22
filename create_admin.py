@@ -4,8 +4,8 @@ from application.models import User
 
 def create_admin_user():
     with app.app_context():
-        username = "admin"
-        password = "Tripled@121"  # Change this to a secure password
+        username = "admin2"
+        password = "admin@123"  # Change this to a secure password
 
         existing_user = User.query.filter_by(username=username).first()
         if not existing_user:

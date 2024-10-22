@@ -97,6 +97,7 @@ class ResultForm(FlaskForm):
         default="2023/2024",
     )
     next_term_begins = StringField("Next Term Begins", validators=[Optional()])
+    date_issued = StringField("Date Issued", validators=[Optional()])
     last_term_average = FloatField("Last Term Average", validators=[Optional()])
     position = StringField("Position", validators=[Optional()])
     submit = SubmitField("Load Results")
@@ -115,10 +116,16 @@ class EditStudentForm(FlaskForm):
     middle_name = StringField("Middle Name", validators=[Length(max=50)])
     last_name = StringField("Last Name", validators=[DataRequired()])
     username = StringField("Username", validators=[DataRequired()])
+    gender = SelectField(
+        "Gender",
+        choices=[("male", "Male"), ("female", "Female")],
+        validators=[DataRequired()],
+    )
     entry_class = SelectField(
         "Class",
         choices=[
             ("Creche", "Creche"),
+            ("Pre-Nursery", "Pre-Nursery"),
             ("Nursery 1", "Nursery 1"),
             ("Nursery 2", "Nursery 2"),
             ("Nursery 3", "Nursery 3"),
@@ -156,3 +163,26 @@ class DeleteForm(FlaskForm):
 
 class ApproveForm(FlaskForm):
     pass
+
+
+class SelectTermSessionForm(FlaskForm):
+    term = SelectField(
+        "Term",
+        choices=[
+            ("First Term", "First Term"),
+            ("Second Term", "Second Term"),
+            ("Third Term", "Third Term"),
+        ],
+        validators=[DataRequired()],
+    )
+    session = SelectField(
+        "Select Session",
+        choices=[
+            ("2023/2024", "2023/2024"),
+            ("2024/2025", "2024/2025"),
+            ("2025/2026", "2025/2026"),
+        ],
+        validators=[DataRequired()],
+        default="2023/2024",
+    )
+    submit = SubmitField("Generate Broadsheet")

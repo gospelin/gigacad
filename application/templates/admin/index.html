@@ -1,237 +1,65 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta
-            name="description"
-            content="Admin Dashboard for managing school data including students, teachers, parents, and classes."
-        />
-        <meta
-            name="keywords"
-            content="Admin Dashboard, School Management, Students, Teachers, Classes"
-        />
-        <meta name="author" content="Aunty Anne's Int'l School" />
-        <title>Admin Dashboard</title>
-        <link
-            href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-            rel="stylesheet"
-        />
-        <link
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
-            rel="stylesheet"
-        />
-        <link
-            href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
-            rel="stylesheet"
-        />
-        <link
-            href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
-            rel="stylesheet"
-            onload="this.rel='stylesheet'"
-        />
-        <noscript>
-            <link
-                href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
-                rel="stylesheet"
-            />
-        </noscript>
+{% extends 'admin/base.html' %}
 
-        <style>
-            body {
-                font-family: "Roboto", sans-serif;
-            }
-            .sidebar {
-                height: 100vh;
-                background-color: #343a40;
-                color: #fff;
-                position: fixed;
-                width: 220px;
-                transition: all 0.3s ease;
-            }
-            .sidebar a {
-                color: #fff;
-                text-decoration: none;
-                padding: 15px;
-                display: block;
-                transition: background-color 0.3s ease;
-            }
-            .sidebar a:hover {
-                background-color: #495057;
-            }
-            .sidebar .active {
-                background-color: #007bff;
-                color: #fff;
-            }
-            .sidebar .icon {
-                margin-right: 10px;
-            }
-            .sidebar-toggler {
-                display: none;
-            }
-            main {
-                margin-left: 220px;
-                padding: 20px;
-                transition: all 0.3s ease;
-            }
-            .card {
-                margin-bottom: 20px;
-                animation: fadeInUp 1s;
-            }
-            .card h5 {
-                font-weight: 500;
-            }
-            @media (max-width: 768px) {
-                .sidebar {
-                    width: 100%;
-                    height: auto;
-                    position: relative;
-                }
-                main {
-                    margin-left: 0;
-                }
-            }
-        </style>
-    </head>
-    <body>
-        <div class="container-fluid">
-            <div class="row">
-                <!-- Sidebar Toggler -->
-                <div class="sidebar-toggler">
-                    <i class="fas fa-bars fa-2x"></i>
-                </div>
-                <!-- Sidebar -->
-                <nav class="col-md-2 sidebar">
-                    <h2 class="text-center py-3">Admin Dashboard</h2>
-                    <a href="#" id="dashboard-link" class="active"
-                        ><i class="fas fa-tachometer-alt icon"></i>Dashboard</a
-                    >
-                    <a
-                        href="{{ url_for('admins.approve_students') }}"
-                        id="students-link"
-                        ><i class="fas fa-user-graduate icon"></i>Students</a
-                    >
-                    <a
-                        href="{{ url_for('admins.manage_subjects') }}"
-                        id="subjects-link"
-                        ><i class="fas fa-book icon"></i> Subjects</a
-                    >
-                    <a href="#" id="teachers-link"
-                        ><i class="fas fa-chalkboard-teacher icon"></i
-                        >Teachers</a
-                    >
-                    <a href="#" id="parents-link"
-                        ><i class="fas fa-user icon"></i>Parents</a
-                    >
-                    <a href="{{ url_for('admins.manage_classes') }}" id="classes-link"
-                        ><i class="fas fa-school icon"></i>Classes</a
-                    >
-                    <a href="#" id="attendance-link"
-                        ><i class="fas fa-calendar-check icon"></i>Attendance</a
-                    >
-                    <a href="#" id="settings-link"
-                        ><i class="fas fa-cogs icon"></i>Settings</a
-                    >
-                    <a href="{{ url_for('auth.logout') }}" id="logout-link"
-                        ><i class="fas fa-sign-out-alt icon"></i>Logout</a
-                    >
-                </nav>
-                <!-- Main content -->
-                <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
-                    {% for message in get_flashed_messages() %}
-                    <div class="alert alert-warning mt-3">{{ message }}</div>
-                    {% endfor %}
+{% block title %}Admin Dashboard{% endblock %}
 
-                    <div
-                        class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"
-                    >
-                        <h1 class="h2">Dashboard</h1>
-                    </div>
-                    <!-- Dashboard cards -->
-                    <div class="row">
-                        <div class="col-md-3 col-sm-6">
-                            <div class="card shadow-sm">
-                                <div class="card-body">
-                                    <h5 class="card-title">Students</h5>
-                                    <p class="card-text">
-                                        Total:
-                                        <span id="total-students"
-                                            >{{ total_students }}</span
-                                        >
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3 col-sm-6">
-                            <div class="card shadow-sm">
-                                <div class="card-body">
-                                    <h5 class="card-title">Teachers</h5>
-                                    <p class="card-text">
-                                        Total:
-                                        <span id="total-teachers">0</span>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3 col-sm-6">
-                            <div class="card shadow-sm">
-                                <div class="card-body">
-                                    <h5 class="card-title">Parents</h5>
-                                    <p class="card-text">
-                                        Total: <span id="total-parents">0</span>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3 col-sm-6">
-                            <div class="card shadow-sm">
-                                <div class="card-body">
-                                    <h5 class="card-title">Classes</h5>
-                                    <p class="card-text">
-                                        Total: <span id="total-classes">0</span>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Charts -->
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="card shadow-sm">
-                                <div class="card-body">
-                                    <h5 class="card-title">
-                                        Student Enrollment
-                                    </h5>
-                                    <canvas id="studentChart"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="card shadow-sm">
-                                <div class="card-body">
-                                    <h5 class="card-title">
-                                        Teacher Distribution
-                                    </h5>
-                                    <canvas id="teacherChart"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </main>
+{% block content %}
+<div class="row">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Total Students</h5>
+                <p class="card-text" id="total-students">234</p>
             </div>
         </div>
-        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script>
-            $(document).ready(function () {
-                $(".sidebar-toggler").on("click", function () {
-                    $(".sidebar").toggleClass("open");
-                });
-            });
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-success mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Total Teachers</h5>
+                <p class="card-text" id="total-teachers">20</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-warning mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Total Parents</h5>
+                <p class="card-text" id="total-parents">115</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-danger mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Total Classes</h5>
+                <p class="card-text" id="total-classes">10</p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Student Enrollment</h5>
+                <canvas id="studentChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Teacher Distribution</h5>
+                <canvas id="teacherChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
 
-            $(document).ready(function () {
+{% block scripts %}
+    <script>
+     $(document).ready(function () {
                 $(".sidebar-toggler").on("click", function () {
                     $(".sidebar").toggleClass("open");
                     setTimeout(function () {
@@ -242,18 +70,14 @@
             });
 
             $(document).ready(function () {
-                // Get current URL path
                 var path = window.location.pathname;
-
-                // Highlight the active sidebar link based on path
                 if (path.includes("dashboard")) {
                     $("#dashboard-link").addClass("active");
                 } else if (path.includes("approve_students")) {
                     $("#students-link").addClass("active");
-                } // Add more conditions for other links
+                }
             });
 
-            // Dummy data for charts and cards (replace with dynamic data as needed)
             const totalStudents = 234;
             const totalTeachers = 20;
             const totalParents = 115;
@@ -264,29 +88,18 @@
             $("#total-parents").text(totalParents);
             $("#total-classes").text(totalClasses);
 
-            // Student Enrollment Chart
-            const studentChartCtx = document
-                .getElementById("studentChart")
-                .getContext("2d");
+            const studentChartCtx = document.getElementById("studentChart").getContext("2d");
             const studentChart = new Chart(studentChartCtx, {
                 type: "bar",
                 data: {
-                    labels: [
-                        "Basic 1",
-                        "Basic 2",
-                        "Basic 3",
-                        "Basic 4",
-                        "Basic 5",
-                    ],
-                    datasets: [
-                        {
-                            label: "# of Students",
-                            data: [12, 19, 3, 5, 2],
-                            backgroundColor: "rgba(54, 162, 235, 0.2)",
-                            borderColor: "rgba(54, 162, 235, 1)",
-                            borderWidth: 1,
-                        },
-                    ],
+                    labels: ["Basic 1", "Basic 2", "Basic 3", "Basic 4", "Basic 5"],
+                    datasets: [{
+                        label: "# of Students",
+                        data: [12, 19, 3, 5, 2],
+                        backgroundColor: "rgba(54, 162, 235, 0.2)",
+                        borderColor: "rgba(54, 162, 235, 1)",
+                        borderWidth: 1,
+                    }],
                 },
                 options: {
                     scales: {
@@ -297,35 +110,30 @@
                 },
             });
 
-            // Teacher Distribution Chart
-            const teacherChartCtx = document
-                .getElementById("teacherChart")
-                .getContext("2d");
+            const teacherChartCtx = document.getElementById("teacherChart").getContext("2d");
             const teacherChart = new Chart(teacherChartCtx, {
                 type: "pie",
                 data: {
                     labels: ["Math", "Science", "English", "History", "Art"],
-                    datasets: [
-                        {
-                            label: "# of Teachers",
-                            data: [3, 5, 2, 4, 6],
-                            backgroundColor: [
-                                "rgba(255, 99, 132, 0.2)",
-                                "rgba(54, 162, 235, 0.2)",
-                                "rgba(255, 206, 86, 0.2)",
-                                "rgba(75, 192, 192, 0.2)",
-                                "rgba(153, 102, 255, 0.2)",
-                            ],
-                            borderColor: [
-                                "rgba(255, 99, 132, 1)",
-                                "rgba(54, 162, 235, 1)",
-                                "rgba(255, 206, 86, 1)",
-                                "rgba(75, 192, 192, 1)",
-                                "rgba(153, 102, 255, 1)",
-                            ],
-                            borderWidth: 1,
-                        },
-                    ],
+                    datasets: [{
+                        label: "# of Teachers",
+                        data: [3, 5, 2, 4, 6],
+                        backgroundColor: [
+                            "rgba(255, 99, 132, 0.2)",
+                            "rgba(54, 162, 235, 0.2)",
+                            "rgba(255, 206, 86, 0.2)",
+                            "rgba(75, 192, 192, 0.2)",
+                            "rgba(153, 102, 255, 0.2)",
+                        ],
+                        borderColor: [
+                            "rgba(255, 99, 132, 1)",
+                            "rgba(54, 162, 235, 1)",
+                            "rgba(255, 206, 86, 1)",
+                            "rgba(75, 192, 192, 1)",
+                            "rgba(153, 102, 255, 1)",
+                        ],
+                        borderWidth: 1,
+                    }],
                 },
                 options: {
                     responsive: true,
@@ -336,13 +144,13 @@
                         tooltip: {
                             callbacks: {
                                 label: function (tooltipItem) {
-                                    return `${tooltipItem.label}: ${tooltipItem.raw}`;
+                                    return tooltipItem.label + ": " + tooltipItem.raw;
                                 },
                             },
                         },
                     },
                 },
             });
-        </script>
-    </body>
-</html>
+    </script>
+{% endblock %}
+

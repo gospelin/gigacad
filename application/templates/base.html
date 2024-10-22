@@ -53,8 +53,8 @@
                 display: none;
             }
             main {
-                margin-left: 220px;
-                padding: 20px;
+                margin-left: 200px;
+                padding: 10px;
                 transition: all 0.3s ease;
             }
             .card {
@@ -73,13 +73,27 @@
                 main {
                     margin-left: 0;
                 }
-                .sidebar-toggler {
-                    display: block;
-                    position: absolute;
-                    top: 10px;
-                    left: 10px;
-                    color: #fff;
-                    cursor: pointer;
+                .card-body {
+                    text-align: center;
+                }
+                .table-responsive {
+                    margin-bottom: 10px;
+                    /* Adjusted for mobile responsiveness */
+                }
+
+                /* Added for mobile responsiveness */
+                .input-group-text {
+                    width: 100%;
+                    text-align: left;
+                }
+
+                .form-control {
+                    width: 100%;
+                }
+
+                .btn {
+                    width: 100%;
+                    margin-bottom: 10px;
                 }
             }
         </style>
@@ -123,6 +137,7 @@
                     <!-- Content will be inserted here by the child templates -->
                     {% endblock %}
                 </main>
+
             </div>
         </div>
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
