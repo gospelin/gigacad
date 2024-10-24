@@ -1,1 +1,168 @@
-{{ selected_session }}: {{ student_class }}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Admin Dashboard for managing school data including students, teachers, parents, and classes.">
+    <meta name="keywords" content="Admin Dashboard, School Management, Students, Teachers, Classes">
+    <meta name="author" content="Aunty Anne's Int'l School">
+    <title>Admin Dashboard</title>
+
+    <!-- Latest Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Latest FontAwesome CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <!-- Boxicons CSS -->
+    <link href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="{{ url_for('static', filename='css/admin_base.css') }}" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="logo-details">
+            <i class='bx bxl-c-plus-plus icon'></i>
+            <div class="logo_name">Admin Dashboard</div>
+            <i class='bx bx-menu' id="btn"></i>
+        </div>
+        <ul class="nav-list">
+            <li>
+                <i class='bx bx-search'></i>
+                <input type="text" placeholder="Search...">
+                <span class="tooltip">Search</span>
+            </li>
+            <!-- Student Management -->
+            <li>
+                <a href="#" data-bs-toggle="collapse" data-bs-target="#studentMenu" aria-expanded="false">
+                    <i class='bx bx-user'></i>
+                    <span class="links_name">Student Management</span>
+                </a>
+                <ul class="submenu collapse" id="studentMenu">
+                    <li><a href="#">Add New Student</a></li>
+                    <li><a href="{{ url_for('admins.approve_students') }}">View All Students</a></li>
+                    <li><a href="{{ url_for('admins.manage_classes') }}">Edit Student Details</a></li>
+                    <li><a href="#">Delete Student Records</a></li>
+                    <li><a href="#">Bulk Upload Students</a></li>
+                    <li><a href="#">Search and Filter Students</a></li>
+                </ul>
+                <span class="tooltip">Student Management</span>
+            </li>
+            <!-- Class Management -->
+            <li>
+                <a href="#" data-bs-toggle="collapse" data-bs-target="#classMenu" aria-expanded="false">
+                    <i class='bx bx-book'></i>
+                    <span class="links_name">Class Management</span>
+                </a>
+                <ul class="submenu collapse" id="classMenu">
+                    <li><a href="#">Add New Class/Section</a></li>
+                    <li><a href="#">View All Classes/Sections</a></li>
+                    <li><a href="#">Edit Class/Section Details</a></li>
+                    <li><a href="#">Assign Teachers to Classes</a></li>
+                </ul>
+                <span class="tooltip">Class Management</span>
+            </li>
+            <!-- Subject Management -->
+            <li>
+                <a href="#" data-bs-toggle="collapse" data-bs-target="#subjectMenu" aria-expanded="false">
+                    <i class='bx bx-bookmark'></i>
+                    <span class="links_name">Subject Management</span>
+                </a>
+                <ul class="submenu collapse" id="subjectMenu">
+                    <li><a href="#">Add New Subject</a></li>
+                    <li><a href="#">View All Subjects</a></li>
+                    <li><a href="#">Edit Subject Details</a></li>
+                    <li><a href="#">Assign Subjects to Classes/Sections</a></li>
+                </ul>
+                <span class="tooltip">Subject Management</span>
+            </li>
+            <!-- Result Management -->
+            <li>
+                <a href="#" data-bs-toggle="collapse" data-bs-target="#resultMenu" aria-expanded="false">
+                    <i class='bx bx-chart'></i>
+                    <span class="links_name">Result Management</span>
+                </a>
+                <ul class="submenu collapse" id="resultMenu">
+                    <li><a href="#">Add or Upload Results</a></li>
+                    <li><a href="#">View Results by Student</a></li>
+                    <li><a href="#">Edit Results</a></li>
+                    <li><a href="#">Generate and Download Reports</a></li>
+                    <li><a href="#">Notify Students about Results Availability</a></li>
+                </ul>
+                <span class="tooltip">Result Management</span>
+            </li>
+            <!-- Teacher Management -->
+            <li>
+                <a href="#" data-bs-toggle="collapse" data-bs-target="#teacherMenu" aria-expanded="false">
+                    <i class='bx bx-chalkboard-teacher'></i>
+                    <span class="links_name">Teacher Management</span>
+                </a>
+                <ul class="submenu collapse" id="teacherMenu">
+                    <li><a href="#">Add New Teacher</a></li>
+                    <li><a href="#">View All Teachers</a></li>
+                    <li><a href="#">Edit Teacher Details</a></li>
+                    <li><a href="#">Assign Teachers to Classes/Subjects</a></li>
+                </ul>
+                <span class="tooltip">Teacher Management</span>
+            </li>
+            <!-- User Management -->
+            <li>
+                <a href="#" data-bs-toggle="collapse" data-bs-target="#userMenu" aria-expanded="false">
+                    <i class='bx bx-group'></i>
+                    <span class="links_name">User Management</span>
+                </a>
+                <ul class="submenu collapse" id="userMenu">
+                    <li><a href="#">Add New Admin/User</a></li>
+                    <li><a href="#">View All Users</a></li>
+                    <li><a href="#">Edit User Roles and Permissions</a></li>
+                    <li><a href="#">Delete Users</a></li>
+                </ul>
+                <span class="tooltip">User Management</span>
+            </li>
+            <!-- Settings -->
+            <li>
+                <a href="#" data-bs-toggle="collapse" data-bs-target="#settingsMenu" aria-expanded="false">
+                    <i class='bx bx-cog'></i>
+                    <span class="links_name">Settings</span>
+                </a>
+                <ul class="submenu collapse" id="settingsMenu">
+                    <li><a href="#">Configure System Settings</a></li>
+                    <li><a href="#">Manage Email Templates</a></li>
+                    <li><a href="#">Customize Dashboard Layout and Appearance</a></li>
+                </ul>
+                <span class="tooltip">Settings</span>
+            </li>
+            <li class="profile">
+                <div class="profile-details">
+                    <img src="{{ url_for('static', filename='img/profile.jpg') }}" alt="Profile Image">
+                    <div class="name_job">
+                        <div class="name">Admin Name</div>
+                        <div class="job">Administrator</div>
+                    </div>
+                </div>
+                <a href="{{ url_for('auth.logout') }}" id="logout-link">
+                    <i class='bx bx-log-out' id="log_out"></i>
+                </a>
+                    
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Main Section -->
+    <section class="home-section">
+        <main class="col-md-9 ml-sm-auto col-lg-10 px-4 main-content">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Dashboard</h1>
+            </div>
+            <div class="container mt-4">
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </section>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>

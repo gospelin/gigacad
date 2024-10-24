@@ -935,9 +935,13 @@ def manage_results(student_id):
     if request.method == "POST":
         app.logger.error(f"Form validation failed: {form.errors}")
 
-    grand_total, average, cumulative_average = calculate_results(
+    grand_total, average, cumulative_average, last_term_average = calculate_results(
         student.id, term, session_year
     )
+    # Extract additional details from the first result (if available)
+    next_term_begins = results[0].next_term_begins if results else None
+    position = results[0].position if results else None
+    date_issued = results[0].date_issued if results else None
 
     return render_template(
         "admin/results/manage_results.html",
@@ -953,6 +957,11 @@ def manage_results(student_id):
         cumulative_average=cumulative_average,
         results_dict=results_dict,
         results=results,
+        school_name="Aunty Anne's Int'l School",
+        next_term_begins=next_term_begins,
+        last_term_average=last_term_average,
+        date_issued=date_issued,
+        position=position,
     )
 
 
