@@ -196,7 +196,7 @@
                                 &nbsp; {{ student.last_name }}
                             </td>
                             <td>Class</td>
-                            <td>{{ student.class_name }}</td>
+                            <td>{{ student_class }}</td>
                         </tr>
                         <tr class="text-uppercase">
                             <td>Student ID</td>
@@ -220,8 +220,8 @@
                             <td>Average for the Term</td>
                             <td>{{ average }}</td>
                         </tr>
-                        {% if "Creche" in student.class_name or "Nursery" in
-                        student.class_name or "Basic" in student.class_name %}
+                        {% if "Creche" in student_class or "Nursery" in
+                        student_class or "Basic" in student_class %}
                         <tr class="text-uppercase">
                             <td>Position in class</td>
                             <td>{{ position }}</td>
@@ -272,7 +272,7 @@
 
                                     {% if total > 0 %}
                                         <tr>
-                                            <td style="color: #28a745;" class="text-uppercase">{{ result.subject.name }}</td>
+                                            <td style="color: #333;" class="text-uppercase">{{ result.subject.name }}</td>
 
                                             {% if class_assessment < 10 %}
                                                 <td class="text-center" style="color: red;">{{ class_assessment }}</td>
@@ -326,7 +326,7 @@
                                     </td>
                                     <td colspan="2"></td>
                                 </tr>
-                                {% if "Nursery" in student.class_name or "Basic 1" in student.class_name or "Basic 2" in student.class_name or "Basic 3" in student.class_name or "Basic 4" in student.class_name %}
+                                {% if "Nursery" in student_class or ("Basic" in student_class and "Basic 5" not in student_class) %}
                                 <tr class="grading">
                                     <td colspan="7" style="font-size: 10pt; color: #333;"><strong>GRADES: A+ [95-100] &nbsp;&nbsp; A [80-94] &nbsp;&nbsp; B+ [70-79] &nbsp;&nbsp; B [65-69] &nbsp;&nbsp; C+ [60-64] &nbsp;&nbsp; C [50-59] &nbsp;&nbsp; D [40-49] &nbsp;&nbsp; E [30-39] &nbsp;&nbsp; F [0-29]</strong></td>
                                 </tr>
@@ -364,7 +364,7 @@
                         </table>
                     </div>
                     {% endif %}
-                    {% if "JSS" in student.class_name %}
+                    {% if "JSS" in student_class %}
                     <div class="remarks mt-4">
                         <table style="margin-top: -15px;" class="table">
                             <tbody>

@@ -284,4 +284,4 @@ def calculate_results(student_id, term, session_year):
     for res in results:
         res.last_term_average = last_term_average
 
-    return grand_total, average, cumulative_average
+    return grand_total, average, cumulative_average, last_term_average
