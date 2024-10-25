@@ -94,6 +94,7 @@ class ResultForm(FlaskForm):
         "Select Session",  # This will be populated dynamically
         choices=[],  # Start with an empty list, to be populated in the route
         validators=[DataRequired()],
+        default="2024/2025",
     )
     next_term_begins = StringField("Next Term Begins", validators=[Optional()])
     date_issued = StringField("Date Issued", validators=[Optional()])
@@ -166,33 +167,39 @@ class ApproveForm(FlaskForm):
 
 class SelectTermSessionForm(FlaskForm):
     term = SelectField(
-        "Term",
+        "Select Term",
         choices=[
             ("First Term", "First Term"),
             ("Second Term", "Second Term"),
             ("Third Term", "Third Term"),
         ],
         validators=[DataRequired()],
+        default="Third Term",
     )
     session = SelectField(
-        "Select Session",
-        choices=[
-            ("2023/2024", "2023/2024"),
-            ("2024/2025", "2024/2025"),
-            ("2025/2026", "2025/2026"),
-        ],
+        "Select Session",  # This will be populated dynamically
+        choices=[],  # Start with an empty list, to be populated in the route
         validators=[DataRequired()],
-        default="2023/2024",
     )
     submit = SubmitField("Generate Broadsheet")
 
 class SessionForm(FlaskForm):
-    session = SelectField("Select Session", choices=[], coerce=int)
+    session = SelectField(
+        "Select Session",
+        choices=[],
+        validators=[DataRequired()],
+        default="2024/2025",
+    )
     submit = SubmitField("Choose an Academic Session")
 
 
 class classForm(FlaskForm):
-    session = SelectField("Select Session", choices=[], coerce=int)
+    session = SelectField(
+        "Select Session",
+        choices=[],
+        validators=[DataRequired()],
+        default="2024/2025",
+    )
     class_name = SelectField(
         "Class",
         choices=[

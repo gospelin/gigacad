@@ -28,11 +28,7 @@
     }
 </style>
 
-<div class="container my-5">
-    {% for message in get_flashed_messages() %}
-    <div class="alert alert-warning mt-3">{{ message }}</div>
-    {% endfor %}
-    
+<div class="container my-5">    
     <!-- Session Form -->
     <form method="POST" action="{{ url_for('admins.approve_students') }}">
         {{ session_form.hidden_tag() }}

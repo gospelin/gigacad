@@ -19,6 +19,7 @@ Returns:
 from datetime import datetime
 from . import admin_bp
 from io import BytesIO
+from sqlalchemy.orm import joinedload
 
 # import io
 import openpyxl
@@ -44,12 +45,10 @@ from ..auth.forms import (
     ResultForm,
     SubjectForm,
     DeleteForm,
-    SelectTermSessionForm,
     SessionForm,
     ApproveForm,
     classForm,
     ManageResultsForm,
-    SubjectResultForm,
 )
 from ..helpers import (
     get_subjects_by_class_name,
@@ -62,19 +61,18 @@ from ..helpers import (
 )
 
 
-from weasyprint import HTML
-from sqlalchemy.exc import SQLAlchemyError
-
 @admin_bp.errorhandler(CSRFError)
 def handle_csrf_error(e):
     app.logger.warning(f"CSRF error: {e.description}")
     flash("The form submission has expired. Please try again.", "alert alert-danger")
     return redirect(url_for("admins.admin_dashboard"))
 
+
 @admin_bp.errorhandler(500)
 def internal_error(error):
     app.logger.error(f"Server Error: {error}")
     return redirect(url_for("admins.admin_dashboard"))
+
 
 @admin_bp.errorhandler(404)
 def not_found_error(error):
@@ -87,7 +85,9 @@ def not_found_error(error):
 def admin_before_request():
     if not current_user.is_admin:
         flash("You are not authorized to access this page.", "alert alert-danger")
-        app.logger.warning(f"Unauthorized access attempt by user {current_user.username}")
+        app.logger.warning(
+            f"Unauthorized access attempt by user {current_user.username}"
+        )
         return redirect(url_for("main.index"))
 
 
@@ -95,6 +95,7 @@ def admin_before_request():
 def admin_dashboard():
     app.logger.info(f"Admin dashboard accessed by user {current_user.username}")
     return render_template("admin/index.html")
+
 
 @admin_bp.route("/manage_sessions", methods=["GET", "POST"])
 @login_required
@@ -124,11 +125,11 @@ def manage_sessions():
 
     if form.validate_on_submit():
         selected_session = form.session.data
-        return redirect(
-            url_for("admins.change_session", session_id=selected_session)
-        )
+        return redirect(url_for("admins.change_session", session_id=selected_session))
 
-    return render_template("admin/manage_sessions.html", current_session=current_session.year, form=form)
+    return render_template(
+        "admin/manage_sessions.html", current_session=current_session.year, form=form
+    )
 
 
 @admin_bp.route("/change_session/<int:session_id>", methods=["GET", "POST"])
@@ -183,6 +184,7 @@ It also provides links to edit, delete, approve, and deactivate students
     delete_student: Deletes a student
 """
 
+
 @admin_bp.route("/admin/manage_students", methods=["GET", "POST"])
 @login_required
 def manage_students():
@@ -217,16 +219,17 @@ def approve_students():
     regenerate_form = ApproveForm(prefix="regenerate")
     session_form = SessionForm()
 
-    # Fetch available sessions and populate the choices for the form
+    # Fetch available sessions from the database
     sessions = Session.query.all()
-    session_form.session.choices = [(session.id, session.year) for session in sessions]
+    session_form.session.choices = [(s.year, s.year) for s in sessions]
 
-    # Default to the latest session if none is selected
-    selected_session_id = (
+    # Get term and session either from form data or query parameters
+    session = (
         session_form.session.data
-        if session_form.validate_on_submit()
-        else sessions[-1].id
+        if session_form.session.data
+        else request.args.get("session")
     )
+    selected_session_id = Session.query.filter_by(year=session).first().id
 
     # Get students and their class history for the selected session
     students = (
@@ -339,7 +342,9 @@ def regenerate_password(student_id):
 
     if form.validate_on_submit():
         student = Student.query.get_or_404(student_id)
-        new_password = "".join(random.choices(string.ascii_letters + string.digits, k=8))
+        new_password = "".join(
+            random.choices(string.ascii_letters + string.digits, k=8)
+        )
         student.user.set_password(new_password)
         db.session.commit()
 
@@ -362,44 +367,9 @@ def manage_classes():
     return render_template("admin/classes/classes.html", students=students)
 
 
-@admin_bp.route("/select_class", methods=["GET", "POST"])
+@admin_bp.route("/students_by_class", methods=["GET", "POST"])
 @login_required
-def view_class_by_session():
-    """
-    View function for selecting a class based on session.
-
-    This function handles the GET and POST requests for selecting a class based on session.
-    It renders a form to select the session and class, and redirects to the students by class page
-    when the form is submitted.
-
-    Returns:
-        A rendered template for selecting a class by session.
-    """
-    form = classForm()
-    # Query the sessions from the database
-    sessions = Session.query.all() 
-    form.session.choices = [
-        (session.id, session.year) for session in sessions
-    ]
-    current_session = Session.get_current_session()
-
-    if form.validate_on_submit():
-        selected_session = form.session.data
-
-        selected_class = form.class_name.data
-        return redirect(
-            url_for(
-                "admins.students_by_class",
-                session_id=selected_session,
-                class_name=selected_class,
-            )
-        )
-    return render_template("admin/classes/select_class_by_session.html", current_session=current_session.year, form=form)
-
-
-@admin_bp.route("/students_by_class/<int:session_id>/<string:class_name>")
-@login_required
-def students_by_class(session_id, class_name):
+def students_by_class():
     """
     Retrieve students by class for a given session.
 
@@ -410,23 +380,52 @@ def students_by_class(session_id, class_name):
     Returns:
         render_template: The rendered template with the students, session, class name, and form.
     """
-    # Get the selected session
-    session = Session.query.get_or_404(session_id)
 
-    # Get the student history filtered by session and class
-    student_histories = StudentClassHistory.query.filter_by(
-        session_id=session_id, class_name=class_name
-    ).all()
+    class_form = classForm()
+    form = DeleteForm()
 
-    # Extract the students based on the history records
-    students = [history.student for history in student_histories]
+    # Fetch available sessions from the database
+    sessions = Session.query.all()
+    class_form.session.choices = [(s.year, s.year) for s in sessions]
 
-    form = DeleteForm()  # Example form for actions like delete or edit
+    # Handle POST request with form validation
+    if class_form.validate_on_submit():
+        # Get term and session from form data
+        class_name = class_form.class_name.data
+        session = class_form.session.data
+
+        # Retrieve session ID based on the selected session
+        session_id = Session.query.filter_by(year=session).first().id
+
+        # Fetch the student history filtered by session and class
+        student_histories = StudentClassHistory.query.filter_by(
+            session_id=session_id, class_name=class_name
+        ).all()
+
+        # Extract the students based on the history records
+        students = [history.student for history in student_histories]
+
+        if not students:
+            flash(
+                f"No students inserted in {class_name} for {session}",
+                "alert alert-danger",
+            )
+
+        return render_template(
+            "admin/classes/students_by_class.html",
+            students=students,
+            session=session,
+            class_name=class_name,
+            class_form=class_form,
+            form=form,
+        )
+
+    # Handle GET request or form validation failure
     return render_template(
         "admin/classes/students_by_class.html",
-        students=students,
-        session=session,
-        class_name=class_name,
+        class_form=class_form,
+        session=None,
+        class_name=None,
         form=form,
     )
 
@@ -578,7 +577,8 @@ def edit_student(student_id):
         else:
             # If no history exists, create a new entry
             new_class_history = StudentClassHistory(
-                student_id=student.id, session_id=session_id,  # Assuming current session is tracked
+                student_id=student.id,
+                session_id=session_id,  # Assuming current session is tracked
                 class_name=form.class_name.data,
             )
             db.session.add(new_class_history)
@@ -590,7 +590,11 @@ def edit_student(student_id):
         db.session.commit()
         flash("Student updated successfully!", "alert alert-success")
         return redirect(
-            url_for("admins.students_by_class", session_id=session_id, class_name=form.class_name.data)
+            url_for(
+                "admins.students_by_class",
+                session_id=session_id,
+                class_name=form.class_name.data,
+            )
         )
 
     elif request.method == "GET":
@@ -677,7 +681,11 @@ def delete_student(student_id):
     class_name = (
         student_class_history.class_name if student_class_history else "Unassigned"
     )
-    return redirect(url_for("admins.students_by_class", session_id=session_id, class_name=class_name))
+    return redirect(
+        url_for(
+            "admins.students_by_class", session_id=session_id, class_name=class_name
+        )
+    )
 
 
 """"
@@ -861,6 +869,10 @@ def select_term_session(student_id):
     sessions = Session.query.all()
     form.session.choices = [(s.year, s.year) for s in sessions]
 
+    # Get term and session either from form data or query parameters
+    term = form.term.data if form.term.data else request.args.get("term")
+    session = form.session.data if form.session.data else request.args.get("session")
+
     if form.validate_on_submit():
         term = form.term.data
         session = form.session.data
@@ -965,288 +977,433 @@ def manage_results(student_id):
     )
 
 
-# @admin_bp.route("/broadsheet/<string:class_name>", methods=["GET", "POST"])
-# @login_required
-# def broadsheet(class_name):
-#    if not current_user.is_authenticated or not current_user.is_admin:
-#        return redirect(url_for("auth.login"))
+@admin_bp.route("/broadsheet", methods=["GET", "POST"])
+@login_required
+def broadsheet():
+    try:
+        # Ensure the user is logged in and is an admin
+        if not current_user.is_authenticated or not current_user.is_admin:
+            return redirect(url_for("auth.login"))
 
-#    form = SelectTermSessionForm()
-#    term = form.term.data if form.term.data else request.args.get("term")
-#    session = form.session.data if form.session.data else request.args.get("session")
+        # Initialize the form for selecting term and session
+        form = ResultForm()
+        class_name = request.args.get("class_name")
 
-#    students = Student.query.filter_by(class_name=class_name).all()
-#    subjects = get_subjects_by_class_name(class_name=class_name)
+        # Fetch available sessions from the database
+        sessions = Session.query.all()
+        form.session.choices = [(s.year, s.year) for s in sessions]
 
-#    broadsheet_data = []
-#    subject_averages = {subject.id: {"total": 0, "count": 0} for subject in subjects}
+        # Handle POST request with form validation
+        if form.validate_on_submit():
+            # Get term and session from form data
+            term = form.term.data
+            session = form.session.data
 
-#    for student in students:
-#        student_results = {
-#            "student": student,
-#            "results": {
-#                subject.id: {
-#                    "class_assessment": "",
-#                    "summative_test": "",
-#                    "exam": "",
-#                    "total": "",
-#                    "grade": "",
-#                    "remark": "",
-#                }
-#                for subject in subjects
-#            },
-#            "grand_total": "",
-#            "average": "",
-#            "position": "",
-#        }
-#        results = Result.query.filter_by(
-#            student_id=student.id, term=term, session=session
-#        ).all()
+            # Fetch the selected session object
+            selected_session = Session.query.filter_by(year=session).first()
 
-#        grand_total = 0
-#        non_zero_subjects = 0
-#        for result in results:
-#            if result.subject_id in student_results["results"]:
-#                student_results["results"][result.subject_id] = {
-#                    "class_assessment": (
-#                        result.class_assessment
-#                        if result.class_assessment is not None
-#                        else ""
-#                    ),
-#                    "summative_test": (
-#                        result.summative_test
-#                        if result.summative_test is not None
-#                        else ""
-#                    ),
-#                    "exam": result.exam if result.exam is not None else "",
-#                    "total": (
-#                        result.total
-#                        if result.total is not None and result.total > 0
-#                        else ""
-#                    ),
-#                    "grade": result.grade if result.grade is not None else "",
-#                    "remark": result.remark if result.remark is not None else "",
-#                }
-#                if result.total > 0:
-#                    grand_total += result.total
-#                    non_zero_subjects += 1
-#                    subject_averages[result.subject_id]["total"] += result.total
-#                    subject_averages[result.subject_id]["count"] += 1
-#                student_results["position"] = result.position
+            if not selected_session:
+                flash(f"Session '{session}' not found.", "alert-danger")
+                return redirect(url_for("admins.admin_dashboard"))
 
-#        # Set grand_total and average with blank space if they are zero
-#        student_results["grand_total"] = grand_total if grand_total > 0 else ""
-#        average = grand_total / non_zero_subjects if non_zero_subjects > 0 else 0
-#        student_results["average"] = round(average, 1) if average > 0 else float("-inf")
+            # Fetch students and subjects based on class_name from StudentClassHistory
+            student_class_histories = (
+                StudentClassHistory.query.filter_by(
+                    class_name=class_name, session_id=selected_session.id
+                )
+                .options(joinedload(StudentClassHistory.student))
+                .all()
+            )
 
-#        # student_results["average"] = round(average, 1) if average > 0 else ""
+            students = [history.student for history in student_class_histories]
+            subjects = get_subjects_by_class_name(class_name=class_name)
 
-#        # average = grand_total / non_zero_subjects if non_zero_subjects > 0 else 0
-#        # student_results["grand_total"] = grand_total
-#        # student_results["average"] = round(average, 1)
-#        broadsheet_data.append(student_results)
+            if not students or not subjects:
+                flash(
+                    f"No students or subjects found for class {class_name}.",
+                    "alert-info",
+                )
+                return render_template(
+                    "admin/results/broadsheet.html",
+                    form=form,
+                    students=[],
+                    subjects=[],
+                    broadsheet_data=[],
+                    subject_averages={},
+                    class_name=class_name,
+                )
 
-#    # Calculate class averages for each subject
-#    for subject_id, values in subject_averages.items():
-#        values["average"] = (
-#            round(values["total"] / values["count"], 1) if values["count"] > 0 else 0
-#        )
+            broadsheet_data = []
+            subject_averages = {
+                subject.id: {"total": 0, "count": 0} for subject in subjects
+            }
 
-#    # Sort students by their average
-#    broadsheet_data.sort(key=lambda x: x["average"], reverse=True)
+            # Iterate through students and their results
+            for student in students:
+                student_results = {
+                    "student": student,
+                    "results": {
+                        subject.id: {
+                            "class_assessment": "",
+                            "summative_test": "",
+                            "exam": "",
+                            "total": "",
+                            "grade": "",
+                            "remark": "",
+                        }
+                        for subject in subjects
+                    },
+                    "grand_total": "",
+                    "average": "",
+                    "position": "",
+                }
 
-#    return render_template(
-#        "admin/results/broadsheet.html",
-#        form=form,
-#        students=students,
-#        subjects=subjects,
-#        broadsheet_data=broadsheet_data,
-#        subject_averages=subject_averages,
-#        class_name=class_name,
-#    )
+                # Fetch student results for the specific term and session
+                results = Result.query.filter_by(
+                    student_id=student.id, term=term, session=session
+                ).all()
+
+                grand_total = 0
+                non_zero_subjects = 0
+
+                # Process each result for the student
+                for result in results:
+                    if result.subject_id in student_results["results"]:
+                        student_results["results"][result.subject_id] = {
+                            "class_assessment": result.class_assessment or "",
+                            "summative_test": result.summative_test or "",
+                            "exam": result.exam or "",
+                            "total": result.total or "",
+                            "grade": result.grade or "",
+                            "remark": result.remark or "",
+                        }
+                        if result.total > 0:
+                            grand_total += result.total
+                            non_zero_subjects += 1
+                            subject_averages[result.subject_id]["total"] += result.total
+                            subject_averages[result.subject_id]["count"] += 1
+                        student_results["position"] = result.position or ""
+
+                # Set grand total and average
+                student_results["grand_total"] = grand_total if grand_total > 0 else ""
+                average = (
+                    grand_total / non_zero_subjects if non_zero_subjects > 0 else 0
+                )
+                student_results["average"] = (
+                    round(average, 1) if average > 0 else float("-inf")
+                )
+
+                # Add student results to the broadsheet data
+                broadsheet_data.append(student_results)
+
+            # Calculate class averages for each subject
+            for subject_id, values in subject_averages.items():
+                values["average"] = (
+                    round(values["total"] / values["count"], 1)
+                    if values["count"] > 0
+                    else 0
+                )
+
+            # Sort students by their average
+            broadsheet_data.sort(key=lambda x: x["average"], reverse=True)
+
+            return render_template(
+                "admin/results/broadsheet.html",
+                form=form,
+                students=students,
+                subjects=subjects,
+                broadsheet_data=broadsheet_data,
+                subject_averages=subject_averages,
+                class_name=class_name,
+            )
+
+        # Handle GET request or form validation failure
+        return render_template(
+            "admin/results/broadsheet.html",
+            form=form,
+            students=[],
+            subjects=[],
+            broadsheet_data=[],
+            subject_averages={},
+            class_name=class_name,
+        )
+
+    except Exception as e:
+        app.logger.error(
+            f"Error generating broadsheet for class_name: {class_name} - {str(e)}"
+        )
+        flash("An error occurred. Please try again later.", "alert-danger")
+        return redirect(url_for("admins.admin_dashboard"))
 
 
-# @admin_bp.route("/download_broadsheet/<string:class_name>")
-# @login_required
-# def download_broadsheet(class_name):
-#    if not current_user.is_authenticated or not current_user.is_admin:
-#        return redirect(url_for("auth.login"))
+@admin_bp.route("/download_broadsheet/<string:class_name>", methods=["GET"])
+def download_broadsheet(class_name):
+    try:
+        term = request.args.get("term")
+        session = request.args.get("session")
 
-#    term = request.args.get("term")
-#    session = request.args.get("session")
+        if not term or not session:
+            flash(
+                "Term and session must be provided to download broadsheet.",
+                "alert-danger",
+            )
+            return redirect(url_for("admins.broadsheet", class_name=class_name))
 
-#    students = Student.query.filter_by(class_name=class_name).all()
-#    subjects = get_subjects_by_class_name(class_name=class_name)
+        selected_session = Session.query.filter_by(year=session).first()
+        if not selected_session:
+            flash(f"Session '{session}' not found.", "alert-danger")
+            return redirect(url_for("admins.admin_dashboard"))
 
-#    broadsheet_data = []
-#    subject_averages = {subject.id: {"total": 0, "count": 0} for subject in subjects}
+        student_class_histories = (
+            StudentClassHistory.query.filter_by(
+                class_name=class_name, session_id=selected_session.id
+            )
+            .options(joinedload(StudentClassHistory.student))
+            .all()
+        )
+        students = [history.student for history in student_class_histories]
+        subjects = get_subjects_by_class_name(class_name=class_name)
 
-#    for student in students:
-#        student_results = {
-#            "student": student,
-#            "results": {subject.id: None for subject in subjects},
-#            "grand_total": 0,
-#            "average": 0,
-#            "position": None,
-#        }
-#        results = Result.query.filter_by(
-#            student_id=student.id, term=term, session=session
-#        ).all()
+        if not students or not subjects:
+            flash(
+                f"No students or subjects found for class {class_name}.", "alert-info"
+            )
+            return redirect(url_for("admins.broadsheet", class_name=class_name))
 
-#        grand_total = 0
-#        non_zero_subjects = 0
-#        for result in results:
-#            student_results["results"][result.subject_id] = result
-#            grand_total += result.total
-#            if result.total > 0:
-#                non_zero_subjects += 1
-#                subject_averages[result.subject_id]["total"] += result.total
-#                subject_averages[result.subject_id]["count"] += 1
-#            student_results["position"] = result.position
+        broadsheet_data = []
+        subject_averages = {
+            subject.id: {"total": 0, "count": 0} for subject in subjects
+        }
 
-#        average = grand_total / non_zero_subjects if non_zero_subjects > 0 else 0
-#        student_results["grand_total"] = grand_total
-#        student_results["average"] = round(average, 1)
-#        broadsheet_data.append(student_results)
+        for student in students:
+            student_results = {
+                "student": student,
+                "results": {subject.id: None for subject in subjects},
+                "grand_total": 0,
+                "average": 0,
+                "position": None,
+            }
+            results = Result.query.filter_by(
+                student_id=student.id, term=term, session=session
+            ).all()
 
-#    # Calculate class averages for each subject
-#    for subject_id, values in subject_averages.items():
-#        values["average"] = (
-#            round(values["total"] / values["count"], 1) if values["count"] > 0 else 0
-#        )
+            grand_total = 0
+            non_zero_subjects = 0
+            for result in results:
+                student_results["results"][result.subject_id] = result
+                if result.total > 0:
+                    grand_total += result.total
+                    non_zero_subjects += 1
+                    subject_averages[result.subject_id]["total"] += result.total
+                    subject_averages[result.subject_id]["count"] += 1
+                student_results["position"] = result.position
 
-#    # Sort students by their average in descending order
-#    broadsheet_data.sort(key=lambda x: x["average"], reverse=True)
+            average = grand_total / non_zero_subjects if non_zero_subjects > 0 else 0
+            student_results["grand_total"] = grand_total
+            student_results["average"] = round(average, 1)
+            broadsheet_data.append(student_results)
 
-#    # Create Excel file
-#    workbook = openpyxl.Workbook()
-#    sheet = workbook.active
-#    sheet.title = f"Broadsheet_{class_name}_{term}"
+        for subject_id, values in subject_averages.items():
+            values["average"] = (
+                round(values["total"] / values["count"], 1)
+                if values["count"] > 0
+                else 0
+            )
 
-#    # Define styles
-#    header_font = Font(bold=True, size=14, name="Times New Roman")
-#    sub_header_font = Font(bold=True, size=12, name="Times New Roman")
-#    cell_font = Font(size=12, name="Times New Roman")
-#    border = Border(
-#        left=Side(style="thin"),
-#        right=Side(style="thin"),
-#        top=Side(style="thin"),
-#        bottom=Side(style="thin"),
-#    )
-#    alignment = Alignment(horizontal="left", vertical="center")
+        broadsheet_data.sort(key=lambda x: x["average"], reverse=True)
 
-#    # Add context information at the top
-#    sheet.append([f"Broadsheet for {class_name} - Term: {term}, Session: {session}"])
-#    sheet.append([f"Generated on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"])
-#    sheet.append([])  # Blank row for separation
+        # Create Excel file
+        workbook = openpyxl.Workbook()
+        sheet = workbook.active
+        sheet.title = f"Broadsheet_{class_name}_{term}"
 
-#    # Write headers
-#    headers = ["Subjects"]
-#    for student_data in broadsheet_data:
-#        student = student_data["student"]
-#        headers.extend([f"{student.first_name} {student.last_name}", "", "", ""])
-#    headers.append("Class Average")
-#    sheet.append(headers)
+        # Define styles
+        header_font = Font(bold=True, size=16, name="Times New Roman")
+        sub_header_font = Font(bold=True, size=12, name="Times New Roman")
+        cell_font = Font(bold=True, size=12, name="Times New Roman")
+        border = Border(
+            left=Side(style="thin"),
+            right=Side(style="thin"),
+            top=Side(style="thin"),
+            bottom=Side(style="thin"),
+        )
+        alignment = Alignment(horizontal="center", vertical="center")
 
-#    sub_headers = [""]
-#    for _ in broadsheet_data:
-#        sub_headers.extend(["C/A", "S/T", "Exam", "Total"])
-#    sub_headers.append("")
-#    sheet.append(sub_headers)
+        # Merge cells from A1 to the column for Class Average
+        last_column = (
+            2 + len(broadsheet_data) * 4
+        )  # Adjust according to the number of students
+        sheet.merge_cells(
+            start_row=1, start_column=2, end_row=1, end_column=last_column
+        )
+        sheet["B1"].value = (
+            f"Broadsheet for {class_name} - Term: {term}, Academic Session: {session}  -  Generated on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+        )
+        sheet["B1"].alignment = Alignment(horizontal="center", vertical="center")
+        sheet["B1"].font = header_font
 
-#    for cell in sheet["1:1"]:
-#        cell.font = header_font
-#    for cell in sheet["2:2"]:
-#        cell.font = sub_header_font
-#    for cell in sheet["3:3"]:
-#        cell.font = cell_font
-#    sheet.merge_cells("A1:A2")
+        # Set column widths
+        subject_column_letter = get_column_letter(1)
+        sheet.column_dimensions[subject_column_letter].width = (
+            25  # Set subject column width to 26cm
+        )
 
-#    # Write data
-#    for subject in subjects:
-#        row = [subject.name]
-#        for student_data in broadsheet_data:
-#            result = student_data["results"][subject.id]
-#            if result:
-#                row.extend(
-#                    [
-#                        result.class_assessment,
-#                        result.summative_test,
-#                        result.exam,
-#                        result.total,
-#                    ]
-#                )
-#            else:
-#                row.extend(["-", "-", "-", "-"])
-#        row.append(subject_averages[subject.id]["average"])
-#        sheet.append(row)
+        class_average_column_letter = get_column_letter(last_column)
+        sheet.column_dimensions[class_average_column_letter].width = (
+            13  # Set class average width to 10 cm
+        )
 
-#    # Write grand totals, averages, and positions
-#    sheet.append(
-#        ["Grand Total"]
-#        + sum(
-#            [
-#                ["", "", "", student_data["grand_total"]]
-#                for student_data in broadsheet_data
-#            ],
-#            [],
-#        )
-#        + [""]
-#    )
-#    sheet.append(
-#        ["Average"]
-#        + sum(
-#            [["", "", "", student_data["average"]] for student_data in broadsheet_data],
-#            [],
-#        )
-#        + [""]
-#    )
-#    sheet.append(
-#        ["Position"]
-#        + sum(
-#            [
-#                ["", "", "", student_data["position"]]
-#                for student_data in broadsheet_data
-#            ],
-#            [],
-#        )
-#        + [""]
-#    )
+        # Write headers (now student names merged and centralized)
+        headers = [""]
+        for student_data in broadsheet_data:
+            student = student_data["student"]
+            headers.extend([f"{student.first_name} {student.last_name}", "", "", ""])
+        headers.append("Class Average")
+        sheet.append(headers)
 
-#    # Set page orientation to landscape
-#    sheet.page_setup.orientation = sheet.ORIENTATION_LANDSCAPE
+        # Merge and center student names across their 4 corresponding columns
+        for i, student_data in enumerate(
+            broadsheet_data, start=2
+        ):  # start=2 to account for header rows
+            start_col = 2 + (i - 2) * 4
+            end_col = start_col + 3
 
-#    # Apply styles
-#    for row in sheet.iter_rows(
-#        min_row=1, max_row=sheet.max_row, min_col=1, max_col=sheet.max_column
-#    ):
-#        for cell in row:
-#            cell.border = border
-#            cell.alignment = alignment
-#            cell.font = cell_font
+            # Set the width for C/A (start_col), S/T (start_col + 1), Exam (start_col + 2), and Total (start_col + 3)
+            sheet.column_dimensions[get_column_letter(start_col)].width = 7  # C/A width
+            sheet.column_dimensions[get_column_letter(start_col + 1)].width = (
+                7  # S/T width
+            )
+            sheet.column_dimensions[get_column_letter(start_col + 2)].width = (
+                7  # Exam width
+            )
+            sheet.column_dimensions[get_column_letter(start_col + 3)].width = (
+                7  # Total width
+            )
 
-#    # Adjust column widths
-#    for col in sheet.columns:
-#        max_length = 0
-#        column = col[0].column_letter
-#        for cell in col:
-#            try:
-#                if len(str(cell.value)) > max_length:
-#                    max_length = len(cell.value)
-#            except:
-#                pass
-#        adjusted_width = max_length + 2
-#        sheet.column_dimensions[column].width = adjusted_width
+            sheet.merge_cells(
+                start_row=2, start_column=start_col, end_row=2, end_column=end_col
+            )
+            cell = sheet.cell(row=2, column=start_col)
+            cell.alignment = Alignment(horizontal="center", vertical="center")
+            cell.font = sub_header_font
 
-#    # Save to a bytes buffer
-#    output = BytesIO()
-#    workbook.save(output)
-#    output.seek(0)
+        # Add sub-headers (C/A, S/T, Exam, Total) under each student name
+        sub_headers = ["Subjects"]
+        for _ in broadsheet_data:
+            sub_headers.extend(["C/A", "S/T", "Exam", "Total"])
+        sub_headers.append("")
+        sheet.append(sub_headers)
 
-#    return Response(
-#        output,
-#        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-#        headers={
-#            "Content-Disposition": f"attachment;filename=Broadsheet_{class_name}_{term}_{session}.xlsx"
-#        },
-#    )
+        # Write data for each subject and student
+        for subject in subjects:
+            row = [subject.name]
+            for student_data in broadsheet_data:
+                result = student_data["results"][subject.id]
+                if result:
+                    row.extend(
+                        [
+                            result.class_assessment,
+                            result.summative_test,
+                            result.exam,
+                            result.total,
+                        ]
+                    )
+                else:
+                    row.extend(["", "", "", ""])
+            row.append(
+                subject_averages[subject.id]["average"]
+                if subject_averages[subject.id]["average"]
+                else ""
+            )
+            sheet.append(row)
+
+        # Write grand totals, averages, and positions, ensuring values are not empty
+        sheet.append([""])
+        sheet.append(
+            ["Grand Total"]
+            + sum(
+                [
+                    [
+                        "",
+                        "",
+                        "",
+                        (
+                            student_data["grand_total"]
+                            if student_data["grand_total"]
+                            else ""
+                        ),
+                    ]
+                    for student_data in broadsheet_data
+                ],
+                [],
+            )
+            + [""]
+        )
+        sheet.append(
+            ["Average"]
+            + sum(
+                [
+                    [
+                        "",
+                        "",
+                        "",
+                        student_data["average"] if student_data["average"] else "",
+                    ]
+                    for student_data in broadsheet_data
+                ],
+                [],
+            )
+            + [""]
+        )
+        sheet.append(
+            ["Position"]
+            + sum(
+                [
+                    ["", "", "", student_data["position"]]
+                    for student_data in broadsheet_data
+                ],
+                [],
+            )
+            + [""]
+        )
+
+        # Set page orientation to landscape
+        sheet.page_setup.orientation = sheet.ORIENTATION_LANDSCAPE
+        sheet.PAPERSIZE_A4 = True
+
+        for row in sheet.iter_rows(
+            min_row=1, max_row=sheet.max_row, min_col=1, max_col=sheet.max_column
+        ):
+            for cell in row:
+                cell.border = border
+                cell.font = cell_font
+
+                # Apply left alignment specifically to "Subjects" column, sub-headers, and result cells
+                if cell.column == 1:
+                    cell.alignment = Alignment(horizontal="left")
+                else:
+                    cell.alignment = alignment
+
+        # Save to a bytes buffer
+        output = BytesIO()
+        workbook.save(output)
+        output.seek(0)
+
+        # Return the Excel file as a downloadable response
+        return Response(
+            output,
+            mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            headers={
+                "Content-Disposition": f"attachment;filename=Broadsheet_{class_name}_{term}_{session}.xlsx"
+            },
+        )
+
+    except Exception as e:
+        app.logger.error(
+            f"Error generating broadsheet for class_name: {class_name} - {str(e)}"
+        )
+        flash(
+            "An error occurred while downloading the broadsheet. Please try again later.",
+            "alert-danger",
+        )
+        return redirect(url_for("admins.broadsheet", class_name=class_name))
