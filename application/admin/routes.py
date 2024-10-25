@@ -1077,7 +1077,7 @@ def broadsheet():
                             "grade": result.grade or "",
                             "remark": result.remark or "",
                         }
-                        if result.total > 0:
+                        if result.total and result.total > 0:
                             grand_total += result.total
                             non_zero_subjects += 1
                             subject_averages[result.subject_id]["total"] += result.total
@@ -1087,11 +1087,9 @@ def broadsheet():
                 # Set grand total and average
                 student_results["grand_total"] = grand_total if grand_total > 0 else ""
                 average = (
-                    grand_total / non_zero_subjects if non_zero_subjects > 0 else 0
+                    grand_total / non_zero_subjects if non_zero_subjects > 0 else ""
                 )
-                student_results["average"] = (
-                    round(average, 1) if average > 0 else float("-inf")
-                )
+                student_results["average"] = round(average, 1) if average else ""
 
                 # Add student results to the broadsheet data
                 broadsheet_data.append(student_results)
@@ -1100,8 +1098,8 @@ def broadsheet():
             for subject_id, values in subject_averages.items():
                 values["average"] = (
                     round(values["total"] / values["count"], 1)
-                    if values["count"] > 0
-                    else 0
+                    if values["count"]
+                    else ""
                 )
 
             # Sort students by their average
