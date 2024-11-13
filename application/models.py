@@ -86,6 +86,7 @@ class Student(db.Model, UserMixin):
     date_registered = db.Column(db.DateTime, server_default=db.func.now())
     approved = db.Column(db.Boolean, default=False)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    has_paid_fee = db.Column(db.Boolean, default=False)
 
     results = db.relationship("Result", backref="student", lazy=True)
 

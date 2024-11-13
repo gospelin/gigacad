@@ -7,12 +7,12 @@ from wtforms import (
     PasswordField,
     SelectMultipleField,
     FloatField,
-    IntegerField, 
-    HiddenField, 
-    FieldList, 
-    FormField
+    IntegerField,
+    HiddenField,
+    FieldList,
+    FormField,
 )
-from wtforms.validators import DataRequired, Length, Optional, NumberRange, InputRequired
+from wtforms.validators import DataRequired, Length, Optional, NumberRange
 
 
 class StudentRegistrationForm(FlaskForm):
@@ -23,7 +23,7 @@ class StudentRegistrationForm(FlaskForm):
         "Gender",
         choices=[("male", "Male"), ("female", "Female")],
         validators=[DataRequired()],
-    )   
+    )
     date_of_birth = DateField("Date of Birth", validators=[Optional()])
     parent_name = StringField("Parent Name", validators=[Length(max=70)])
     parent_phone_number = StringField(
@@ -88,7 +88,7 @@ class ResultForm(FlaskForm):
             ("Third Term", "Third Term"),
         ],
         validators=[DataRequired()],
-        default="Third Term",
+        default="First Term",
     )
     session = SelectField(
         "Select Session",  # This will be populated dynamically
@@ -174,7 +174,7 @@ class SelectTermSessionForm(FlaskForm):
             ("Third Term", "Third Term"),
         ],
         validators=[DataRequired()],
-        default="Third Term",
+        default="First Term",
     )
     session = SelectField(
         "Select Session",  # This will be populated dynamically
@@ -232,12 +232,8 @@ class SubjectResultForm(FlaskForm):
     summative_test = IntegerField(
         "Summative Test", validators=[Optional(), NumberRange(min=0, max=20)]
     )
-    exam = IntegerField(
-        "Exam", validators=[Optional(), NumberRange(min=0, max=60)]
-    )
-    total = IntegerField(
-        "Total", validators=[Optional(), NumberRange(min=0, max=100)]
-    )
+    exam = IntegerField("Exam", validators=[Optional(), NumberRange(min=0, max=60)])
+    total = IntegerField("Total", validators=[Optional(), NumberRange(min=0, max=100)])
     grade = StringField("Grade", validators=[Optional()])
     remark = StringField("Remark", validators=[Optional()])
 
