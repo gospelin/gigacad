@@ -296,7 +296,7 @@ def approve_student(student_id):
     else:
         flash("Form validation failed. Please try again.", "alert alert-danger")
 
-    return redirect(url_for("admins.approve_students"))
+    return redirect(url_for("admins.students_by_class"))
 
 
 @admin_bp.route("/admin/deactivate_student/<int:student_id>", methods=["POST"])
@@ -316,7 +316,7 @@ def deactivate_student(student_id):
         )
     else:
         flash("An error occurred. Please try again.", "alert alert-danger")
-    return redirect(url_for("admins.approve_students"))
+    return redirect(url_for("admins.students_by_class"))
 
 
 @admin_bp.route("/admin/regenerate_credentials/<int:student_id>", methods=["POST"])
@@ -355,7 +355,7 @@ def regenerate_password(student_id):
     else:
         flash("Form validation failed. Please try again.", "alert alert-danger")
 
-    return redirect(url_for("admins.approve_students"))
+    return redirect(url_for("admins.students_by_class"))
 
 
 @admin_bp.route("/admin/manage_classes")
@@ -428,6 +428,26 @@ def students_by_class():
         class_name=None,
         form=form,
     )
+
+
+@admin_bp.route("/toggle_fee_status/<int:student_id>", methods=["POST"])
+@login_required
+def toggle_fee_status(student_id):
+    """
+    Toggles the payment status for accessing results online for a student.
+    """
+    if not current_user.is_admin:
+        abort(403)
+
+    student = Student.query.get_or_404(student_id)
+    student.has_paid_fee = not student.has_paid_fee
+    db.session.commit()
+
+    flash(
+        f"Payment status for {student.first_name} {student.last_name} has been updated.",
+        "alert alert-success",
+    )
+    return redirect(request.referrer or url_for("admins.students_by_class"))
 
 
 @admin_bp.route("/promote_student/<int:student_id>", methods=["POST"])
@@ -532,6 +552,197 @@ def promote_student(student_id):
     )
 
 
+# @admin_bp.route("/promote_student/<int:student_id>", methods=["POST"])
+# @login_required
+# def promote_student(student_id):
+#     """
+#     Promotes a student to the next class if applicable. Updates class history
+#     within the same session, or creates a new class history entry for a new session.
+
+#     Args:
+#         student_id (int): The ID of the student to be promoted.
+
+#     Returns:
+#         redirect: Redirects to the page displaying students of the new class.
+
+#     Raises:
+#         403: If the current user is not an admin.
+#         404: If the student with the given ID is not found.
+#     """
+#     if not current_user.is_admin:
+#         abort(403)  # Restrict access for non-admins
+
+#     student = Student.query.get_or_404(student_id)
+#     current_session = Session.get_current_session()
+
+#     if not current_session:
+#         flash("No current session available for promotion.", "alert alert-danger")
+#         return redirect(url_for("admins.students_by_class"))
+
+#     # Define the class hierarchy
+#     class_hierarchy = [
+#         "Creche", "Pre-Nursery", "Nursery 1", "Nursery 2", "Nursery 3",
+#         "Basic 1", "Basic 2", "Basic 3", "Basic 4", "Basic 5", "Basic 6",
+#         "JSS 1", "JSS 2", "JSS 3"
+#     ]
+
+#     # Retrieve the latest class from StudentClassHistory, checking for the current session
+#     latest_class_history = (
+#         StudentClassHistory.query.filter_by(student_id=student.id, session_id=current_session.id)
+#         .order_by(StudentClassHistory.id.desc())
+#         .first()
+#     )
+
+#     if not latest_class_history:
+#         flash("No class history found for the student in the current session.", "alert alert-danger")
+#         return redirect(url_for("admins.students_by_class"))
+
+#     current_class = latest_class_history.class_name
+
+#     # Promote the student to the next class if applicable
+#     if current_class in class_hierarchy:
+#         current_index = class_hierarchy.index(current_class)
+#         if current_index + 1 < len(class_hierarchy):
+#             new_class = class_hierarchy[current_index + 1]
+#         else:
+#             flash("This student has completed the highest class.", "alert alert-warning")
+#             return redirect(url_for("admins.students_by_class", session_id=current_session.id, class_name=current_class))
+#     else:
+#         flash("Current class not found in the hierarchy.", "alert alert-danger")
+#         return redirect(url_for("admins.students_by_class", session_id=current_session.id, class_name=current_class))
+
+#     # Check and remove any duplicate class history record for the current session and student
+#     duplicate_history = StudentClassHistory.query.filter_by(
+#         student_id=student.id, session_id=current_session.id
+#     ).first()
+
+#     if duplicate_history:
+#         db.session.delete(duplicate_history)
+
+#     # Add or update the class history for the student in the current session
+#     new_class_history = StudentClassHistory(
+#         student_id=student.id, session_id=current_session.id, class_name=new_class
+#     )
+#     db.session.add(new_class_history)
+
+#     db.session.commit()
+
+#     flash(f"{student.first_name} has been promoted to {new_class}.", "alert alert-success")
+#     return redirect(url_for("admins.students_by_class", session_id=current_session.id, class_name=new_class))
+
+
+@admin_bp.route("/demote_student/<int:student_id>", methods=["POST"])
+@login_required
+def demote_student(student_id):
+    """
+    Demotes a student to the previous class if applicable. Updates class history
+    within the same session, or creates a new class history entry for a new session.
+
+    Args:
+        student_id (int): The ID of the student to be demoted.
+
+    Returns:
+        redirect: Redirects to the page displaying students of the new class.
+
+    Raises:
+        403: If the current user is not an admin.
+        404: If the student with the given ID is not found.
+    """
+    if not current_user.is_admin:
+        abort(403)  # Restrict access for non-admins
+
+    student = Student.query.get_or_404(student_id)
+    current_session = Session.get_current_session()
+
+    if not current_session:
+        flash("No current session available for demotion.", "alert alert-danger")
+        return redirect(url_for("admins.students_by_class"))
+
+    # Define the class hierarchy
+    class_hierarchy = [
+        "Creche",
+        "Pre-Nursery",
+        "Nursery 1",
+        "Nursery 2",
+        "Nursery 3",
+        "Basic 1",
+        "Basic 2",
+        "Basic 3",
+        "Basic 4",
+        "Basic 5",
+        "Basic 6",
+        "JSS 1",
+        "JSS 2",
+        "JSS 3",
+    ]
+
+    # Retrieve the latest class from StudentClassHistory for the current session
+    latest_class_history = (
+        StudentClassHistory.query.filter_by(
+            student_id=student.id, session_id=current_session.id
+        )
+        .order_by(StudentClassHistory.id.desc())
+        .first()
+    )
+
+    if not latest_class_history:
+        flash(
+            "No class history found for the student in the current session.",
+            "alert alert-danger",
+        )
+        return redirect(url_for("admins.students_by_class"))
+
+    current_class = latest_class_history.class_name
+
+    # Demote the student to the previous class if applicable
+    if current_class in class_hierarchy:
+        current_index = class_hierarchy.index(current_class)
+        if current_index > 0:
+            new_class = class_hierarchy[current_index - 1]
+        else:
+            flash("This student is already in the lowest class.", "alert alert-warning")
+            return redirect(
+                url_for(
+                    "admins.students_by_class",
+                    session_id=current_session.id,
+                    class_name=current_class,
+                )
+            )
+    else:
+        flash("Current class not found in the hierarchy.", "alert alert-danger")
+        return redirect(
+            url_for(
+                "admins.students_by_class",
+                session_id=current_session.id,
+                class_name=current_class,
+            )
+        )
+
+    # Check if the latest class history record belongs to the current session
+    if latest_class_history.session_id == current_session.id:
+        # Update the existing class history record for the current session
+        latest_class_history.class_name = new_class
+    else:
+        # Create a new class history record for the new session
+        new_class_history = StudentClassHistory(
+            student_id=student.id, session_id=current_session.id, class_name=new_class
+        )
+        db.session.add(new_class_history)
+
+    db.session.commit()
+
+    flash(
+        f"{student.first_name} has been demoted to {new_class}.", "alert alert-success"
+    )
+    return redirect(
+        url_for(
+            "admins.students_by_class",
+            session_id=current_session.id,
+            class_name=new_class,
+        )
+    )
+
+
 @admin_bp.route("/admin/edit_student/<int:student_id>", methods=["GET", "POST"])
 @login_required
 def edit_student(student_id):
@@ -552,12 +763,20 @@ def edit_student(student_id):
         abort(403)  # Restrict access for non-admins
 
     student = Student.query.get_or_404(student_id)
-    session_id = Session.query.filter_by(is_current=True).first().id
+    current_session = Session.query.filter_by(is_current=True).first()
+
+    if not current_session:
+        flash("No current session found.", "alert alert-danger")
+        return redirect(url_for("admins.students_by_class"))
+
+    session_id = current_session.id
     form = EditStudentForm()
 
-    # Retrieve the latest class history for the student
+    # Retrieve the latest class history for the student in the current session
     student_class_history = (
-        StudentClassHistory.query.filter_by(student_id=student.id)
+        StudentClassHistory.query.filter_by(
+            student_id=student.id, session_id=session_id
+        )
         .order_by(StudentClassHistory.id.desc())
         .first()
     )
@@ -569,16 +788,26 @@ def edit_student(student_id):
         student.last_name = form.last_name.data
         student.middle_name = form.middle_name.data
         student.gender = form.gender.data
-        # Update other fields as necessary
 
-        # Update class in StudentClassHistory (create new entry if necessary)
+        # Check for any existing class history record in the current session for this class
+        # existing_class_history = StudentClassHistory.query.filter_by(
+        #     student_id=student.id,
+        #     session_id=session_id,
+        #     class_name=form.class_name.data
+        # ).first()
+
+        # Delete the duplicate if found
+        # if existing_class_history:
+        #     db.session.delete(existing_class_history)
+
+        # Update the class history for the current session
         if student_class_history:
             student_class_history.class_name = form.class_name.data
         else:
-            # If no history exists, create a new entry
+            # Create a new entry if no history exists for the current session
             new_class_history = StudentClassHistory(
                 student_id=student.id,
-                session_id=session_id,  # Assuming current session is tracked
+                session_id=session_id,
                 class_name=form.class_name.data,
             )
             db.session.add(new_class_history)
@@ -608,8 +837,6 @@ def edit_student(student_id):
         # Pre-fill the class name from StudentClassHistory if available
         if student_class_history:
             form.class_name.data = student_class_history.class_name
-        else:
-            form.class_name.data = "Unassigned"  # Default or handle no class case
 
     return render_template(
         "admin/students/edit_student.html", form=form, student=student
@@ -1243,12 +1470,12 @@ def download_broadsheet(class_name):
         # Set column widths
         subject_column_letter = get_column_letter(1)
         sheet.column_dimensions[subject_column_letter].width = (
-            25  # Set subject column width to 26cm
+            30  # Set subject column width to 30cm
         )
 
         class_average_column_letter = get_column_letter(last_column)
         sheet.column_dimensions[class_average_column_letter].width = (
-            13  # Set class average width to 10 cm
+            15  # Set class average width to 15 cm
         )
 
         # Write headers (now student names merged and centralized)
