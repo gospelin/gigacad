@@ -24,6 +24,7 @@ def rate_limit(limit, per):
     Raises:
         HTTPException: If the maximum number of calls has been exceeded, a 429 Too Many Requests error is raised.
     """
+
     def decorator(f):
         @wraps(f)
         def wrapped(*args, **kwargs):
@@ -143,22 +144,31 @@ def calculate_cumulative_average(yearly_results):
     return total_sum / non_zero_subjects if non_zero_subjects > 0 else 0
 
 
-def get_subjects_by_class_name(class_name):
+def get_subjects_by_class_name(class_name, include_deactivated=False):
     """Get subjects based on the student's class name from history.
 
     Args:
-        student_class_history (object): The student's class history object.
+        class_name (str): The student's class name.
+        include_deactivated (bool): Whether to include deactivated subjects (for past sessions).
 
     Returns:
-        list: A list of subjects based on the student's class name.
+        list: A list of subjects based on the student's class name in ascending order.
     """
 
+    # Determine section based on class_name
     if "Nursery" in class_name:
-        return Subject.query.filter_by(section="Nursery").all()
+        query = Subject.query.filter_by(section="Nursery")
     elif "Basic" in class_name:
-        return Subject.query.filter_by(section="Basic").all()
+        query = Subject.query.filter_by(section="Basic")
     else:
-        return Subject.query.filter_by(section="Secondary").all()
+        query = Subject.query.filter_by(section="Secondary")
+
+    # Include or exclude deactivated subjects based on the session context
+    if not include_deactivated:
+        query = query.filter_by(deactivated=False)
+
+    # Order the results by subject name in ascending order
+    return query.order_by(Subject.name.asc()).all()
 
 
 # Helper function to populate form with existing results
@@ -263,7 +273,9 @@ def calculate_results(student_id, term, session_year):
         student_id=student_id, session=session_year
     ).all()
 
-    app.logger.info(f"Fetched {len(yearly_results)} results for the entire academic year")
+    app.logger.info(
+        f"Fetched {len(yearly_results)} results for the entire academic year"
+    )
 
     # Calculate cumulative average across the academic year
     cumulative_average = round(calculate_cumulative_average(yearly_results), 1)
