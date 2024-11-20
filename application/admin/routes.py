@@ -1150,9 +1150,9 @@ def manage_results(student_id):
         return redirect(url_for("admins.select_term_session", student_id=student.id))
 
     if session_year == "2023/2024":
-        subjects = get_subjects_by_class_name(student_class, include_deactivated=False)
-    else:
         subjects = get_subjects_by_class_name(student_class, include_deactivated=True)
+    else:
+        subjects = get_subjects_by_class_name(student_class, include_deactivated=False)
 
     # Initialize the forms
     result_form = ResultForm(term=term, session=session_year)
