@@ -83,14 +83,13 @@ class Student(db.Model, UserMixin):
     state_of_origin = db.Column(db.String(50), nullable=True)
     local_government_area = db.Column(db.String(50), nullable=True)
     religion = db.Column(db.String(50), nullable=True)
-    date_registered = db.Column(
-        db.String(19), nullable=True
-    )  # Stored as "YYYY-MM-DD HH:MM:SS"
+    date_registered = db.Column(db.String(19), nullable=True)  # Stored as "YYYY-MM-DD HH:MM:SS"
     approved = db.Column(db.Boolean, default=False)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     has_paid_fee = db.Column(db.Boolean, default=False)
 
     results = db.relationship("Result", backref="student", lazy=True)
+
     @staticmethod
     def get_class_by_session(student_id, session):
         """
