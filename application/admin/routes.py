@@ -934,13 +934,7 @@ It also provides links to edit, delete, and add subjects
 def manage_subjects():
     """
     Route handler for managing subjects in the admin panel.
-
-    This function handles the GET and POST requests for the "/admin/manage_subjects" route.
-    It requires the user to be authenticated and have admin privileges.
-    The function renders the subject administration template, which allows the admin to add and delete subjects.
-
-    Returns:
-        A rendered template for the subject administration page.
+    Allows adding and deactivating subjects for the current session.
     """
     if not current_user.is_authenticated or not current_user.is_admin:
         return redirect(url_for("auth.login"))
@@ -952,9 +946,8 @@ def manage_subjects():
 
         for subject_name in subject_names:
             for section in form.section.data:
-                # Check if the subject already exists for the given section
                 existing_subject = Subject.query.filter_by(
-                    name=subject_name, section=section
+                    name=subject_name, section=section, deactivated=False
                 ).first()
                 if existing_subject is None:
                     subject = Subject(name=subject_name, section=section)
@@ -963,7 +956,22 @@ def manage_subjects():
         flash("Subject(s) added successfully!", "alert alert-success")
         return redirect(url_for("admins.manage_subjects"))
 
-    subjects = Subject.query.order_by(Subject.section).all()
+    # Check for deactivation request
+    if request.method == "POST" and "deactivate_subject_id" in request.form:
+        subject_id = int(request.form.get("deactivate_subject_id"))
+        subject = Subject.query.get(subject_id)
+        if subject:
+            subject.deactivated = True
+            db.session.commit()
+            flash(
+                f"Subject '{subject.name}' has been deactivated.", "alert alert-warning"
+            )
+        return redirect(url_for("admins.manage_subjects"))
+
+    # Display only active subjects for the current session
+    subjects = (
+        Subject.query.filter_by(deactivated=False).order_by(Subject.section).all()
+    )
     subjects_by_section = {}
     for subject in subjects:
         if subject.section not in subjects_by_section:
@@ -1141,7 +1149,10 @@ def manage_results(student_id):
         flash(f"No class history for session {session.year}", "alert alert-danger")
         return redirect(url_for("admins.select_term_session", student_id=student.id))
 
-    subjects = get_subjects_by_class_name(student_class)
+    if session_year == "2023/2024":
+        subjects = get_subjects_by_class_name(student_class, include_deactivated=False)
+    else:
+        subjects = get_subjects_by_class_name(student_class, include_deactivated=True)
 
     # Initialize the forms
     result_form = ResultForm(term=term, session=session_year)

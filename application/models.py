@@ -74,7 +74,7 @@ class Student(db.Model, UserMixin):
     username = db.Column(db.String(50), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)
     gender = db.Column(db.String(10), nullable=False)
-    date_of_birth = db.Column(db.Date, nullable=True)
+    date_of_birth = db.Column(db.String(10), nullable=True)  # Stored as "YYYY-MM-DD"
     parent_name = db.Column(db.String(70), nullable=True)
     previous_class = db.Column(db.String(50), nullable=True)
     parent_phone_number = db.Column(db.String(11), nullable=True)
@@ -83,13 +83,14 @@ class Student(db.Model, UserMixin):
     state_of_origin = db.Column(db.String(50), nullable=True)
     local_government_area = db.Column(db.String(50), nullable=True)
     religion = db.Column(db.String(50), nullable=True)
-    date_registered = db.Column(db.DateTime, server_default=db.func.now())
+    date_registered = db.Column(
+        db.String(19), nullable=True
+    )  # Stored as "YYYY-MM-DD HH:MM:SS"
     approved = db.Column(db.Boolean, default=False)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     has_paid_fee = db.Column(db.Boolean, default=False)
 
     results = db.relationship("Result", backref="student", lazy=True)
-
     @staticmethod
     def get_class_by_session(student_id, session):
         """
@@ -145,9 +146,9 @@ class Subject(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     section = db.Column(db.String(20), nullable=False)
+    deactivated = db.Column(db.Boolean, nullable=False, default=False)  # New attribute
 
     results = db.relationship("Result", backref="subject", lazy=True)
-
     __table_args__ = (db.UniqueConstraint("name", "section", name="_name_section_uc"),)
 
     def __repr__(self):
@@ -165,7 +166,7 @@ class Result(db.Model):
     exam = db.Column(db.Integer, nullable=True)
     total = db.Column(db.Integer, nullable=True)
     grade = db.Column(db.String(5), nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.now())
+    created_at = db.Column(db.String(19), nullable=True)
     remark = db.Column(db.String(100), nullable=True)
     next_term_begins = db.Column(db.String(100), nullable=True)
     last_term_average = db.Column(db.Float, nullable=True)
