@@ -1,35 +1,19 @@
-{% extends 'admin/base.html' %} {% block content %}
-<div class="container mt-5">
-    {% for message in get_flashed_messages() %}
-    <div class="alert alert-warning mt-3">{{ message }}</div>
-    {% endfor %}
-    <h1 class="text-center mb-5">Manage Subjects</h1>
+{% extends 'admin/base.html' %}
 
-    <!-- Display subjects grouped by sections -->
+{% block content %}
+<div class="container mt-5">
     {% for section, subjects in subjects_by_section.items() %}
     <h2>{{ section }} Subjects</h2>
     <ul class="list-group">
         {% for subject in subjects %}
-        <li
-            class="list-group-item d-flex justify-content-between align-items-center"
-        >
+        <li class="list-group-item d-flex justify-content-between align-items-center">
             {{ subject.name }}
             <span>
-                <a
-                    href="{{ url_for('admins.edit_subject', subject_id=subject.id) }}"
-                    class="btn btn-warning btn-sm"
-                    >Edit</a
-                >
-                <form
-                    method="POST"
-                    action="{{ url_for('admins.delete_subject', subject_id=subject.id) }}"
-                    style="display: inline"
-                    onsubmit="return confirm('Are you sure you want to delete this subject?');"
-                >
-                    {{ form.hidden_tag() }}
-                    <button type="submit" class="btn btn-danger btn-sm">
-                        Delete
-                    </button>
+                <a href="{{ url_for('admins.edit_subject', subject_id=subject.id) }}" class="btn btn-warning btn-sm">Edit</a>
+                <form method="POST" action="{{ url_for('admins.manage_subjects') }}" style="display: inline" onsubmit="return confirm('Are you sure you want to deactivate this subject?');">
+                    {{ delete_form.hidden_tag() }}
+                    <input type="hidden" name="deactivate_subject_id" value="{{ subject.id }}">
+                    <button type="submit" class="btn btn-danger btn-sm">Deactivate</button>
                 </form>
             </span>
         </li>
@@ -43,20 +27,15 @@
             <form method="POST" action="{{ url_for('admins.manage_subjects') }}">
                 {{ form.hidden_tag() }}
                 <div class="mb-3">
-                    {{ form.name.label(class="form-label") }} {{
-                    form.name(class="form-control") }}
-                    <small class="form-text text-muted"
-                        >Enter multiple subjects separated by commas (e.g.,
-                        Math, English, Science).</small
-                    >
+                    {{ form.name.label(class="form-label") }}
+                    {{ form.name(class="form-control") }}
+                    <small class="form-text text-muted">Enter multiple subjects separated by commas (e.g., Math, English, Science).</small>
                 </div>
                 <div class="mb-3">
-                    {{ form.section.label(class="form-label") }} {{
-                    form.section(class="form-control") }}
+                    {{ form.section.label(class="form-label") }}
+                    {{ form.section(class="form-control") }}
                 </div>
-                <button type="submit" class="btn btn-primary btn-block">
-                    Add Subjects
-                </button>
+                <button type="submit" class="btn btn-primary btn-block">Add Subjects</button>
             </form>
         </div>
     </div>
