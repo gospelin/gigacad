@@ -5,7 +5,7 @@
 {% block content %}
 <div class="row">
     <div class="col-md-3">
-        <div class="card text-white bg-primary mb-3">
+        <div class="card bg-primary text-light mb-3">
             <div class="card-body">
                 <h5 class="card-title">Total Students</h5>
                 <p class="card-text" id="total-students">234</p>
@@ -13,7 +13,7 @@
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card text-white bg-success mb-3">
+        <div class="card bg-success text-light mb-3">
             <div class="card-body">
                 <h5 class="card-title">Total Teachers</h5>
                 <p class="card-text" id="total-teachers">20</p>
@@ -21,7 +21,7 @@
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card text-white bg-warning mb-3">
+        <div class="card bg-warning text-dark mb-3">
             <div class="card-body">
                 <h5 class="card-title">Total Parents</h5>
                 <p class="card-text" id="total-parents">115</p>
@@ -29,7 +29,7 @@
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card text-white bg-danger mb-3">
+        <div class="card bg-danger text-light mb-3">
             <div class="card-body">
                 <h5 class="card-title">Total Classes</h5>
                 <p class="card-text" id="total-classes">10</p>
@@ -55,39 +55,37 @@
         </div>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
 {% endblock %}
 
 {% block scripts %}
+
     <script>
-     $(document).ready(function () {
-                $(".sidebar-toggler").on("click", function () {
-                    $(".sidebar").toggleClass("open");
-                    setTimeout(function () {
-                        studentChart.resize();
-                        teacherChart.resize();
-                    }, 300);
-                });
+        $(document).ready(function () {
+            $(".sidebar-toggler").on("click", function () {
+                $(".sidebar").toggleClass("open");
+                setTimeout(function () {
+                    studentChart.resize();
+                    teacherChart.resize();
+                }, 300);
             });
 
-            $(document).ready(function () {
-                var path = window.location.pathname;
-                if (path.includes("dashboard")) {
-                    $("#dashboard-link").addClass("active");
-                } else if (path.includes("approve_students")) {
-                    $("#students-link").addClass("active");
-                }
-            });
+            // Active link highlighting
+            var path = window.location.pathname;
+            if (path.includes("dashboard")) {
+                $("#dashboard-link").addClass("active");
+            } else if (path.includes("approve_students")) {
+                $("#students-link").addClass("active");
+            }
 
-            const totalStudents = 234;
-            const totalTeachers = 20;
-            const totalParents = 115;
-            const totalClasses = 10;
+            // Display the total values
+            $("#total-students").text(234);
+            $("#total-teachers").text(20);
+            $("#total-parents").text(115);
+            $("#total-classes").text(10);
 
-            $("#total-students").text(totalStudents);
-            $("#total-teachers").text(totalTeachers);
-            $("#total-parents").text(totalParents);
-            $("#total-classes").text(totalClasses);
-
+            // Initialize the Student Enrollment Chart
             const studentChartCtx = document.getElementById("studentChart").getContext("2d");
             const studentChart = new Chart(studentChartCtx, {
                 type: "bar",
@@ -96,12 +94,13 @@
                     datasets: [{
                         label: "# of Students",
                         data: [12, 19, 3, 5, 2],
-                        backgroundColor: "rgba(54, 162, 235, 0.2)",
+                        backgroundColor: "rgba(54, 162, 235, 0.5)",
                         borderColor: "rgba(54, 162, 235, 1)",
                         borderWidth: 1,
                     }],
                 },
                 options: {
+                    responsive: true,
                     scales: {
                         y: {
                             beginAtZero: true,
@@ -110,6 +109,7 @@
                 },
             });
 
+            // Initialize the Teacher Distribution Chart
             const teacherChartCtx = document.getElementById("teacherChart").getContext("2d");
             const teacherChart = new Chart(teacherChartCtx, {
                 type: "pie",
@@ -119,11 +119,11 @@
                         label: "# of Teachers",
                         data: [3, 5, 2, 4, 6],
                         backgroundColor: [
-                            "rgba(255, 99, 132, 0.2)",
-                            "rgba(54, 162, 235, 0.2)",
-                            "rgba(255, 206, 86, 0.2)",
-                            "rgba(75, 192, 192, 0.2)",
-                            "rgba(153, 102, 255, 0.2)",
+                            "rgba(255, 99, 132, 0.5)",
+                            "rgba(54, 162, 235, 0.5)",
+                            "rgba(255, 206, 86, 0.5)",
+                            "rgba(75, 192, 192, 0.5)",
+                            "rgba(153, 102, 255, 0.5)",
                         ],
                         borderColor: [
                             "rgba(255, 99, 132, 1)",
@@ -143,14 +143,14 @@
                         },
                         tooltip: {
                             callbacks: {
-                                label: function (tooltipItem) {
-                                    return tooltipItem.label + ": " + tooltipItem.raw;
+                                label: function (context) {
+                                    return context.label + ": " + context.raw;
                                 },
                             },
                         },
                     },
                 },
             });
+        });
     </script>
 {% endblock %}
-

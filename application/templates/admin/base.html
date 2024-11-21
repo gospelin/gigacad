@@ -1,199 +1,286 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta name="description"
-              content="Admin Dashboard for managing school data including students, teachers, parents, and classes." />
-        <meta name="keywords"
-              content="Admin Dashboard, School Management, Students, Teachers, Classes" />
-        <meta name="author" content="Aunty Anne's Int'l School" />
-        <title>
-            {% block title %}Admin Dashboard{% endblock %}
-        </title>
-        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-              rel="stylesheet" />
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
-              rel="stylesheet" />
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
-              rel="stylesheet" />
-        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
-              rel="stylesheet"
-              onload="this.rel='stylesheet'" />
-        <link rel="stylesheet"
-              href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
-        <noscript>
-            <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
-                  rel="stylesheet" />
-        </noscript>
-        <style>
-            body {
-                font-family: "Roboto", sans-serif;
-            }
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Admin Dashboard for managing school data including students, teachers, parents, and classes." />
+    <meta name="keywords"
+          content="Admin Dashboard, School Management, Students, Teachers, Classes" />
+    <meta name="author" content="Aunty Anne's Int'l School" />
+    <title>{% block title %}Admin Dashboard{% endblock %}</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Latest FontAwesome CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" onload="this.rel='stylesheet'" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <noscript>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+    </noscript>
+    <style>
+        body {
+            font-family: "Roboto", sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 230px;
+            background-color: #343a40;
+            color: #fff;
+            position: sticky;
+            top: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding-top: 1rem;
+            z-index: 1000;
+        }
+
+        .sidebar a, .sidebar .submenu a {
+            color: #fff;
+            text-decoration: none;
+            padding: 15px;
+            display: block;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidebar a:hover, .sidebar .submenu a:hover {
+            background-color: #495057;
+        }
+
+        .sidebar .active {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .sidebar .icon {
+            margin-right: 10px;
+        }
+
+        .submenu {
+            display: none;
+            background-color: #444;
+        }
+
+        .submenu.show {
+            display: block;
+        }
+
+        /* Sidebar Toggle Button */
+        .sidebar-toggle {
+            display: none;
+        }
+
+        /* Main Content */
+        main {
+            flex: 1;
+            padding: 20px;
+            min-height: 100vh;
+            transition: margin-left 0.3s ease;
+        }
+
+        /* Mobile View */
+        @media (max-width: 768px) {
             .sidebar {
-                height: 100vh;
-                background-color: #343a40;
-                color: #fff;
+                transform: translateX(-100%);
+                width: 250px;
                 position: fixed;
-                width: 220px;
-                transition: all 0.3s ease;
             }
-            .sidebar a {
-                color: #fff;
-                text-decoration: none;
-                padding: 15px;
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .sidebar-toggle {
                 display: block;
-                transition: background-color 0.3s ease;
+                position: absolute;
+                top: 10px;
+                left: 10px;
+                background-color: fff;
+                color: #333;
+                border: none;
+                padding: 10px;
+                z-index: 1001;
+                cursor: pointer;
             }
-            .sidebar a:hover {
-                background-color: #495057;
-            }
-            .sidebar .active {
-                background-color: #007bff;
-                color: #fff;
-            }
-            .sidebar .icon {
-                margin-right: 10px;
-            }
-            .sidebar-toggler {
-                display: none;
-            }
+
             main {
-                margin-left: 220px;
-                padding: 20px;
-                transition: all 0.3s ease;
+                margin-left: 0;
             }
-            .card {
-                margin-bottom: 20px;
-                animation: fadeInUp 1s;
-            }
-            .card h5 {
-                font-weight: 500;
-            }
-            @media (max-width: 768px) {
-                .sidebar {
-                    width: 100%;
-                    height: auto;
-                    position: relative;
-                }
-                main {
-                    margin-left: 0;
-                }
-                .card-body {
-                    text-align: center;
-                }
-
-                .table-responsive {
-                    margin-bottom: 10px;
-                }
-
-                .input-group-text {
-                    width: 100%;
-                    text-align: left;
-                }
-
-                .form-control {
-                    width: 100%;
-                }
-
-                .btn {
-                    width: 100%;
-                    margin-bottom: 10px;
-                }
-            }
-
-            .container {
-                max-width: 1200px;
-                margin: auto;
-                padding: 0 15px;
-            }
-
-            .card {
-                margin-bottom: 1.5rem;
-                transition: transform 0.3s ease;
-            }
-
-            .card-title {
-                font-size: 1.2rem;
-                font-weight: bold;
-            }
-
-            .card-text {
-                font-size: 1rem;
-                color: #6c757d;
-            }
-
-            .card:hover {
-                transform: scale(1.02);
-            }
-
-            .btn-block {
-                display: block;
-                width: 100%;
+            .card-body {
+                text-align: center;
             }
 
             .table-responsive {
-                overflow-x: auto;
-                margin-bottom: 30px;
+                margin-bottom: 10px;
             }
 
-            .table thead th {
-                border-bottom: 2px solid #dee2e6;
+            .input-group-text {
+                width: 100%;
+                text-align: left;
             }
 
-            .table tbody tr td {
-                vertical-align: middle;
+            .form-control {
+                width: 100%;
             }
 
-            .btn-sm {
-                font-size: 0.875rem;
-                padding: 0.25rem 0.5rem;
+            .btn {
+                width: 100%;
+                margin-bottom: 10px;
             }
-        </style>
-        {% block styles %}{% endblock %}
-        {% block head %}{% endblock %}
-    </head>
-    <body>
-        <div class="container-fluid">
-            <div class="row">
-                <!-- Sidebar Toggler -->
-                <div class="sidebar-toggler">
-                    <i class="fas fa-bars fa-2x"></i>
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 0 15px;
+        }
+
+        .card {
+            margin-bottom: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .card-text {
+            font-size: 1rem;
+            color: #6c757d;
+        }
+
+        .card:hover {
+            transform: scale(1.02);
+        }
+
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            margin-bottom: 30px;
+        }
+
+        .table thead th {
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .table tbody tr td {
+            vertical-align: middle;
+        }
+
+        .btn-sm {
+            font-size: 0.875rem;
+            padding: 0.25rem 0.5rem;
+        }
+    </style>
+
+    {% block styles %} {% endblock styles %}
+</head>
+<body>
+    <!-- Sidebar Toggle Button -->
+    <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+
+    <!-- Sidebar -->
+    <nav id="sidebar" class="sidebar">
+        <h2 class="text-center py-3">Admin Dashboard</h2>
+        <a href="{{ url_for('main.index') }}"><i class="fas fa-home icon"></i>Home</a>
+        <a href="{{ url_for('admins.admin_dashboard') }}" id="dashboard-link" class="active"><i class="fas fa-tachometer-alt icon"></i>Dashboard</a>
+         <!-- Student Management -->
+                <a href="#" data-bs-toggle="collapse" data-bs-target="#studentMenu" aria-expanded="false">
+                    <i class="fas fa-user-graduate icon"></i> Student Management
+                </a>
+                <div class="submenu collapse" id="studentMenu">
+                    <a href="#">Add New Student</a>
+                    <a href="{{ url_for('admins.approve_students') }}">View All Students</a>
+                    <a href="#">Edit Student Details</a>
+                    <a href="#">Delete Student Records</a>
+                    <a href="#">Bulk Upload Students</a>
+                    <a href="#">Search and Filter Students</a>
                 </div>
-                <!-- Sidebar -->
-                <nav class="col-md-2 sidebar">
-                    <h2 class="text-center py-3">Admin Dashboard</h2>
-                    <a href="{{ url_for("main.index") }}"><i class="fas fa-home icon"></i>Home</a>
-                    <a href="{{ url_for("admin.index") }}"
-                        id="dashboard-link"
-                        class="active"><i class="fas fa-tachometer-alt icon"></i>Dashboard</a>
-                    <a href="{{ url_for("admins.approve_students") }}" id="students-link"><i class="fas fa-user-graduate icon"></i>Students</a>
-                    <a href="{{ url_for("admins.manage_subjects") }}" id="subjects-link"><i class="fas fa-book icon"></i> Subjects</a>
-                    <a href="#" id="teachers-link"><i class="fas fa-chalkboard-teacher icon"></i>Teachers</a>
-                    <a href="#" id="parents-link"><i class="fas fa-user icon"></i>Parents</a>
-                    <a href="{{ url_for('admins.students_by_class') }}" id="classes-link"><i class="fas fa-school icon"></i>Classes</a>
-                    <a href="{{ url_for('admins.manage_sessions') }}" id="sessions-link"><i class="fas fa-calendar-alt icon"></i>Manage Sessions</a>
-                    <a href="#" id="settings-link"><i class="fas fa-cogs icon"></i>Settings</a>
-                    <a href="{{ url_for("auth.logout") }}" id="logout-link"><i class="fas fa-sign-out-alt icon"></i>Logout</a>
-                </nav>
-                <!-- Main content -->
-                <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
-                    {% for message in get_flashed_messages() %}
-                        <div class="alert alert-warning mt-3">{{ message }}</div>
-                    {% endfor %}
-                    {% block content %}{% endblock %}
-                </main>
-            </div>
-        </div>
-        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.6/jquery.inputmask.min.js"></script>
-        <script>
-        </script>
-        {% block scripts %}{% endblock %}
-    </body>
-</html>
 
+                <!-- Class Management -->
+                <a href="#" data-bs-toggle="collapse" data-bs-target="#classMenu" aria-expanded="false">
+                    <i class="fas fa-school icon"></i> Class Management
+                </a>
+                <div class="submenu collapse" id="classMenu">
+                    <a href="#">Add New Class/Section</a>
+                    <a href="{{ url_for('admins.students_by_class') }}">View All Classes/Sections</a>
+                    <a href="#">Edit Class/Section Details</a>
+                    <a href="#">Assign Teachers to Classes</a>
+                </div>
+
+                <!-- Subject Management -->
+                <a href="#" data-bs-toggle="collapse" data-bs-target="#subjectMenu" aria-expanded="false">
+                    <i class="fas fa-book icon"></i> Subject Management
+                </a>
+                <div class="submenu collapse" id="subjectMenu">
+                    <a href="#">Add New Subject</a>
+                    <a href="{{ url_for('admins.manage_subjects') }}">View All Subjects</a>
+                    <a href="#">Edit Subject Details</a>
+                    <a href="#">Assign Subjects to Classes/Sections</a>
+                </div>
+
+                <!-- Result Management -->
+                <a href="#" data-bs-toggle="collapse" data-bs-target="#resultMenu" aria-expanded="false">
+                    <i class="fas fa-chart-line icon"></i> Result Management
+                </a>
+                <div class="submenu collapse" id="resultMenu">
+                    <a href="#">Add or Upload Results</a>
+                    <a href="#">View Results by Student</a>
+                    <a href="#">Edit Results</a>
+                    <a href="#">Generate and Download Reports</a>
+                    <a href="#">Notify Students about Results Availability</a>
+                </div>
+
+                <!-- Teacher Management -->
+                <a href="#" data-bs-toggle="collapse" data-bs-target="#teacherMenu" aria-expanded="false">
+                    <i class="fas fa-chalkboard-teacher icon"></i> Teacher Management
+                </a>
+                <div class="submenu collapse" id="teacherMenu">
+                    <a href="#">Add New Teacher</a>
+                    <a href="#">View All Teachers</a>
+                    <a href="#">Edit Teacher Details</a>
+                    <a href="#">Assign Teachers to Classes</a>
+                </div>
+
+
+                <a href="{{ url_for('admins.manage_sessions') }}">
+                    <i class="fas fa-calendar-alt icon"></i> Manage Sessions
+                </a>
+                <a href="{{ url_for('auth.logout') }}">
+                    <i class="fas fa-sign-out-alt icon"></i> Logout
+                </a>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        {% for message in get_flashed_messages() %}
+            <div class="alert alert-warning mt-3">{{ message }}</div>
+        {% endfor %}
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open');
+        }
+    </script>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>
