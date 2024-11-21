@@ -1371,10 +1371,14 @@ def broadsheet():
         flash("An error occurred. Please try again later.", "alert-danger")
         return redirect(url_for("admins.admin_dashboard"))
 
+from urllib.parse import unquote
 
 @admin_bp.route("/download_broadsheet/<string:class_name>", methods=["GET"])
 def download_broadsheet(class_name):
     try:
+        # Decode and normalize class_name
+        class_name = unquote(class_name).strip()
+        
         term = request.args.get("term")
         session = request.args.get("session")
 
