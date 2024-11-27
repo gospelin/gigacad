@@ -283,9 +283,6 @@
 <div class="container mt-5 print-view">
     <div class="row justify-content-center">
         <div class="col-lg-8">
-            {% for message in get_flashed_messages() %}
-                <div class="alert alert-warning mt-3">{{ message }}</div>
-            {% endfor %}
             <div class="card border-0 shadow-lg">
                 <div class="card-body">
                     <div class="school-header">
@@ -362,7 +359,7 @@
 
                                     {% if total > 0 %}
                                         <tr>
-                                            <td style="color: #28a745;" class="text-uppercase">{{ result.subject.name }}</td>
+                                            <td style="color: #28a745;" class="text-uppercase"> {{ result.subject.name }} </td>
 
                                             {% if class_assessment < 10 %}
                                                 <td class="text-center" style="color: red;">{{ class_assessment }}</td>
