@@ -21,6 +21,7 @@ from ..helpers import (
 
 from weasyprint import HTML
 
+
 @student_bp.route("/student_portal")
 @login_required
 def student_portal():
@@ -35,7 +36,9 @@ def student_portal():
             app.logger.warning(f"Student not found for user_id: {current_user.id}")
             return redirect(url_for("auth.login"))
 
-        app.logger.info(f"Accessing student portal for student_id: {student.id}, {student.first_name = } {student.last_name = }")
+        app.logger.info(
+            f"Accessing student portal for student_id: {student.id}, {student.first_name = } {student.last_name = }"
+        )
         return render_template(
             "student/student_portal.html", student_id=student.id, student=student
         )
@@ -84,6 +87,95 @@ def select_results(student_id):
     return render_template("student/select_results.html", student=student, form=form)
 
 
+# @student_bp.route("/view_results/<int:student_id>", methods=["GET", "POST"])
+# @login_required
+# def view_results(student_id):
+#     try:
+#         student = Student.query.get_or_404(student_id)
+
+#         # Ensure the current user is authorized to view the student's results
+#         if current_user.id != student.user_id and not current_user.is_admin:
+#             flash("You are not authorized to view this profile.", "alert alert-danger")
+#             logger.warning(
+#                 f"Unauthorized access attempt by user_id: {current_user.id} for student_id: {student_id}"
+#             )
+#             return redirect(url_for("main.index"))
+
+#         term = request.args.get("term")
+#         session = request.args.get("session")
+
+#         if not term or not session:
+#             return redirect(url_for("students.select_term_session", student_id=student.id))
+
+#         results = Result.query.filter_by(
+#             student_id=student.id, term=term, session=session
+#         ).all()
+#         if not results:
+#             flash("No results found for this term or session", "alert alert-info")
+#             logger.info(
+#                 f"No results found for student_id: {student_id}, term: {term}, session: {session}"
+#             )
+#             return redirect(url_for("students.select_results", student_id=student.id))
+
+#         grand_total = {
+#             "class_assessment": sum(result.class_assessment for result in results),
+#             "summative_test": sum(result.summative_test for result in results),
+#             "exam": sum(result.exam for result in results),
+#             "total": sum(result.total for result in results),
+#         }
+
+#         average = grand_total["total"] / len(results) if results else 0
+#         average = round(average, 1)
+
+#         last_term = get_last_term(term)
+#         last_term_results = Result.query.filter_by(
+#             student_id=student.id, term=last_term, session=session
+#         ).all()
+#         last_term_average = (
+#             calculate_average(last_term_results) if last_term_results else 0
+#         )
+#         last_term_average = round(last_term_average, 1)
+
+#         # Add last_term_average to each result in results for cumulative calculation
+#         for res in results:
+#             res.last_term_average = last_term_average
+
+#         cumulative_average = calculate_cumulative_average(results, average)
+#         cumulative_average = round(cumulative_average, 1)
+
+#         next_term_begins = results[0].next_term_begins if results else None
+#         position = results[0].position if results else None
+#         date_issued = results[0].date_issued if results else None
+
+#         date_printed = datetime.now().strftime('%dth %B, %Y')
+
+#         logger.info(
+#             f"Results viewed for student_id: {student_id}, term: {term}, session: {session}"
+#         )
+#         return render_template(
+#             "student/view_results.html",
+#             title=f"{student.first_name}_{student.last_name}_{term}_{session}_Result",
+#             student=student,
+#             results=results,
+#             term=term,
+#             session=session,
+#             grand_total=grand_total,
+#             average=average,
+#             cumulative_average=cumulative_average,
+#             school_name="Aunty Anne's Int'l School",
+#             next_term_begins=next_term_begins,
+#             last_term_average=last_term_average,
+#             date_issued=date_issued,
+#             date_printed=date_printed,
+#             position=position
+#         )
+
+#     except Exception as e:
+#         logger.error(f"Error viewing results for student_id: {student_id} - {str(e)}")
+#         flash("An error occurred. Please try again later.", "alert alert-danger")
+#         return redirect(url_for("students.select_results", student_id=student.id))
+
+
 @student_bp.route("/view_results/<int:student_id>", methods=["GET", "POST"])
 @login_required
 def view_results(student_id):
@@ -99,28 +191,30 @@ def view_results(student_id):
             return redirect(url_for("main.index"))
 
         term = request.args.get("term")
-        session = request.args.get("session")
+        session_year = request.args.get("session")
 
-        if not term or not session:
+        if not term or not session_year:
             return redirect(
                 url_for("students.select_term_session", student_id=student.id)
             )
 
+        # Fetch session and student class history in a single query
+        session = Session.query.filter_by(year=session_year).first_or_404()
         student_class = StudentClassHistory.get_class_by_session(
-            student_id=student.id, session_year_str=session
+            student_id=student.id, session_year_str=session.year
         )
 
         if not student_class:
-            app.logger.error(f"No class history for {student.id} in {session.year}", "alert alert-danger")
+            app.logger.error(f"No class history for {student.id} in {session.year}")
 
         results = Result.query.filter_by(
-            student_id=student.id, term=term, session=session
+            student_id=student.id, term=term, session=session_year
         ).all()
 
         if not results:
-            flash("No results found for this term or session", "alert alert-info")
+            flash("No results found for this term or session")
             app.logger.info(
-                f"No results found for student_id: {student_id}, term: {term}, session: {session}"
+                f"No results found for student_id: {student_id}, term: {term}, session: {session_year}"
             )
             return redirect(url_for("students.select_results", student_id=student.id))
 
@@ -138,7 +232,7 @@ def view_results(student_id):
         # Fetch and calculate last term's average
         last_term = get_last_term(term)
         last_term_results = Result.query.filter_by(
-            student_id=student_id, term=last_term, session=session
+            student_id=student_id, term=last_term, session=session_year
         ).all()
 
         last_term_average = (
@@ -152,7 +246,7 @@ def view_results(student_id):
 
         # Fetch all results for the academic year (cumulative calculation)
         yearly_results = Result.query.filter_by(
-            student_id=student_id, session=session
+            student_id=student_id, session=session_year
         ).all()
 
         app.logger.info(
@@ -170,15 +264,15 @@ def view_results(student_id):
         date_printed = datetime.now().strftime("%dth %B, %Y")
 
         app.logger.info(
-            f"Results viewed for student_id: {student_id}, term: {term}, session: {session}"
+            f"Results viewed for student_id: {student_id}, term: {term}, session: {session_year}"
         )
         return render_template(
             "student/view_results.html",
-            title=f"{student.first_name}_{student.last_name}_{term}_{session}_Result",
+            title=f"{student.first_name}_{student.last_name}_{term}_{session_year}_Result",
             student=student,
             results=results,
             term=term,
-            session=session,
+            session=session_year,
             grand_total=grand_total,
             average=average,
             cumulative_average=cumulative_average,
@@ -188,11 +282,13 @@ def view_results(student_id):
             date_issued=date_issued,
             date_printed=date_printed,
             position=position,
-            student_class=student_class
+            student_class=student_class,
         )
 
     except Exception as e:
-        app.logger.error(f"Error viewing results for student_id: {student_id} - {str(e)}")
+        app.logger.error(
+            f"Error viewing results for student_id: {student_id} - {str(e)}"
+        )
         flash("An error occurred. Please try again later.", "alert alert-danger")
         return redirect(url_for("students.select_results", student_id=student.id))
 
