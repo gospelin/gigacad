@@ -13,12 +13,6 @@ db = SQLAlchemy()
 migrate = Migrate()
 csrf = CSRFProtect()
 
-# Initialize the login manager
-# login_manager = login_manager.LoginManager()
-
-# Initialize Flask-Admin
-admin = Admin(template_mode="bootstrap4")
-
 
 # Function to create and configure the Flask application
 def create_app(config_name=None):
@@ -28,6 +22,7 @@ def create_app(config_name=None):
     # Load configuration based on the environment
     env = os.getenv("FLASK_ENV", "default") if config_name is None else config_name
     app.config.from_object(config_by_name[env])
+
 
     # Initialize extensions with the app
     db.init_app(app)
@@ -46,6 +41,7 @@ def create_app(config_name=None):
     app.register_blueprint(admin_bp, url_prefix="/admin")
     app.register_blueprint(main_bp)
     app.register_blueprint(student_bp)
+
 
     # Set up logging for the app
     setup_logging(app)
