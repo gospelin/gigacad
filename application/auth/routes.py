@@ -7,7 +7,7 @@ from application.helpers import rate_limit
 
 @auth_bp.route("/", methods=["GET", "POST"])
 @auth_bp.route("/login", methods=["GET", "POST"])
-@rate_limit(limit=15, per=60)  # Limit to 5 requests per minute per IP
+@rate_limit(limit=20, per=60)  # Limit to 5 requests per minute per IP
 def login():
     if current_user.is_authenticated:
         if current_user.is_admin:

@@ -244,25 +244,5 @@ body {
         padding: 20px 0;
     }
     
-    /* About us Page */
     
-    .carousel-item img {
-        height: 300px;
-    }
-
-    .jumbotron {
-        padding: 3rem 1.5rem;
-    }
-
-    .display-4 {
-        font-size: 2.5rem;
-    }
-
-    .display-5 {
-        font-size: 1.75rem;
-    }
-    .staff-photo {
-        width: 100px;
-        height: 100px;
-    }
 }
