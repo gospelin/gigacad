@@ -10,6 +10,7 @@ __pycache__/
 # Environment Variables
 .env
 .flaskenv
+config.py
 
 # Other files to ignore
 __pycache__/
