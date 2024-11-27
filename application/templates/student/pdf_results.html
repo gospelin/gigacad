@@ -1,42 +1,21 @@
 <style>
     @page {
         size: A4;
-        margin: 1mm;
+        margin: 10mm;
     }
 
     body {
-        font-weight: bolder;
-        position: relative;
+        font-family: "Arial", sans-serif;
+        font-size: 10pt;
+        margin: 0;
     }
 
     .print-view {
-        margin: 2mm auto;
-        padding: 3mm;
-        font-family: "Arial", sans-serif;
-        font-size: 8pt;
+        margin: auto;
+        padding: 10mm;
+        font-size: 9pt;
+        background-color: #fff;
     }
-
-    .table-bordered {
-        /*border: 1px solid #28a745;*/
-        border: 1px solid #333;
-    }
-
-    .table-bordered th,
-    .table-bordered td {
-        /*border: 1px solid #28a745;*/
-        border: 1px solid #333;
-        font-size: 8pt;
-    }
-
-    .details,
-    .text-end {
-        text-align: left;
-    }
-
-    /*.details {*/
-    /*    margin: -30px 3px 0px -10px;*/
-    /*    color: #28a745;*/
-    /*}*/
 
     .navbar,
     .footer,
@@ -46,29 +25,58 @@
     }
 
     .school-header {
-        margin-top: -50px;
-        margin-bottom: 5px;
         display: flex;
         align-items: center;
-        justify-content: flex-start;
-        font-family: "Arial Black", serif;
+        justify-content: space-between;
+        border-bottom: 2px solid #333;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
     }
 
     .school-logo {
-        margin-top: -12px;
-        width: 72px;
-        margin-left: 15px;
+        width: 80px;
+        height: auto;
     }
 
     .school-info {
-        margin-top: 0;
         text-align: center;
-        margin-left: 25px;
+        width: 100%;
     }
 
+    .school-info h1 {
+        font-size: 14pt;
+        margin: 0;
+        text-transform: uppercase;
+        color: #333;
+    }
+
+    .school-info p {
+        margin: 0;
+        font-size: 9pt;
+        color: #666;
+    }
+
+    .school-info h2 {
+        font-size: 12pt;
+        margin: 5px 0 0;
+        text-transform: uppercase;
+        color: #28a745;
+    }
+    
+    .details {
+        margin-bottom: 20px;
+    }
+
+    .details td {
+        padding: 5px 10px;
+        vertical-align: top;
+        font-size: 9pt;
+    }
+
+    /*
     .card {
         margin-bottom: 5mm;
-        /*border: 1px solid #28a745;*/
+        border: 1px solid #28a745;
         border: 1px solid #333;
         box-shadow: none;
     }
@@ -85,7 +93,7 @@
     .card-title {
         font-size: 15pt;
         margin-top: 0;
-        /*color: #28a745;*/
+        color: #28a745;
         color: #333;
     }
 
@@ -98,14 +106,25 @@
     .card-subtitle {
         font-size: 12pt;
         margin-top: -5px;
-        /*color: #28a745;*/
+        color: #28a745;
         color: #333;
     }
+    
 
-    .table {
-        margin-bottom: 1px;
+
+    .table-bordered {
+        border: 1px solid #28a745;
+        border: 1px solid #333;
     }
 
+    .table-bordered th,
+    .table-bordered td {
+        border: 1px solid #28a745;
+        border: 1px solid #333;
+        font-size: 8pt;
+    }
+
+    
     .table-responsive {
         overflow-x: auto;
         margin-bottom: 3mm;
@@ -115,14 +134,40 @@
         text-transform: uppercase;
         color: #fff;
         vertical-align: middle;
-        /*background-color: #28a745;*/
+        background-color: #28a745;
         background-color: #333;
         border: 1px solid #fff;
     }
 
     .table tr td {
         vertical-align: middle;
-        /*color: #28a745;*/
+        color: #28a745;
+        color: #333;
+    }
+
+*/
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+
+    .table th, .table td {
+        border: 1px solid #333;
+        padding: 5px;
+        text-align: center;
+        font-size: 9pt;
+    }
+
+    .table th {
+        background-color: #28a745;
+        color: #fff;
+        text-transform: uppercase;
+        font-size: 9pt;
+    }
+
+    .table td {
         color: #333;
     }
 
@@ -133,10 +178,23 @@
     }
 
     .remarks {
-        margin-top: 10px;
+        margin-top: 20px;
+        font-size: 9pt;
+        text-align: left;
     }
 
-    /* Watermark styling */
+    .watermark {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(-45deg);
+        font-size: 50pt;
+        color: rgba(0, 0, 0, 0.05);
+        z-index: -1;
+        pointer-events: none;
+    }
+
+    /* Watermark styling 
     body::before {
         content: "Aunty Anne's Int'l School Approved Result";
         position: absolute;
@@ -148,16 +206,131 @@
         white-space: nowrap;
         pointer-events: none;
         z-index: 0;
-    }
+    } */
 
-    /* Ensure watermark is behind other content */
+    /* Ensure watermark is behind other content 
     .print-view,
     .container {
         position: relative;
         z-index: -1;
+    } */
+
+    .footer {
+        margin-top: 30px;
+        display: flex;
+        justify-content: space-between;
+        font-size: 9pt;
+        color: #333;
+    }
+
+    .footer .signature {
+        text-align: center;
+        margin-top: 30px;
     }
 </style>
 
+<div class="watermark">Aunty Anne's Int'l School</div> 
+    <div class="print-view"> 
+        <div class="school-header"> 
+            <img src="{{ static_url }}" alt="School Logo" class="school-logo">
+            <div class="school-info"> 
+                <h1>{{ school_name }}</h1> 
+                <p>6 OOMNNE DRIVE, ABAYI, ABA, ABIA STATE</p> 
+                <h2>Report Sheet for {{ term }} {{ session }} Academic Session</h2> 
+            </div> 
+        </div>
+        <table class="details">
+            <tr>
+                <td><strong>Name:</strong></td>
+                <td>{{ student.first_name }} {{ student.middle_name[0] if student.middle_name else '' }} {{ student.last_name }}</td>
+                <td><strong>Class:</strong></td>
+                <td>{{ student_class }}</td>
+            </tr>
+            <tr>
+                <td><strong>Student ID:</strong></td>
+                <td>AAIS/0559/00{{ student.id }}</td>
+                <td><strong>Reopening Date:</strong></td>
+                <td>{{ next_term_begins }}</td>
+            </tr>
+            <tr>
+                <td><strong>Gender:</strong></td>
+                <td>{{ student.gender }}</td>
+                <td><strong>Last Term Average:</strong></td>
+                <td>{{ last_term_average if last_term_average else 'N/A' }}</td>
+            </tr>
+            <tr>
+                <td><strong>Cumulative Average:</strong></td>
+                <td>{{ cumulative_average }}</td>
+                <td><strong>Average for the Term:</strong></td>
+                <td>{{ average }}</td>
+            </tr>
+        </table>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Subjects</th>
+                    <th>Class Work (20)</th>
+                    <th>Summative Test (20)</th>
+                    <th>Exam (60)</th>
+                    <th>Total (100)</th>
+                    <th>Grade</th>
+                    <th>Remark</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for result in results %}
+                    {% set class_assessment = result.class_assessment if result.class_assessment is not none else 0 %}
+                    {% set summative_test = result.summative_test if result.summative_test is not none else 0 %}
+                    {% set exam = result.exam if result.exam is not none else 0 %}
+                    {% set total = result.total if result.total is not none else 0 %}
+                    {% set grade = result.grade if result.grade is not none else '-' %}
+                    {% set remark = result.remark if result.remark is not none else '-' %}
+
+                    <tr>
+                        <td class="text-left">{{ result.subject.name }}</td>
+                        <td>{{ class_assessment }}</td>
+                        <td>{{ summative_test }}</td>
+                        <td>{{ exam }}</td>
+                        <td>{{ total }}</td>
+                        <td>{{ grade }}</td>
+                        <td>{{ remark }}</td>
+                    </tr>
+                {% endfor %}
+                <tr>
+                    <td><strong>Grand Total</strong></td>
+                    <td colspan="3"></td>
+                    <td><strong>{{ grand_total.total }}</strong></td>
+                    <td colspan="2"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="remarks">
+            <p><strong>Remarks:</strong> {{ remarks if remarks else 'N/A' }}</p>
+        </div>
+
+        <div class="footer">
+            <div class="signature">
+                <p>_______________________</p>
+                <p><strong>Principal's Signature</strong></p>
+            </div>
+            <div>
+                <p><strong>Date Issued:</strong> {{ date_issued }}</p>
+                <p><strong>Date Printed:</strong> {{ date_printed }}</p>
+            </div>
+        </div>
+
+
+
+
+
+
+
+
+
+
+{#
 <div class="container mt-5 print-view">
     <div class="row justify-content-center">
         <div class="col-lg-8">
@@ -385,3 +558,4 @@
         </div>
     </div>
 </div>
+#}
