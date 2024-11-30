@@ -1,28 +1,30 @@
 {% extends 'admin/base.html' %}
+
 {% block content %}
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-md-8 col-lg-6">
-                {% for message in get_flashed_messages() %}<div class="alert alert-warning mt-3">{{ message }}</div>{% endfor %}
-                <div class="card border-0 shadow-lg animate__animated animate__fadeIn">
-                    <div class="card-body">
-                        <h5 class="card-title text-center">Edit Subject</h5>
-                        <form method="POST"
-                              action="{{ url_for('admins.edit_subject', subject_id=subject.id) }}">
-                            {{ form.hidden_tag() }}
-                            <div class="mb-3">
-                                {{ form.name.label(class="form-label") }}
-                                {{ form.name(class="form-control") }}
-                            </div>
-                            <div class="mb-3">
-                                {{ form.section.label(class="form-label") }}
-                                {{ form.section(class="form-control") }}
-                            </div>
-                            <button type="submit" class="btn btn-primary btn-block">Update Subject</button>
-                        </form>
-                    </div>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            {% for message in get_flashed_messages() %}
+                <div class="alert alert-warning mt-3">{{ message }}</div>
+            {% endfor %}
+            <div class="card border-0 shadow-lg animate__animated animate__fadeIn">
+                <div class="card-body">
+                    <h5 class="card-title text-center">Edit Subject</h5>
+                    <form method="POST" action="{{ url_for('admins.edit_subject', subject_id=subject.id) }}">
+                        {{ form.hidden_tag() }}
+                        <div class="mb-3">
+                            {{ form.name.label(class="form-label") }}
+                            {{ form.name(class="form-control") }}
+                        </div>
+                        <div class="mb-3">
+                            {{ form.section.label(class="form-label") }}
+                            {{ form.section(class="form-control") }}
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Update Subject</button>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
+</div>
 {% endblock %}

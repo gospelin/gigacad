@@ -1,0 +1,18 @@
+{% extends 'admin/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+        <h1 class="text-center">Manage Sessions</h1>
+        <h2 class="text-center">Current Session - {{current_session}} </h2>
+        <form method="POST" action="{{ url_for('admins.manage_sessions') }}">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                {{ form.session.label }}
+                {{ form.session(class="form-control") }}
+            </div>
+            <div class="form-group">
+                {{ form.submit(class="btn btn-primary") }}
+            </div>
+        </form>
+</div>
+{% endblock %}

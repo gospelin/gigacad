@@ -1,0 +1,6 @@
+
+RewriteEngine on
+RewriteCond %{HTTP_HOST} ^portal\.auntyannesschools\.com\.ng$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.portal\.auntyannesschools\.com\.ng$
+RewriteRule ^/?$ "https\:\/\/portal\.auntyannesschools\.com\.ng\/login" [R=301,L]
+
