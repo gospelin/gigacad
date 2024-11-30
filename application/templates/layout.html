@@ -1,281 +1,130 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta name="description"
-              content="Welcome to {{ school_name }}, where practical learning meets knowledge and confidence. We are committed to providing a transformative education experience." />
-        <meta name="keywords"
-              content="School, Education, Practical Learning, Holistic Education, Empowerment, Knowledge, Confidence" />
-        <meta name="author" content="{{ school_name }}" />
-        <title>{{ title }} - Aunty Anne's Int'l School</title>
-        <!-- Google Fonts -->
-        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-              rel="stylesheet" />
-        <!-- FontAwesome for Icons -->
-        <link rel="stylesheet"
-              href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-        <!-- Bootstrap CSS -->
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-              rel="stylesheet"
-              crossorigin="anonymous" />
-        <link rel="stylesheet"
-              href="{{ url_for('static', filename='css/style.css') }}" />
-        <!-- Custom CSS -->
-        <style>
-            .footer a {
-                color: white;
-                text-decoration: none;
-            }
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Welcome to {{ school_name }}. Transformative education with practical learning, knowledge, and confidence.">
+  <meta name="keywords" content="Aunty Anne's International School, Aunty Anne's Int'l School, Aunty Anne's School,  Education in Aba, Best Schools in Aba, Best Schools in Abia, Knowledge and Confidence">
+  <meta name="author" content="Aunty Anne's Int'l School">
+  <meta property="og:title" content="{{ title }} | Aunty Anne's Int'l School">
+  <meta property="og:description" content="In Aunty Anne's Int'l School, we provide education focused on practical learning and confidence-building.">
+  <meta property="og:image" content="{{ url_for('static', filename='images/MY_SCHOOL_LOGO.png') }}">
+  <meta property="og:url" content="{{ request.url }}">
+  <meta name="twitter:card" content="summary_large_image">
+  <style data-href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,600&amp;display=swap">
+      @font-face{font-family:'Poppins';font-style:italic;font-weight:600;font-display:swap;src:url(https://fonts.gstatic.com/s/poppins/v21/pxiDyp8kv8JHgFVrJJLmr19lEw.woff) format('woff')}
+      @font-face{font-family:'Poppins';font-style:normal;font-weight:200;font-display:swap;src:url(https://fonts.gstatic.com/s/poppins/v21/pxiByp8kv8JHgFVrLFj_V1g.woff) format('woff')}
+      @font-face{font-family:'Poppins';font-style:normal;font-weight:300;font-display:swap;src:url(https://fonts.gstatic.com/s/poppins/v21/pxiByp8kv8JHgFVrLDz8V1g.woff) format('woff')}
+      @font-face{font-family:'Poppins';font-style:normal;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/poppins/v21/pxiEyp8kv8JHgFVrFJM.woff) format('woff')}
+      @font-face{font-family:'Poppins';font-style:normal;font-weight:500;font-display:swap;src:url(https://fonts.gstatic.com/s/poppins/v21/pxiByp8kv8JHgFVrLGT9V1g.woff) format('woff')}
+      @font-face{font-family:'Poppins';font-style:normal;font-weight:600;font-display:swap;src:url(https://fonts.gstatic.com/s/poppins/v21/pxiByp8kv8JHgFVrLEj6V1g.woff) format('woff')}
+      @font-face{font-family:'Poppins';font-style:normal;font-weight:700;font-display:swap;src:url(https://fonts.gstatic.com/s/poppins/v21/pxiByp8kv8JHgFVrLCz7V1g.woff) format('woff')}
+      @font-face{font-family:'Poppins';font-style:normal;font-weight:800;font-display:swap;src:url(https://fonts.gstatic.com/s/poppins/v21/pxiByp8kv8JHgFVrLDD4V1g.woff) format('woff')}
+      @font-face{font-family:'Poppins';font-style:normal;font-weight:900;font-display:swap;src:url(https://fonts.gstatic.com/s/poppins/v21/pxiByp8kv8JHgFVrLBT5V1g.woff) format('woff')}
+      @font-face{font-family:'Poppins';font-style:italic;font-weight:600;font-display:swap;src:url(https://fonts.gstatic.com/s/poppins/v21/pxiDyp8kv8JHgFVrJJLmr19VGdeOYktMqlap.woff2) format('woff2');unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+      @font-face{font-family:'Poppins';font-style:italic;font-weight:600;font-display:swap;src:url(https://fonts.gstatic.com/s/poppins/v21/pxiDyp8kv8JHgFVrJJLmr19VF9eOYktMqg.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+      @font-face{font-family:'Poppins';font-style:normal;font-weight:200;font-display:swap;src:url(https://fonts.gstatic.com/s/poppins/v21/pxiByp8kv8JHgFVrLFj_Z1JlFd2JQEl8qw.woff2) format('woff2');unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+      @font-face{font-family:'Poppins';font-style:normal;font-weight:200;font-display:swap;src:url(https://fonts.gstatic.com/s/poppins/v21/pxiByp8kv8JHgFVrLFj_Z1xlFd2JQEk.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+      @font-face{font-family:'Poppins';font-style:normal;font-weight:300;font-display:swap;src:url(https://fonts.gstatic.com/s/poppins/v21/pxiByp8kv8JHgFVrLDz8Z1JlFd2JQEl8qw.woff2) format('woff2');unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+      @font-face{font-family:'Poppins';font-style:normal;font-weight:300;font-display:swap;src:url(https://fonts.gstatic.com/s/poppins/v21/pxiByp8kv8JHgFVrLDz8Z1xlFd2JQEk.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+      @font-face{font-family:'Poppins';font-style:normal;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/poppins/v21/pxiEyp8kv8JHgFVrJJnecnFHGPezSQ.woff2) format('woff2');unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:'Poppins';font-style:normal;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/poppins/v21/pxiEyp8kv8JHgFVrJJfecnFHGPc.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+      @font-face{font-family:'Poppins';font-style:normal;font-weight:500;font-display:swap;src:url(https://fonts.gstatic.com/s/poppins/v21/pxiByp8kv8JHgFVrLGT9Z1JlFd2JQEl8qw.woff2) format('woff2');unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:'Poppins';font-style:normal;font-weight:500;font-display:swap;src:url(https://fonts.gstatic.com/s/poppins/v21/pxiByp8kv8JHgFVrLGT9Z1xlFd2JQEk.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+      @font-face{font-family:'Poppins';font-style:normal;font-weight:600;font-display:swap;src:url(https://fonts.gstatic.com/s/poppins/v21/pxiByp8kv8JHgFVrLEj6Z1JlFd2JQEl8qw.woff2) format('woff2');unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:'Poppins';font-style:normal;font-weight:600;font-display:swap;src:url(https://fonts.gstatic.com/s/poppins/v21/pxiByp8kv8JHgFVrLEj6Z1xlFd2JQEk.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:'Poppins';font-style:normal;font-weight:700;font-display:swap;src:url(https://fonts.gstatic.com/s/poppins/v21/pxiByp8kv8JHgFVrLCz7Z1JlFd2JQEl8qw.woff2) format('woff2');unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:'Poppins';font-style:normal;font-weight:700;font-display:swap;src:url(https://fonts.gstatic.com/s/poppins/v21/pxiByp8kv8JHgFVrLCz7Z1xlFd2JQEk.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:'Poppins';font-style:normal;font-weight:800;font-display:swap;src:url(https://fonts.gstatic.com/s/poppins/v21/pxiByp8kv8JHgFVrLDD4Z1JlFd2JQEl8qw.woff2) format('woff2');unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:'Poppins';font-style:normal;font-weight:800;font-display:swap;src:url(https://fonts.gstatic.com/s/poppins/v21/pxiByp8kv8JHgFVrLDD4Z1xlFd2JQEk.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:'Poppins';font-style:normal;font-weight:900;font-display:swap;src:url(https://fonts.gstatic.com/s/poppins/v21/pxiByp8kv8JHgFVrLBT5Z1JlFd2JQEl8qw.woff2) format('woff2');unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:'Poppins';font-style:normal;font-weight:900;font-display:swap;src:url(https://fonts.gstatic.com/s/poppins/v21/pxiByp8kv8JHgFVrLBT5Z1xlFd2JQEk.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}</s
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" crossorigin="anonymous">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
+  <title>{{ title }} | Aunty Anne's Int'l School</title>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "School",
+    "name": "Aunty Anne's International School",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "No 6 Oomnne Drive by winner's bus-stop opposite Ngwa high school",
+      "addressLocality": "Abayi, Aba",
+      "addressRegion": "Abia",
+      "addressCountry": "NG"
+    },
+    "telephone": "+234-806-967-8968",
+    "email": "auntyannesschools@gmail.com",
+    "url": "https://auntyannesschools.com.ng"
+  }
+  </script>
+</head>
 
-            .footer .list-unstyled li {
-                margin-bottom: 0.5rem;
-            }
-
-            .footer .form-control {
-                border: none;
-                border-radius: 0;
-                box-shadow: none;
-            }
-
-            .footer .btn-outline-light {
-                border-color: #ffffff;
-            }
-
-            .footer .btn-outline-light:hover {
-                background-color: #ffffff;
-                color: #333;
-            }
-
-            .footer .list-inline-item a {
-                color: #ffffff;
-                margin: 0 10px;
-                transition: color 0.3s;
-            }
-
-            .footer .list-inline-item a:hover {
-                color: #dddddd;
-            }
-
-            @media (max-width: 767px) {
-                .footer .col-md-4 {
-                    margin-bottom: 20px;
-                    text-align: center;
-                }
-
-                .footer .list-inline {
-                    text-align: center;
-                }
-            }
-        </style>
-    </head>
-    <body>
-        <div class="d-flex flex-column min-vh-100">
-            <div class="top-bar">
-                <div class="container d-flex justify-content-between align-items-center">
-                    <div class="d-flex align-items-center">
-                    <span class="phone-number"><i class="fas fa-phone-alt"></i>
-                +234-806-967-8968</span>
-                <div class="social-media-links">
-                    <a href="https://www.facebook.com/schoolname" target="_blank"><i class="fab fa-facebook-f"></i></a>
-                    <a href="https://twitter.com/schoolname" target="_blank"><i class="fab fa-twitter"></i></a>
-                    <a href="https://www.instagram.com/schoolname" target="_blank"><i class="fab fa-instagram"></i></a>
-                </div>
-            </div>
-            <div>
-                {% if current_user.is_authenticated %}
-                    <a class="btn btn-success btn-sm ml-2"
-                       href="{{ url_for("auth.logout") }}"
-                       class="text-white">Logout</a>
-                {% else %}
-                    <a class="btn btn-success btn-sm ml-2"
-                       href="{{ url_for("auth.login") }}"
-                       class="text-white">Login</a>
+<body>
+  <div class="d-flex flex-column min-vh-100">
+    <header class="sticky-top">
+      <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+          <a class="school-name navbar-brand d-flex align-items-center" href="{{ url_for('main.index') }}">
+            <img src="../static/images/MY_SCHOOL_LOGO.png" alt="School Logo" class="d-inline-block align-top" style="height: 50px; margin-right: 10px;">
+            {{ school_name }}
+          </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="toggler-icon"></span>
+            <span class="toggler-icon"></span>
+            <span class="toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+              <li class="nav-item"><a class="nav-link" href="{{ url_for('main.index') }}">Home</a></li>
+              <li class="nav-item"><a class="nav-link" href="{{ url_for('main.about_us') }}">About Us</a></li>
+              <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}">School Portal</a></li>
+              {# <li class="nav-item"><a class="nav-link" href="{{ url_for('main.student_registration') }}">Registration</a></li>
+              <li class="nav-item"><a class="nav-link" href="{{ url_for('students.student_portal') }}">Student Portal</a></li> 
+              {% if current_user.is_authenticated %}
+                {% if current_user.is_admin %}
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('admins.admin_dashboard') }}">Admin Dashboard</a></li>
                 {% endif %}
-                <a href="{{ url_for("main.student_registration") }}"
-                   class="btn btn-success btn-sm ml-2">Register</a>
-            </div>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a></li>
+              {% else %}
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}">Login</a></li>
+              {% endif %} #}
+            </ul>
+          </div>
         </div>
-    </div>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
-        <div class="container">
-            <a class="navbar-brand" href="{{ url_for("main.index") }}">
-                <img src="{{ url_for('static', filename='images/MY_SCHOOL_LOGO.png') }}"
-                     alt="School Logo" />
-            </a>
-            <button class="navbar-toggler"
-                    type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#navbarNav"
-                    aria-controls="navbarNav"
-                    aria-expanded="false"
-                    aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for("main.index") }}">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for("main.about_us") }}">About Us</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for("main.student_registration") }}">Registration</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for("students.student_portal") }}">Student Portal</a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle"
-                           href="#"
-                           id="navbarDropdown"
-                           role="button"
-                           data-bs-toggle="dropdown"
-                           aria-expanded="false">More</a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li>
-                                <a class="dropdown-item" href="#">Academics</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="#">Admissions</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="#">Contact Us</a>
-                            </li>
-                        </ul>
-                    </li>
-                    {% if current_user.is_authenticated %}
-                        {% if current_user.is_admin %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ url_for("admin.index") }}">Admin Dashboard</a>
-                            </li>
-                        {% endif %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for("auth.logout") }}">Logout</a>
-                        </li>
-                    {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for("auth.login") }}">Admin Login</a>
-                        </li>
-                    {% endif %}
-                </ul>
-            </div>
-        </div>
-    </nav>
+      </nav>
+    </header>
     <main class="flex-fill">
-        {% block content %}{% endblock %}
+      {% block content %}{% endblock content %}
     </main>
-    <footer class="footer text-white mt-auto text-center py-5">
-        <div class="container">
-            <div class="row">
-                <!-- Contact Information -->
-                <div class="col-md-4 mb-4">
-                    <h5>Contact Us</h5>
-                    <p>
-                        Address: No 6 Oomnne Drive by winner's bus-stop,
-                        Abayi, Aba
-                    </p>
-                <span class="phone-number"><i class="fas fa-phone-alt"></i>
-            +234-806-967-8968</span>
-            <p>
-                Email:
-                <a href="mailto:info@schoolname.edu" class="text-white">info@schoolname.edu</a>
-            </p>
-        </div>
-        <!-- Quick Links -->
-        <div class="col-md-4 mb-4">
+    <footer class="footer">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4 text-center text-md-start">
+            <h5>Contact Us</h5>
+            <p>No 6 Oomnne Drive, Abayi, Aba</p>
+            <p><i class="fas fa-phone-alt"></i> +234-806-967-8968</p>
+            <p><i class="fas fa-envelope"></i> <a href="mailto:auntyannesschools@gmail.com" class="text-white">auntyannesschools@gmail.com</a></p>
+          </div>
+          <div class="col-md-4">
             <h5>Quick Links</h5>
             <ul class="list-unstyled">
-                <li>
-                    <a href="{{ url_for("main.index") }}" class="text-white">Home</a>
-                </li>
-                <li>
-                    <a href="{{ url_for("main.about_us") }}" class="text-white">About Us</a>
-                </li>
-                <li>
-                    <a href="{{ url_for("main.student_registration") }}" class="text-white">Registration</a>
-                </li>
-                {# <li>
-                                    <a
-                                        href="{{ url_for('student_portal') }}"
-                                        class="text-white"
-                                        >Student Portal</a
-                                    >
-                                </li> #}
-                <li>
-                    <a href="#" class="text-white">Contact</a>
-                </li>
+              <li><a href="{{ url_for('main.index') }}" class="text-white">Home</a></li>
+              <li><a href="{{ url_for('main.about_us') }}" class="text-white">About Us</a></li>
+              <li><a href="{{ url_for('main.student_registration') }}" class="text-white">Registration</a></li>
+              <li><a href="#" class="text-white">Contact</a></li>
             </ul>
-        </div>
-        <!-- Newsletter Subscription -->
-        <div class="col-md-4 mb-4">
+          </div>
+          <div class="col-md-4">
             <h5>Newsletter</h5>
             <form>
-                <div class="mb-3">
-                    <input type="email" class="form-control" placeholder="Your Email" required />
-                </div>
-                <button type="submit" class="btn btn-outline-light">Subscribe</button>
+              <div class="input-group">
+                <input type="email" class="form-control" placeholder="Your Email" required>
+                <button class="btn btn-primary" type="submit">Subscribe</button>
+              </div>
             </form>
+          </div>
         </div>
-    </div>
-    <!-- Social Media Links -->
-    <div class="row mt-4">
-        <div class="col-12">
-            <ul class="list-inline">
-                <li class="list-inline-item">
-                    <a href="https://www.facebook.com/schoolname"
-                       target="_blank"
-                       class="text-white">
-                        <i class="fab fa-facebook-f fa-lg"></i>
-                    </a>
-                </li>
-                <li class="list-inline-item">
-                    <a href="https://twitter.com/schoolname"
-                       target="_blank"
-                       class="text-white">
-                        <i class="fab fa-twitter fa-lg"></i>
-                    </a>
-                </li>
-                <li class="list-inline-item">
-                    <a href="https://www.instagram.com/schoolname"
-                       target="_blank"
-                       class="text-white">
-                        <i class="fab fa-instagram fa-lg"></i>
-                    </a>
-                </li>
-                <!-- Add more social media links as needed -->
-            </ul>
+        <div class="text-center mt-3">
+          <p>&copy; 2024 {{ school_name }}. All Rights Reserved.</p>
         </div>
-    </div>
-    <!-- Footer Bottom -->
-    <div class="row mt-4">
-        <div class="col-12">
-            <p>
-                &copy; 2024 {{ school_name }}. All Rights
-                Reserved.
-            </p>
-        </div>
-    </div>
-</div>
-</footer>
-</div>
-<!-- Bootstrap JS and dependencies -->
-{#
-        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-        #}
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-{#
-        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-        #}
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
-{#
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-#} {#
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
-#}
-<!-- Custom JS for Animations -->
-<script>// Add any custom JS for animations or interactions here</script>
+      </div>
+    </footer>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

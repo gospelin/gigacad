@@ -1,31 +1,41 @@
-{% extends 'admin/base.html' %}
-{% block content %}
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-lg-6">
-                <div class="card border-0 shadow-lg">
-                    <div class="card-body">
-                        <div class="school-header text-center mb-4">
-                            <img src="{{ url_for('static', filename='images/school_logo.png') }}"
-                                 alt="School Logo"
-                                 style="width: 100px" />
-                            <h1>Select Term and Session</h1>
-                        </div>
-                        <form method="POST">
-                            {{ form.hidden_tag() }}
-                            <div class="mb-3">
-                                <label for="term" class="form-label">Select Term:</label>
-                                {{ form.term(class_='form-control') }}
-                            </div>
-                            <div class="mb-3">
-                                <label for="session" class="form-label">Select Session:</label>
-                                {{ form.session(class_='form-control') }}
-                            </div>
-                            <button type="submit" class="btn btn-primary w-100">Load Results</button>
-                        </form>
+{% extends 'admin/base.html' %} {% block content %}
+<div class="container mt-5">
+    {% for message in get_flashed_messages() %}
+        <div class="alert alert-warning mt-3">{{ message }}</div>
+    {% endfor %}
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-lg">
+                <div class="card-body">
+                    <div class="school-header text-center mb-4">
+                        <img
+                            src="{{ url_for('static', filename='images/school_logo.png') }}"
+                            alt="School Logo"
+                            style="width: 100px"
+                        />
+                        <h1>Select Term and Session</h1>
                     </div>
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        <div class="mb-3">
+                            <label for="term" class="form-label"
+                                >Select Term:</label
+                            >
+                            {{ form.term(class_='form-control') }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="session" class="form-label"
+                                >Select Session:</label
+                            >
+                            {{ form.session(class_='form-control') }}
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            Load Results
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
+</div>
 {% endblock %}

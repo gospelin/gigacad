@@ -1,269 +1,203 @@
 {% extends "layout.html" %}
 {% block content %}
-    <!-- Include Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
-          rel="stylesheet" />
-    <style>
-    body {
-        font-family: "Poppins", sans-serif;
-    }
-    .jumbotron {
-        background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-            url("/static/images/IMG_20240322_141915_157.jpg") no-repeat center
-                center;
-        background-size: cover;
-        color: white;
-    }
-    .section-heading {
-        font-weight: 600;
-        margin-top: 30px;
-    }
-    .staff-member {
-        text-align: center;
-        margin-bottom: 30px;
-    }
-    .staff-photo {
-        border-radius: 50%;
-        width: 150px;
-        height: 150px;
-        object-fit: cover;
-        transition: transform 0.3s ease-in-out;
-    }
-    .staff-photo:hover {
-        transform: scale(1.1);
-    }
-    .animate {
-        animation: fadeInUp 1s ease-in-out;
-    }
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-    @media (max-width: 768px) {
-        .staff-photo {
-            width: 100px;
-            height: 100px;
-        }
-    }
-    .testimonial blockquote {
-        font-size: 1.1em;
-        line-height: 1.6em;
-        margin: 0 0 20px;
-        padding: 20px;
-        position: relative;
-        border-left: 5px solid #f39c12;
-        background: #f9f9f9;
-        border-radius: 5px;
-    }
-    .testimonial footer {
-        color: #555;
-        font-size: 0.9em;
-        text-align: right;
-    }
-    .map-responsive {
-        overflow: hidden;
-        padding-bottom: 56.25%;
-        position: relative;
-        height: 0;
-    }
-    .map-responsive iframe {
-        left: 0;
-        top: 0;
-        height: 100%;
-        width: 100%;
-        position: absolute;
-    }
-    </style>
-    <div class="jumbotron text-center py-5">
-        <div class="container">
-            <h1>About Us</h1>
-            <p class="lead animated fadeInUp">
-                Welcome to {{ school_name }}, where practical learning meets
-                knowledge and confidence.
+
+{% block style %} 
+<link rel="stylesheet" href="{{ url_for('static', filename='css/about.css') }}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" />
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+
+<script>
+    AOS.init({
+        duration: 1200,
+        once: true,
+    });
+</script>
+{% endblock style %}
+
+<!-- SEO Optimizations -->
+<title>{{ school_name }} - About Us | Aunty Anne's International School</title>
+<meta name="description" content="Learn about {{ school_name }}'s mission, vision, values, and meet our team. Explore our world-class educational approach at Aunty Anne's International School.">
+
+<div class="jumbotron text-center py-5">
+    <div class="container">
+        <h1 data-aos="fade-up">About Us</h1>
+        <p style="color: #fff" class="lead animated fadeInUp" data-aos="fade-right">
+            Welcome to {{ school_name }}, where practical learning enhances
+            knowledge and confidence.
+        </p>
+    </div>
+</div>
+
+<div class="container mt-5">
+    <div class="row animate">
+        <div class="col-lg-8 offset-lg-2">
+            <h2 class="section-heading" data-aos="fade-up">Our Mission</h2>
+            <p class="lead animated fadeInUp" data-aos="fade-right">
+                At {{ school_name }}, our mission is to nurture a community of
+                lifelong learners who are prepared to thrive in a dynamic world.
+                We are dedicated to providing a well-rounded education that
+                fosters intellectual growth, character development, and a
+                commitment to global citizenship.
             </p>
+
+            <h2 class="section-heading" data-aos="fade-up">Our Vision</h2>
+            <p class="lead animated fadeInUp" data-aos="fade-right">
+                We envision a world where every student is empowered to reach
+                their full potential, equipped with the knowledge and skills
+                necessary to make meaningful contributions to society. Our
+                vision is to be a leader in innovative education, inspiring
+                excellence and shaping the future.
+            </p>
+
+            <h2 class="section-heading" data-aos="fade-up">Our Values</h2>
+            <ul class="lead animated fadeInUp" data-aos="fade-right">
+                <li>
+                    <strong>Practical Learning:</strong> We believe in hands-on,
+                    experiential learning that prepares students for real-world
+                    challenges.
+                </li>
+                <li>
+                    <strong>Knowledge Empowerment:</strong> We strive to empower
+                    our students with a deep understanding of diverse subjects,
+                    fostering intellectual curiosity and a love for learning.
+                </li>
+                <li>
+                    <strong>Confidence Building:</strong> We focus on building
+                    confidence and resilience in our students, ensuring they
+                    have the self-assurance to pursue their dreams.
+                </li>
+            </ul>
         </div>
-    </div>
-    <div class="container mt-5">
-        <div class="row animate">
-            <div class="col-lg-8 offset-lg-2">
-                <h2>Our Mission</h2>
-                <p class="lead animated fadeInUp">
-                    At {{ school_name }}, our mission is to nurture a community of
-                    lifelong learners who are prepared to thrive in a dynamic world.
-                    We are dedicated to providing a well-rounded education that
-                    fosters intellectual growth, character development, and a
-                    commitment to global citizenship.
-                </p>
-                <h2>Our Vision</h2>
-                <p class="lead animated fadeInUp">
-                    We envision a world where every student is empowered to reach
-                    their full potential, equipped with the knowledge and skills
-                    necessary to make meaningful contributions to society. Our
-                    vision is to be a leader in innovative education, inspiring
-                    excellence and shaping the future.
-                </p>
-                <h2>Our Values</h2>
-                <ul class="lead animated fadeInUp">
-                    <li>
-                        <strong>Practical Learning:</strong> We believe in hands-on,
-                        experiential learning that prepares students for real-world
-                        challenges.
-                    </li>
-                    <li>
-                        <strong>Knowledge Empowerment:</strong> We strive to empower
-                        our students with a deep understanding of diverse subjects,
-                        fostering intellectual curiosity and a love for learning.
-                    </li>
-                    <li>
-                        <strong>Confidence Building:</strong> We focus on building
-                        confidence and resilience in our students, ensuring they
-                        have the self-assurance to pursue their dreams.
-                    </li>
-                </ul>
-            </div>
-            <div class="col-md-12">
-                <h2 class="section-heading">Our Team - Administration, Faculty, and Staff</h2>
-                <p class="lead animated fadeInUp">
-                    Our dedicated team of administrators, faculty, and staff are the
-                    heart of {{ school_name }}. They are passionate educators and
-                    professionals committed to nurturing each student's potential.
-                    With a diverse range of expertise and a shared vision for
-                    excellence, our team works collaboratively to create an
-                    inspiring and supportive learning environment.
-                </p>
-                <p class="lead animated fadeInUp">
-                    At the core of {{ school_name }} are our exceptional
-                    administrators, faculty members, and staff. Each member brings
-                    unique skills and experiences, contributing to a dynamic and
-                    enriching educational environment. We take pride in our team's
-                    commitment to excellence, professional development, and their
-                    unwavering dedication to our students' success.
-                </p>
-                <div class="row">
-                    <div class="col-sm-4 staff-member">
-                        <img src="/static/images/FB_IMG_1715841251928.jpg"
-                             alt="Staff Photo"
-                             class="staff-photo" />
-                        <h3>Mr. Isaac Gospel</h3>
-                        <p>Principal</p>
-                    </div>
-                    <div class="col-sm-4 staff-member">
-                        <img src="/static/images/IMG-20240217-WA0049.jpg"
-                             alt="Staff Photo"
-                             class="staff-photo" />
-                        <h3>Miss. Ezeugbana Chiamaka</h3>
-                        <p>Vice Principal</p>
-                    </div>
-                    <div class="col-sm-4 staff-member">
-                        <img src="/static/images/IMG-20230731-WA0008.jpg"
-                             alt="Staff Photo"
-                             class="staff-photo" />
-                        <h3>Miss. Isaac Glory</h3>
-                        <p>Head of Admissions</p>
-                    </div>
+
+        <div class="col-md-12">
+            <h2 class="section-heading">
+                Our Team - Administration, Faculty, and Staff
+            </h2>
+            <p class="lead animated fadeInUp">
+                Our dedicated team of administrators, faculty, and staff are the
+                heart of {{ school_name }}. They are passionate educators and
+                professionals committed to nurturing each student's potential.
+                With a diverse range of expertise and a shared vision for
+                excellence, our team works collaboratively to create an
+                inspiring and supportive learning environment.
+            </p>
+
+            <p class="lead animated fadeInUp">
+                At the core of {{ school_name }} are our exceptional
+                administrators, faculty members, and staff. Each member brings
+                unique skills and experiences, contributing to a dynamic and
+                enriching educational environment. We take pride in our team's
+                commitment to excellence, professional development, and their
+                unwavering dedication to our students' success.
+            </p>
+            <div class="row">
+                <div class="col-sm-4 staff-member">
+                    <img
+                        src="/static/images/FB_IMG_1715841251928.jpg"
+                        alt="Staff Photo - Mr. Isaac Gospel, Principal"
+                        class="staff-photo"
+                        loading="lazy"
+                    />
+                    <h3>Mr. Isaac Gospel</h3>
+                    <p>Principal</p>
                 </div>
-            </div>
-        </div>
-    </div>
-    <div class="container mt-5 mb-5">
-        <div class="row animate">
-            <div class="col-md-6 mb-4">
-                <h2>Testimonials</h2>
-                <div class="testimonial">
-                    <blockquote>
-                        <p>
-                            "{{ school_name }} has provided me with a nurturing
-                            environment to grow both academically and personally.
-                            The faculty's dedication and the school's innovative
-                            approach to education have truly set me on a path to
-                            success."
-                        </p>
-                        <footer>
-                            - Mrs. Anyanwu, Alumni
-                        </footer>
-                    </blockquote>
+                <div class="col-sm-4 staff-member">
+                    <img
+                        src="/static/images/IMG-20240217-WA0049.jpg"
+                        alt="Staff Photo - Miss. Ezeugbana Chiamaka, Vice Principal"
+                        class="staff-photo"
+                        loading="lazy"
+                    />
+                    <h3>Miss. Ezeugbana Chiamaka</h3>
+                    <p>Vice Principal</p>
                 </div>
-                <div class="testimonial">
-                    <blockquote>
-                        <p>
-                            "As a parent, I am extremely pleased with the holistic
-                            education my child is receiving at {{ school_name }}.
-                            The emphasis on both academics and character development
-                            is remarkable, and I have seen tremendous growth in my
-                            child's confidence and abilities."
-                        </p>
-                        <footer>
-                            - Mr. Ezechukwu Chukwudi, Parent
-                        </footer>
-                    </blockquote>
-                </div>
-            </div>
-            <div class="col-md-6 mb-4">
-                <div class="testimonial">
-                    <blockquote>
-                        <p>
-                            "The teachers at {{ school_name }} are incredibly
-                            supportive and dedicated. They go above and beyond to
-                            ensure each student understands the material and feels
-                            confident in their abilities."
-                        </p>
-                        <footer>
-                            - Victoria Uwadiegwu, Current Student
-                        </footer>
-                    </blockquote>
-                </div>
-                <div class="testimonial">
-                    <blockquote>
-                        <p>
-                            "I have seen my child's academic performance and social
-                            skills improve significantly since joining {{
-                            school_name }}. The school's focus on a well-rounded
-                            education is truly commendable."
-                        </p>
-                        <footer>
-                            - Beckley Gideon, Parent
-                        </footer>
-                    </blockquote>
+                <div class="col-sm-4 staff-member">
+                    <img
+                        src="/static/images/IMG-20230731-WA0008.jpg"
+                        alt="Staff Photo - Miss. Isaac Glory, Head of Admissions"
+                        class="staff-photo"
+                        loading="lazy"
+                    />
+                    <h3>Miss. Isaac Glory</h3>
+                    <p>Head of Admissions</p>
                 </div>
             </div>
         </div>
     </div>
-    <div class="container mt-5 mb-5">
-        <div class="row animate">
-            <div class="col-md-6 mb-4">
-                <h2 class="section-heading">Contact Us</h2>
-                <p>For inquiries or feedback, please use the contact form below:</p>
-                <form class="contact-form">
-                    <div class="form-group">
-                        <input type="text" class="form-control" placeholder="Your Name" required />
-                    </div>
-                    <div class="form-group">
-                        <input type="email" class="form-control" placeholder="Your Email" required />
-                    </div>
-                    <div class="form-group">
-                        <textarea class="form-control" rows="4" placeholder="Your Message" required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Send Message</button>
-                </form>
+</div>
+
+
+<div class="container mt-5 mb-5">
+    <h2 class="section-heading text-center">What People Say About Us</h2>
+    <div id="testimonialCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <blockquote class="testimonial">
+                    <p>
+                        "{{ school_name }} has provided me with a nurturing
+                        environment to grow both academically and personally.
+                        The school's dedication and innovative
+                        approach to education have truly set me on a path to
+                        success."
+                    </p>
+                    <footer>- Mrs. Anyanwu, Alumni</footer>
+                </blockquote>
             </div>
-            <div class="col-md-6 mb-4">
-                <h2 class="section-heading">Location</h2>
-                <div class="map-responsive">
-                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d993.4329494977746!2d7.3309549798887925!3d5.146810527312397!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x10429b8a252a1025%3A0x9ac7285163476022!2sAunty%20Anne&#39;s%20International%20School%20Aba!5e0!3m2!1sen!2sus!4v1714916226431!5m2!1sen!2sus"
-                            width="600"
-                            height="450"
-                            style="border: 0"
-                            allowfullscreen=""
-                            loading="lazy"
-                            referrerpolicy="no-referrer-when-downgrade"></iframe>
-                </div>
+            <div class="carousel-item">
+                <blockquote class="testimonial">
+                     <p>
+                        "As a parent, I am extremely pleased with the holistic
+                        education my child is receiving at {{ school_name }}.
+                        The emphasis on both academics and character development
+                        is remarkable, and I have seen tremendous growth in my
+                        child's confidence and abilities."
+                    </p>
+                    <footer>- Mr. Ezechukwu Chukwudi, Parent</footer>
+                </blockquote>
+            </div>
+            <div class="carousel-item">
+                <blockquote class="testimonial">
+                   <p>
+                        "The teachers at {{ school_name }} are incredibly
+                        supportive and dedicated. They go above and beyond to
+                        ensure each student understands the material and feels
+                        confident in their abilities."
+                    </p>
+                    <footer>- Victoria Uwadiegwu, Current Student</footer>
+                </blockquote>
+            </div>
+            <div class="carousel-item">
+                <blockquote class="testimonial">
+                   <p>
+                        "I have seen my child's academic performance and social
+                        skills improve significantly since joining {{
+                        school_name }}. The school's focus on a well-rounded
+                        education is truly commendable."
+                    </p>
+                    <footer>- Beckley Gideon, Parent</footer>
+                </blockquote>
             </div>
         </div>
     </div>
-{% endblock %}
+</div>
+
+<div class="container mb-5">
+    <h2>Our Location</h2>
+    <p class="lead">
+        Visit us at our campus to explore our vibrant learning environment
+        firsthand.
+    </p>
+    <div class="map-responsive">
+        <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d993.4329494977746!2d7.3309549798887925!3d5.146810527312397!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x10429b8a252a1025%3A0x9ac7285163476022!2sAunty%20Anne&#39;s%20International%20School%20Aba!5e0!3m2!1sen!2sus!4v1714916226431!5m2!1sen!2sus"
+            width="600"
+            height="450"
+            style="border: 0"
+            allowfullscreen=""
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+        ></iframe>
+    </div>
+</div>
+
+{% endblock content %}

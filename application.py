@@ -1,8 +1,8 @@
 from application import app
 
-if __name__ == "__main__":
-    debug = app.config["DEBUG"]
-    app.run(debug=debug)
+# if __name__ == "__main__":
+#     debug = app.config["DEBUG"]
+#     app.run(debug=debug)
     # app.run(host='app')
     # from waitress import serve
 
