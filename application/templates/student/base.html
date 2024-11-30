@@ -1,141 +1,224 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>
-            {% block title %}Student Portal{% endblock %}
-        </title>
-        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-              rel="stylesheet" />
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
-              rel="stylesheet" />
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
-              rel="stylesheet" />
-        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
-              rel="stylesheet" />
-        <style>
-            body {
-                font-family: "Roboto", sans-serif;
-            }
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Student Portal{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" crossorigin="anonymous">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #4e54c8;
+            --light-blue: #8f94fb;
+            --hover-blue: #3c40a4;
+            --dark-blue: #6d74c7;
+            --white: #ffffff;
+            --light-gray: #f8f9fa;
+        }
+        
+        .navbar {
+            --bs-navbar-toggler-border-color: none;
+            --bs-navbar-toggler-border-radius: none; 
+            --bs-navbar-toggler-focus-width: none;
+            --bs-navbar-toggler-transition: box-shadow 0.15s ease-in-out;
+            --bs-navbar-toggler-icon-bg: none;
+        }
+
+        body {
+            font-family: "Roboto", sans-serif;
+            background-color: var(--light-gray);
+        }
+
+        .navbar {
+            display: none;
+            background-color: var(--primary-blue);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--white);
+        }
+
+        .navbar-toggler-icon {
+            color: var(--white);
+            font-size: 1.5rem;
+        }
+        
+        .navbar-toggler {
+            border-color: var(--bs-navbar-toggler-border-color);
+            border-radius: var(--bs-navbar-toggler-border-radius);
+            transition: var(--bs-navbar-toggler-transition);
+        }
+        
+        .navbar-toggler .toggler-icon {
+            display: block;
+            position: relative;
+            width: 24px;
+            height: 2px;
+            background-color: var(--white);
+            margin: 6px auto;
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* Static Sidebar for Desktop */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 250px;
+            overflow-y: auto;
+            z-index: 1030;
+        }
+
+        .sidebar a {
+            color: var(--white);
+            text-decoration: none;
+            padding: 10px 15px;
+            display: block;
+        }
+
+        .sidebar a:hover {
+            background-color: var(--hover-blue);
+            color: var(--white);
+        }
+
+        .sidebar-header {
+            padding: 10px;
+            background-color: var(--dark-blue);
+            color: var(--white);
+        }
+
+        .offcanvas a {
+            color: var(--white);
+            text-decoration: none;
+            padding: 10px 15px;
+            display: block;
+        }
+
+        .offcanvas a:hover {
+            background-color: var(--hover-blue);
+            color: var(--white);
+        }
+        
+
+        .offcanvas-header {
+            border-bottom: 1px solid var(--light-blue);
+        }
+
+        .offcanvas-title {
+            font-weight: 700;
+        }
+        
+        /* Common styles for both sidebar and offcanvas */
+        .sidebar, .offcanvas {
+            color: var(--white);
+            background-color: var(--primary-blue);
+            transition: width 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
+        
+        .btn-close {
+            color: var(--white);
+            opacity: 1;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding-top: 30px;
+        }
+
+        /* Offcanvas for Mobile/Smaller Screens */
+        @media (max-width: 767px) {
             .sidebar {
+                position: static;
                 height: 100vh;
-                background-color: #343a40;
-                color: #fff;
-                position: fixed;
-                width: 220px;
-                transition: all 0.3s ease;
-            }
-            .sidebar a {
-                color: #fff;
-                text-decoration: none;
-                padding: 15px;
-                display: block;
-                transition: background-color 0.3s ease;
-            }
-            .sidebar a:hover {
-                background-color: #495057;
-            }
-            .sidebar .active {
-                background-color: #007bff;
-                color: #fff;
-            }
-            .sidebar .icon {
-                margin-right: 10px;
-            }
-            .sidebar-toggler {
+                width: 100%;
                 display: none;
             }
-            main {
-                margin-left: 200px;
-                padding: 10px;
-                transition: all 0.3s ease;
-            }
-            .card {
-                margin-bottom: 20px;
-                animation: fadeInUp 1s;
-            }
-            .card h5 {
-                font-weight: 500;
-            }
-            @media (max-width: 768px) {
-                .sidebar {
-                    width: 100%;
-                    height: auto;
-                    position: relative;
-                }
-                main {
-                    margin-left: 0;
-                }
-                .card-body {
-                    text-align: center;
-                }
-                .table-responsive {
-                    margin-bottom: 10px;
-                    /* Adjusted for mobile responsiveness */
-                }
-
-                /* Added for mobile responsiveness */
-                .input-group-text {
-                    width: 100%;
-                    text-align: left;
-                }
-
-                .form-control {
-                    width: 100%;
-                }
-
-                .btn {
-                    width: 100%;
-                    margin-bottom: 10px;
-                }
-            }
-        </style>
-    </head>
-    <body>
-        <div class="container-fluid">
             
-            <div class="row">
-                <!-- Sidebar Toggler -->
-                <div class="sidebar-toggler">
-                    <i class="fas fa-bars fa-2x"></i>
-                </div>
-                <!-- Sidebar -->
-                <nav class="col-md-2 sidebar">
-                    <h2 class="text-center py-3">Student Portal</h2>
-                    <a href="{{ url_for("main.index") }}"><i class="fas fa-home icon"></i>Home</a>
-                    <a href="{{ url_for("students.student_portal") }}" class="active"><i class="fas fa-tachometer-alt icon"></i>Dashboard</a>
-                    <a href="{{ url_for('students.student_profile', student_id=current_user.student.id) }}">
-                        <i class="fas fa-user icon"></i> Profile
-                    </a>
-                    <a href="{{ url_for('students.select_results', student_id=current_user.student.id) }}"><i class="fas fa-file-alt icon"></i>Results</a>
-                    <a href="#"><i class="fas fa-calendar-check icon"></i>Attendance</a>
-                    <a href="#"><i class="fas fa-clock icon"></i>Timetable</a>
-                    <a href="{{ url_for("auth.logout") }}"><i class="fas fa-sign-out-alt icon"></i>Logout</a>
-                </nav>
-                <!-- Main content -->
-                <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
-                    {% for message in get_flashed_messages() %}
-                        <div class="alert alert-warning mt-3">{{ message }}</div>
-                    {% endfor %}
-                    {% block content %}<!-- Content will be inserted here by the child templates -->{% endblock %}
-                </main>
+            .offcanvas {
+                --bs-offcanvas-width: 230px;
+            }
+            
+            .navbar {
+                display: block;
+            }
+
+            .navbar-toggler {
+                display: block;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding-top: 100px;
+            }
+        }
+
+        /* Highlight active link */
+        .nav-link.active {
+            background-color: var(--hover-blue);
+            color: var(--white) !important;
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Student Portal</a>
+            <div class="d-flex align-items-center">
+                <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu" aria-controls="offcanvasMenu">
+                    <span class="navbar-toggler-icon"><i class="fas fa-bars"></i></span>
+                </button>
             </div>
         </div>
-        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script>
-            $(document).ready(function() {
-                $('.sidebar-toggler').on('click', function() {
-                    $('.sidebar').toggleClass('open');
-                });
-            });
+    </nav>
 
-            {% block script %}
+    <!-- Static Sidebar for Larger Screens -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h4>Student Portal</h4>
+        </div>
+        <a href="{{ url_for('main.index') }}" class="nav-link {% if request.endpoint == 'main.index' %}active{% endif %}" aria-current="{% if request.endpoint == 'main.index' %}page{% endif %}"><i class="fas fa-home"></i> Home</a>
+        <a href="{{ url_for('students.student_portal') }}" class="nav-link {% if request.endpoint == 'students.student_portal' %}active{% endif %}" aria-current="{% if request.endpoint == 'students.student_portal' %}page{% endif %}"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+        <a href="{{ url_for('students.student_profile', student_id=current_user.student.id) }}" class="nav-link {% if request.endpoint == 'students.student_profile' %}active{% endif %}" aria-current="{% if request.endpoint == 'students.student_profile' %}page{% endif %}"><i class="fas fa-user"></i> Profile</a>
+        <a href="{{ url_for('students.select_results', student_id=current_user.student.id) }}" class="nav-link {% if request.endpoint == 'students.select_results' %}active{% endif %}"><i class="fas fa-file-alt" aria-current="{% if request.endpoint == 'students.select_results' %}page{% endif %}"></i> Results</a>
+        <a href="#" class="nav-link {% if request.endpoint == 'students.attendance' %}active{% endif %}"><i class="fas fa-calendar-check"></i> Attendance</a>
+        <a href="#" class="nav-link {% if request.endpoint == 'students.timetable' %}active{% endif %}"><i class="fas fa-clock"></i> Timetable</a>
+        <a href="{{ url_for('auth.logout') }}" class="nav-link {% if request.endpoint == 'auth.logout' %}active{% endif %}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
 
-            {% endblock script %}
-        </script>
-    </body>
+    <!-- Offcanvas Menu for Smaller Screens -->
+    <div class="offcanvas  offcanvas-start custom-offcanvas-width" tabindex="-1" id="offcanvasMenu" aria-labelledby="offcanvasMenuLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasMenuLabel">Menu</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <a href="{{ url_for('main.index') }}" class="nav-link {% if request.endpoint == 'main.index' %}active{% endif %}" aria-current="{% if request.endpoint == 'main.index' %}page{% endif %}"><i class="fas fa-home"></i> Home</a>
+            <a href="{{ url_for('students.student_portal') }}" class="nav-link {% if request.endpoint == 'students.student_portal' %}active{% endif %}" aria-current="{% if request.endpoint == 'students.student_portal' %}page{% endif %}"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <a href="{{ url_for('students.student_profile', student_id=current_user.student.id) }}" class="nav-link {% if request.endpoint == 'students.student_profile' %}active{% endif %}" aria-current="{% if request.endpoint == 'students.student_profile' %}page{% endif %}"><i class="fas fa-user"></i> Profile</a>
+            <a href="{{ url_for('students.select_results', student_id=current_user.student.id) }}" class="nav-link {% if request.endpoint == 'students.select_results' %}active{% endif %}"><i class="fas fa-file-alt" aria-current="{% if request.endpoint == 'students.select_results' %}page{% endif %}"></i> Results</a>
+            <a href="#" class="nav-link {% if request.endpoint == 'students.attendance' %}active{% endif %}"><i class="fas fa-calendar-check"></i> Attendance</a>
+            <a href="#" class="nav-link {% if request.endpoint == 'students.timetable' %}active{% endif %}"><i class="fas fa-clock"></i> Timetable</a>
+            <a href="{{ url_for('auth.logout') }}" class="nav-link {% if request.endpoint == 'auth.logout' %}active{% endif %}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container main-content">
+        {% for message in get_flashed_messages() %}
+            <div class="alert alert-warning mt-3">{{ message }}</div>
+        {% endfor %}
+        {% block content %}{% endblock %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
 </html>

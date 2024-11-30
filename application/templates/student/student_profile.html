@@ -1,5 +1,5 @@
-{% extends "student/base.html" %} {% block title %}{{ student.first_name }} {{
-student.last_name }}'s Profile{% endblock %} {% block content %}
+{% extends "student/base.html" %} 
+{% block title %}{{ student.first_name }} {{student.last_name }}'s Profile{% endblock %} {% block content %}
 <style>
     .profile-card {
         border: none;
@@ -73,91 +73,34 @@ student.last_name }}'s Profile{% endblock %} {% block content %}
         <div class="col-lg-10">
             <div class="profile-card card">
                 <div class="profile-header">
-                    <i class="bi bi-person-circle profile-picture"></i>
+                    <img src="{{ student.profile_picture_url or '/static/default.png' }}" 
+                         alt="Profile Picture" 
+                         class="rounded-circle img-thumbnail" 
+                         width="150" />
                     <h2>{{ student.first_name }} {{ student.last_name }}</h2>
                     <p>Class: {{ student.class_name }}</p>
                 </div>
                 <div class="profile-info">
                     <div class="row">
                         <div class="col-md-6">
-                            <p>
-                                <strong>First Name:</strong> {{
-                                student.first_name }}
-                            </p>
-                            <p>
-                                <strong>Middle Name:</strong> {{
-                                student.middle_name }}
-                            </p>
-                            <p>
-                                <strong>Last Name:</strong> {{ student.last_name
-                                }}
-                            </p>
-                            <p>
-                                <strong>Gender:</strong> {{
-                                student.gender.capitalize() }}
-                            </p>
-                            <p>
-                                <strong>Date of Birth:</strong> {{
-                                student.date_of_birth }}
-                            </p>
+                            <p><strong>First Name:</strong> {{ student.first_name }}</p>
+                            <p><strong>Middle Name:</strong> {{ student.middle_name }}</p>
+                            <p><strong>Last Name:</strong> {{ student.last_name }}</p>
+                            <p><strong>Gender:</strong> {{ student.gender.capitalize() }}</p>
+                            <p><strong>Date of Birth:</strong> {{ student.date_of_birth }}</p>
                         </div>
                         <div class="col-md-6">
-                            <p>
-                                <strong>Parent's Name:</strong> {{
-                                student.parent_name }}
-                            </p>
-                            <p>
-                                <strong>Parent's Phone:</strong> {{
-                                student.parent_phone_number }}
-                            </p>
-                            <p>
-                                <strong>Address:</strong> {{ student.address }}
-                            </p>
-                            <p>
-                                <strong>Parent's Occupation:</strong> {{
-                                student.parent_occupation }}
-                            </p>
-                            <p>
-                                <strong>Previous Class:</strong> {{
-                                student.previous_class }}
-                            </p>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <p>
-                                <strong>State of Origin:</strong> {{
-                                student.state_of_origin }}
-                            </p>
-                        </div>
-                        <div class="col-md-6">
-                            <p>
-                                <strong>LGA:</strong> {{
-                                student.local_government_area }}
-                            </p>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <p>
-                                <strong>Religion:</strong> {{ student.religion
-                                }}
-                            </p>
-                        </div>
-                        <div class="col-md-6">
-                            <p>
-                                <strong>Student ID:</strong> AAIS/0559/00{{
-                                student.id }}
-                            </p>
+                            <p><strong>Parent's Name:</strong> {{ student.parent_name }}</p>
+                            <p><strong>Parent's Phone:</strong> {{ student.parent_phone_number }}</p>
+                            <p><strong>Address:</strong> {{ student.address }}</p>
+                            <p><strong>Occupation:</strong> {{ student.parent_occupation }}</p>
                         </div>
                     </div>
                 </div>
                 <div class="card-footer text-center">
-                    <a
-                        href="{{ url_for('students.student_portal', student_id=student.id) }}"
-                        class="btn btn-secondary"
-                        >Back to Portal</a
-                    >
+                    <a href="{{ url_for('students.student_portal', student_id=student.id) }}" 
+                       class="btn btn-secondary">Back to Portal</a>
+                    <a href="#" class="btn btn-primary">Edit Profile</a>
                 </div>
             </div>
         </div>

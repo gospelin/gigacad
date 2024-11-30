@@ -1,12 +1,67 @@
-/* About us page */
-.jumbotron {
-    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-        url("/static/images/IMG_20240322_141915_157.jpg") no-repeat center
-            center;
-    background-size: cover;
-    color: white;
+/* Colors */
+:root {
+    --primary-green: #28a745;
+    --dark-green: #006400;
+    --dark-red: #8B0000;
+    --light-gray: #f8f9fa;
+    --dark-gray: #6c757d;
+    --white: #ffffff;
+    --black: #000000;
+    
 }
 
+/* General Styles for About Us Page */
+.jumbotron {
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+        url("/static/images/IMG_20240322_141915_157.jpg") no-repeat center center;
+    background-size: cover;
+    color: white;
+    text-align: center;
+    padding: 5rem 1rem;
+}
+
+.jumbotron h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+}
+
+.jumbotron p {
+    font-size: 1.25rem;
+    margin-top: 1rem;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+/* Mission, Vision, Values Section */
+.animate {
+    animation: fadeInUp 1s ease-in-out;
+}
+
+.section-heading {
+    font-weight: 600;
+    margin-top: 30px;
+    text-align: center;
+    color: var(--dark-green);
+}
+
+.staff-member {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.staff-photo {
+    border-radius: 50%;
+    width: 150px;
+    height: 150px;
+    transition: transform 0.3s ease-in-out;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.staff-photo:hover {
+    transform: scale(1.1);
+}
+
+/* Testimonials Section */
 .testimonial blockquote {
     font-size: 1.1em;
     line-height: 1.6em;
@@ -16,47 +71,117 @@
     border-left: 5px solid #f39c12;
     background: #f9f9f9;
     border-radius: 5px;
+    color: var(--dark-gray);
 }
+
 .testimonial footer {
     color: #555;
     font-size: 0.9em;
     text-align: right;
+    margin-top: 10px;
 }
+
+/* Map Section */
 .map-responsive {
     overflow: hidden;
     padding-bottom: 56.25%;
     position: relative;
     height: 0;
 }
+
 .map-responsive iframe {
     left: 0;
     top: 0;
     height: 100%;
     width: 100%;
     position: absolute;
+    border: none;
 }
 
-.section-heading {
-    font-weight: 600;
-    margin-top: 30px;
-}
-.staff-member {
-    text-align: center;
-    margin-bottom: 30px;
-}
-.staff-photo {
-    border-radius: 50%;
-    width: 150px;
-    height: 150px;
-    transition: transform 0.3s ease-in-out;
-}
-.staff-photo:hover {
-    transform: scale(1.1);
-}
-.animate {
-    animation: fadeInUp 1s ease-in-out;
+/* Media Queries */
+@media (max-width: 768px) {
+    .container.mt-5 {
+        padding: 1.5rem 1rem; /* Reduce top and side padding */
+    }
+
+    .container.mt-5 h2 {
+        font-size: 1.5rem; /* Slightly smaller headings */
+        margin-bottom: 1rem; /* Adjust spacing below headings */
+    }
+
+    .container.mt-5 p.lead {
+        font-size: 1rem; /* Reduce paragraph font size */
+        line-height: 1.4; /* Adjust line spacing for better readability */
+        margin-bottom: 1.5rem; /* Space between paragraphs */
+    }
+
+    .container.mt-5 ul.lead {
+        padding-left: 1rem; /* Compact left padding for lists */
+        font-size: 1rem; /* Reduce font size for list items */
+    }
+
+    .container.mt-5 ul.lead li {
+        margin-bottom: 0.75rem; /* Reduce space between list items */
+    }
+    
+    .jumbotron {
+        padding: 3rem 1rem;
+    }
+
+    .jumbotron h1 {
+        font-size: 2.5rem;
+    }
+
+    .jumbotron p {
+        font-size: 1rem;
+    }
+
+    .staff-photo {
+        width: 120px;
+        height: 120px;
+    }
+
+    .testimonial blockquote {
+        font-size: 1em;
+        padding: 15px;
+    }
+
+    .testimonial footer {
+        font-size: 0.8em;
+    }
 }
 
+@media (max-width: 576px) {
+    
+    
+    .jumbotron h1 {
+        font-size: 2rem;
+    }
+
+    .jumbotron p {
+        font-size: 0.9rem;
+    }
+
+    .staff-photo {
+        width: 100px;
+        height: 100px;
+    }
+
+    .testimonial blockquote {
+        font-size: 0.9em;
+        padding: 10px;
+    }
+
+    .testimonial footer {
+        font-size: 0.75em;
+    }
+
+    .map-responsive {
+        padding-bottom: 75%; /* Adjust for better aspect ratio on smaller screens */
+    }
+}
+
+/* Fade In Animation */
 @keyframes fadeInUp {
     from {
         opacity: 0;
@@ -65,31 +190,5 @@
     to {
         opacity: 1;
         transform: translateY(0);
-    }
-}
-
-
-@media (max-width: 768px) {
-    /* About us Page */
-    
-    .carousel-item img {
-        height: 300px;
-    }
-
-    .jumbotron {
-        padding: 3rem 1.5rem;
-    }
-
-    .display-4 {
-        font-size: 2.5rem;
-    }
-
-    .display-5 {
-        font-size: 1.75rem;
-    }
-
-    .staff-photo {
-        width: 100px;
-        height: 100px;
     }
 }

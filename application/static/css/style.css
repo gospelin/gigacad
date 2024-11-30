@@ -26,27 +26,6 @@ body {
     
 }
 
-/* Top Bar */
-.top-bar {
-    background-color: var(--primary-green);
-    color: var(--white);
-    padding: 10px 0;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.top-bar .social-media-links a {
-    color: var(--dark-green);
-    margin: 0 5px;
-    transition: color 0.3s ease;
-}
-
-.top-bar .social-media-links a:hover {
-    color: #ddd;
-}
-
 /* Card Styles */
 .card {
     margin-bottom: 1.5rem;
@@ -65,21 +44,26 @@ body {
     padding: 1.5rem 1rem;
     background: linear-gradient(165deg, var(--dark-green), var(--dark-red));
     color: var(--white);
+    font-size: 1.25rem;
+    font-weight: 600;
 }
 
 .card-body {
-    padding: 2rem;
+    padding: 1.5rem;
 }
 
 .card-title {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     font-weight: bold;
     color: var(--dark-green);
+    text-align: center;
+    margin-bottom: 1rem;
 }
 
 .card-text {
-    font-size: 1rem;
+     font-size: 1rem;
     color: var(--dark-gray);
+    text-align: justify;
 }
 
 /* Button Styles */
@@ -127,6 +111,130 @@ body {
     vertical-align: middle;
 }
 
+
+
+
+
+
+
+/* Navigation styling */
+.navbar {
+    --bs-navbar-toggler-border-color: none;
+    --bs-navbar-toggler-border-radius: none; 
+    --bs-navbar-toggler-focus-width: none;
+    --bs-navbar-toggler-transition: box-shadow 0.15s ease-in-out;
+}
+
+.navbar-brand img {
+    height: 100px;
+}
+
+.navbar-nav .nav-link:hover {
+    color: var(--primary-green);
+}
+
+.navbar-toggler {
+    border-color: var(--bs-navbar-toggler-border-color);
+    border-radius: var(--bs-navbar-toggler-border-radius);
+    transition: var(--bs-navbar-toggler-transition);
+}
+
+.navbar-toggler:focus {
+    outline-width: var(--bs-navbar-toggler-focus-width);
+}
+
+@keyframes slide-in {
+    from {
+        width: 0;
+        left: 50%;
+    }
+    to {
+        width: 100%;
+        left: 0;
+    }
+}
+
+.navbar-nav .nav-link {
+    font-weight: 500;
+    color: var(--dark-green);
+    position: relative;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.navbar-nav .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--primary-green);
+    transition: width 0.3s ease;
+    animation: none;
+}
+
+.navbar-nav .nav-link:hover {
+    color: var(--primary-green);
+}
+
+.navbar-nav .nav-link:hover::after {
+    width: 100%;
+    animation: slide-in 0.3s ease;
+}
+
+.navbar-toggler {
+    border: none;
+    outline: none;
+    position: relative;
+    
+    background-color: var(--white);
+    border-radius: 0.25rem;
+    transition: all 0.3s ease;
+}
+
+.navbar-toggler .toggler-icon {
+    display: block;
+    position: relative;
+    width: 24px;
+    height: 2px;
+    background-color: var(--dark-green);
+    margin: 6px auto;
+    transition: all 0.3s ease-in-out;
+}
+
+.navbar-toggler[aria-expanded="true"] .toggler-icon {
+    transform: rotate(45deg);
+    background-color: var(--primary-green);
+}
+
+.navbar-toggler[aria-expanded="true"] .toggler-icon:nth-child(1) {
+    transform: rotate(45deg);
+    top: 8px;
+}
+
+.navbar-toggler[aria-expanded="true"] .toggler-icon:nth-child(2) {
+    opacity: 0;
+}
+
+.navbar-toggler[aria-expanded="true"] .toggler-icon:nth-child(3) {
+    transform: rotate(-45deg);
+    top: -8px;
+    background-color: var(--primary-green);
+}
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+}
+
+.school-name {
+    color: var(--primary-green);
+}
+
+
+
+
 /* Footer */
 .footer {
     background: linear-gradient(165deg, var(--dark-green), var(--dark-red));
@@ -145,45 +253,18 @@ body {
     color: #ddd;
 }
 
-/* Navbar */
-.navbar {
-    --bs-navbar-toggler-border-color: none;
-    --bs-navbar-toggler-border-radius: none; 
-    --bs-navbar-toggler-focus-width: none;
-    --bs-navbar-toggler-transition: box-shadow 0.15s ease-in-out;
-}
 
-.navbar-brand img {
-    height: 100px;
-}
 
-.navbar-nav .nav-link {
-    font-weight: 500;
-    color: var(--dark-green);
-    transition: color 0.3s ease;
-}
 
-.navbar-nav .nav-link:hover {
-    color: var(--primary-green);
-}
+/* Homepage Styling */
 
-.navbar-toggler {
-    border-color: var(--bs-navbar-toggler-border-color);
-    border-radius: var(--bs-navbar-toggler-border-radius);
-    transition: var(--bs-navbar-toggler-transition);
-}
-
-.navbar-toggler:focus {
-    outline-width: var(--bs-navbar-toggler-focus-width);
-}
-
-/* Jumbotron */
 .jumbotron {
     position: relative;
-    background: url('static/images/DSC_0184.JPG') no-repeat center center;
+    background: url('/static/images/DSC_0184.JPG') no-repeat center center;
     background-size: cover;
     color: var(--white);
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+    text-align: center;
     padding: 3rem 1.5rem;
 }
 
@@ -206,6 +287,12 @@ body {
     font-size: 2.5rem;
 }
 
+.jumbotron p {
+    font-size: 1.25rem;
+    margin-top: 1rem;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
+}
+
 
 /* Responsive Styles */
 @media (max-width: 768px) {
@@ -213,17 +300,32 @@ body {
         font-size: 0.9rem;
     }
 
-    .container {
-        padding: 0 10px;
+    .card {
+        width: 90%;
+        margin: 1.25rem;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08);
+    }
+
+    .card-header {
+        font-size: 1.15rem;
+        padding: 1rem;
+    }
+
+    .card-title {
+        font-size: 1.2rem;
     }
 
     .card-body {
-        text-align: center;
+        padding: 1.25rem;
+    }
+
+    .card-text {
+        font-size: 0.95rem;
     }
 
     .btn {
-        width: 100%;
-        margin-bottom: 10px;
+        font-size: 0.9rem;
+        padding: 0.4rem 0.8rem;
     }
 
     .navbar-brand img {
@@ -235,14 +337,86 @@ body {
         flex-direction: column;
         align-items: center;
     }
-
-    .jumbotron h1 {
-        font-size: 2rem;
+    
+    .school-name {
+        font-size: 0.875rem;
     }
 
+   .jumbotron {
+        padding: 2rem 1rem; /* Reduced padding for better space usage */
+    }
+
+    .jumbotron h1 {
+        font-size: 2rem; /* Adjust heading size for smaller screens */
+    }
+
+    .jumbotron h2 {
+        font-size: 1.5rem; /* Reduce subheading size */
+    }
+
+    .jumbotron p {
+        font-size: 1.1rem; /* Slightly smaller paragraph text */
+    }
+    
     .footer {
         padding: 20px 0;
     }
     
+}
+
+@media (max-width: 576px) {
+    .card {
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.07);
+    }
+
+    .card-header {
+        font-size: 1rem;
+        padding: 0.8rem;
+    }
+
+    .card-title {
+        font-size: 1.2rem;
+    }
+
+    .card-body {
+        padding: 1rem;
+    }
+
+    .card-text {
+        font-size: 0.9rem;
+    }
+
+    .btn {
+        font-size: 0.85rem;
+        padding: 0.3rem 0.7rem;
+    }
     
+    .jumbotron {
+        padding: 1.5rem 0.5rem;
+    }
+
+    .jumbotron h1 {
+        font-size: 1.75rem; 
+    }
+
+    .jumbotron h2 {
+        font-size: 1.25rem; 
+    }
+
+    .jumbotron p {
+        font-size: 1rem;
+    }
+}
+
+/* Global Media Query for Larger Screens */
+@media (min-width: 992px) {
+    .card {
+        transition: all 0.4s ease;
+    }
+
+    .card:hover {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        transform: translateY(-5px);
+    }
 }
