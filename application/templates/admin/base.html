@@ -43,9 +43,7 @@
 
         body {
             font-family: "Roboto", sans-serif;
-            /*min-height: 100vh;*/
-            /*overflow-x: hidden;*/
-            /*display: flex;*/
+            overflow-x: auto;
             background-color: var(--light-background);
             /*color: var(--dark-gray);*/
         }
@@ -62,6 +60,8 @@
         }
 
         .navbar-nav .nav-link {
+             background-color: var(--light-blue);
+            font-weight: bold;
             color: var(--white);
             transition: color 0.3s ease;
         }
@@ -90,6 +90,10 @@
             margin: 6px auto;
             transition: all 0.3s ease-in-out;
         }
+        
+        .navbar-toggler.collapsed .toggler-icon {
+            transform: rotate(90deg);
+        }
 
         .sidebar {
             position: fixed;
@@ -116,8 +120,8 @@
         }
 
         .sidebar .active {
-            background-color: var(--light-blue);
-            color: var(--white);
+            background-color: var(--hover-blue);
+            font-weight: bold;
         }
         
         .sidebar-header {
@@ -133,6 +137,12 @@
 
         .submenu.show {
             display: block;
+        }
+        
+        .submenu.collapse.show {
+            margin-top: 10px;
+            padding-left: 20px;
+            transition: all 0.3s ease-in-out;
         }
 
         .offcanvas a {
@@ -199,7 +209,7 @@
             }
             
             .offcanvas {
-                --bs-offcanvas-width: 230px;
+                --bs-offcanvas-width: 250px;
             }
             
             .navbar {
@@ -221,8 +231,9 @@
                 color: var(--white) !important;
             }
         }
+        
+        {% block styles %}{% endblock %}
     </style>
-    {% block styles %}{% endblock %}
 </head>
 <body>
     <!-- Navbar -->
@@ -242,21 +253,44 @@
         <div class="sidebar-header">
             <h2 class="text-center py-3">Admin Dashboard</h2>
         </div>
-        <a href="{{ url_for('main.index') }}"><i class="fas fa-home icon"></i>Home</a>
-        <a href="{{ url_for('admins.admin_dashboard') }}" id="dashboard-link" class="active"><i class="fas fa-tachometer-alt icon"></i>Dashboard</a>
+        <a href="{{ url_for('main.index') }}" class="nav-link {% if request.endpoint == 'main.index' %}active{% endif %}" aria-current="{% if request.endpoint == 'main.index' %}page{% endif %}"><i class="fas fa-home icon"></i>Home</a>
+        <a href="{{ url_for('admins.admin_dashboard') }}" id="dashboard-link" class="nav-link {% if request.endpoint == 'admins.admin_dashboard' %}active{% endif %}" aria-current="{% if request.endpoint == 'admins.admin_dashboard' %}page{% endif %}"><i class="fas fa-tachometer-alt icon"></i>Dashboard</a>
         
         <!-- Student Management -->
-        <a href="#" data-bs-toggle="collapse" data-bs-target="#studentMenu" aria-expanded="false">
+        <a href="#" 
+           class="nav-link {% if request.endpoint in ['placeholder.add_student', 'admins.approve_students', 'placeholder.edit_student', 'placeholder.delete_student', 'placeholder.bulk_upload_students', 'placeholder.search_students'] %}active{% endif %}" 
+           data-bs-toggle="collapse" 
+           data-bs-target="#studentMenu" 
+           aria-expanded="{% if request.endpoint in ['placeholder.add_student', 'admins.approve_students', 'placeholder.edit_student', 'placeholder.delete_student', 'placeholder.bulk_upload_students', 'placeholder.search_students'] %}true{% else %}false{% endif %}">
             <i class="fas fa-user-graduate icon"></i> Student Management
         </a>
-        <div class="submenu collapse" id="studentMenu">
-            <a href="#">Add New Student</a>
-            <a href="{{ url_for('admins.approve_students') }}">View All Students</a>
-            <a href="#">Edit Student Details</a>
-            <a href="#">Delete Student Records</a>
-            <a href="#">Bulk Upload Students</a>
-            <a href="#">Search and Filter Students</a>
+        <div class="submenu collapse {% if request.endpoint in ['placeholder.add_student', 'admins.approve_students', 'placeholder.edit_student', 'placeholder.delete_student', 'placeholder.bulk_upload_students', 'placeholder.search_students'] %}show{% endif %}" id="studentMenu">
+            <a href="#" 
+               class="nav-link {% if request.endpoint == 'placeholder.add_student' %}active{% endif %}">
+               Add New Student
+            </a>
+            <a href="{{ url_for('admins.approve_students') }}" 
+               class="nav-link {% if request.endpoint == 'admins.approve_students' %}active{% endif %}">
+               View All Students
+            </a>
+            <a href="#" 
+               class="nav-link {% if request.endpoint == 'placeholder.edit_student' %}active{% endif %}">
+               Edit Student Details
+            </a>
+            <a href="#" 
+               class="nav-link {% if request.endpoint == 'placeholder.delete_student' %}active{% endif %}">
+               Delete Student Records
+            </a>
+            <a href="#" 
+               class="nav-link {% if request.endpoint == 'placeholder.bulk_upload_students' %}active{% endif %}">
+               Bulk Upload Students
+            </a>
+            <a href="#" 
+               class="nav-link {% if request.endpoint == 'placeholder.search_students' %}active{% endif %}">
+               Search and Filter Students
+            </a>
         </div>
+
         
         <!-- Class Management -->
         <a href="#" data-bs-toggle="collapse" data-bs-target="#classMenu" aria-expanded="false">

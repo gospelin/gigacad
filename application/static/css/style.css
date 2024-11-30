@@ -116,7 +116,6 @@ body {
 
 
 
-
 /* Navigation styling */
 .navbar {
     --bs-navbar-toggler-border-color: none;
@@ -239,20 +238,84 @@ body {
 .footer {
     background: linear-gradient(165deg, var(--dark-green), var(--dark-red));
     color: var(--white);
-    padding: 40px 0;
+    // padding: 40px 0;
+    padding: 60px 20px;
     font-size: 0.875rem;
     text-align: center;
 }
 
 .footer a {
     color: var(--white);
-    transition: color 0.3s ease;
+    // transition: color 0.3s ease;
+    text-decoration: none;
+    transition: color 0.3s ease-in-out;
 }
 
 .footer a:hover {
     color: #ddd;
 }
 
+
+
+.footer h5 {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.footer p,
+.footer ul {
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+
+.footer ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer ul li {
+    margin-bottom: 8px;
+}
+
+.footer ul li a {
+    display: inline-block;
+    text-decoration: none;
+    transition: transform 0.3s ease;
+}
+
+.footer ul li a:hover {
+    transform: translateX(5px);
+}
+
+.footer form {
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+.footer .input-group {
+    display: flex;
+}
+
+.footer .input-group input {
+    border: 1px solid #ddd;
+    border-radius: 0;
+    padding: 10px;
+    flex: 1;
+}
+
+.footer .input-group button {
+    background: var(--dark-green);
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 0;
+    transition: background 0.3s ease;
+}
+
+.footer .input-group button:hover {
+    background: #b71c1c;
+}
 
 
 
@@ -291,6 +354,22 @@ body {
     font-size: 1.25rem;
     margin-top: 1rem;
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+/* Testimonial */
+.testimonial {
+    padding: 20px;
+    border-left: 5px solid var(--primary-green);
+    background: var(--light-gray);
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.testimonial footer {
+    color: #555;
+    font-size: 0.9em;
+    text-align: right;
+    margin-top: 10px;
 }
 
 
@@ -360,6 +439,22 @@ body {
     
     .footer {
         padding: 20px 0;
+    }
+    
+    
+    .footer .row > div {
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .footer .input-group {
+        flex-direction: column;
+    }
+
+    .footer .input-group input,
+    .footer .input-group button {
+        width: 100%;
+        margin-bottom: 10px;
     }
     
 }
