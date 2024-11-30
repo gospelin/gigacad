@@ -1,7 +1,18 @@
 {% extends "layout.html" %}
 {% block content %}
 
-{% block style %} <link rel="stylesheet" href="{{ url_for('static', filename='css/about.css') }}"> {% endblock style %}
+{% block style %} 
+<link rel="stylesheet" href="{{ url_for('static', filename='css/about.css') }}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" />
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+
+<script>
+    AOS.init({
+        duration: 1200,
+        once: true,
+    });
+</script>
+{% endblock style %}
 
 <!-- SEO Optimizations -->
 <title>{{ school_name }} - About Us | Aunty Anne's International School</title>
@@ -9,9 +20,9 @@
 
 <div class="jumbotron text-center py-5">
     <div class="container">
-        <h1>About Us</h1>
-        <p class="lead animated fadeInUp">
-            Welcome to {{ school_name }}, where practical learning meets
+        <h1 data-aos="fade-up">About Us</h1>
+        <p style="color: #fff" class="lead animated fadeInUp" data-aos="fade-right">
+            Welcome to {{ school_name }}, where practical learning enhances
             knowledge and confidence.
         </p>
     </div>
@@ -20,8 +31,8 @@
 <div class="container mt-5">
     <div class="row animate">
         <div class="col-lg-8 offset-lg-2">
-            <h2>Our Mission</h2>
-            <p class="lead animated fadeInUp">
+            <h2 class="section-heading" data-aos="fade-up">Our Mission</h2>
+            <p class="lead animated fadeInUp" data-aos="fade-right">
                 At {{ school_name }}, our mission is to nurture a community of
                 lifelong learners who are prepared to thrive in a dynamic world.
                 We are dedicated to providing a well-rounded education that
@@ -29,8 +40,8 @@
                 commitment to global citizenship.
             </p>
 
-            <h2>Our Vision</h2>
-            <p class="lead animated fadeInUp">
+            <h2 class="section-heading" data-aos="fade-up">Our Vision</h2>
+            <p class="lead animated fadeInUp" data-aos="fade-right">
                 We envision a world where every student is empowered to reach
                 their full potential, equipped with the knowledge and skills
                 necessary to make meaningful contributions to society. Our
@@ -38,8 +49,8 @@
                 excellence and shaping the future.
             </p>
 
-            <h2>Our Values</h2>
-            <ul class="lead animated fadeInUp">
+            <h2 class="section-heading" data-aos="fade-up">Our Values</h2>
+            <ul class="lead animated fadeInUp" data-aos="fade-right">
                 <li>
                     <strong>Practical Learning:</strong> We believe in hands-on,
                     experiential learning that prepares students for real-world
@@ -115,25 +126,26 @@
     </div>
 </div>
 
+
 <div class="container mt-5 mb-5">
-    <div class="row animate">
-        <div class="col-md-6 mb-4">
-            <h2>Testimonials</h2>
-            <div class="testimonial">
-                <blockquote>
+    <h2 class="section-heading text-center">What People Say About Us</h2>
+    <div id="testimonialCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <blockquote class="testimonial">
                     <p>
                         "{{ school_name }} has provided me with a nurturing
                         environment to grow both academically and personally.
-                        The faculty's dedication and the school's innovative
+                        The school's dedication and innovative
                         approach to education have truly set me on a path to
                         success."
                     </p>
                     <footer>- Mrs. Anyanwu, Alumni</footer>
                 </blockquote>
             </div>
-            <div class="testimonial">
-                <blockquote>
-                    <p>
+            <div class="carousel-item">
+                <blockquote class="testimonial">
+                     <p>
                         "As a parent, I am extremely pleased with the holistic
                         education my child is receiving at {{ school_name }}.
                         The emphasis on both academics and character development
@@ -143,12 +155,9 @@
                     <footer>- Mr. Ezechukwu Chukwudi, Parent</footer>
                 </blockquote>
             </div>
-        </div>
-
-        <div class="col-md-6 mb-4">
-            <div class="testimonial">
-                <blockquote>
-                    <p>
+            <div class="carousel-item">
+                <blockquote class="testimonial">
+                   <p>
                         "The teachers at {{ school_name }} are incredibly
                         supportive and dedicated. They go above and beyond to
                         ensure each student understands the material and feels
@@ -157,9 +166,9 @@
                     <footer>- Victoria Uwadiegwu, Current Student</footer>
                 </blockquote>
             </div>
-            <div class="testimonial">
-                <blockquote>
-                    <p>
+            <div class="carousel-item">
+                <blockquote class="testimonial">
+                   <p>
                         "I have seen my child's academic performance and social
                         skills improve significantly since joining {{
                         school_name }}. The school's focus on a well-rounded
