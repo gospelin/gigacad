@@ -103,11 +103,56 @@ class ResultForm(FlaskForm):
     submit = SubmitField("Load Results")
 
 
-class LoginForm(FlaskForm):
-    username = StringField(
-        "Username", validators=[DataRequired(), Length(min=2, max=50)]
+# class LoginForm(FlaskForm):
+#     username = StringField(
+#         "Username", validators=[DataRequired(), Length(min=2, max=50)]
+#     )
+#     # password = PasswordField("Password", validators=[DataRequired()])
+#     # submit = SubmitField("Login")
+#     identifier = StringField("Username or Student ID", validators=[DataRequired()])
+#     password = PasswordField("Password", validators=[DataRequired()])
+#     submit = SubmitField("Login")
+
+# class LoginForm(FlaskForm):
+#     identifier = StringField(
+#         "Student ID or Username",
+#         validators=[
+#             DataRequired(message="This field is required."),
+#             Length(min=3, max=50, message="Must be between 3 and 50 characters."),
+#         ],
+#     )
+#     password = PasswordField(
+#         "Password",
+#         validators=[DataRequired(message="This field is required.")],
+#     )
+#     submit = SubmitField("Login")
+
+class StudentLoginForm(FlaskForm):
+    identifier = StringField(
+        "Student ID or Username",
+        validators=[
+            DataRequired(message="This field is required."),
+            Length(min=3, max=50, message="Must be between 3 and 50 characters."),
+        ],
     )
-    password = PasswordField("Password", validators=[DataRequired()])
+    password = PasswordField(
+        "Password",
+        validators=[DataRequired(message="This field is required.")],
+    )
+    submit = SubmitField("Login")
+
+class AdminLoginForm(FlaskForm):
+    username = StringField(
+        "Username",
+        validators=[
+            DataRequired(message="This field is required."),
+            Length(min=3, max=50, message="Must be between 3 and 50 characters."),
+        ],
+    )
+    password = PasswordField(
+        "Password",
+        validators=[DataRequired(message="This field is required.")],
+    )
     submit = SubmitField("Login")
 
 
