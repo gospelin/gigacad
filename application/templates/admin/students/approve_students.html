@@ -29,33 +29,23 @@
 </style>
 
 <div class="container my-5">    
-    <!-- Session Form -->
-    <form method="POST" action="{{ url_for('admins.approve_students') }}">
-        {{ session_form.hidden_tag() }}
-        <div class="form-group">
-            {{ session_form.session.label }}
-            {{ session_form.session(class="form-control") }}
-        </div>
-        <div class="form-group">
-            {{ session_form.submit(class="btn btn-primary") }}
-        </div>
-    </form>
-
     <h1 class="text-center mb-4 animate__animated animate__fadeInDown">Manage Students</h1>
+    <h2 class="text-center">Current Session - {{ current_session }} | Term - {{ current_term }}</h2>
     
-    {% for class_name, students in students_by_class.items() %}
-    <h2 class="mt-4">{{ class_name }}</h2>
+    {% for class_name, students in students_classes.items() %}
+    {% set student_class = class_name %}
+    <h3 class="mt-4">{{ class_name }}</h3>
     <div class="table-responsive">
         <table class="table table-hover table-striped align-middle">
             <thead class="table-dark">
                 <tr>
                     <th>First Name</th>
-                    <th>Middle Name</th>
                     <th>Last Name</th>
                     <th>Gender</th>
-                    <th>Password</th>
                     <th>Class</th>
                     <th>Username</th>
+                    <th>Student ID</th>
+                    <th>Password</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -63,13 +53,12 @@
                 {% for student in students %}
                 <tr class="table-row">
                     <td>{{ student.first_name }}</td>
-                    <td>{{ student.middle_name }}</td>
                     <td>{{ student.last_name }}</td>
                     <td>{{ student.gender }}</td>
-                    <td>{{ student.password }}</td>
-                    <td>{{ student.class_history[-1].class_name if student.class_history else 'N/A' }}</td>
+                    <td>{{ student_class }}</td>
                     <td>{{ student.username }}</td>
-
+                    <td>AAIS/0559/{{student.id}}</td>
+                    <td>{{ student.password }}</td>
                     <td>
                         <form action="{{ url_for('admins.approve_student', student_id=student.id) }}" method="POST">
                             {{ approve_form.hidden_tag() }}

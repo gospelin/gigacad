@@ -105,7 +105,7 @@ Manage Results
                                 type="text"
                                 id="term"
                                 class="form-control"
-                                value="{{ term }}"
+                                value="{{ current_term }}"
                                 readonly
                             />
                         </div>
@@ -115,12 +115,12 @@ Manage Results
                                 type="text"
                                 id="session"
                                 class="form-control"
-                                value="{{ session.year }}"
+                                value="{{ session }}"
                                 readonly
                             />
                         </div>
                     </div>
-                    <form method="POST" action="{{ url_for('admins.manage_results', student_id=student.id, term=term, session=session.year) }}">
+                    <form method="POST" action="{{ url_for('admins.manage_results', student_id=student.id) }}">
                         {{ form.hidden_tag() }}
                         
                         <div class="row mb-3">
@@ -263,7 +263,7 @@ Manage Results
                     </form>
                     
                     <div class="text-center">
-                        <a href="{{ url_for('admins.students_by_class', session_id=session.id, class_name=class_name) }}" class="btn btn-secondary mt-3">
+                        <a href="{{ url_for('admins.students_by_class', class_name=class_name) }}" class="btn btn-secondary mt-3">
                             Back to Students in {{ class_name }}
                         </a>
                     </div>

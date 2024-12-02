@@ -238,7 +238,7 @@ body {
 .footer {
     background: linear-gradient(165deg, var(--dark-green), var(--dark-red));
     color: var(--white);
-    // padding: 40px 0;
+    /*// padding: 40px 0;*/
     padding: 60px 20px;
     font-size: 0.875rem;
     text-align: center;
@@ -246,7 +246,7 @@ body {
 
 .footer a {
     color: var(--white);
-    // transition: color 0.3s ease;
+    /*// transition: color 0.3s ease;*/
     text-decoration: none;
     transition: color 0.3s ease-in-out;
 }
