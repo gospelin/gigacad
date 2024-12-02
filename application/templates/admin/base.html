@@ -43,9 +43,9 @@
 
         body {
             font-family: "Roboto", sans-serif;
-            overflow-x: auto;
+            overflow-x: hidden;
             background-color: var(--light-background);
-            /*color: var(--dark-gray);*/
+            color: var(--dark-gray);
         }
 
         /* Navbar */
@@ -188,6 +188,20 @@
             margin-left: 250px;
             padding-top: 30px;
         }
+        
+        /* Table Styles */
+        .table-responsive {
+            overflow-x: auto;
+            margin-bottom: 1.5rem;
+        }
+        
+        .table thead th {
+            border-bottom: 2px solid #dee2e6;
+        }
+        
+        .table tbody tr td {
+            vertical-align: middle;
+        }
 
         .btn-primary {
             background-color: var(--primary-blue);
@@ -222,7 +236,7 @@
 
             .main-content {
                 margin-left: 0;
-                padding-top: 80px;
+                padding-top: 70px;
             }
             
             /* Highlight active link */
@@ -298,7 +312,7 @@
         </a>
         <div class="submenu collapse" id="classMenu">
             <a href="#">Add New Class/Section</a>
-            <a href="{{ url_for('admins.students_by_class') }}">View All Classes/Sections</a>
+            <a href="{{ url_for('admins.select_class') }}">View All Classes/Sections</a>
             <a href="#">Edit Class/Section Details</a>
             <a href="#">Assign Teachers to Classes</a>
         </div>
@@ -352,7 +366,7 @@
     <div class="offcanvas  offcanvas-start custom-offcanvas-width" tabindex="-1" id="offcanvasMenu" aria-labelledby="offcanvasMenuLabel">
         <div class="offcanvas-header">
             <h5 class="offcanvas-title" id="offcanvasMenuLabel">Menu</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            <button type="button" class="btn-close btn-close-white"  data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
             <a href="{{ url_for('main.index') }}"><i class="fas fa-home icon"></i>Home</a>
@@ -377,7 +391,7 @@
             </a>
             <div class="submenu collapse" id="classMenu">
                 <a href="#">Add New Class/Section</a>
-                <a href="{{ url_for('admins.students_by_class') }}">View All Classes/Sections</a>
+                <a href="{{ url_for('admins.select_class') }}">View All Classes/Sections</a>
                 <a href="#">Edit Class/Section Details</a>
                 <a href="#">Assign Teachers to Classes</a>
             </div>

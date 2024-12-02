@@ -77,7 +77,7 @@ class StudentRegistrationForm(FlaskForm):
     )
     religion = StringField("Religion", validators=[Length(max=50)])
     submit = SubmitField("Register")
-
+    
 
 class ResultForm(FlaskForm):
     term = SelectField(
@@ -102,30 +102,6 @@ class ResultForm(FlaskForm):
     position = StringField("Position", validators=[Optional()])
     submit = SubmitField("Load Results")
 
-
-# class LoginForm(FlaskForm):
-#     username = StringField(
-#         "Username", validators=[DataRequired(), Length(min=2, max=50)]
-#     )
-#     # password = PasswordField("Password", validators=[DataRequired()])
-#     # submit = SubmitField("Login")
-#     identifier = StringField("Username or Student ID", validators=[DataRequired()])
-#     password = PasswordField("Password", validators=[DataRequired()])
-#     submit = SubmitField("Login")
-
-# class LoginForm(FlaskForm):
-#     identifier = StringField(
-#         "Student ID or Username",
-#         validators=[
-#             DataRequired(message="This field is required."),
-#             Length(min=3, max=50, message="Must be between 3 and 50 characters."),
-#         ],
-#     )
-#     password = PasswordField(
-#         "Password",
-#         validators=[DataRequired(message="This field is required.")],
-#     )
-#     submit = SubmitField("Login")
 
 class StudentLoginForm(FlaskForm):
     identifier = StringField(
@@ -209,42 +185,24 @@ class DeleteForm(FlaskForm):
 class ApproveForm(FlaskForm):
     pass
 
-
-class SelectTermSessionForm(FlaskForm):
-    term = SelectField(
-        "Select Term",
-        choices=[
-            ("First Term", "First Term"),
-            ("Second Term", "Second Term"),
-            ("Third Term", "Third Term"),
-        ],
-        validators=[DataRequired()],
-        default="First Term",
-    )
-    session = SelectField(
-        "Select Session",  # This will be populated dynamically
-        choices=[],  # Start with an empty list, to be populated in the route
-        validators=[DataRequired()],
-    )
-    submit = SubmitField("Generate Broadsheet")
-
 class SessionForm(FlaskForm):
     session = SelectField(
         "Select Session",
-        choices=[],
+        choices=[],  # Populated dynamically in the route
         validators=[DataRequired()],
         default="2024/2025",
     )
-    submit = SubmitField("Choose an Academic Session")
+    term = SelectField(
+        "Select Term",
+        choices=[],  # Populated dynamically in the route
+        validators=[DataRequired()],
+        default="First Term",
+    )
+    submit = SubmitField("Update Academic Session and Term")
+
 
 
 class classForm(FlaskForm):
-    session = SelectField(
-        "Select Session",
-        choices=[],
-        validators=[DataRequired()],
-        default="2024/2025",
-    )
     class_name = SelectField(
         "Class",
         choices=[

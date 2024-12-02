@@ -8,6 +8,7 @@ class Session(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     year = db.Column(db.String(20), unique=True, nullable=False)  # e.g., "2023/2024"
     is_current = db.Column(db.Boolean, default=False)
+    current_term = db.Column(db.String(20), nullable=True)
 
     def __repr__(self):
         return f"<Session {self.year}>"
@@ -15,16 +16,30 @@ class Session(db.Model):
     @staticmethod
     def get_current_session():
         return Session.query.filter_by(is_current=True).first()
+        # return session.year if session else None
+        
+    @staticmethod
+    def get_current_session_and_term(include_term=False):
+        """Helper function to get the current session and optionally the current term."""
+        session = Session.query.filter_by(is_current=True).first()
+        if not session:
+            return None, None if include_term else None
+    
+        if include_term:
+            return session.year, session.current_term
+        return session.year
 
     @staticmethod
-    def set_current_session(session_id):
+    def set_current_session(session_id, term):
         # First, unset the current session
         Session.query.update({Session.is_current: False})
+        db.session.commit()
 
         # Set the new session as the current one
         new_session = Session.query.get(session_id)
         if new_session:
             new_session.is_current = True
+            new_session.current_term = term
             db.session.commit()
             return new_session
         return None

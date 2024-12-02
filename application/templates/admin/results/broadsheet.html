@@ -23,23 +23,9 @@
 
 <div class="container mt-5">
     <h1>Broadsheet</h1>
-    <form method="POST" action="{{ url_for('admins.broadsheet', class_name=class_name) }}">
-        {{ form.hidden_tag() }}
-        <div class="row mb-3">
-            <div class="col">
-                <label for="term" class="form-label">Term:</label>
-                {{ form.term(class="form-control") }}
-            </div>
-            <div class="col">
-                <label for="session" class="form-label">Session:</label>
-                {{ form.session(class="form-control") }}
-            </div>
-        </div>
-        <button type="submit" class="btn btn-primary">Generate Broadsheet</button>
-    </form>
-
+    
     {% if broadsheet_data %}
-    <a href="{{ url_for('admins.download_broadsheet', class_name=class_name) }}?term={{ form.term.data }}&session={{ form.session.data }}" class="btn btn-success mt-3">Download Broadsheet</a>
+    <a href="{{ url_for('admins.download_broadsheet', class_name=class_name) }}?term={{ current_term }}&session={{ current_session }}" class="btn btn-primary mt-3">Download Broadsheet</a>
 
     <div class="table-responsive mt-3">
         <table class="table table-bordered">
@@ -107,6 +93,10 @@
         </table>
     </div>
     {% endif %}
+    
+    <div class="text-center">
+        <a href="{{ url_for('admins.select_class') }}" class="btn btn-primary mt-3">Back to Classes</a>
+    </div>
 </div>
 
 {% endblock %}

@@ -50,7 +50,7 @@
     }
 
     .btn-primary {
-        background-color: #555;
+        background-color: inherit;
         border: none;
     }
 
@@ -110,31 +110,13 @@
 </style>
 
 <div class="container mt-5">
-    <h2>Student Management</h2>
-
-    <!-- Class Form -->
-    <form method="POST" action="{{ url_for('admins.students_by_class') }}">
-        {{ class_form.hidden_tag() }}
-        <div class="row mb-4">
-            <div class="col">
-                {{ class_form.session.label(class="font-weight-bold") }}
-                {{ class_form.session(class="form-control") }}
-            </div>
-            <div class="col">
-                {{ class_form.class_name.label(class="font-weight-bold") }}
-                {{ class_form.class_name(class="form-control") }}
-            </div>
-        </div>
-        <button type="submit" class="btn btn-primary btn-block">View Students</button>
-    </form>
-
     {% if students %}
-        <h1 class="text-center mb-4">Students in {{ class_name }} for {{ session }} Academic Session</h1>
+        <h1 class="text-center mb-4">Students in {{ class_name }} for {{ current_session }} Academic Session</h1>
         
         <table class="table table-striped table-responsive animate__animated animate__fadeInUp">
             <thead>
                 <tr>
-                    <th>ID</th>
+                    <th>Student ID</th>
                     <th>First Name</th>
                     <th>Middle Name</th>
                     <th>Last Name</th>
@@ -146,7 +128,7 @@
             <tbody>
                 {% for student in students %}
                 <tr class="table-row">
-                    <td>{{ student.id }}</td>
+                    <td>AAIS/0559/{{ student.id }}</td>
                     <td>{{ student.first_name }}</td>
                     <td>{{ student.middle_name }}</td>
                     <td>{{ student.last_name }}</td>
@@ -155,43 +137,48 @@
                     <td>
                         <!-- Action Buttons with Spacing -->
                         <div class="d-flex flex-wrap">
-                            <a href="{{ url_for('admins.edit_student', student_id=student.id) }}" class="btn btn-warning btn-sm animate-approve">Edit</a>
+                            <a href="{{ url_for('admins.edit_student', class_name=class_name, student_id=student.id) }}" class="btn btn-warning btn-sm animate-approve">Edit</a>
 
-                            <form action="{{ url_for('admins.delete_student', student_id=student.id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this student?');">
+                            <form action="{{ url_for('admins.delete_student', class_name=class_name, student_id=student.id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this student?');">
                                 {{ form.hidden_tag() }}
                                 <button type="submit" class="btn btn-danger btn-sm animate-deactivate">Delete</button>
                             </form>
+                            
+                            <form action="{{ url_for('admins.delete_student_record', class_name=class_name, student_id=student.id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this student?');">
+                                {{ form.hidden_tag() }}
+                                <button type="submit" class="btn btn-danger btn-sm animate-deactivate">Delete for {{current_session}} </button>
+                            </form>
 
-                            <form method="POST" action="{{ url_for('admins.promote_student', student_id=student.id) }}">
+                            <form method="POST" action="{{ url_for('admins.promote_student', class_name=class_name, student_id=student.id) }}">
                                 {{ form.hidden_tag() }}
                                 <button type="submit" class="btn btn-success btn-sm animate-approve">Promote</button>
                             </form>
 
-                            <form method="POST" action="{{ url_for('admins.demote_student', student_id=student.id) }}">
+                            <form method="POST" action="{{ url_for('admins.demote_student', class_name=class_name, student_id=student.id) }}">
                                 {{ form.hidden_tag() }}
                                 <button type="submit" class="btn btn-danger btn-sm animate-approve">Demote</button>
                             </form>
 
-                            <form action="{{ url_for('admins.approve_student', student_id=student.id) }}" method="POST">
+                            <form action="{{ url_for('admins.approve_student', class_name=class_name, student_id=student.id) }}" method="POST">
                                 {{ form.hidden_tag() }}
                                 {% if not student.approved %}
                                 <button type="submit" class="btn btn-success btn-sm animate-approve">Approve</button>
                                 {% endif %}
                             </form>
 
-                            <form action="{{ url_for('admins.deactivate_student', student_id=student.id) }}" method="POST">
+                            <form action="{{ url_for('admins.deactivate_student', class_name=class_name, student_id=student.id) }}" method="POST">
                                 {{ form.hidden_tag() }}
                                 {% if student.approved %}
                                 <button type="submit" class="btn btn-warning btn-sm animate-deactivate">Deactivate</button>
                                 {% endif %}
                             </form>
 
-                            <form action="{{ url_for('admins.regenerate_password', student_id=student.id) }}" method="POST">
+                            <form action="{{ url_for('admins.regenerate_password', class_name=class_name, student_id=student.id) }}" method="POST">
                                 {{ form.hidden_tag() }}
                                 <button type="submit" class="btn btn-info btn-sm animate-regenerate">Regenerate Password</button>
                             </form>
 
-                            <form action="{{ url_for('admins.toggle_fee_status', student_id=student.id) }}" method="post">
+                            <form action="{{ url_for('admins.toggle_fee_status', class_name=class_name, student_id=student.id) }}" method="post">
                                 {{ form.hidden_tag() }}
                                 <button type="submit" class="btn btn-primary">
                                     {% if student.has_paid_fee %}
@@ -212,7 +199,8 @@
         
         <!-- Broadsheet and Print Buttons -->
         <div class="text-center">
-            <a href="{{ url_for('admins.broadsheet', class_name=class_name) }}" class="btn btn-secondary mt-3">Generate Broadsheet</a>
+            <a href="{{ url_for('admins.select_class') }}" class="btn btn-primary mt-3">Back to Classes</a>
+            <a href="{{ url_for('admins.broadsheet', class_name=class_name ) }}" class="btn btn-secondary mt-3">Generate Broadsheet</a>
             <button onclick="printStudentDetails()" class="btn btn-primary mt-3">Print Student Details</button>
         </div>
 
