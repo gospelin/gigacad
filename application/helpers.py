@@ -106,7 +106,112 @@ def generate_remark(total):
         return "Very Poor"
     else:
         return "Failed"
+    
 
+def generate_principal_remark(average):
+    if average >= 90:
+        remarks = [
+            "Exceptional performance! You are an inspiration to others.",
+            "Outstanding results! Keep setting high standards.",
+            "Excellent work! You’ve proven yourself as a top performer.",
+        ]
+    elif average >= 80:
+        remarks = [
+            "Very impressive performance! Aim for even higher success.",
+            "Great job! Your efforts are commendable.",
+            "Consistently good results. Keep striving for excellence."
+        ]
+    elif average >= 70:
+        remarks = [
+            "Good performance! With a little more effort, you’ll excel further.",
+            "You’ve done well, but there’s room for improvement.",
+            "Nice results! Strive for greater achievements."
+        ]
+    elif average >= 60:
+        remarks = [
+            "Fair performance. Keep pushing for better results.",
+            "You’re on the right track. Focus on improving your weaker areas.",
+            "A decent effort. Keep working hard to achieve more."
+        ]
+    elif average >= 50:
+        remarks = [
+            "An average performance. Aim for consistent improvement.",
+            "Your results are satisfactory, but you can do much better.",
+            "A fair effort. Focus and determination will lead to success."
+        ]
+    elif average >= 40:
+        remarks = [
+            "Below average. Significant improvement is required.",
+            "Your performance is concerning. Seek guidance to improve.",
+            "You need to focus more on your studies to succeed."
+        ]
+    elif average >= 30:
+        remarks = [
+            "Poor results. A lot more effort is needed.",
+            "Your performance requires immediate attention and action.",
+            "Seek extra help to address your challenges effectively."
+        ]
+    else:
+        remarks = [
+            "Unacceptable performance. Take your studies seriously.",
+            "Drastic improvement is needed to progress.",
+            "This performance is not satisfactory. Immediate action is required."
+        ]
+    import random
+    return random.choice(remarks)
+
+
+def generate_teacher_remark(average):
+    if average >= 90:
+        remarks = [
+            "Excellent understanding of all subjects. Keep it up!",
+            "Your dedication to learning is inspiring. Well done!",
+            "An exemplary performance! Your efforts are commendable."
+        ]
+    elif average >= 80:
+        remarks = [
+            "Strong subject knowledge! Focus on consistent excellence.",
+            "Your hard work is paying off. Keep aiming higher!",
+            "You’ve done very well. Aim to push your limits further."
+        ]
+    elif average >= 70:
+        remarks = [
+            "Good grasp of subjects, but practice more for perfection.",
+            "You’re doing well, but focus on weaker areas to improve further.",
+            "A good effort! Strive to achieve even better results."
+        ]
+    elif average >= 60:
+        remarks = [
+            "Fair knowledge of the subjects. Pay attention to details.",
+            "You’re progressing, but focus on difficult topics.",
+            "With a bit more effort, your performance will improve significantly."
+        ]
+    elif average >= 50:
+        remarks = [
+            "An average performance. Work on improving your fundamentals.",
+            "You’ve done okay. Additional practice will help.",
+            "Keep working on weaker subjects to build a strong foundation."
+        ]
+    elif average >= 40:
+        remarks = [
+            "Below average understanding. Concentrate on improving your basics.",
+            "Your performance is concerning. Seek help to address challenges.",
+            "Weak results. Focus on understanding the core concepts."
+        ]
+    elif average >= 30:
+        remarks = [
+            "Very poor performance. A focused study plan is necessary.",
+            "You need additional support to overcome your difficulties.",
+            "Your results are below expectations. Put in much more effort."
+        ]
+    else:
+        remarks = [
+            "Unacceptable. Urgent attention to studies is required.",
+            "A very poor performance. Take your academics more seriously.",
+            "This is concerning. Work closely with teachers to improve."
+        ]
+    import random
+    return random.choice(remarks)
 
 def calculate_grand_total(results):
     """Calculate the total score from all results."""
@@ -127,8 +232,8 @@ def calculate_average(results):
     """
     Calculate the average score based on non-zero totals.
     """
-    total_sum = sum(result.total for result in results if result.total > 0)
-    non_zero_subjects = sum(1 for result in results if result.total > 0)
+    total_sum = sum(result.total for result in results if result.total is not None)
+    non_zero_subjects = sum(1 for result in results if result.total is not None)
 
     return total_sum / non_zero_subjects if non_zero_subjects > 0 else 0
 
@@ -138,8 +243,8 @@ def calculate_cumulative_average(yearly_results):
     Calculate the cumulative average over an academic year.
     Divides the total score by the number of subjects with non-zero totals.
     """
-    total_sum = sum(result.total for result in yearly_results if result.total > 0)
-    non_zero_subjects = sum(1 for result in yearly_results if result.total > 0)
+    total_sum = sum(result.total for result in yearly_results if result.total is not None)
+    non_zero_subjects = sum(1 for result in yearly_results if result.total is not None)
 
     return total_sum / non_zero_subjects if non_zero_subjects > 0 else 0
 
@@ -188,27 +293,99 @@ def populate_form_with_results(form, subjects, results_dict):
         app.logger.info(f"Subject form added for subject ID {subject.id}")
 
 
+# def update_results(student, term, session_year, form, result_form):
+#     """
+#     Proceed with updating results for each subject.
+#     """
+
+#     # Proceed with updating results
+#     for subject_form in form.subjects:
+#         subject_id = subject_form.subject_id.data
+#         class_assessment = subject_form.class_assessment.data
+#         summative_test = subject_form.summative_test.data
+#         exam = subject_form.exam.data
+
+#         class_assessment_value = int(class_assessment) if class_assessment else 0
+#         summative_test_value = int(summative_test) if summative_test else 0
+#         exam_value = int(exam) if exam else 0
+#         total = class_assessment_value + summative_test_value + exam_value
+
+#         grade = calculate_grade(total)
+#         remark = generate_remark(total)
+
+#         # Save or update result in the database
+#         result = Result.query.filter_by(
+#             student_id=student.id,
+#             subject_id=subject_id,
+#             term=term,
+#             session=session_year,
+#         ).first()
+
+#         if result:
+#             # Update the existing result
+#             result.class_assessment = class_assessment_value
+#             result.summative_test = summative_test_value
+#             result.exam = exam_value
+#             result.total = total
+#             result.grade = grade
+#             result.remark = remark
+#             result.next_term_begins = result_form.next_term_begins.data
+#             result.last_term_average = result_form.last_term_average.data
+#             result.position = result_form.position.data
+#             result.date_issued = result_form.date_issued.data
+#         else:
+#             # Create a new result if it doesn't exist
+#             new_result = Result(
+#                 student_id=student.id,
+#                 subject_id=subject_id,
+#                 term=term,
+#                 session=session_year,
+#                 class_assessment=class_assessment_value,
+#                 summative_test=summative_test_value,
+#                 exam=exam_value,
+#                 total=total,
+#                 grade=grade,
+#                 remark=remark,
+#                 next_term_begins=result_form.next_term_begins.data,
+#                 last_term_average=result_form.last_term_average.data,
+#                 position=result_form.position.data,
+#                 date_issued=result_form.date_issued.data,
+#             )
+#             db.session.add(new_result)
+#             app.logger.info(f"Result added: {new_result}")
+#     db.session.commit()
+
 def update_results(student, term, session_year, form, result_form):
     """
     Proceed with updating results for each subject.
     """
-
-    # Proceed with updating results
     for subject_form in form.subjects:
         subject_id = subject_form.subject_id.data
         class_assessment = subject_form.class_assessment.data
         summative_test = subject_form.summative_test.data
         exam = subject_form.exam.data
 
-        class_assessment_value = int(class_assessment) if class_assessment else 0
-        summative_test_value = int(summative_test) if summative_test else 0
-        exam_value = int(exam) if exam else 0
-        total = class_assessment_value + summative_test_value + exam_value
+        # Set to None if empty or blank, otherwise use the numeric value
+        class_assessment_value = None if not class_assessment else int(class_assessment)
+        summative_test_value = None if not summative_test else int(summative_test)
+        exam_value = None if not exam else int(exam)
 
-        grade = calculate_grade(total)
-        remark = generate_remark(total)
+        # If all are None or 0, set total to None, otherwise calculate total
+        if (class_assessment_value in [None, 0] and
+            summative_test_value in [None, 0] and
+            exam_value in [None, 0]):
+            total = None
+        else:
+            total = (
+                (class_assessment_value if class_assessment_value else 0)
+                + (summative_test_value if summative_test_value else 0)
+                + (exam_value if exam_value else 0)
+            )
 
-        # Save or update result in the database
+        # Calculate grade and remark if total is not None
+        grade = calculate_grade(total) if total is not None else ''
+        remark = generate_remark(total) if total is not None else ''
+
         result = Result.query.filter_by(
             student_id=student.id,
             subject_id=subject_id,
@@ -217,7 +394,6 @@ def update_results(student, term, session_year, form, result_form):
         ).first()
 
         if result:
-            # Update the existing result
             result.class_assessment = class_assessment_value
             result.summative_test = summative_test_value
             result.exam = exam_value
@@ -229,7 +405,6 @@ def update_results(student, term, session_year, form, result_form):
             result.position = result_form.position.data
             result.date_issued = result_form.date_issued.data
         else:
-            # Create a new result if it doesn't exist
             new_result = Result(
                 student_id=student.id,
                 subject_id=subject_id,
@@ -251,6 +426,8 @@ def update_results(student, term, session_year, form, result_form):
     db.session.commit()
 
 
+
+
 def calculate_results(student_id, term, session_year):
     """
     Calculate student results and averages.
@@ -264,7 +441,7 @@ def calculate_results(student_id, term, session_year):
     app.logger.info(f"Fetched {len(results)} results for the current term and session")
 
     # Calculate grand total and average for the current term
-    grand_total = sum(result.total for result in results)
+    grand_total = sum(result.total for result in results if result.total is not None)
     average = round(calculate_average(results), 1)
     app.logger.info(f"Grand total: {grand_total}, Average: {average}")
 

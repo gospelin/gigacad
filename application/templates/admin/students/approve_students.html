@@ -60,19 +60,19 @@
                     <td>AAIS/0559/{{student.id}}</td>
                     <td>{{ student.password }}</td>
                     <td>
-                        <form action="{{ url_for('admins.approve_student', student_id=student.id) }}" method="POST">
+                        <form action="{{ url_for('admins.approve_student', class_name=student_class, student_id=student.id) }}" method="POST">
                             {{ approve_form.hidden_tag() }}
                             {% if not student.approved %}
                             <button type="submit" class="btn btn-success btn-sm animate-approve">Approve</button>
                             {% endif %}
                         </form>
-                        <form action="{{ url_for('admins.deactivate_student', student_id=student.id) }}" method="POST" class="d-inline">
+                        <form action="{{ url_for('admins.deactivate_student', class_name=student_class, student_id=student.id) }}" method="POST" class="d-inline">
                             {{ deactivate_form.hidden_tag() }}
                             {% if student.approved %}
                             <button type="submit" class="btn btn-warning btn-sm animate-deactivate">Deactivate</button>
                             {% endif %}
                         </form>
-                        <form action="{{ url_for('admins.regenerate_password', student_id=student.id) }}" method="POST" class="d-inline">
+                        <form action="{{ url_for('admins.regenerate_password', class_name=student_class, student_id=student.id) }}" method="POST" class="d-inline">
                             {{ regenerate_form.hidden_tag() }}
                             <button type="submit" class="btn btn-primary btn-sm animate-regenerate">Regenerate Password</button>
                         </form>

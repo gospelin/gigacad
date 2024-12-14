@@ -95,7 +95,8 @@
     {% endif %}
     
     <div class="text-center">
-        <a href="{{ url_for('admins.select_class') }}" class="btn btn-primary mt-3">Back to Classes</a>
+        <a href="{{ url_for('admins.students_by_class', class_name=class_name) }}" class="btn btn-primary mt-3">Back to Classes</a>
+        <a href="{{ url_for('admins.select_class') }}" class="btn btn-primary mt-3">Back</a>
     </div>
 </div>
 
