@@ -5,11 +5,21 @@ Manage Results
 {% endblock %}
 
 <style>
-    .container {
-        max-width: 1200px;
-        margin: auto;
-        padding: 0 15px;
-        /* Added for mobile responsiveness */
+    .school-header h1 {
+        font-size: 2.5rem;
+        color: #007bff; /* School brand color */
+        margin-bottom: 10px;
+    }
+    
+    .school-header h2 {
+        font-size: 1.8rem;
+        color: #6c757d; /* Subtle secondary color */
+    }
+    
+    .school-header img {
+        margin-bottom: 15px;
+        border-radius: 50%; /* Circular logo */
+        border: 2px solid #007bff;
     }
 
     .card {
@@ -35,11 +45,23 @@ Manage Results
         display: block;
         width: 100%;
     }
+    
+    .table {
+        border-collapse: collapse;
+        background-color: #fff;
+    }
 
     .table-responsive {
         overflow-x: auto;
         margin-bottom: 30px;
-        /* Adjusted for mobile responsiveness */
+        max-height: 400px; /* Adjust based on your needs */
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch; /* For mobile users */
+    }
+    
+    .table thead {
+        background-color: #007bff; /* Blue header */
+        color: white;
     }
 
     .table thead th {
@@ -49,13 +71,46 @@ Manage Results
     .table tbody tr td {
         vertical-align: middle;
     }
+    
+    .table td, .table th {
+        text-align: center;
+        vertical-align: middle;
+        padding: 12px; /* Comfortable padding */
+    }
 
     .btn-sm {
         font-size: 0.875rem;
         padding: 0.25rem 0.5rem;
     }
+    
+    .progress, .progress-stacked {
+        height: 25px;
+        border-radius: 5px;
+        --bs-progress-bar-bg: #4e54c8;
+       
+    }
+    
+    .progress-bar {
+        font-size: 1rem;
+        line-height: 25px;
+        color: #fff;
+        background-color: #4e54c8;;
+    }
 
     @media (max-width: 768px) {
+        .table {
+            font-size: 0.9rem; /* Slightly smaller font for smaller screens */
+        }
+    
+        .btn-lg {
+            font-size: 1rem;
+            padding: 0.75rem 1rem;
+        }
+    
+        .card {
+            margin-bottom: 1rem;
+        }
+        
         .card-body {
             text-align: center;
         }
@@ -98,29 +153,25 @@ Manage Results
                         <h1>Aunty Anne's Int'l School</h1>
                         <h2>Student Results</h2>
                     </div>
-                    <div class="row mb-3">
-                        <div class="col">
-                            <label for="term" class="form-label">Term:</label>
-                            <input
-                                type="text"
-                                id="term"
-                                class="form-control"
-                                value="{{ current_term }}"
-                                readonly
-                            />
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card text-center shadow-sm">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title">Current Term</h5>
+                                    <p class="card-text">{{ term }}</p>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col">
-                            <label for="session" class="form-label">Session:</label>
-                            <input
-                                type="text"
-                                id="session"
-                                class="form-control"
-                                value="{{ session }}"
-                                readonly
-                            />
+                        <div class="col-md-6">
+                            <div class="card text-center shadow-sm">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title">Session</h5>
+                                    <p class="card-text">{{ session }}</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <form method="POST" action="{{ url_for('admins.manage_results', student_id=student.id) }}">
+                    <form method="POST" action="{{ url_for('admins.manage_results', class_name=class_name, student_id=student.id) }}">
                         {{ form.hidden_tag() }}
                         
                         <div class="row mb-3">
@@ -140,7 +191,11 @@ Manage Results
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <div class="input-group">
-                                    <label for="next_term_begins" class="input-group-text">Reopening Date:</label>
+                                    <label for="next_term_begins" class="input-group-text">
+                                        <span class="input-group-text">
+                                            <i class="bi bi-calendar3"></i> Reopening Date
+                                        </span>
+                                    </label>
                                     <input
                                         type="text"
                                         id="next_term_begins"
@@ -217,7 +272,7 @@ Manage Results
                         </div>
 
                         <div style="width: 100%;" class="table-responsive">
-                            <table class="table table-bordered mt-4">
+                            <table class="table table-bordered">
                                 <thead>
                                     <tr>
                                         <th>Subject</th>
@@ -238,19 +293,19 @@ Manage Results
                                                 <td>{{ subject.name }}</td>
 
                                                 <!-- Class Assessment -->
-                                                <td>{{ subject_form.class_assessment(class="form-control class-assessment", value=results_dict.get(subject.id).class_assessment if results_dict.get(subject.id) else '') }}</td>
+                                                <td>{{ subject_form.class_assessment(class="form-control class-assessment", value=results_dict.get(subject.id).class_assessment if results_dict.get(subject.id) is not none else '') }}</td>
 
                                                 <!-- Summative Test -->
-                                                <td>{{ subject_form.summative_test(class="form-control summative-test", value=results_dict.get(subject.id).summative_test if results_dict.get(subject.id) else '') }}</td>
+                                                <td>{{ subject_form.summative_test(class="form-control summative-test", value=results_dict.get(subject.id).summative_test if results_dict.get(subject.id) is not none else '') }}</td>
 
                                                 <!-- Exam -->
-                                                <td>{{ subject_form.exam(class="form-control exam", value=results_dict.get(subject.id).exam if results_dict.get(subject.id) else '') }}</td>
+                                                <td>{{ subject_form.exam(class="form-control exam", value=results_dict.get(subject.id).exam if results_dict.get(subject.id) is not none else '') }}</td>
 
                                                 <!-- Total (read-only) -->
-                                                <td>{{ subject_form.total(class="form-control total", readonly=true, value=results_dict.get(subject.id).total if results_dict.get(subject.id) else '') }}</td>
+                                                <td>{{ subject_form.total(class="form-control total", readonly=true, value=results_dict.get(subject.id).total if results_dict.get(subject.id) is not none else '') }}</td>
 
                                                 <!-- Grade (read-only) -->
-                                                <td>{{ subject_form.grade(class="form-control grade", readonly=true, value=results_dict.get(subject.id).grade if results_dict.get(subject.id) else '') }}</td>
+                                                <td>{{ subject_form.grade(class="form-control grade", readonly=true, value=results_dict.get(subject.id).grade if results_dict.get(subject.id)  else '') }}</td>
                                                 <!-- Remark (read-only) -->
                                                 <td>{{ subject_form.remark(class="form-control remark", readonly=true, value=results_dict.get(subject.id).remark if results_dict.get(subject.id) else '') }}</td>
                                             </tr>
@@ -259,12 +314,26 @@ Manage Results
 
                             </table>
                         </div>
-                        <button type="submit" class="btn btn-primary mt-3">Save Results</button>
+                        <div class="progress mb-4">
+                            <div 
+                                id="resultProgressBar" 
+                                class="progress-bar progress-bar-striped" 
+                                role="progressbar" 
+                                style="width: 0%;" 
+                                aria-valuenow="0" 
+                                aria-valuemin="0" 
+                                aria-valuemax="100">
+                                0%
+                            </div>
+                        </div>
+                    
+                        <button type="submit" class="btn btn-primary mt-3"><i class="bi bi-save"></i> Save Results</button>
                     </form>
                     
-                    <div class="text-center">
-                        <a href="{{ url_for('admins.students_by_class', class_name=class_name) }}" class="btn btn-secondary mt-3">
-                            Back to Students in {{ class_name }}
+                    
+                    <div class="text-center mt-4">
+                        <a href="{{ url_for('admins.students_by_class', class_name=class_name) }}" class="btn btn-primary mt-3">
+                            <i class="bi bi-arrow-left"></i> Back
                         </a>
                     </div>
                     
@@ -273,20 +342,64 @@ Manage Results
         </div>
     </div>
 </div>
+{% endblock %}
 
-<!--
+{% block scripts %}
 <script>
-    document.querySelectorAll(".class-assessment, .summative-test, .exam").forEach((input) => {
-        input.addEventListener("input", function () {
-            const id = this.getAttribute("data_id");
-            const classAssessment = parseInt(document.querySelector(`input[name="${id}.class_assessment"]`).value) || 0;
-            const summativeTest = parseInt(document.querySelector(`input[name="${id}.summative_test"]`).value) || 0;
-            const exam = parseInt(document.querySelector(`input[name="${id}.exam"]`).value) || 0;
-            const total = classAssessment + summativeTest + exam;
-            document.querySelector(`input[name="${id}.total"]`).value = total;
+document.addEventListener("DOMContentLoaded", function () {
+    // Attach event listeners to update totals and progress bar
+    const progressBar = document.getElementById("resultProgressBar");
+
+    const updateProgress = () => {
+        const totalFields = document.querySelectorAll(".class-assessment, .summative-test, .exam").length;
+        let filledFields = 0;
+
+        // Count filled input fields
+        document.querySelectorAll(".class-assessment, .summative-test, .exam").forEach((input) => {
+            if (input.value.trim() !== "") {
+                filledFields++;
+            }
+        });
+
+        // Calculate progress percentage
+        const progress = Math.round((filledFields / totalFields) * 100);
+
+        // Update progress bar
+        progressBar.style.width = `${progress}%`;
+        progressBar.setAttribute("aria-valuenow", progress);
+        progressBar.textContent = `${progress}%`;
+    };
+
+    document.querySelectorAll("table tbody tr").forEach((row) => {
+        const classAssessmentField = row.querySelector(".class-assessment");
+        const summativeTestField = row.querySelector(".summative-test");
+        const examField = row.querySelector(".exam");
+        const totalField = row.querySelector(".total");
+
+        // Update the total field whenever any input changes
+        const updateTotal = () => {
+            const classAssessment = parseInt(classAssessmentField.value) || 0;
+            const summativeTest = parseInt(summativeTestField.value) || 0;
+            const exam = parseInt(examField.value) || 0;
+
+            // Calculate and set the total
+            totalField.value = classAssessment + summativeTest + exam;
+
+            // Update the progress bar
+            updateProgress();
+        };
+
+        // Attach event listeners to relevant fields
+        [classAssessmentField, summativeTestField, examField].forEach((field) => {
+            field.addEventListener("input", updateTotal);
         });
     });
+
+    // Initial update for progress bar in case fields are pre-filled
+    updateProgress();
+});
+
 </script>
--->
-{% endblock %}
+
+{% endblock scripts %}
 

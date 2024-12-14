@@ -16,9 +16,11 @@ body {
 
 /* Colors */
 :root {
-    --primary-green: #28a745;
+    /*--primary-green: #28a745;*/
+    --primary-green: #21a055;
     --dark-green: #006400;
-    --dark-red: #8B0000;
+    /*--dark-red: #8B0000;*/
+    --dark-red: #e53137;
     --light-gray: #f8f9fa;
     --dark-gray: #6c757d;
     --white: #ffffff;
@@ -98,17 +100,93 @@ body {
 }
 
 /* Table Styles */
-.table-responsive {
-    overflow-x: auto;
-    margin-bottom: 1.5rem;
+/*.table-responsive {*/
+/*    overflow-x: auto;*/
+/*    margin-bottom: 1.5rem;*/
+/*}*/
+
+/*.table thead th {*/
+/*    border-bottom: 2px solid #dee2e6;*/
+/*}*/
+
+/*.table tbody tr td {*/
+/*    vertical-align: middle;*/
+/*}*/
+
+
+/* General Alert Styling */
+.alert {
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 1rem;
 }
 
-.table thead th {
-    border-bottom: 2px solid #dee2e6;
+.alert i {
+  font-size: 1.5rem;
+  margin-right: 10px;
 }
 
-.table tbody tr td {
-    vertical-align: middle;
+/* Success Alert */
+.alert-success {
+  background-color: #d4edda;
+  border-left: 4px solid #28a745;
+  color: #155724;
+}
+
+.alert-success i {
+  color: #28a745;
+}
+
+/* Info Alert */
+.alert-info {
+  background-color: #d1ecf1;
+  border-left: 4px solid #17a2b8;
+  color: #0c5460;
+}
+
+.alert-info i {
+  color: #17a2b8;
+}
+
+/* Warning Alert */
+.alert-warning {
+  background-color: #fff3cd;
+  border-left: 4px solid #ffc107;
+  color: #856404;
+}
+
+.alert-warning i {
+  color: #ffc107;
+}
+
+/* Danger Alert */
+.alert-danger {
+  background-color: #f8d7da;
+  border-left: 4px solid #dc3545;
+  color: #721c24;
+}
+
+.alert-danger i {
+  color: #dc3545;
+}
+
+/* Dismiss Button */
+.alert .close {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  color: inherit;
+  opacity: 0.8;
+  text-shadow: none;
+}
+
+.alert .close:hover {
+  opacity: 1;
 }
 
 
@@ -323,7 +401,7 @@ body {
 
 .jumbotron {
     position: relative;
-    background: url('/static/images/DSC_0184.JPG') no-repeat center center;
+    background: url('/static/images/background_image.jpg') no-repeat center center;
     background-size: cover;
     color: var(--white);
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);

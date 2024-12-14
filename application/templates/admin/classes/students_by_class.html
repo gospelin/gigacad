@@ -3,12 +3,6 @@
 
 <style>
     /* General Styling */
-    body {
-        font-family: 'Arial', sans-serif;
-        background-color: #f0f0f0
-        color: #333;
-    }
-
     .container {
         background-color: #ffffff;
         border-radius: 8px;
@@ -21,10 +15,55 @@
         text-align: center;
     }
 
+    /* Widgets Section */
+    .stats-widget {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+
+    .stat-card {
+        flex: 1;
+        background: #f9f9f9;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        padding: 15px;
+        text-align: center;
+        margin: 0 10px;
+    }
+
+    .stat-card h3 {
+        margin: 0;
+        font-size: 1.5rem;
+    }
+
+    .stat-card p {
+        margin: 5px 0 0;
+        color: #666;
+    }
+
     /* Table Styling */
     .table {
         margin-top: 20px;
     }
+    
+    /*.table-responsive {*/
+    /*    overflow-x: auto;*/
+    /*    -webkit-overflow-scrolling: touch;*/
+    /*    position: relative;*/
+    /*}*/
+
+    .table th, .table td {
+        padding: 10px;
+        vertical-align: middle;
+        font-size: 0.85rem;
+    }
+
+    .table-row:hover {
+        background-color: #f1f1f1;
+        cursor: pointer;
+    }
+
 
     .table thead {
         background-color: #333;
@@ -34,14 +73,25 @@
     .table-striped tbody tr:nth-of-type(odd) {
         background-color: #f7f7f7;
     }
-
+    
     .table th, .table td {
         padding: 15px;
         vertical-align: middle;
         font-size: 0.95rem;
+        word-wrap: break-word;
+        white-space: normal;
     }
 
-    /* Button Styling */
+    .table-row:hover {
+        background-color: #f1f1f1;
+        cursor: pointer;
+    }
+    
+    .form-control {
+        padding: 10px;
+    }
+
+    /* Action Buttons */
     .btn {
         border-radius: 5px;
         padding: 8px 12px;
@@ -49,275 +99,353 @@
         margin: 2px;
     }
 
-    .btn-primary {
-        background-color: inherit;
-        border: none;
+    /* Filter and Search Section */
+    .filters {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
     }
 
-    .btn-secondary {
-        background-color: #6c757d;
-        border: none;
+    .search-bar {
+        flex: 1;
+        margin-right: 15px;
     }
 
-    .btn-warning {
-        background-color: #e2a400;
-        border: none;
+    .filter-dropdown {
+        width: 200px;
+    }
+    
+    .search-bar, .filter-dropdown {
+        flex: 1 1 100%;
+        margin-bottom: 10px;
+    }
+
+    /* Action Buttons */
+    .btn {
+        border-radius: 5px;
+        padding: 8px 12px;
+        font-weight: 500;
+        margin: 2px;
+    }
+
+    /* Modal Styling */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 2050;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        /*overflow: hidden;*/
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-content {
+        background-color: #fff;
+        margin: 15% auto;
+        padding: 20px;
+        border-radius: 8px;
+        max-width: 500px;
+    }
+
+    .modal-close {
+        float: right;
+        font-size: 1.5rem;
+        font-weight: bold;
         color: #333;
+        cursor: pointer;
     }
-
-    .btn-danger {
-        background-color: #c82333;
-        border: none;
-    }
-
-    .btn-info {
-        background-color: #17a2b8;
-        border: none;
-    }
-
-    .btn-success {
-        background-color: #28a745;
-        border: none;
-    }
-
-    /* Animation Effects */
-    .table-row {
-        animation: fadeIn 0.5s ease-in-out;
-    }
-
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(10px);
+    
+    
+   @media (min-width: 576px) {
+        .search-bar {
+            margin-right: 15px;
         }
-        to {
-            opacity: 1;
-            transform: translateY(0);
+    
+        .filter-dropdown {
+            flex: 1 1 auto;
+            margin-bottom: 0;
         }
     }
-
-    .animate-approve,
-    .animate-deactivate,
-    .animate-regenerate {
-        transition: transform 0.2s ease-in-out, background-color 0.3s ease;
+    
+    @media (max-width: 576px) {
+        .container {
+            padding: 15px;
+        }
+        
+        .stats-widget {
+            flex-direction: column;
+            gap: 10px;
+        }
+    
+        .stat-card {
+            margin: 0; /* Remove side margins */
+        }
+        
+        .filters {
+            flex-direction: column;
+            gap: 10px;
+        }
+    
+        .filter-dropdown,
+        .search-bar {
+            flex: 1 1 auto;
+            margin-right: 0;
+        }
+        
+        .table th, .table td {
+            padding: 5px;
+            font-size: 0.75rem;
+        }
+        
+        .modal-content {
+            margin: 10% auto;
+            max-width: 90%;
+        }
+        
+        .btn {
+            font-size: 0.85rem;
+        }
+        
+        /*.dropdown-item {*/
+        /*    background-color: var(--primary-blue);*/
+        /*    z-index: 3000;*/
+        /*}*/
     }
-
-    .animate-approve:hover,
-    .animate-deactivate:hover,
-    .animate-regenerate:hover {
-        transform: scale(1.05);
-    }
+    
+    /* @media (max-width: 768px) {*/
+    /*    .table-responsive {*/
+    /*        width: 100%;*/
+    /*        overflow-y: hidden;*/
+    /*        -ms-overflow-style: -ms-autohiding-scrollbar;*/
+    /*        border: 0;*/
+    /*    }*/
+    /*}*/
+    
+    /*.dropdown-menu {*/
+    /*    z-index: 3000;*/
+    /*    position: absolute */
+    /*}*/
+    
 </style>
 
-<div class="container mt-5">
+<!-- Modal for Confirmation -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete this student?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<div class="flex-fill container-fluid mt-0">
+    <!--<nav aria-label="breadcrumb">-->
+    <!--    <ol class="breadcrumb">-->
+    <!--        <li class="breadcrumb-item"><a href="{{ url_for('admins.admin_dashboard') }}">Home</a></li>-->
+    <!--        <li class="breadcrumb-item"><a href="{{ url_for('admins.select_class') }}">Classes</a></li>-->
+    <!--        <li class="breadcrumb-item active" aria-current="page">Students</li>-->
+    <!--    </ol>-->
+    <!--</nav>-->
+
+    <!-- Stats Section -->
+    <div class="stats-widget">
+       <div class="stat-card">
+            <i class="bi bi-people"></i>
+            <h3>{{ total_students }}</h3>
+            <p>Total Students</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ approved_students }}</h3>
+            <p>Approved</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ fees_paid }}</h3>
+            <p>Fees Paid</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ promoted_students }}</h3>
+            <p>Promoted</p>
+        </div>
+    </div>
+
+    <!-- Filters and Search -->
+    <div class="filters">
+        <input type="text" class="form-control search-bar" placeholder="Search students by name or ID...">
+        <select name="fee_status" class="form-control filter-dropdown">
+            <option value="">Filter by Fee Status</option>
+            <option value="paid">Fees Paid</option>
+            <option value="unpaid">Fees Unpaid</option>
+        </select>
+        <select name="approval_status" class="form-control filter-dropdown">
+            <option value="">Filter by Approval Status</option>
+            <option value="approved">Approved</option>
+            <option value="pending">Pending Approval</option>
+        </select>
+    </div>
+
     {% if students %}
         <h1 class="text-center mb-4">Students in {{ class_name }} for {{ current_session }} Academic Session</h1>
         
-        <table class="table table-striped table-responsive animate__animated animate__fadeInUp">
-            <thead>
-                <tr>
-                    <th>Student ID</th>
-                    <th>First Name</th>
-                    <th>Middle Name</th>
-                    <th>Last Name</th>
-                    <th>Username</th>
-                    <th>Password</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for student in students %}
-                <tr class="table-row">
-                    <td>AAIS/0559/{{ student.id }}</td>
-                    <td>{{ student.first_name }}</td>
-                    <td>{{ student.middle_name }}</td>
-                    <td>{{ student.last_name }}</td>
-                    <td>{{ student.username }}</td>
-                    <td>{{ student.password }}</td>
-                    <td>
-                        <!-- Action Buttons with Spacing -->
-                        <div class="d-flex flex-wrap">
-                            <a href="{{ url_for('admins.edit_student', class_name=class_name, student_id=student.id) }}" class="btn btn-warning btn-sm animate-approve">Edit</a>
-
-                            <form action="{{ url_for('admins.delete_student', class_name=class_name, student_id=student.id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this student?');">
-                                {{ form.hidden_tag() }}
-                                <button type="submit" class="btn btn-danger btn-sm animate-deactivate">Delete</button>
-                            </form>
-                            
-                            <form action="{{ url_for('admins.delete_student_record', class_name=class_name, student_id=student.id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this student?');">
-                                {{ form.hidden_tag() }}
-                                <button type="submit" class="btn btn-danger btn-sm animate-deactivate">Delete for {{current_session}} </button>
-                            </form>
-
-                            <form method="POST" action="{{ url_for('admins.promote_student', class_name=class_name, student_id=student.id) }}">
-                                {{ form.hidden_tag() }}
-                                <button type="submit" class="btn btn-success btn-sm animate-approve">Promote</button>
-                            </form>
-
-                            <form method="POST" action="{{ url_for('admins.demote_student', class_name=class_name, student_id=student.id) }}">
-                                {{ form.hidden_tag() }}
-                                <button type="submit" class="btn btn-danger btn-sm animate-approve">Demote</button>
-                            </form>
-
-                            <form action="{{ url_for('admins.approve_student', class_name=class_name, student_id=student.id) }}" method="POST">
-                                {{ form.hidden_tag() }}
-                                {% if not student.approved %}
-                                <button type="submit" class="btn btn-success btn-sm animate-approve">Approve</button>
-                                {% endif %}
-                            </form>
-
-                            <form action="{{ url_for('admins.deactivate_student', class_name=class_name, student_id=student.id) }}" method="POST">
-                                {{ form.hidden_tag() }}
-                                {% if student.approved %}
-                                <button type="submit" class="btn btn-warning btn-sm animate-deactivate">Deactivate</button>
-                                {% endif %}
-                            </form>
-
-                            <form action="{{ url_for('admins.regenerate_password', class_name=class_name, student_id=student.id) }}" method="POST">
-                                {{ form.hidden_tag() }}
-                                <button type="submit" class="btn btn-info btn-sm animate-regenerate">Regenerate Password</button>
-                            </form>
-
-                            <form action="{{ url_for('admins.toggle_fee_status', class_name=class_name, student_id=student.id) }}" method="post">
-                                {{ form.hidden_tag() }}
-                                <button type="submit" class="btn btn-primary">
-                                    {% if student.has_paid_fee %}
-                                        Mark as Unpaid
-                                    {% else %}
-                                        Mark as Paid
-                                    {% endif %}
-                                </button>
-                            </form>
-
-                            <a href="{{ url_for('admins.manage_results', student_id=student.id) }}" class="btn btn-info btn-sm animate-approve">Manage Result</a>
-                        </div>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        
+        <!--<div class="container-fluid">-->
+            <div class="table-responsive">
+                <table class="table table-striped">
+                   <thead>
+                        <tr>
+                            <th>Student ID</th>
+                            <th>First Name</th>
+                            <th>Middle Name</th>
+                            <th>Last Name</th>
+                            <th>Username</th>
+                            <th>Password</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                        <tr class="table-row" data-fee-status="{{ 'paid' if student.has_paid_fee else 'unpaid' }}" data-approval-status="{{ 'approved' if student.approved else 'pending' }}">
+                            <td>AAIS/0559/{{ student.id }}</td>
+                            <td>{{ student.first_name }}</td>
+                            <td>{{ student.middle_name }}</td>
+                            <td>{{ student.last_name }}</td>
+                            <td>{{ student.username }}</td>
+                            <td>{{ student.password }}</td>
+                            <td>
+                                <!-- Actions Dropdown -->
+                                <div class="dropdown dropdown-menu-right dropdown-menu-end">
+                                    <button class="btn btn-primary dropdown-toggle" type="button" id="actionsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                        Actions                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="actionsDropdown">
+                                        <a class="dropdown-item" href="{{ url_for('admins.edit_student', class_name=class_name, student_id=student.id) }}">Edit</a>
+                                        <a class="dropdown-item" href="{{ url_for('admins.manage_results', class_name=class_name, student_id=student.id) }}">Manage Results</a>
+                                        <form action="{{ url_for('admins.delete_student', class_name=class_name, student_id=student.id) }}" method="POST">
+                                            {{ form.hidden_tag() }}
+                                            <button class="delete-btn dropdown-item" data-bs-toggle="modal" data-bs-target="#deleteModal" data-action="{{ url_for('admins.delete_student', class_name=class_name, student_id=student.id) }}" type="button">Delete</button>
+                                        </form>
+                                        <form method="POST" action="{{ url_for('admins.promote_student', class_name=class_name, student_id=student.id) }}">
+                                            {{ form.hidden_tag() }}
+                                            <button  type="submit" class="dropdown-item">Promote</button>
+                                        </form>
+            
+                                        <form method="POST" action="{{ url_for('admins.demote_student', class_name=class_name, student_id=student.id) }}">
+                                            {{ form.hidden_tag() }}
+                                            <button type="submit" class="dropdown-item">Demote</button>
+                                        </form>
+            
+                                        <form action="{{ url_for('admins.approve_student', class_name=class_name, student_id=student.id) }}" method="POST">
+                                            {{ form.hidden_tag() }}
+                                            {% if not student.approved %}
+                                            <button type="submit" class="dropdown-item">Approve</button>
+                                            {% endif %}
+                                        </form>
+                                        <form action="{{ url_for('admins.deactivate_student', class_name=class_name, student_id=student.id) }}" method="POST">
+                                            {{ form.hidden_tag() }}
+                                            {% if student.approved %}
+                                            <button type="submit" class="dropdown-item">Deactivate</button>
+                                            {% endif %}
+                                        </form>
+                                        <form action="{{ url_for('admins.regenerate_password', class_name=class_name, student_id=student.id) }}" method="POST">
+                                            {{ form.hidden_tag() }}
+                                            <button type="submit" class="dropdown-item">Change Password</button>
+                                        </form>
+                                        
+                                        <form action="{{ url_for('admins.delete_student_record', class_name=class_name, student_id=student.id) }}" method="POST">
+                                            {{ form.hidden_tag() }}
+                                            <button type="submit" class="delete-btn dropdown-item" data-bs-toggle="modal" data-bs-target="#deleteModal" data-action="{{ url_for('admins.delete_student_record', class_name=class_name, student_id=student.id) }}">Delete for {{current_session}} </button>
+                                        </form>
+            
+                                        <form action="{{ url_for('admins.toggle_fee_status', class_name=class_name, student_id=student.id) }}" method="POST">
+                                            {{ form.hidden_tag() }}
+                                            <button type="submit" class="dropdown-item">
+                                                {% if student.has_paid_fee %}
+                                                    Mark as Unpaid
+                                                {% else %}
+                                                    Mark as Paid
+                                                {% endif %}
+                                            </button>
+                                        </form>
+                                        <!-- Additional actions here -->
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        <!--</div>-->
         <!-- Broadsheet and Print Buttons -->
         <div class="text-center">
             <a href="{{ url_for('admins.select_class') }}" class="btn btn-primary mt-3">Back to Classes</a>
             <a href="{{ url_for('admins.broadsheet', class_name=class_name ) }}" class="btn btn-secondary mt-3">Generate Broadsheet</a>
             <button onclick="printStudentDetails()" class="btn btn-primary mt-3">Print Student Details</button>
         </div>
-
-        <!-- Hidden Print Section -->
-        <div id="printSection" style="display: none;">
-            <h2>Students in {{ class_name }} - {{ session }} Academic Session</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>First Name</th>
-                        <th>Last Name</th>
-                        <th>Gender</th>
-                        <th>Class</th>
-                        <th>Payment Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for student in students %}
-                    <tr>
-                        <td>{{ student.first_name|capitalize }}</td>
-                        <td>{{ student.last_name|capitalize }}</td>
-                        <td>{{ student.gender|capitalize }}</td>
-                        <td>{{ class_name }}</td>
-                        <td>{{ 'Paid' if student.has_paid_fee else 'Not Paid' }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
     {% endif %}
 </div>
 
-<script>
-function printStudentDetails() {
-    const printContents = document.getElementById("printSection").innerHTML;
-    const printWindow = window.open("", "", "height=800,width=600");
-    printWindow.document.write(`
-        <html>
-        <head>
-            <title>Print Student Details</title>
-            <style>
-                /* Basic reset */
-                * {
-                    box-sizing: border-box;
-                    margin: 0;
-                    padding: 0;
-                }
-
-                body {
-                    font-family: Arial, sans-serif;
-                    color: #333;
-                    padding: 20px;
-                }
-
-                h2 {
-                    text-align: center;
-                    font-size: 1.6em;
-                    margin-bottom: 20px;
-                    color: #2c3e50;
-                }
-
-                table {
-                    width: 100%;
-                    border-collapse: collapse;
-                    margin-top: 10px;
-                }
-
-                th, td {
-                    padding: 12px 15px;
-                    text-align: left;
-                    border: 1px solid #ddd;
-                }
-
-                th {
-                    background-color: #2c3e50;
-                    color: white;
-                    font-size: 1.1em;
-                }
-
-                td {
-                    font-size: 1em;
-                    color: #555;
-                }
-
-                /* Alternate row coloring for readability */
-                tr:nth-child(even) {
-                    background-color: #f9f9f9;
-                }
-
-                /* Adding spacing for a cleaner look */
-                tr {
-                    line-height: 1.5;
-                }
-
-                /* Footer for additional notes */
-                .footer {
-                    text-align: center;
-                    font-size: 0.9em;
-                    color: #777;
-                    margin-top: 20px;
-                }
-            </style>
-        </head>
-        <body>
-            <table>
-                <tbody>
-                    ${printContents}
-                </tbody>
-            </table>
-            <div class="footer">
-                <p>Generated by Aunty Anne's International School Student Portal</p>
-            </div>
-        </body>
-        </html>
-    `);
-    printWindow.document.close();
-    printWindow.print();
-}
-</script>
 {% endblock %}
+
+{% block scripts %}
+<script>
+    // Initialize Modal for Delete Confirmation
+    document.querySelectorAll('[data-bs-toggle="modal"]').forEach((button) => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+    
+            const modalElement = document.getElementById('deleteModal');
+            const modalInstance = bootstrap.Modal.getOrCreateInstance(modalElement);
+    
+            // Assuming the form is associated with the button
+            const form = e.target.closest('form');
+            const confirmButton = document.getElementById('confirmDeleteBtn');
+    
+            modalInstance.show();
+    
+            confirmButton.onclick = () => {
+                form.submit(); // Submit the form
+            };
+        });
+    });
+    
+    // Filter Functionality
+    document.querySelectorAll('.filter-dropdown').forEach((dropdown) => {
+        dropdown.addEventListener('change', function () {
+            const feeStatus = document.querySelector('select[name="fee_status"]').value;
+            const approvalStatus = document.querySelector('select[name="approval_status"]').value;
+
+            // Update Table Visibility
+            document.querySelectorAll('.table-row').forEach((row) => {
+                const feePaid = row.dataset.feeStatus; // e.g., "paid"
+                const approved = row.dataset.approvalStatus; // e.g., "approved"
+
+                const feeMatch = !feeStatus || feePaid === feeStatus;
+                const approvalMatch = !approvalStatus || approved === approvalStatus;
+
+                row.style.display = feeMatch && approvalMatch ? '' : 'none';
+            });
+        });
+    });
+
+    // Search Implementation
+    document.querySelector('.search-bar').addEventListener('input', function (e) {
+        const searchTerm = e.target.value.toLowerCase();
+        document.querySelectorAll('.table-row').forEach((row) => {
+            const matches = Array.from(row.cells).some((cell) => {
+                return cell.textContent.toLowerCase().includes(searchTerm);
+            });
+            row.style.display = matches ? '' : 'none';
+        });
+    });
+</script>
+{% endblock scripts %}

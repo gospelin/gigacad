@@ -47,6 +47,8 @@ from ..helpers import (
     random,
     string,
     populate_form_with_results,
+    generate_principal_remark,
+    generate_teacher_remark,
 )
 from ..models import Student, User, Subject, Result, Session, StudentClassHistory
 
@@ -65,7 +67,7 @@ from ..auth.forms import (
 @admin_bp.errorhandler(CSRFError)
 def handle_csrf_error(e):
     app.logger.warning(f"CSRF error: {e.description}")
-    flash("The form submission has expired. Please try again.", "alert alert-danger")
+    flash("The form submission has expired. Please try again.", "alert-danger")
     return redirect(url_for("admins.admin_dashboard"))
 
 
@@ -85,7 +87,7 @@ def not_found_error(error):
 @login_required
 def admin_before_request():
     if not current_user.is_admin:
-        flash("You are not authorized to access this page.", "alert alert-danger")
+        flash("You are not authorized to access this page.", "alert-danger")
         app.logger.warning(
             f"Unauthorized access attempt by user {current_user.username}"
         )
@@ -127,10 +129,10 @@ def manage_sessions():
         if updated_session:
             flash(
                 f"Current session set to {updated_session.year} ({term}).",
-                "alert alert-success",
+                "alert-success",
             )
         else:
-            flash("Failed to update the current session and term.", "alert alert-danger")
+            flash("Failed to update the current session and term.", "alert-danger")
 
         return redirect(url_for("admins.manage_sessions"))
         
@@ -250,17 +252,17 @@ def approve_student(class_name, student_id):
         if student.approved:
             flash(
                 f"Student {student.first_name} {student.last_name} is already approved.",
-                "alert alert-info",
+                "alert-info",
             )
         else:
             student.approved = True
             db.session.commit()
             flash(
                 f"Student {student.first_name} {student.last_name} has been approved.",
-                "alert alert-success",
+                "alert-success",
             )
     else:
-        flash("Form validation failed. Please try again.", "alert alert-danger")
+        flash("Form validation failed. Please try again.", "alert-danger")
 
     return redirect(url_for("admins.students_by_class", class_name=class_name))
 
@@ -279,10 +281,10 @@ def deactivate_student(class_name, student_id):
         db.session.commit()
         flash(
             f"Student {student.first_name} {student.last_name} has been deactivated.",
-            "alert alert-success",
+            "alert-success",
         )
     else:
-        flash("An error occurred. Please try again.", "alert alert-danger")
+        flash("An error occurred. Please try again.", "alert-danger")
     return redirect(url_for("admins.students_by_class", class_name=class_name))
 
 
@@ -318,10 +320,10 @@ def regenerate_password(class_name, student_id):
 
         flash(
             f"Credentials regenerated for {student.first_name} {student.last_name}. New password: {new_password}",
-            "alert alert-success",
+            "alert-success",
         )
     else:
-        flash("Form validation failed. Please try again.", "alert alert-danger")
+        flash("Form validation failed. Please try again.", "alert-danger")
 
     return redirect(url_for("admins.students_by_class", class_name=class_name))
 
@@ -366,7 +368,7 @@ def students_by_class(class_name):
     class_name = unquote(class_name).strip()
     
     if not class_name:
-        flash("Invalid class name provided.", "alert alert-danger")
+        flash("Invalid class name provided.", "alert-danger")
         return redirect(url_for("admins.select_class"))
 
     # Get current session and term directly from the Session model
@@ -389,7 +391,7 @@ def students_by_class(class_name):
     if not students:
         flash(
             f"No students found in {class_name} for {current_session} - {current_term}",
-            "alert alert-danger",
+            "alert-danger",
         )
         return redirect(url_for("admins.select_class"))
 
@@ -421,7 +423,7 @@ def toggle_fee_status(class_name, student_id):
 
     flash(
         f"Payment status for {student.first_name} {student.last_name} has been updated.",
-        "alert alert-success",
+        "alert-success",
     )
     return redirect(url_for("admins.students_by_class", class_name=class_name))
 
@@ -449,7 +451,7 @@ def toggle_fee_status(class_name, student_id):
 #     current_session = Session.get_current_session()
 
 #     if not current_session:
-#         flash("No current session available for promotion.", "alert alert-danger")
+#         flash("No current session available for promotion.", "alert-danger")
 #         return redirect(url_for("admins.manage_students"))
 
 #     # Define the class hierarchy
@@ -478,7 +480,7 @@ def toggle_fee_status(class_name, student_id):
 #     )
 
 #     if not latest_class_history:
-#         flash("No class history found for the student.", "alert alert-danger")
+#         flash("No class history found for the student.", "alert-danger")
 #         return redirect(url_for("admins.manage_students"))
 
 #     current_class = latest_class_history.class_name
@@ -490,7 +492,7 @@ def toggle_fee_status(class_name, student_id):
 #             new_class = class_hierarchy[current_index + 1]
 #         else:
 #             flash(
-#                 "This student has completed the highest class.", "alert alert-warning"
+#                 "This student has completed the highest class.", "alert-warning"
 #             )
 #             return redirect(
 #                 url_for(
@@ -500,7 +502,7 @@ def toggle_fee_status(class_name, student_id):
 #                 )
 #             )
 #     else:
-#         flash("Current class not found in the hierarchy.", "alert alert-danger")
+#         flash("Current class not found in the hierarchy.", "alert-danger")
 #         return redirect(
 #             url_for(
 #                 "admins.students_by_class",
@@ -517,7 +519,7 @@ def toggle_fee_status(class_name, student_id):
 #     db.session.commit()
 
 #     flash(
-#         f"{student.first_name} has been promoted to {new_class}.", "alert alert-success"
+#         f"{student.first_name} has been promoted to {new_class}.", "alert-success"
 #     )
 #     return redirect(
 #         url_for(
@@ -552,7 +554,7 @@ def toggle_fee_status(class_name, student_id):
 #     current_session = Session.get_current_session()
 
 #     if not current_session:
-#         flash("No current session available for promotion.", "alert alert-danger")
+#         flash("No current session available for promotion.", "alert-danger")
 #         return redirect(url_for("admins.manage_students"))
 
 #     # Define the class hierarchy
@@ -581,7 +583,7 @@ def toggle_fee_status(class_name, student_id):
 #     )
 
 #     if not latest_class_history:
-#         flash("No class history found for the student.", "alert alert-danger")
+#         flash("No class history found for the student.", "alert-danger")
 #         return redirect(url_for("admins.manage_students"))
 
 #     current_class = latest_class_history.class_name
@@ -593,7 +595,7 @@ def toggle_fee_status(class_name, student_id):
 #             new_class = class_hierarchy[current_index + 1]
 #         else:
 #             flash(
-#                 "This student has completed the highest class.", "alert alert-warning"
+#                 "This student has completed the highest class.", "alert-warning"
 #             )
 #             return redirect(
 #                 url_for(
@@ -602,7 +604,7 @@ def toggle_fee_status(class_name, student_id):
 #                 )
 #             )
 #     else:
-#         flash("Current class not found in the hierarchy.", "alert alert-danger")
+#         flash("Current class not found in the hierarchy.", "alert-danger")
 #         return redirect(
 #             url_for(
 #                 "admins.students_by_class",
@@ -627,7 +629,7 @@ def toggle_fee_status(class_name, student_id):
 #     db.session.commit()
 
 #     flash(
-#         f"{student.first_name} has been promoted to {new_class}.", "alert alert-success"
+#         f"{student.first_name} has been promoted to {new_class}.", "alert-success"
 #     )
 #     return redirect(
 #         url_for(
@@ -651,7 +653,7 @@ def promote_student(class_name, student_id):
     class_name = unquote(class_name).strip()
 
     if not current_session:
-        flash("No current session available for promotion.", "alert alert-danger")
+        flash("No current session available for promotion.", "alert-danger")
         return redirect(url_for("admins.students_by_class", class_name=class_name))
 
     # **Fix: Retrieve the next academic session**
@@ -660,7 +662,7 @@ def promote_student(class_name, student_id):
     ).order_by(Session.year.asc()).first()
 
     if not next_session:
-        flash("No next academic session available for promotion.", "alert alert-danger")
+        flash("No next academic session available for promotion.", "alert-danger")
         return redirect(url_for("admins.students_by_class", class_name=class_name))
 
     # Define the class hierarchy
@@ -689,7 +691,7 @@ def promote_student(class_name, student_id):
     # )
 
     # if not latest_class_history:
-    #     flash("No class history found for the student.", "alert alert-danger")
+    #     flash("No class history found for the student.", "alert-danger")
     #     return redirect(url_for("admins.students_by_class", class_name=class_name))
 
     current_class = class_name
@@ -700,7 +702,7 @@ def promote_student(class_name, student_id):
         if current_index + 1 < len(class_hierarchy):
             new_class = class_hierarchy[current_index + 1]
         else:
-            flash("This student has completed the highest class.", "alert alert-warning")
+            flash("This student has completed the highest class.", "alert-warning")
             return redirect(
                 url_for(
                     "admins.students_by_class",
@@ -708,7 +710,7 @@ def promote_student(class_name, student_id):
                 )
             )
     else:
-        flash("Current class not found in the hierarchy.", "alert alert-danger")
+        flash("Current class not found in the hierarchy.", "alert-danger")
         return redirect(
             url_for(
                 "admins.students_by_class",
@@ -733,7 +735,7 @@ def promote_student(class_name, student_id):
 
     flash(
         f"{student.first_name} has been promoted to {new_class} in {next_session.year}.",
-        "alert alert-success",
+        "alert-success",
     )
     return redirect(
         url_for(
@@ -760,7 +762,7 @@ def demote_student(class_name, student_id):
     class_name = unquote(class_name).strip()
 
     if not current_session:
-        flash("No current session available for demotion.", "alert alert-danger")
+        flash("No current session available for demotion.", "alert-danger")
         return redirect(url_for("admins.students_by_class", class_name=class_name))
 
     # **Fix: Retrieve the next academic session**
@@ -769,7 +771,7 @@ def demote_student(class_name, student_id):
     ).order_by(Session.year.asc()).first()
 
     if not next_session:
-        flash("No next academic session available for demotion.", "alert alert-danger")
+        flash("No next academic session available for demotion.", "alert-danger")
         return redirect(url_for("admins.students_by_class", class_name=class_name))
 
     # Define the class hierarchy
@@ -798,7 +800,7 @@ def demote_student(class_name, student_id):
     # )
 
     # if not latest_class_history:
-    #     flash("No class history found for the student.", "alert alert-danger")
+    #     flash("No class history found for the student.", "alert-danger")
     #     return redirect(url_for("admins.students_by_class", class_name=class_name))
 
     current_class = class_name
@@ -809,7 +811,7 @@ def demote_student(class_name, student_id):
         if current_index > 0:
             new_class = class_hierarchy[current_index - 1]
         else:
-            flash("This student is already in the lowest class.", "alert alert-warning")
+            flash("This student is already in the lowest class.", "alert-warning")
             return redirect(
                 url_for(
                     "admins.students_by_class",
@@ -817,7 +819,7 @@ def demote_student(class_name, student_id):
                 )
             )
     else:
-        flash("Current class not found in the hierarchy.", "alert alert-danger")
+        flash("Current class not found in the hierarchy.", "alert-danger")
         return redirect(
             url_for(
                 "admins.students_by_class",
@@ -842,7 +844,7 @@ def demote_student(class_name, student_id):
 
     flash(
         f"{student.first_name} has been demoted to {new_class} in {next_session.year}.",
-        "alert alert-success",
+        "alert-success",
     )
     return redirect(
         url_for(
@@ -877,7 +879,7 @@ def edit_student(student_id):
     current_session = Session.get_current_session()
 
     if not current_session:
-        flash("No current session found.", "alert alert-danger")
+        flash("No current session found.", "alert-danger")
         return redirect(url_for("admins.students_by_class"))
 
     session_id = current_session.id
@@ -917,7 +919,7 @@ def edit_student(student_id):
         user.username = form.username.data
 
         db.session.commit()
-        flash("Student updated successfully!", "alert alert-success")
+        flash("Student updated successfully!", "alert-success")
         return redirect(
             url_for(
                 "admins.students_by_class",
@@ -970,7 +972,7 @@ def delete_student_record(class_name, student_id):
     # Get the current session dynamically
     current_session = Session.get_current_session()
     if not current_session:
-        flash("No current session available.", "alert alert-danger")
+        flash("No current session available.", "alert-danger")
         return redirect(url_for("admins.students_by_class", class_name=class_name))
 
     # Find the student's class record for the current session
@@ -981,7 +983,7 @@ def delete_student_record(class_name, student_id):
     if not class_record:
         flash(
             f"No class record found for {student.first_name} in the current session.",
-            "alert alert-danger",
+            "alert-danger",
         )
         return redirect(url_for("admins.students_by_class", class_name=class_name))
 
@@ -991,7 +993,7 @@ def delete_student_record(class_name, student_id):
 
     flash(
         f"Class record for {student.first_name} in session {current_session.year} has been deleted.",
-        "alert alert-success",
+        "alert-success",
     )
     return redirect(url_for("admins.students_by_class", class_name=class_name))
 
@@ -1052,11 +1054,11 @@ def delete_student(student_id):
 
             flash(
                 "Student and associated records deleted successfully!",
-                "alert alert-success",
+                "alert-success",
             )
         except Exception as e:
             db.session.rollback()
-            flash(f"Error deleting student: {e}", "alert alert-danger")
+            flash(f"Error deleting student: {e}", "alert-danger")
 
     # Redirect to the student's class page, using the latest class from history or default if not found
     class_name = (
@@ -1107,7 +1109,7 @@ def manage_subjects():
                     subject = Subject(name=subject_name, section=section)
                     db.session.add(subject)
         db.session.commit()
-        flash("Subject(s) added successfully!", "alert alert-success")
+        flash("Subject(s) added successfully!", "alert-success")
         return redirect(url_for("admins.manage_subjects"))
 
     # Check for deactivation request
@@ -1118,7 +1120,7 @@ def manage_subjects():
             subject.deactivated = True
             db.session.commit()
             flash(
-                f"Subject '{subject.name}' has been deactivated.", "alert alert-warning"
+                f"Subject '{subject.name}' has been deactivated.", "alert-warning"
             )
         return redirect(url_for("admins.manage_subjects"))
 
@@ -1170,7 +1172,7 @@ def edit_subject(subject_id):
             result.subject_section = subject.section
         db.session.commit()
 
-        flash("Subject updated successfully!", "alert alert-success")
+        flash("Subject updated successfully!", "alert-success")
         return redirect(url_for("admins.manage_subjects"))
 
     return render_template(
@@ -1212,11 +1214,11 @@ def delete_subject(subject_id):
 
             flash(
                 "Subject and associated scores deleted successfully!",
-                "alert alert-success",
+                "alert-success",
             )
         except Exception as e:
             db.session.rollback()
-            flash(f"Error deleting subject: {e}", "alert alert-danger")
+            flash(f"Error deleting subject: {e}", "alert-danger")
 
     return redirect(url_for("admins.manage_subjects"))
 
@@ -1238,30 +1240,19 @@ It also provides the ability to generate broadsheets and download results
 """
 
 
-@admin_bp.route("/manage_results/<int:student_id>", methods=["GET", "POST"])
+@admin_bp.route("/manage_results/<string:class_name>/<int:student_id>", methods=["GET", "POST"])
 @login_required
-def manage_results(student_id):
+def manage_results(class_name, student_id):
     student = Student.query.get_or_404(student_id)
+    
+    class_name = unquote(class_name).strip()
 
     # Get the current session and term directly from the Session model
     current_session, current_term = Session.get_current_session_and_term(include_term=True)
 
-    if not current_session or not current_term:
-        flash("Current session or term is not set", "alert alert-danger")
-        return redirect(url_for("admins.students_by_class"))  # Updated redirection
-
-    # Fetch student class history for the current session
-    student_class = StudentClassHistory.get_class_by_session(
-        student_id=student.id, session_year_str=current_session
-    )
-
-    if not student_class:
-        flash(f"No class history for session {current_session}", "alert alert-danger")
-        return redirect(url_for("admins.students_by_class"))  # Updated redirection
-
     # Get subjects based on class and session (with deactivated subjects based on session year)
     subjects = get_subjects_by_class_name(
-        student_class, include_deactivated=(current_session == "2023/2024")
+        class_name, include_deactivated=(current_session == "2023/2024")
     )
 
     # Initialize the forms
@@ -1278,18 +1269,31 @@ def manage_results(student_id):
     if request.method == "GET":
         populate_form_with_results(form, subjects, results_dict)
 
-    # Handle POST request: update results if form is valid
     if form.validate_on_submit():
-        update_results(student, current_term, current_session, form, result_form)
-        flash("Results updated successfully", "alert alert-success")
-        return redirect(
-            url_for(
-                "admins.manage_results",
-                student_id=student.id,
-                term=current_term,
-                session=current_session,
+        try:
+            # Attempt to update results
+            update_results(student, current_term, current_session, form, result_form)
+            flash("Results updated successfully.", "alert-success")
+            app.logger.info(
+                f"Results for student {student.id} updated for term {current_term}, session {current_session}."
             )
-        )
+            return redirect(
+                url_for(
+                    "admins.manage_results",
+                    class_name=class_name,
+                    student_id=student.id,
+                )
+            )
+        except Exception as e:
+            # Log the error and flash a failure message
+            app.logger.error(
+                f"Error updating results for student {student.id}: {str(e)}"
+            )
+            flash(
+                "An error occurred while updating the results. Please try again.",
+                "alert-danger",
+            )
+
 
     # Log validation errors if POST request fails
     if request.method == "POST":
@@ -1299,6 +1303,10 @@ def manage_results(student_id):
     grand_total, average, cumulative_average, last_term_average = calculate_results(
         student.id, current_term, current_session
     )
+    
+    principal_remark = generate_principal_remark(average)
+    teacher_remark = generate_teacher_remark(average)
+    
     # Extract additional details from the first result (if available)
     next_term_begins = results[0].next_term_begins if results else None
     position = results[0].position if results else None
@@ -1311,7 +1319,7 @@ def manage_results(student_id):
         form=form,
         term=current_term,
         subject_results=zip(subjects, form.subjects),
-        class_name=student_class,
+        class_name=class_name,
         grand_total=grand_total,
         session=current_session,
         average=average,
@@ -1323,6 +1331,8 @@ def manage_results(student_id):
         last_term_average=last_term_average,
         date_issued=date_issued,
         position=position,
+        principal_remark=principal_remark,
+        teacher_remark=teacher_remark,
     )
 
 

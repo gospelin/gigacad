@@ -1,15 +1,16 @@
 <style>
     @page {
         size: A4;
-        margin: 8mm; /* Adjusted to fit more content */
+        margin: 10mm; /* Adjusted to fit more content */
     }
 
     body {
-        font-family: "Arial", serif;
-        font-weight: bolder;
-        line-height: 1.0;
+        font-family: "Georgia", sans-serif;
+        font-weight: bold;
+        line-height: 1.2;
         margin: 0;
-        font-size: 9pt; /* Slightly increased for better readability */
+        color: #000;
+        font-size: 8pt;
     }
 
     .print-view {
@@ -17,6 +18,8 @@
         padding: 3mm;
         font-size: 8.5pt; /* Adjusted for balance with the body font size */
         background-color: #fff;
+        position: relative;
+        z-index: -1;
     }
 
     .navbar,
@@ -43,7 +46,7 @@
     .school-info {
         text-align: center;
         width: 100%;
-        line-height: 1.5;
+        line-height: 1.2;
     }
 
     .school-info h1 {
@@ -56,7 +59,7 @@
     .school-info p {
         margin: 0;
         font-size: 9pt;
-        color: #666;
+        color: #333;
     }
 
     .school-info h2 {
@@ -70,12 +73,6 @@
         padding: 5px;
         vertical-align: top;
     }
-
-    .table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-bottom: 5px;
-    }
     
    .custom-table {
         width: 100%;
@@ -85,9 +82,9 @@
     
     .custom-table th,
     .custom-table td {
-        border-bottom: 1px solid #ddd;
-        padding: 10px;
-        font-size: 10pt;
+        border-bottom: 1px solid #ccc;
+        padding: 8px;
+        font-size: 8pt;
         text-transform: uppercase;
     }
     
@@ -97,23 +94,30 @@
     }
     
     .custom-table tbody tr:nth-child(odd) {
-        background-color: #f9f9f9;
+        border-bottom: 1px solid #333;
     }
     
+    
     .custom-table tbody tr:nth-child(even) {
-        background-color: #ffffff;  
+        border-bottom: 1px solid #333;  
     }
     
     
     .custom-table .text-center {
         text-align: center;
     }
+    
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 2px;
+    }
 
     .table th,
     .table td {
-        border: 1px solid #ccc; /* Soften borders */
-        padding: 5px;
-        font-size: 9pt;
+        border: 1px solid #333; 
+        padding: 8px;
+        font-size: 8pt;
         text-align: center; /* Center numerical values */
     }
     
@@ -144,59 +148,109 @@
     }
 
     .grading td {
-        font-size: 9pt;
+        font-size: 8pt;
         padding-right: 5px;
         white-space: nowrap;
     }
 
-    .footer {
-        border-top: 1px solid #333;
-        padding-top: 10px;
-        margin-top: 30px;
-        display: flex;
-        justify-content: space-between;
-        font-size: 9pt;
-        line-height: 1.2;
-        color: #333;
-    }
+    /*.footer {*/
+    /*    border-top: 1px solid #333;*/
+    /*    padding-top: 10px;*/
+    /*    margin-top: 30px;*/
+    /*    display: flex;*/
+    /*    justify-content: space-between;*/
+    /*    font-size: 9pt;*/
+    /*    line-height: 1.2;*/
+    /*    color: #333;*/
+    /*}*/
 
-    .footer .signature {
-        text-align: center;
-        margin-top: 30px;
-    }
+    /*.footer .signature {*/
+    /*    text-align: center;*/
+    /*    margin-top: 30px;*/
+    /*}*/
+
     
-    .remarks {
-        margin-top: 20px;
+   .remarks {
+        margin-top: 10px;
         font-size: 9pt;
         text-align: left;
+    }
+    
+    .remarks p {
+        margin: 5px 0;
+        font-style: italic;
+        padding-top: 5px;
+    }
+    
+    .remarks strong {
+        text-transform: uppercase;
+        font-weight: bold;
+    }
+    
+    .footer {
+        border-top: 1px solid #333;
+        padding-top: 5px;
+        margin-top: 5px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 9pt;
+        line-height: 1.5;
+        color: #333;
+    }
+    
+    .footer .signature {
+        text-align: center;
+        margin-top: 10px;
+    }
+    
+    .footer .signature img {
+        width: 120px; /* Adjust based on your image size */
+        /*height: auto;*/
+        margin-bottom: -20px;
+    }
+    
+    .footer .signature p {
+        margin: 0;
+        font-size: 9pt;
+        color: #555;
+    }
+    
+    .footer div {
+        text-align: right;
+    }
+    
+    .footer div p {
+        margin: 3px 0;
+        font-size: 9pt;
+        /*font-weight: normal;*/
+        /*color: #555;*/
     }
 
     /* Watermark Styling */
     body::before {
-        content: "Aunty Anne's Int'l School Approved Result";
+        content: url('{{ logo_url }}');
         position: absolute;
         top: 50%;
         left: 50%;
-        transform: translate(-50%, -50%) rotate(-48deg);
-        font-size: 3.5rem;
-        color: rgba(0, 0, 0, 0.03);
-        white-space: nowrap;
+        transform: translate(-30%, -70%) rotate(-2deg);
+        /*font-size: 3rem;*/
+        /*color: rgba(0, 0, 0, 0.03);*/
+        opacity: 0.15;
+        /*white-space: nowrap;*/
+        width: 50%;
         z-index: 0;
-    }
-
-    .print-view {
-        position: relative;
-        z-index: -1;
     }
 </style>
 
 <div class="print-view">
     <div class="school-header">
-        <img src="{{ static_url }}" alt="School Logo" class="school-logo">
+        <img src="{{ logo_url }}" alt="School Logo" class="school-logo">
         <div class="school-info">
             <h1>{{ school_name }}</h1>
             <p>6 OOMNNE DRIVE, ABAYI, ABA, ABIA STATE</p>
             <h2>Report Sheet for {{ term }} {{ session }} Academic Session</h2>
+            <p><em>"Practical, Knowledge and Confidence"</em></p>
         </div>
     </div>
 
@@ -204,7 +258,7 @@
         <table class="custom-table">
             <tr>
                 <td><strong>Name:</strong></td>
-                <td>{{ student.first_name | upper }} {{ student.middle_name[0] + '.' if student.middle_name else '' }}. {{ student.last_name | upper }}</td>
+                <td>{{ student.first_name | upper }} {{ student.middle_name[0] + '.' if student.middle_name else '' }} {{ student.last_name | upper }}</td>
                 <td><strong>Class:</strong></td>
                 <td>{{ student_class | upper }}</td>
             </tr>
@@ -241,7 +295,7 @@
                 <tr>
                     <th class="subject-column">Subjects</th>
                     <th class="classwork-column">Class Work<br>(20)</th>
-                    <th class="summative-column">Summative Test<br>(20)</th>
+                    <th class="summative-column">Test<br>(20)</th>
                     <th class="exam-column">Exam<br>(60)</th>
                     <th class="total-column">Total<br>(100)</th>
                     <th class="grade-column">Grade</th>
@@ -252,12 +306,18 @@
                 {% for result in results %}
                 <tr>
                     <td class="subject-column">{{ result.subject.name }}</td>
-                    <td style="color: {{ 'red' if result.class_assessment < 10 else '#333' }}">{{ result.class_assessment }}</td>
-                    <td style="color: {{ 'red' if result.summative_test < 10 else '#333' }}">{{ result.summative_test }}</td>
-                    <td style="color: {{ 'red' if result.exam < 30 else '#333' }}">{{ result.exam }}</td>
-                    <td>{{ result.total }}</td>
-                    <td>{{ result.grade }}</td>
-                    <td>{{ result.remark | capitalize }}</td>
+                    <td style="color: {{ 'red' if result.class_assessment is not none and result.class_assessment < 10 else '#333' }}">
+                        {{ result.class_assessment if result.class_assessment is not none else '-' }}
+                    </td>
+                    <td style="color: {{ 'red' if result.summative_test is not none and result.summative_test < 10 else '#333' }}">
+                        {{ result.summative_test if result.summative_test is not none else '-' }}
+                    </td>
+                    <td style="color: {{ 'red' if result.exam is not none and result.exam < 30 else '#333' }}">
+                        {{ result.exam if result.exam is not none else '-' }}
+                    </td>
+                    <td>{{ result.total if result.total is not none else '-' }}</td>
+                    <td>{{ result.grade if result.grade  else '-' }}</td>
+                    <td>{{ (result.remark | capitalize) if result.remark else '-' }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -295,11 +355,13 @@
     </div>
     
     <div class="remarks">
-        <p><strong>Remarks:</strong> {{ remarks if remarks else 'N/A' }}</p>
+        <p><strong>Principal's Remark:</strong> {{ principal_remark if principal_remark else 'N/A' }}</p>
+        <p><strong>Teacher's Remark:</strong> {{ teacher_remark if teacher_remark else 'N/A' }}</p>
     </div>
 
     <div class="footer">
         <div class="signature">
+            <img src="{{ signature_url }}" alt="Signature">
             <p>_______________________</p>
             <p><strong>Principal's Signature</strong></p>
         </div>
@@ -309,3 +371,5 @@
         </div>
     </div>
 </div>
+
+<p style="font-size: 6pt; padding-top: 5px; text-align: right;"> {{ request.url }} </p>

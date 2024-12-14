@@ -18,6 +18,8 @@ from ..helpers import (
     datetime,
     calculate_average,
     calculate_cumulative_average,
+    generate_principal_remark,
+    generate_teacher_remark,
 )
 
 from weasyprint import HTML
@@ -286,6 +288,9 @@ def download_results_pdf(student_id):
         app.logger.info(
             f"Fetched {len(yearly_results)} results for the entire academic year"
         )
+        
+        principal_remark = generate_principal_remark(average)
+        teacher_remark = generate_teacher_remark(average)
 
         # Calculate cumulative average across the academic year
         cumulative_average = round(calculate_cumulative_average(yearly_results), 1)
@@ -296,8 +301,11 @@ def download_results_pdf(student_id):
         date_issued = results[0].date_issued if results else None
 
         # Get the absolute path to the static directory
-        static_path = os.path.join(app.root_path, "static", "images", "MY_SCHOOL_LOGO.png")
-        static_url = f"file://{static_path}"
+        logo_path = os.path.join(app.root_path, "static", "images", "school_logo.png")
+        logo_url = f"file://{logo_path}"
+        
+        signature_path = os.path.join(app.root_path, "static", "images", "signature_anne.png")
+        signature_url = f"file://{signature_path}"
 
         date_printed = datetime.now().strftime('%dth %B, %Y')
 
@@ -317,8 +325,11 @@ def download_results_pdf(student_id):
             position=position,
             date_issued=date_issued,
             date_printed=date_printed,
-            static_url=static_url,
+            logo_url=logo_url,
+            signature_url=signature_url,
             student_class=student_class,
+            principal_remark=principal_remark,
+            teacher_remark=teacher_remark,
         )
 
         pdf = HTML(string=rendered).write_pdf()
