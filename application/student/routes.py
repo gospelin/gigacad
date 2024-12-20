@@ -4,6 +4,7 @@ from flask import (
     render_template,
     redirect,
     url_for,
+    session,
     flash,
     request,
     jsonify,
@@ -17,9 +18,10 @@ from ..helpers import (
     get_last_term,
     datetime,
     calculate_average,
+    calculate_grade,
     calculate_cumulative_average,
-    generate_principal_remark,
-    generate_teacher_remark,
+    generate_excel_broadsheet,
+    prepare_broadsheet_data,
 )
 
 from weasyprint import HTML
@@ -35,21 +37,33 @@ def student_portal():
         student = Student.query.filter_by(user_id=current_user.id).first()
 
         if not student:
-            flash("Student not found", "alert alert-danger")
+            flash("Student not found", "alert-danger")
             app.logger.warning(f"Student not found for user_id: {current_user.id}")
             return redirect(url_for("auth.login"))
 
         app.logger.info(
             f"Accessing student portal for student_id: {student.id}, {student.first_name = } {student.last_name = }"
         )
+        
+        # Check if session data exists for overall performance, attendance, etc.
+        overall_performance = session.get('avetage', 0)
+        total_attendance = session.get('total_attendance', 95)
+        total_subjects = session.get('total_subjects', 18)
+        best_grade = session.get('best_grade', 'N/A')
+        average = session.get('average', 0)
+        
         return render_template(
             "student/student_portal.html", student_id=student.id, student=student,
-            logo_url="auntyannesschools.com.ng/AAIS/application/static/images/MY_SCHOOL_LOGO.png",
+            overall_performance=overall_performance,
+            total_attendance=total_attendance,
+            total_subjects=total_subjects,
+            best_grade=best_grade,
+            average=average,
         )
 
     except Exception as e:
         app.logger.error(f"Error accessing student portal: {str(e)}")
-        flash("An error occurred. Please try again later.", "alert alert-danger")
+        flash("An error occurred. Please try again later.", "alert-danger")
         return redirect(url_for("auth.login"))
 
 
@@ -58,13 +72,19 @@ def student_portal():
 def student_profile(student_id):
     # Fetch the student details from the database
     student = Student.query.get_or_404(student_id)
+    session_year = Session.get_current_session()
+
 
     # Ensure the logged-in user is authorized to view this profile
     if current_user.id != student.user_id and not current_user.is_admin:
-        flash("You are not authorized to view this profile.", "alert alert-danger")
+        flash("You are not authorized to view this profile.", "alert-danger")
         return redirect(url_for("main.index"))
+    
+    class_name = StudentClassHistory.get_class_by_session(
+            student_id=student.id, session_year_str=session_year
+        )
 
-    return render_template("student/student_profile.html", student=student)
+    return render_template("student/student_profile.html", student=student, class_name=class_name)
 
 
 
@@ -100,43 +120,36 @@ def view_results(student_id):
 
         # Ensure the current user is authorized to view the student's results
         if current_user.id != student.user_id and not current_user.is_admin:
-            flash("You are not authorized to view this profile.", "alert alert-danger")
+            flash("You are not authorized to view this profile.", "alert-danger")
             app.logger.warning(
                 f"Unauthorized access attempt by user_id: {current_user.id} for student_id: {student_id}"
             )
             return redirect(url_for("main.index"))
 
         term = request.args.get("term")
-        session = request.args.get("session")
+        session_year = request.args.get("session")
 
-        if not term or not session:
+        if not term or not session_year:
             return redirect(
                 url_for("students.select_term_session", student_id=student.id)
             )
 
         # Fetch session and student class history in a single query
 
-        student_class = StudentClassHistory.get_class_by_session(
-            student_id=student.id, session_year_str=session
+        class_name = StudentClassHistory.get_class_by_session(
+            student_id=student.id, session_year_str=session_year
         )
 
-        if not student_class:
-
-            app.logger.error(f"No class history for {student.id} in {session}")
-
-            app.logger.error(f"{student.first_name} {student.last_name} is not in any class as at {session}")
-            flash(f"{student.first_name} {student.last_name} is not in any class as at {session}")
+        if not class_name:
+            flash(f"{student.first_name} {student.last_name} is not in any class as at {session_year}", "alert-info")
             return redirect(url_for("students.select_results", student_id=student.id))
 
         results = Result.query.filter_by(
-            student_id=student.id, term=term, session=session
+            student_id=student.id, term=term, session=session_year
         ).all()
 
         if not results:
-            flash("No results found for this term or session")
-            app.logger.info(
-                f"No results found for student_id: {student_id}, term: {term}, session: {session}"
-            )
+            flash("No results found for this term or session", "alert-danger")
             return redirect(url_for("students.select_results", student_id=student.id))
 
         # Calculate grand total and average based on non-zero totals
@@ -146,43 +159,28 @@ def view_results(student_id):
             "exam": sum(result.exam or 0 for result in results),
             "total": sum(result.total or 0 for result in results),
         }
-
-        average = round(calculate_average(results), 1)
-        app.logger.info(f"Grand total: {grand_total}, Average: {average}")
-
-        # Fetch and calculate last term's average
-        last_term = get_last_term(term)
-        last_term_results = Result.query.filter_by(
-            student_id=student_id, term=last_term, session=session
-        ).all()
-
-        last_term_average = (
-            round(calculate_average(last_term_results), 1) if last_term_results else 0
-        )
-        app.logger.info(f"Last term average: {last_term_average}")
-
-        # Update current results with the last term average
-        for res in results:
-            res.last_term_average = last_term_average
-
-        # Fetch all results for the academic year (cumulative calculation)
-        yearly_results = Result.query.filter_by(
-            student_id=student_id, session=session
-        ).all()
-
-        app.logger.info(
-            f"Fetched {len(yearly_results)} results for the entire academic year"
-        )
-
-        # Calculate cumulative average across the academic year
-        cumulative_average = round(calculate_cumulative_average(yearly_results), 1)
-        app.logger.info(f"Cumulative average: {cumulative_average}")
-
+        
+        last_term_average = results[0].last_term_average if results else None
+        average = results[0].term_average if results else None
+        cumulative_average = results[0].cumulative_average if results else None
+        subjects_offered = results[0].subjects_offered if results else None
+        
+        
+        # Extract additional details from the first result (if available)
         next_term_begins = results[0].next_term_begins if results else None
         position = results[0].position if results else None
         date_issued = results[0].date_issued if results else None
+        
+        principal_remark = results[0].principal_remark if results else None
+        teacher_remark = results[0].teacher_remark if results else None
 
         date_printed = datetime.now().strftime("%dth %B, %Y")
+        
+        session["average"] = average if average else 0
+        session["total_attendance"] = 95
+        session["total_subjects"] = subjects_offered if subjects_offered else 0
+        grade = max([result.total or 0 for result in results])
+        session["best_grade"] = calculate_grade(grade)
 
 
         app.logger.info(
@@ -194,7 +192,7 @@ def view_results(student_id):
             student=student,
             results=results,
             term=term,
-            session=session,
+            session=session_year,
             grand_total=grand_total,
             average=average,
             cumulative_average=cumulative_average,
@@ -204,14 +202,14 @@ def view_results(student_id):
             date_issued=date_issued,
             date_printed=date_printed,
             position=position,
-            student_class=student_class,
+            class_name=class_name,
         )
 
     except Exception as e:
         app.logger.error(
             f"Error viewing results for student_id: {student_id} - {str(e)}"
         )
-        flash("An error occurred. Please try again later.", "alert alert-danger")
+        flash("An error occurred. Please try again later.", "alert-danger")
         return redirect(url_for("students.select_results", student_id=student.id))
 
 
@@ -223,7 +221,7 @@ def download_results_pdf(student_id):
 
         # Ensure the current user is authorized to download the student's results PDF
         if current_user.id != student.user_id and not current_user.is_admin:
-            flash("You are not authorized to view this profile.", "alert alert-danger")
+            flash("You are not authorized to view this profile.", "alert-danger")
             app.logger.warning(
                 f"Unauthorized access attempt by user_id: {current_user.id} for student_id: {student_id}"
             )
@@ -233,22 +231,22 @@ def download_results_pdf(student_id):
         session = request.args.get("session")
 
         if not term or not session:
-            flash("Term and session must be specified.", "alert alert-info")
+            flash("Term and session must be specified.", "alert-danger")
             return redirect(url_for("students.select_term_session", student_id=student.id))
             
         # Fetch session and student class history in a single query
-        student_class = StudentClassHistory.get_class_by_session(
+        class_name = StudentClassHistory.get_class_by_session(
             student_id=student.id, session_year_str=session
         )
 
-        if not student_class:
+        if not class_name:
             app.logger.error(f"No class history for {student.id} in {session.year}")
 
         results = Result.query.filter_by(
             student_id=student.id, term=term, session=session
         ).all()
         if not results:
-            flash("No results found for this term or session", "alert alert-info")
+            flash("No results found for this term or session", "alert-danger")
             app.logger.info(
                 f"No results found for student_id: {student_id}, term: {term}, session: {session}"
             )
@@ -261,44 +259,20 @@ def download_results_pdf(student_id):
             "exam": sum(result.exam or 0 for result in results),
             "total": sum(result.total or 0 for result in results),
         }
-
-        average = round(calculate_average(results), 1)
-        app.logger.info(f"Grand total: {grand_total}, Average: {average}")
-
-        # Fetch and calculate last term's average
-        last_term = get_last_term(term)
-        last_term_results = Result.query.filter_by(
-            student_id=student_id, term=last_term, session=session
-        ).all()
-
-        last_term_average = (
-            round(calculate_average(last_term_results), 1) if last_term_results else 0
-        )
-        app.logger.info(f"Last term average: {last_term_average}")
-
-        # Update current results with the last term average
-        for res in results:
-            res.last_term_average = last_term_average
-
-        # Fetch all results for the academic year (cumulative calculation)
-        yearly_results = Result.query.filter_by(
-            student_id=student_id, session=session
-        ).all()
-
-        app.logger.info(
-            f"Fetched {len(yearly_results)} results for the entire academic year"
-        )
         
-        principal_remark = generate_principal_remark(average)
-        teacher_remark = generate_teacher_remark(average)
-
-        # Calculate cumulative average across the academic year
-        cumulative_average = round(calculate_cumulative_average(yearly_results), 1)
-        app.logger.info(f"Cumulative average: {cumulative_average}")
-
+        last_term_average = results[0].last_term_average if results else None
+        average = results[0].term_average if results else None
+        cumulative_average = results[0].cumulative_average if results else None
+        subjects_offered = results[0].subjects_offered if results else None
+        
+        
+        # Extract additional details from the first result (if available)
         next_term_begins = results[0].next_term_begins if results else None
         position = results[0].position if results else None
         date_issued = results[0].date_issued if results else None
+        
+        principal_remark = results[0].principal_remark if results else None
+        teacher_remark = results[0].teacher_remark if results else None
 
         # Get the absolute path to the static directory
         logo_path = os.path.join(app.root_path, "static", "images", "school_logo.png")
@@ -327,7 +301,7 @@ def download_results_pdf(student_id):
             date_printed=date_printed,
             logo_url=logo_url,
             signature_url=signature_url,
-            student_class=student_class,
+            class_name=class_name,
             principal_remark=principal_remark,
             teacher_remark=teacher_remark,
         )
@@ -351,6 +325,6 @@ def download_results_pdf(student_id):
         )
         flash(
             "An error occurred while generating the PDF. Please try again later.",
-            "alert alert-danger",
+            "alert-danger",
         )
         return redirect(url_for("students.select_results", student_id=student.id))

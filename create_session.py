@@ -1,16 +1,19 @@
-from application import app, db
+from application import create_app, db
 from application.models import Session
 
+app = create_app()
 
 def create_sessions():
     with app.app_context():
         # Define sessions to be added
         sessions = [
-            {"year": "2023/2024", "is_current": True},
-            {"year": "2024/2025", "is_current": False},
+            {"year": "2023/2024", "is_current": False},
+            {"year": "2024/2025", "is_current": True},
+            {"year": "2025/2026", "is_current": True},
             {"year": "2026/2027", "is_current": False},
             {"year": "2027/2028", "is_current": False},
             {"year": "2028/2029", "is_current": False},
+            {"year": "2029/2030", "is_current": False}
         ]
 
         # Add each session to the database

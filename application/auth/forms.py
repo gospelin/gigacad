@@ -48,6 +48,7 @@ class StudentRegistrationForm(FlaskForm):
             ("JSS 1"),
             ("JSS 2"),
             ("JSS 3"),
+            ("SSS"),
         ],
         validate_choice=True,
     )
@@ -68,6 +69,7 @@ class StudentRegistrationForm(FlaskForm):
             ("JSS 1"),
             ("JSS 2"),
             ("JSS 3"),
+            ("SSS"),
         ],
         validate_choice=True,
     )
@@ -159,6 +161,7 @@ class EditStudentForm(FlaskForm):
             ("JSS 1", "JSS 1"),
             ("JSS 2", "JSS 2"),
             ("JSS 3", "JSS 3"),
+            ("SSS", "SSS"),
         ],
     )
     submit = SubmitField("Update")
@@ -172,6 +175,7 @@ class SubjectForm(FlaskForm):
             ("Nursery", "Nursery"),
             ("Basic", "Basic"),
             ("Secondary", "Secondary"),
+            ("Senior Secondary", "Senior Secondary"),
         ],
         validators=[DataRequired()],
     )  # Change to SelectMultipleField
@@ -220,6 +224,7 @@ class classForm(FlaskForm):
             ("JSS 1", "JSS 1"),
             ("JSS 2", "JSS 2"),
             ("JSS 3", "JSS 3"),
+            ("SSS", "SSS"),
         ],
     )
     submit = SubmitField("View Classes")

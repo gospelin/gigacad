@@ -62,7 +62,7 @@ def setup_logging(app):
 
     # Create a rotating file handler for logging
     file_handler = RotatingFileHandler(
-        os.path.join(log_dir, "flask_app.log"), maxBytes=10240, backupCount=10
+        os.path.join(log_dir, "flask_app.log"), maxBytes=100960, backupCount=10
     )
     file_handler.setLevel(logging.INFO)
 

@@ -47,11 +47,12 @@
         margin-top: 20px;
     }
     
-    /*.table-responsive {*/
-    /*    overflow-x: auto;*/
-    /*    -webkit-overflow-scrolling: touch;*/
-    /*    position: relative;*/
-    /*}*/
+    .table-responsive {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        position: relative;
+    }
 
     .table th, .table td {
         padding: 10px;
@@ -69,16 +70,12 @@
         background-color: #333;
         color: #fff;
     }
-
-    .table-striped tbody tr:nth-of-type(odd) {
-        background-color: #f7f7f7;
-    }
     
     .table th, .table td {
         padding: 15px;
         vertical-align: middle;
         font-size: 0.95rem;
-        word-wrap: break-word;
+        word-wrap: nowrap;
         white-space: normal;
     }
 
@@ -209,24 +206,15 @@
             font-size: 0.85rem;
         }
         
-        /*.dropdown-item {*/
-        /*    background-color: var(--primary-blue);*/
-        /*    z-index: 3000;*/
-        /*}*/
     }
     
     /* @media (max-width: 768px) {*/
     /*    .table-responsive {*/
     /*        width: 100%;*/
-    /*        overflow-y: hidden;*/
+            /*overflow-y: auto;*/
     /*        -ms-overflow-style: -ms-autohiding-scrollbar;*/
     /*        border: 0;*/
     /*    }*/
-    /*}*/
-    
-    /*.dropdown-menu {*/
-    /*    z-index: 3000;*/
-    /*    position: absolute */
     /*}*/
     
 </style>
@@ -297,52 +285,34 @@
 
     {% if students %}
         <h1 class="text-center mb-4">Students in {{ class_name }} for {{ current_session }} Academic Session</h1>
-        
-        <!--<div class="container-fluid">-->
+        <div class="container">
+            
             <div class="table-responsive">
                 <table class="table table-striped">
                    <thead>
                         <tr>
-                            <th>Student ID</th>
+                            <th>Registration ID</th>
                             <th>First Name</th>
-                            <th>Middle Name</th>
                             <th>Last Name</th>
-                            <th>Username</th>
-                            <th>Password</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for student in students %}
                         <tr class="table-row" data-fee-status="{{ 'paid' if student.has_paid_fee else 'unpaid' }}" data-approval-status="{{ 'approved' if student.approved else 'pending' }}">
-                            <td>AAIS/0559/{{ student.id }}</td>
+                            <td>{{ student.reg_no }}</td>
                             <td>{{ student.first_name }}</td>
-                            <td>{{ student.middle_name }}</td>
                             <td>{{ student.last_name }}</td>
-                            <td>{{ student.username }}</td>
-                            <td>{{ student.password }}</td>
+            
                             <td>
                                 <!-- Actions Dropdown -->
-                                <div class="dropdown dropdown-menu-right dropdown-menu-end">
-                                    <button class="btn btn-primary dropdown-toggle" type="button" id="actionsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                        Actions                                    </button>
-                                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="actionsDropdown">
+                                <div class="btn-group dropend">
+                                    <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        Actions                                    
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-end dropdown-menu-sm-start dropdown-menu-md-start " aria-labelledby="actionsDropdown">
                                         <a class="dropdown-item" href="{{ url_for('admins.edit_student', class_name=class_name, student_id=student.id) }}">Edit</a>
                                         <a class="dropdown-item" href="{{ url_for('admins.manage_results', class_name=class_name, student_id=student.id) }}">Manage Results</a>
-                                        <form action="{{ url_for('admins.delete_student', class_name=class_name, student_id=student.id) }}" method="POST">
-                                            {{ form.hidden_tag() }}
-                                            <button class="delete-btn dropdown-item" data-bs-toggle="modal" data-bs-target="#deleteModal" data-action="{{ url_for('admins.delete_student', class_name=class_name, student_id=student.id) }}" type="button">Delete</button>
-                                        </form>
-                                        <form method="POST" action="{{ url_for('admins.promote_student', class_name=class_name, student_id=student.id) }}">
-                                            {{ form.hidden_tag() }}
-                                            <button  type="submit" class="dropdown-item">Promote</button>
-                                        </form>
-            
-                                        <form method="POST" action="{{ url_for('admins.demote_student', class_name=class_name, student_id=student.id) }}">
-                                            {{ form.hidden_tag() }}
-                                            <button type="submit" class="dropdown-item">Demote</button>
-                                        </form>
-            
                                         <form action="{{ url_for('admins.approve_student', class_name=class_name, student_id=student.id) }}" method="POST">
                                             {{ form.hidden_tag() }}
                                             {% if not student.approved %}
@@ -355,9 +325,20 @@
                                             <button type="submit" class="dropdown-item">Deactivate</button>
                                             {% endif %}
                                         </form>
-                                        <form action="{{ url_for('admins.regenerate_password', class_name=class_name, student_id=student.id) }}" method="POST">
+                                        
+                                        <form method="POST" action="{{ url_for('admins.promote_student', class_name=class_name, student_id=student.id) }}">
                                             {{ form.hidden_tag() }}
-                                            <button type="submit" class="dropdown-item">Change Password</button>
+                                            <button  type="submit" class="dropdown-item">Promote</button>
+                                        </form>
+            
+                                        <form method="POST" action="{{ url_for('admins.demote_student', class_name=class_name, student_id=student.id) }}">
+                                            {{ form.hidden_tag() }}
+                                            <button type="submit" class="dropdown-item">Demote</button>
+                                        </form>
+            
+                                        <form action="{{ url_for('admins.delete_student', class_name=class_name, student_id=student.id) }}" method="POST">
+                                            {{ form.hidden_tag() }}
+                                            <button class="delete-btn dropdown-item" data-bs-toggle="modal" data-bs-target="#deleteModal" data-action="{{ url_for('admins.delete_student', class_name=class_name, student_id=student.id) }}" type="button">Delete</button>
                                         </form>
                                         
                                         <form action="{{ url_for('admins.delete_student_record', class_name=class_name, student_id=student.id) }}" method="POST">
@@ -384,7 +365,7 @@
                     </tbody>
                 </table>
             </div>
-        <!--</div>-->
+        </div>
         <!-- Broadsheet and Print Buttons -->
         <div class="text-center">
             <a href="{{ url_for('admins.select_class') }}" class="btn btn-primary mt-3">Back to Classes</a>

@@ -201,7 +201,7 @@ Manage Results
                                         id="next_term_begins"
                                         name="next_term_begins"
                                         class="form-control"
-                                        value="{{ next_term_begins if next_term_begins else '' }}"
+                                        value="{{ next_term_begins if next_term_begins is not none else '' }}"
                                     />
                                 </div>
                             </div>
@@ -236,7 +236,7 @@ Manage Results
                             <div class="col-md-6">
                                 <div class="input-group">
                                     <span class="input-group-text">Cumulative Average:</span>
-                                    <span class="form-control" aria-label="Cumulative Average">{{ cumulative_average }}</span>
+                                    <span class="form-control" aria-label="Cumulative Average">{{ cumulative_average if cumulative_average is not none else '' }}</span>
                                 </div>
                             </div>
                         </div>
@@ -245,7 +245,7 @@ Manage Results
                             <div class="col-md-6">
                                 <div class="input-group">
                                     <span class="input-group-text">Average for the Term:</span>
-                                    <span class="form-control" aria-label="Average for the Term">{{ average }}</span>
+                                    <span class="form-control" aria-label="Average for the Term">{{ average if average is not none else '' }}</span>
                                 </div>
                             </div>
                             <div class="col-md-6">
