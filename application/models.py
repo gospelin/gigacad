@@ -8,7 +8,7 @@ class Session(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     year = db.Column(db.String(20), unique=True, nullable=False)  # e.g., "2023/2024"
     is_current = db.Column(db.Boolean, default=False)
-    current_term = db.Column(db.String(20), nullable=True)
+    current_term = db.Column(db.String(20), nullable=False)
 
     def __repr__(self):
         return f"<Session {self.year}>"
@@ -44,15 +44,52 @@ class Session(db.Model):
             return new_session
         return None
 
+class Classes(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    section = db.Column(db.String(50), nullable=True)
+    
+    # Relationship with Subjects (A class can offer many subjects)
+    subjects = db.relationship("Subject", backref="class_offered", lazy=True)
+    
+    # Relationship with Results (A class will have results for its students)
+    results = db.relationship("Result", backref="class_result", lazy=True)
+
+    def __repr__(self):
+        return f"<Class {self.name}>"
+
+    @classmethod
+    def create_class(cls, name, section):
+        """Helper function to create a new class."""
+        new_class = cls(name=name, section=section)
+        db.session.add(new_class)
+        db.session.commit()
+        return new_class
+
+    def edit_class(self, name=None, section=None):
+        """Helper function to edit an existing class."""
+        if name:
+            self.name = name
+        if section:
+            self.section = section
+        db.session.commit()
+    
+    def delete_class(self):
+        """Helper function to delete an existing class."""
+        db.session.delete(self)
+        db.session.commit()
+
 
 class StudentClassHistory(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     student_id = db.Column(db.Integer, db.ForeignKey("student.id"), nullable=False)
     session_id = db.Column(db.Integer, db.ForeignKey("session.id"), nullable=False)
     class_name = db.Column(db.String(50), nullable=False)
+    # class_id = db.Column(db.Integer, db.ForeignKey("class.id"), nullable=False)
 
     student = db.relationship("Student", backref="class_history", lazy=True)
     session = db.relationship("Session", backref="class_history", lazy=True)
+    classes = db.relationship("Class", backref="class_history", lazy=True)
 
     @classmethod
     def get_class_by_session(cls, student_id, session_year_str):
@@ -83,13 +120,14 @@ class StudentClassHistory(db.Model):
 
 class Student(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
+    reg_no = db.Column(db.String(50), nullable=True)
     first_name = db.Column(db.String(50), nullable=False)
     middle_name = db.Column(db.String(50), nullable=True)
     last_name = db.Column(db.String(50), nullable=False)
     username = db.Column(db.String(50), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)
     gender = db.Column(db.String(10), nullable=False)
-    date_of_birth = db.Column(db.String(10), nullable=True)  # Stored as "YYYY-MM-DD"
+    date_of_birth = db.Column(db.String(20), nullable=True)  # Stored as "YYYY-MM-DD"
     parent_name = db.Column(db.String(70), nullable=True)
     previous_class = db.Column(db.String(50), nullable=True)
     parent_phone_number = db.Column(db.String(11), nullable=True)
@@ -104,14 +142,6 @@ class Student(db.Model, UserMixin):
     has_paid_fee = db.Column(db.Boolean, default=False)
 
     results = db.relationship("Result", backref="student", lazy=True)
-
-    @staticmethod
-    def get_class_by_session(student_id, session):
-        """
-        Delegate to StudentClassHistory to fetch the student's class
-        in the specified session.
-        """
-        return StudentClassHistory.get_class_by_session(student_id, session)
 
     @staticmethod
     def get_latest_class(student_id):
@@ -175,16 +205,27 @@ class Result(db.Model):
     subject_id = db.Column(db.Integer, db.ForeignKey("subject.id"), nullable=False)
     term = db.Column(db.String(20), nullable=False)
     session = db.Column(db.String(20), nullable=False)
+    subjects_offered = db.Column(db.Integer, nullable=True)
+    
     class_assessment = db.Column(db.Integer, nullable=True)
     summative_test = db.Column(db.Integer, nullable=True)
     exam = db.Column(db.Integer, nullable=True)
     total = db.Column(db.Integer, nullable=True)
     grade = db.Column(db.String(5), nullable=True)
-    created_at = db.Column(db.String(19), nullable=True)
     remark = db.Column(db.String(100), nullable=True)
+    grand_total = db.Column(db.Integer, nullable=True)
+   
+    
     next_term_begins = db.Column(db.String(100), nullable=True)
     last_term_average = db.Column(db.Float, nullable=True)
+    term_average = db.Column(db.Float, nullable=True)
+    cumulative_average = db.Column(db.Float, nullable=True)
     position = db.Column(db.String(10), nullable=True)
+    
+    principal_remark = db.Column(db.String(100), nullable=True)
+    teacher_remark = db.Column(db.String(100), nullable=True)
+    
+    created_at = db.Column(db.String(19), nullable=True)
     date_issued = db.Column(db.String(100), nullable=True)
 
     def __repr__(self):

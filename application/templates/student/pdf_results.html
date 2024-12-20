@@ -1,22 +1,22 @@
 <style>
     @page {
         size: A4;
-        margin: 10mm; /* Adjusted to fit more content */
+        margin: {% if "Basic" in class_name %} 0 9mm {% elif "SSS" in class_name %} 10mm {% else %} 9mm {% endif %};
     }
 
     body {
         font-family: "Georgia", sans-serif;
         font-weight: bold;
-        line-height: 1.2;
+        line-height: {% if "Basic" in class_name %} 1.0 {% elif "SSS" in class_name %} 1.5 {% else %} 1.2 {% endif %};
         margin: 0;
         color: #000;
-        font-size: 8pt;
+        font-size: 8.5pt;
     }
 
     .print-view {
         margin: auto;
         padding: 3mm;
-        font-size: 8.5pt; /* Adjusted for balance with the body font size */
+        font-size: 8pt; /* Adjusted for balance with the body font size */
         background-color: #fff;
         position: relative;
         z-index: -1;
@@ -77,7 +77,7 @@
    .custom-table {
         width: 100%;
         border-collapse: collapse;
-        margin: 10px 0;
+        margin: 5px 0;
     }
     
     .custom-table th,
@@ -130,46 +130,25 @@
     
 
     .table .subject-column {
-        width: 55%;
+        width: 35%;
         text-align: left; /* Maintain alignment for subjects */
         text-transform: uppercase;
     }
 
-    .summative-column {
-        width: 10%;
-    }
-
-    .classwork-column {
+    .summative-column, .classwork-column, .exam-column {
         width: 10%;
     }
 
     .remark-column {
         width: 15%;
     }
-
+    
     .grading td {
         font-size: 8pt;
         padding-right: 5px;
         white-space: nowrap;
     }
 
-    /*.footer {*/
-    /*    border-top: 1px solid #333;*/
-    /*    padding-top: 10px;*/
-    /*    margin-top: 30px;*/
-    /*    display: flex;*/
-    /*    justify-content: space-between;*/
-    /*    font-size: 9pt;*/
-    /*    line-height: 1.2;*/
-    /*    color: #333;*/
-    /*}*/
-
-    /*.footer .signature {*/
-    /*    text-align: center;*/
-    /*    margin-top: 30px;*/
-    /*}*/
-
-    
    .remarks {
         margin-top: 10px;
         font-size: 9pt;
@@ -194,7 +173,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        font-size: 9pt;
+        font-size: 8pt;
         line-height: 1.5;
         color: #333;
     }
@@ -205,14 +184,13 @@
     }
     
     .footer .signature img {
-        width: 120px; /* Adjust based on your image size */
-        /*height: auto;*/
+        width: 120px; 
         margin-bottom: -20px;
     }
     
     .footer .signature p {
         margin: 0;
-        font-size: 9pt;
+        font-size: 8pt;
         color: #555;
     }
     
@@ -223,8 +201,6 @@
     .footer div p {
         margin: 3px 0;
         font-size: 9pt;
-        /*font-weight: normal;*/
-        /*color: #555;*/
     }
 
     /* Watermark Styling */
@@ -234,10 +210,7 @@
         top: 50%;
         left: 50%;
         transform: translate(-30%, -70%) rotate(-2deg);
-        /*font-size: 3rem;*/
-        /*color: rgba(0, 0, 0, 0.03);*/
         opacity: 0.15;
-        /*white-space: nowrap;*/
         width: 50%;
         z-index: 0;
     }
@@ -260,11 +233,11 @@
                 <td><strong>Name:</strong></td>
                 <td>{{ student.first_name | upper }} {{ student.middle_name[0] + '.' if student.middle_name else '' }} {{ student.last_name | upper }}</td>
                 <td><strong>Class:</strong></td>
-                <td>{{ student_class | upper }}</td>
+                <td>{{ class_name | upper }}</td>
             </tr>
             <tr>
                 <td><strong>STUDENT ID:</strong></td>
-                <td>AAIS/0559/00{{ student.id }}</td>
+                <td>{{ student.reg_no }}</td>
                 <td><strong>REOPENING DATE:</strong></td>
                 <td>{{ next_term_begins | upper }}</td>
             </tr>
@@ -280,7 +253,7 @@
                 <td><strong>Term Average:</strong></td>
                 <td>{{ average }}</td>
             </tr>
-            {% if "Creche" in student_class or "Nursery" in student_class or "Basic" in student_class %}
+            {% if "Nursery" in class_name or "Basic" in class_name %}
             <tr>
                 <td>Position in class</td>
                 <td colspan="3">{{ position }}</td>
@@ -304,22 +277,46 @@
             </thead>
             <tbody>
                 {% for result in results %}
-                <tr>
-                    <td class="subject-column">{{ result.subject.name }}</td>
-                    <td style="color: {{ 'red' if result.class_assessment is not none and result.class_assessment < 10 else '#333' }}">
-                        {{ result.class_assessment if result.class_assessment is not none else '-' }}
-                    </td>
-                    <td style="color: {{ 'red' if result.summative_test is not none and result.summative_test < 10 else '#333' }}">
-                        {{ result.summative_test if result.summative_test is not none else '-' }}
-                    </td>
-                    <td style="color: {{ 'red' if result.exam is not none and result.exam < 30 else '#333' }}">
-                        {{ result.exam if result.exam is not none else '-' }}
-                    </td>
-                    <td>{{ result.total if result.total is not none else '-' }}</td>
-                    <td>{{ result.grade if result.grade  else '-' }}</td>
-                    <td>{{ (result.remark | capitalize) if result.remark else '-' }}</td>
-                </tr>
+                    {% if result.total is not none %}
+                        <tr>
+                            <td class="subject-column">{{ result.subject.name }}</td>
+                            <td style="color: {{ 'red' if result.class_assessment is not none and result.class_assessment < 10 else '#333' }}">
+                                {{ result.class_assessment if result.class_assessment is not none else '-' }}
+                            </td>
+                            <td style="color: {{ 'red' if result.summative_test is not none and result.summative_test < 10 else '#333' }}">
+                                {{ result.summative_test if result.summative_test is not none else '-' }}
+                            </td>
+                            <td style="color: {{ 'red' if result.exam is not none and result.exam < 30 else '#333' }}">
+                                {{ result.exam if result.exam is not none else '-' }}
+                            </td>
+                            <td>{{ result.total if result.total is not none else '-' }}</td>
+                            <td>{{ result.grade if result.grade  else '-' }}</td>
+                            <td>{{ (result.remark | capitalize) if result.remark else '-' }}</td>
+                        </tr>
+                    {% endif %}
                 {% endfor %}
+                <tr>
+                    <td style="text-align: left;"><strong>GRAND TOTAL</strong></td>
+                    <td class="text-center">
+                        <strong
+                            >{{ grand_total.class_assessment
+                            }}</strong
+                        >
+                    </td>
+                    <td class="text-center">
+                        <strong
+                            >{{ grand_total.summative_test
+                            }}</strong
+                        >
+                    </td>
+                    <td class="text-center">
+                        <strong>{{ grand_total.exam }}</strong>
+                    </td>
+                    <td class="text-center">
+                        <strong>{{ grand_total.total }}</strong>
+                    </td>
+                    <td colspan="2"></td>
+                </tr>
             </tbody>
         </table>
     </div>
@@ -331,20 +328,24 @@
                     <th colspan="4">GRADE</th>
                 </tr>
                 <tr>
-                    <th>100 - 90</th>
-                    <th>89 - 75</th>
-                    <th>74 - 60</th>
+                    <th>100 - 95</th>
+                    <th>94 - 80</th>
+                    <th>79 - 70</th>
+                    <th>69 - 65</th>
+                    <th>64 - 60</th>
                     <th>59 - 50</th>
-                    <th>49 - 45</th>
-                    <th>44 - 40</th>
-                    <th>39 - 0</th>
+                    <th>49 - 40</th>
+                    <th>39 - 30</th>
+                    <th>29 - 0</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td>A+</td>
                     <td>A</td>
+                    <td>B+</td>
                     <td>B</td>
+                    <td>C+</td>
                     <td>C</td>
                     <td>D</td>
                     <td>E</td>
@@ -372,4 +373,4 @@
     </div>
 </div>
 
-<p style="font-size: 6pt; padding-top: 5px; text-align: right;"> {{ request.url }} </p>
+<p style="font-size: 6pt; padding-top: 2px; text-align: right;"> {{ request.url }} </p>

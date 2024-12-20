@@ -53,17 +53,10 @@
                     <td>{{ subject.name }}</td>
                     {% for student_data in broadsheet_data %}
                     {% set result = student_data.results[subject.id] %}
-                    {% if result %}
-                    <td>{{ result.class_assessment }}</td>
-                    <td>{{ result.summative_test }}</td>
-                    <td>{{ result.exam }}</td>
-                    <td>{{ result.total }}</td>
-                    {% else %}
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                    {% endif %}
+                    <td>{{ result.class_assessment if result.class_assessment else "" }}</td>
+                    <td>{{ result.summative_test if result.summative_test else "" }}</td>
+                    <td>{{ result.exam if result.exam else "" }}</td>
+                    <td>{{ result.total if result.total else "" }}</td>
                     {% endfor %}
                     <td>{{ subject_averages[subject.id]['average'] }}</td>
                 </tr>
@@ -83,6 +76,13 @@
                     <td></td>
                 </tr>
                 <tr>
+                    <td>Cumulative Average</td>
+                    {% for student_data in broadsheet_data %}
+                    <td colspan="4">{{ student_data.cumulative_average }}</td>
+                    {% endfor %}
+                    <td></td>
+                </tr>
+                <tr>
                     <td>Position</td>
                     {% for student_data in broadsheet_data %}
                     <td colspan="4">{{ student_data.position }}</td>
@@ -95,8 +95,8 @@
     {% endif %}
     
     <div class="text-center">
-        <a href="{{ url_for('admins.students_by_class', class_name=class_name) }}" class="btn btn-primary mt-3">Back to Classes</a>
-        <a href="{{ url_for('admins.select_class') }}" class="btn btn-primary mt-3">Back</a>
+        <a href="{{ url_for('admins.students_by_class', class_name=class_name) }}" class="btn btn-primary mt-3">Back to Students</a>
+        <a href="{{ url_for('admins.select_class') }}" class="btn btn-primary mt-3">Back to Classes</a>
     </div>
 </div>
 
