@@ -8,7 +8,7 @@ class Session(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     year = db.Column(db.String(20), unique=True, nullable=False)  # e.g., "2023/2024"
     is_current = db.Column(db.Boolean, default=False)
-    current_term = db.Column(db.String(20), nullable=False)
+    current_term = db.Column(db.String(20), nullable=True)
 
     def __repr__(self):
         return f"<Session {self.year}>"
@@ -44,40 +44,40 @@ class Session(db.Model):
             return new_session
         return None
 
-class Classes(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    section = db.Column(db.String(50), nullable=True)
+# class Classes(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     name = db.Column(db.String(100), nullable=False)
+#     section = db.Column(db.String(50), nullable=True)
     
-    # Relationship with Subjects (A class can offer many subjects)
-    subjects = db.relationship("Subject", backref="class_offered", lazy=True)
+#     # Relationship with Subjects (A class can offer many subjects)
+#     subjects = db.relationship("Subject", backref="class_offered", lazy=True)
     
-    # Relationship with Results (A class will have results for its students)
-    results = db.relationship("Result", backref="class_result", lazy=True)
+#     # Relationship with Results (A class will have results for its students)
+#     results = db.relationship("Result", backref="class_result", lazy=True)
 
-    def __repr__(self):
-        return f"<Class {self.name}>"
+#     def __repr__(self):
+#         return f"<Class {self.name}>"
 
-    @classmethod
-    def create_class(cls, name, section):
-        """Helper function to create a new class."""
-        new_class = cls(name=name, section=section)
-        db.session.add(new_class)
-        db.session.commit()
-        return new_class
+#     @classmethod
+#     def create_class(cls, name, section):
+#         """Helper function to create a new class."""
+#         new_class = cls(name=name, section=section)
+#         db.session.add(new_class)
+#         db.session.commit()
+#         return new_class
 
-    def edit_class(self, name=None, section=None):
-        """Helper function to edit an existing class."""
-        if name:
-            self.name = name
-        if section:
-            self.section = section
-        db.session.commit()
+#     def edit_class(self, name=None, section=None):
+#         """Helper function to edit an existing class."""
+#         if name:
+#             self.name = name
+#         if section:
+#             self.section = section
+#         db.session.commit()
     
-    def delete_class(self):
-        """Helper function to delete an existing class."""
-        db.session.delete(self)
-        db.session.commit()
+#     def delete_class(self):
+#         """Helper function to delete an existing class."""
+#         db.session.delete(self)
+#         db.session.commit()
 
 
 class StudentClassHistory(db.Model):
@@ -85,11 +85,11 @@ class StudentClassHistory(db.Model):
     student_id = db.Column(db.Integer, db.ForeignKey("student.id"), nullable=False)
     session_id = db.Column(db.Integer, db.ForeignKey("session.id"), nullable=False)
     class_name = db.Column(db.String(50), nullable=False)
-    # class_id = db.Column(db.Integer, db.ForeignKey("class.id"), nullable=False)
+    # class_id = db.Column(db.Integer, db.ForeignKey("classes.id"), nullable=False)
 
     student = db.relationship("Student", backref="class_history", lazy=True)
     session = db.relationship("Session", backref="class_history", lazy=True)
-    classes = db.relationship("Class", backref="class_history", lazy=True)
+    # classes = db.relationship("Class, backref="class_history", lazy=True)
 
     @classmethod
     def get_class_by_session(cls, student_id, session_year_str):
@@ -116,7 +116,6 @@ class StudentClassHistory(db.Model):
 
     def __repr__(self):
         return f"<StudentClassHistory Student: {self.student_id}, Class: {self.class_name}, Session: {self.session.year}>"
-
 
 class Student(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
