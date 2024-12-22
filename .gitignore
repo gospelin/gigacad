@@ -11,6 +11,7 @@ __pycache__/
 .env
 .flaskenv
 config.py
+*.env
 
 # Other files to ignore
 __pycache__/
