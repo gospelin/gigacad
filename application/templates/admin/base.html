@@ -12,432 +12,218 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- FontAwesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Boxicons CDN Link -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/boxicons/2.1.4/css/boxicons.min.css" rel="stylesheet">
+    
     <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" onload="this.rel='stylesheet'" />
-    <style>
-        :root {
-            --black: #000000;
-            --white: #ffffff;
-            --grey: #888888;
-            --light-gray: #f8f9fa;
-            --dark-gray: #333333;
-            --light-background: #f7f8fa;
-            --border-gray: #dce0e3;
-            --primary-blue: #4e54c8;
-            --light-blue: #8f94fb;
-            --hover-blue: #3c40a4;
-            --dark-blue: #6d74c7;
-            --button-disabled: #ccc;
-            --toggle-button-background: #e9ecef;
-            --link-blue: #4e54c8;
-            --light-gray: #f8f9fa;
-        }
-        
-        .navbar {
-            --bs-navbar-toggler-border-color: none;
-            --bs-navbar-toggler-border-radius: none; 
-            --bs-navbar-toggler-focus-width: none;
-            --bs-navbar-toggler-transition: box-shadow 0.15s ease-in-out;
-            --bs-navbar-toggler-icon-bg: none;
-        }
-
-        body {
-            font-family: "Roboto", sans-serif;
-            overflow-x: auto;
-            background-color: var(--light-background);
-            /*color: var(--dark-gray);*/
-        }
-
-        /* Navbar */
-        .navbar {
-            background-color: var(--primary-blue);
-            display: none;
-        }
-        
-        .navbar-brand {
-            font-weight: 700;
-            color: var(--white);
-        }
-
-        .navbar-nav .nav-link {
-             background-color: var(--light-blue);
-            font-weight: bold;
-            color: var(--white);
-            transition: color 0.3s ease;
-        }
-
-        .navbar-nav .nav-link:hover {
-            color: var(--light-blue);
-        }
-        
-        .navbar-toggler-icon {
-            color: var(--white);
-            font-size: 1.5rem;
-        }
-
-        .navbar-toggler {
-            border-color: var(--bs-navbar-toggler-border-color);
-            border-radius: var(--bs-navbar-toggler-border-radius);
-            transition: var(--bs-navbar-toggler-transition);
-        }
-        
-        .navbar-toggler .toggler-icon {
-            display: block;
-            position: relative;
-            width: 24px;
-            height: 2px;
-            background-color: var(--white);
-            margin: 6px auto;
-            transition: all 0.3s ease-in-out;
-        }
-        
-        .navbar-toggler.collapsed .toggler-icon {
-            transform: rotate(90deg);
-        }
-
-        .sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 100%;
-            min-height: 100vh;
-            width: 250px;
-            overflow-y: auto;
-            z-index: 1030;
-        }
-
-        .sidebar a, .sidebar .submenu a {
-            color: var(--white);
-            text-decoration: none;
-            padding: 15px;
-            display: block;
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-
-        .sidebar a:hover, .sidebar .submenu a:hover {
-            background-color: var(--hover-blue);
-            color: var(--white);
-        }
-
-        .sidebar .active {
-            background-color: var(--hover-blue);
-            font-weight: bold;
-        }
-        
-        .sidebar-header {
-            padding: 10px;
-            background-color: var(--dark-blue);
-            color: var(--white);
-        }
-
-        .submenu {
-            display: none;
-            background-color: var(--dark-blue);
-        }
-
-        .submenu.show {
-            display: block;
-        }
-        
-        .submenu.collapse.show {
-            margin-top: 10px;
-            padding-left: 20px;
-            transition: all 0.3s ease-in-out;
-        }
-
-        .offcanvas a {
-            color: var(--white);
-            text-decoration: none;
-            padding: 10px 15px;
-            display: block;
-        }
-
-        .offcanvas a:hover {
-            background-color: var(--hover-blue);
-            color: var(--white);
-        }
-        
-
-        .offcanvas-header {
-            border-bottom: 1px solid var(--light-blue);
-        }
-
-        .offcanvas-title {
-            font-weight: 700;
-        }
-        
-        /* Common styles for both sidebar and offcanvas */
-        .sidebar, .offcanvas {
-            color: var(--white);
-            background-color: var(--primary-blue);
-            transition: width 0.3s ease-in-out, transform 0.3s ease-in-out;
-        }
-        
-        .btn-close {
-            color: var(--white);
-            opacity: 1;
-        }
-        /* Main Content */
-        .main-content {
-            /*flex: 1;*/
-            padding: 20px;
-            min-height: 100vh;
-            transition: margin-left 0.3s ease;
-            background-color: var(--light-background);
-            color: var(--dark-gray);
-            margin-left: 250px;
-            padding-top: 30px;
-        }
-
-        .btn-primary {
-            background-color: var(--primary-blue);
-            border: none;
-            color: var(--white);
-        }
-
-        .btn-primary:hover {
-            background-color: var(--hover-blue);
-        }
-
-        /* Mobile View */
-        @media (max-width: 768px) {
-            .sidebar {
-                position: static;
-                height: 100vh;
-                width: 100%;
-                display: none;
-            }
-            
-            .offcanvas {
-                --bs-offcanvas-width: 250px;
-            }
-            
-            .navbar {
-                display: block;
-            }
-
-            .navbar-toggler {
-                display: block;
-            }
-
-            .main-content {
-                margin-left: 0;
-                padding-top: 80px;
-            }
-            
-            /* Highlight active link */
-            .nav-link.active {
-                background-color: var(--hover-blue);
-                color: var(--white) !important;
-            }
-        }
-        
-        {% block styles %}{% endblock %}
-    </style>
+    <!--<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" onload="this.rel='stylesheet'" />-->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
 </head>
 <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg fixed-top">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="{{ url_for('admins.admin_dashboard') }}">Admin Dashboard</a>
-            <div class="d-flex align-items-center">
-                <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu" aria-controls="offcanvasMenu">
-                    <span class="navbar-toggler-icon"><i class="fas fa-bars"></i></span>
-                </button>
-            </div>
-       </div>
-    </nav>
+<nav id="sidebar" class="d-flex flex-column min-vh-100 sidebar">
+  <div class="d-flex align-items-center mb-4 logo-details">
+    <i class="bx bxl-c-plus-plus text-white fs-3"></i>
+    <span class="logo_name">Admin Dashboard</span>
+  </div>
 
-    <!-- Static Sidebar for Larger Screens -->
-    <nav id="sidebar" class="sidebar">
-        <div class="sidebar-header">
-            <h2 class="text-center py-3">Admin Dashboard</h2>
-        </div>
-        <a href="{{ url_for('main.index') }}" class="nav-link {% if request.endpoint == 'main.index' %}active{% endif %}" aria-current="{% if request.endpoint == 'main.index' %}page{% endif %}"><i class="fas fa-home icon"></i>Home</a>
-        <a href="{{ url_for('admins.admin_dashboard') }}" id="dashboard-link" class="nav-link {% if request.endpoint == 'admins.admin_dashboard' %}active{% endif %}" aria-current="{% if request.endpoint == 'admins.admin_dashboard' %}page{% endif %}"><i class="fas fa-tachometer-alt icon"></i>Dashboard</a>
-        
-        <!-- Student Management -->
-        <a href="#" 
-           class="nav-link {% if request.endpoint in ['placeholder.add_student', 'admins.approve_students', 'placeholder.edit_student', 'placeholder.delete_student', 'placeholder.bulk_upload_students', 'placeholder.search_students'] %}active{% endif %}" 
-           data-bs-toggle="collapse" 
-           data-bs-target="#studentMenu" 
-           aria-expanded="{% if request.endpoint in ['placeholder.add_student', 'admins.approve_students', 'placeholder.edit_student', 'placeholder.delete_student', 'placeholder.bulk_upload_students', 'placeholder.search_students'] %}true{% else %}false{% endif %}">
-            <i class="fas fa-user-graduate icon"></i> Student Management
-        </a>
-        <div class="submenu collapse {% if request.endpoint in ['placeholder.add_student', 'admins.approve_students', 'placeholder.edit_student', 'placeholder.delete_student', 'placeholder.bulk_upload_students', 'placeholder.search_students'] %}show{% endif %}" id="studentMenu">
-            <a href="#" 
-               class="nav-link {% if request.endpoint == 'placeholder.add_student' %}active{% endif %}">
-               Add New Student
-            </a>
-            <a href="{{ url_for('admins.approve_students') }}" 
-               class="nav-link {% if request.endpoint == 'admins.approve_students' %}active{% endif %}">
-               View All Students
-            </a>
-            <a href="#" 
-               class="nav-link {% if request.endpoint == 'placeholder.edit_student' %}active{% endif %}">
-               Edit Student Details
-            </a>
-            <a href="#" 
-               class="nav-link {% if request.endpoint == 'placeholder.delete_student' %}active{% endif %}">
-               Delete Student Records
-            </a>
-            <a href="#" 
-               class="nav-link {% if request.endpoint == 'placeholder.bulk_upload_students' %}active{% endif %}">
-               Bulk Upload Students
-            </a>
-            <a href="#" 
-               class="nav-link {% if request.endpoint == 'placeholder.search_students' %}active{% endif %}">
-               Search and Filter Students
-            </a>
-        </div>
-
-        
-        <!-- Class Management -->
-        <a href="#" data-bs-toggle="collapse" data-bs-target="#classMenu" aria-expanded="false">
-            <i class="fas fa-school icon"></i> Class Management
-        </a>
-        <div class="submenu collapse" id="classMenu">
-            <a href="#">Add New Class/Section</a>
-            <a href="{{ url_for('admins.students_by_class') }}">View All Classes/Sections</a>
-            <a href="#">Edit Class/Section Details</a>
-            <a href="#">Assign Teachers to Classes</a>
-        </div>
-
-        <!-- Subject Management -->
-        <a href="#" data-bs-toggle="collapse" data-bs-target="#subjectMenu" aria-expanded="false">
-            <i class="fas fa-book icon"></i> Subject Management
-        </a>
-        <div class="submenu collapse" id="subjectMenu">
-            <a href="#">Add New Subject</a>
-            <a href="{{ url_for('admins.manage_subjects') }}">View All Subjects</a>
-            <a href="#">Edit Subject Details</a>
-            <a href="#">Assign Subjects to Classes/Sections</a>
-        </div>
-
-        <!-- Result Management -->
-        <a href="#" data-bs-toggle="collapse" data-bs-target="#resultMenu" aria-expanded="false">
-            <i class="fas fa-chart-line icon"></i> Result Management
-        </a>
-        <div class="submenu collapse" id="resultMenu">
-            <a href="#">Add or Upload Results</a>
-            <a href="#">View Results by Student</a>
-            <a href="#">Edit Results</a>
-            <a href="#">Generate and Download Reports</a>
-            <a href="#">Notify Students about Results Availability</a>
-        </div>
-
-        <!-- Teacher Management -->
-        <a href="#" data-bs-toggle="collapse" data-bs-target="#teacherMenu" aria-expanded="false">
-            <i class="fas fa-chalkboard-teacher icon"></i> Teacher Management
-        </a>
-        <div class="submenu collapse" id="teacherMenu">
-            <a href="#">Add New Teacher</a>
-            <a href="#">View All Teachers</a>
-            <a href="#">Edit Teacher Details</a>
-            <a href="#">Assign Teachers to Classes</a>
-        </div>
-
-
-        <a href="{{ url_for('admins.manage_sessions') }}">
-            <i class="fas fa-calendar-alt icon"></i> Manage Sessions
-        </a>
-        <a href="{{ url_for('auth.logout') }}">
-            <i class="fas fa-sign-out-alt icon"></i> Logout
-        </a>
-
-        <!-- Other menu items go here -->
-    </nav>
+  <ul id="nav-links" class="flex-column list-unstyled nav-links">
+    <li class="nav-item">
+      <a href="{{ url_for('admins.admin_dashboard') }}" class="nav-link text-white active">
+        <i class="bx bx-grid-alt"></i>
+        <span>Dashboard</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="{{ url_for('main.index') }}" class="nav-link text-white">
+      <i class="bx bx-home"></i>
+        <span>Home</span>
+      </a>
+    </li>
     
-    <!-- Offcanvas Menu for Smaller Screens -->
-    <div class="offcanvas  offcanvas-start custom-offcanvas-width" tabindex="-1" id="offcanvasMenu" aria-labelledby="offcanvasMenuLabel">
-        <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="offcanvasMenuLabel">Menu</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    <!-- Student Management -->
+    <li class="nav-item">
+        <a href="#studentManagement" class="text-white nav-link" data-bs-toggle="collapse" data-bs-target="#studentManagement" aria-expanded="false">
+            <i class='bx bxs-graduation'></i> <span>Student Management</span>
+        </a>
+        <div class="collapse" id="studentManagement">
+            <ul class="nav flex-column ms-0">
+                <li><a href="#" class="text-white nav-link"><span>Add New Student</span></a></li>
+                <li><a href="{{ url_for('admins.approve_students') }}" class="text-white nav-link"><span>View All Students</span></a></li>
+                <li><a href="#" class="text-white nav-link"><span>Edit Student Details</span></a></li>
+                <li><a href="#" class="text-white nav-link"><span>Delete Student Records</span></a></li>
+                <li><a href="#" class="text-white nav-link"><span>Bulk Upload Students</span></a></li>
+                <li><a href="#" class="text-white nav-link"><span>Search and Filter Students</span></a></li>
+            </ul>
         </div>
-        <div class="offcanvas-body">
-            <a href="{{ url_for('main.index') }}"><i class="fas fa-home icon"></i>Home</a>
-            <a href="{{ url_for('admins.admin_dashboard') }}" id="dashboard-link" class="active"><i class="fas fa-tachometer-alt icon"></i>Dashboard</a>
-            
-            <!-- Student Management -->
-            <a href="#" data-bs-toggle="collapse" data-bs-target="#studentMenu" aria-expanded="false">
-                <i class="fas fa-user-graduate icon"></i> Student Management
-            </a>
-            <div class="submenu collapse" id="studentMenu">
-                <a href="#">Add New Student</a>
-                <a href="{{ url_for('admins.approve_students') }}">View All Students</a>
-                <a href="#">Edit Student Details</a>
-                <a href="#">Delete Student Records</a>
-                <a href="#">Bulk Upload Students</a>
-                <a href="#">Search and Filter Students</a>
-            </div>
-            
-            <!-- Class Management -->
-            <a href="#" data-bs-toggle="collapse" data-bs-target="#classMenu" aria-expanded="false">
-                <i class="fas fa-school icon"></i> Class Management
-            </a>
-            <div class="submenu collapse" id="classMenu">
-                <a href="#">Add New Class/Section</a>
-                <a href="{{ url_for('admins.students_by_class') }}">View All Classes/Sections</a>
-                <a href="#">Edit Class/Section Details</a>
-                <a href="#">Assign Teachers to Classes</a>
-            </div>
+    </li>
     
-            <!-- Subject Management -->
-            <a href="#" data-bs-toggle="collapse" data-bs-target="#subjectMenu" aria-expanded="false">
-                <i class="fas fa-book icon"></i> Subject Management
-            </a>
-            <div class="submenu collapse" id="subjectMenu">
-                <a href="#">Add New Subject</a>
-                <a href="{{ url_for('admins.manage_subjects') }}">View All Subjects</a>
-                <a href="#">Edit Subject Details</a>
-                <a href="#">Assign Subjects to Classes/Sections</a>
-            </div>
+    <!-- Class Management -->
+    <li class="nav-item">
+      <a href="#classManagement" class="nav-link text-white" data-bs-toggle="collapse" data-bs-target="#classManagement"  aria-expanded="false">
+          <i class='bx bxs-group'></i> 
+          <span>Class Management</span>
+      </a>
+      <div class="collapse" id="classManagement">
+          <ul class="nav flex-column ms-0">
+                <li><a href="#" class="nav-link text-white"><span>Add Class</span></a></li>
+                <li><a href="{{ url_for('admins.select_class') }}" class="nav-link text-white"><span>View Classes</span></a></li>
+                <li><a href="#" class="nav-link text-white"><span>Edit Class/Section Details</span></a></li>
+                <li><a href="#" class="nav-link text-white"><span>Assign Teachers to Classes</span></a></li>
+            </ul>
+      </div>
+    </li>
     
-            <!-- Result Management -->
-            <a href="#" data-bs-toggle="collapse" data-bs-target="#resultMenu" aria-expanded="false">
-                <i class="fas fa-chart-line icon"></i> Result Management
-            </a>
-            <div class="submenu collapse" id="resultMenu">
-                <a href="#">Add or Upload Results</a>
-                <a href="#">View Results by Student</a>
-                <a href="#">Edit Results</a>
-                <a href="#">Generate and Download Reports</a>
-                <a href="#">Notify Students about Results Availability</a>
-            </div>
+    <!-- Subject Management -->
+    <li class="nav-item">
+      <a href="#subjectManagement" class="nav-link text-white" data-bs-toggle="collapse" data-bs-target="#subjectManagement"  aria-expanded="false">
+          <i class="fas fa-book icon"></i> 
+          <span>Subject Management</span>
+      </a>
+      <div class="collapse" id="subjectManagement">
+          <ul class="nav flex-column ms-0">
+                <li><a href="#" class="nav-link text-white"><span>Add New Subject</span></a></li>
+                <li><a href="{{ url_for('admins.manage_subjects') }}" class="nav-link text-white"><span>View Subjects</span></a></li>
+                <li><a href="#" class="nav-link text-white"><span>Edit Subject Details</span></a></li>
+                <li><a href="#" class="nav-link text-white"><span>Assign Subjects to Classes</span></a></li>
+            </ul>
+      </div>
+    </li>
     
-            <!-- Teacher Management -->
-            <a href="#" data-bs-toggle="collapse" data-bs-target="#teacherMenu" aria-expanded="false">
-                <i class="fas fa-chalkboard-teacher icon"></i> Teacher Management
-            </a>
-            <div class="submenu collapse" id="teacherMenu">
-                <a href="#">Add New Teacher</a>
-                <a href="#">View All Teachers</a>
-                <a href="#">Edit Teacher Details</a>
-                <a href="#">Assign Teachers to Classes</a>
-            </div>
+     <!-- Result Management -->
+    <li class="nav-item">
+      <a href="#resultManagement" class="nav-link text-white" data-bs-toggle="collapse" data-bs-target="#resultManagement"  aria-expanded="false">
+          <i class="fas fa-chart-line icon"></i> 
+          <span>Result Management</span>
+      </a>
+      <div class="collapse" id="resultManagement">
+          <ul class="nav flex-column ms-0">
+                <li><a href="#" class="nav-link text-white"><span>Add or Upload Results</span></a></li>
+                <li><a href="#" class="nav-link text-white"><span>View Results by Student</span></a></li>
+                <li><a href="#" class="nav-link text-white"><span>Edit Results</span></a></li>
+                <li><a href="#" class="nav-link text-white"><span>Generate and Download Reports</span></a></li>
+                <li><a href="{{ url_for('admins.print_student_message') }}" class="nav-link text-white"><span>Notify Students about Results Availability</span></a></li>
+            </ul>
+      </div>
+    </li>
     
+     <!-- Teacher Management -->
+    <li class="nav-item">
+      <a href="#teachertManagement" class="nav-link text-white" data-bs-toggle="collapse" data-bs-target="#teacherManagement"  aria-expanded="false">
+          <i class="fas fa-chalkboard-teacher icon"></i> 
+          <span>Teacher Management</span>
+      </a>
+      <div class="collapse" id="teacherManagement">
+          <ul class="nav flex-column ms-0">
+                <li><a href="#" class="nav-link text-white"><span>Add New Teacher</span></a></li>
+                <li><a href="#" class="nav-link text-white"><span>View All Teachers</span></a></li>
+                <li><a href="#" class="nav-link text-white"><span>Edit Teacher Details</span></a></li>
+                <li><a href="#" class="nav-link text-white"><span>Assign Teachers to Classes</span></a></li>
+            </ul>
+      </div>
+    </li>
     
-            <a href="{{ url_for('admins.manage_sessions') }}">
-                <i class="fas fa-calendar-alt icon"></i> Manage Sessions
-            </a>
-            <a href="{{ url_for('auth.logout') }}">
-                <i class="fas fa-sign-out-alt icon"></i> Logout
-            </a>
+    <!-- Manage Session -->
+    <li class="nav-item">
+      <a href="{{ url_for('admins.manage_sessions') }}" class="nav-link text-white">
+        <i class="fas fa-calendar-alt icon"></i>
+        <span>Manage Sessions</span>
+      </a>
+    </li>
+    
+    <li class="nav-item">
+      <a href="#" class="nav-link text-white">
+        <i class="bx bx-cog"></i>
+        <span>Setting</span>
+      </a>
+    </li>
+    <li class="nav-item mt-auto">
+      <a href="{{ url_for('auth.logout') }}" class="nav-link text-white">
+        <i class="bx bx-log-out"></i>
+        <span>Log out</span>
+      </a>
+    </li>
+  </ul>
+</nav>
+
+<section class="home-section">
+  <nav>
+    <div class="sidebar-button">
+      <i class="bx bx-menu sidebarBtn"></i>
+      <span class="dashboard">Dashboard</span>
+    </div>
+    <div class="d-flex align-items-center ms-auto">
+        <form class="d-flex">
+          <input class="form-control me-2" type="search" placeholder="Search..." aria-label="Search"/>
+            <button class="btn btn-primary" type="submit">
+                <i class="bx bx-search"></i>
+            </button>
+        </form>
+        <div class="dropdown ms-3 profile-details">
+          <img src="/static/images/FB_IMG_1715841251928.jpg" alt="Profile" 
+          class="img-fluid rounded circle" style="width: 40px; height: 40px;" />
+          <button class="btn  text-dark dropdown-toggle" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                Gospel Isaac
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                <li><a class="dropdown-item" href="#">Profile</a></li>
+                <li><a class="dropdown-item" href="#">Logout</a></li>
+            </ul>
         </div>
     </div>
-
+  </nav>
     <!-- Main Content -->
-    <main class="container main-content">
-        {% for message in get_flashed_messages() %}
-            <div class="alert alert-warning mt-3">{{ message }}</div>
+   <main class="flex-fill home-content container mt-0">
+        {% for category, message in get_flashed_messages(with_categories=True) %}
+            <div class="alert {{ category }} mt-3">{{ message }}</div>
         {% endfor %}
         {% block content %}{% endblock %}
     </main>
 
-    <!-- JavaScript Libraries -->
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.0/dist/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    {% block scripts %}{% endblock %}
+</section>
+
+<!-- JavaScript Libraries -->
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.0/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+{% block scripts %}{% endblock %}
+  <script>
+    // Highlight active navigation link based on current URL
+    const navLinks = document.querySelectorAll("#nav-links .nav-link");
+
+    navLinks.forEach(link => {
+        if (link.href === window.location.href) {
+            link.classList.add("active");
+        }
+
+        link.addEventListener("click", () => {
+            navLinks.forEach(nav => nav.classList.remove("active"));
+            link.classList.add("active");
+        });
+    });
+
+    // Sidebar toggle functionality
+    const sidebar = document.querySelector(".sidebar");
+    const sidebarBtn = document.querySelector(".sidebarBtn");
+    const collapsibleNavs = document.querySelectorAll(".collapse");
+    
+    sidebarBtn.onclick = function () {
+        sidebar.classList.toggle("active");
+        
+        // Collapse all expanded submenus when sidebar is toggled
+        collapsibleNavs.forEach(nav => {
+            if (nav.classList.contains("show")) {
+                nav.classList.remove("show"); // Bootstrap's collapse class management
+                nav.setAttribute("aria-expanded", "false");
+            }
+        });
+        
+        if (sidebar.classList.contains("active")) {
+            sidebarBtn.classList.replace("bx-menu", "bx-menu-alt-right");
+        } else {
+            sidebarBtn.classList.replace("bx-menu-alt-right", "bx-menu");
+        }
+    };
+</script>
 </body>
 </html>

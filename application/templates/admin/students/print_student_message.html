@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Print Student Message</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
+
+    <style>
+        @media print {
+            .no-print {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="mb-4">Print Student Login Credentials</h2>
+        <form method="post" class="no-print">
+            {{ form.hidden_tag() }}
+            <input type="hidden" name="csrf_token" id="csrf_token" value="{{ csrf_token() }}">
+            <div class="mb-3">
+                {% if students %}
+                    <label for="student_id" class="form-label">Select Student</label>
+                    <select class="form-select" name="student_id" id="student_id" required style="width: 100%">
+                        <option value="" disabled selected>Select a student</option>
+                        {% for student in students %}
+                            <option value="{{ student.id }}" 
+                                    {% if selected_student and selected_student.id == student.id %}selected{% endif %}>
+                                {{ student.first_name }} {{ student.last_name }} ({{ student.reg_no }})
+                            </option>
+                        {% endfor %}
+                    </select>
+                {% else %}
+                    <p class="text-danger">No students found in the database. Please register students first.</p>
+                {% endif %}
+            </div>
+            <button type="submit" class="btn btn-primary">View Credentials</button>
+        </form>
+
+        <div id="print-section" class="mt-5">
+            {% if selected_student %}
+                <h3>Student Login Credentials</h3>
+                <p><strong>Name:</strong> {{ selected_student.first_name }} {{ selected_student.last_name }}</p>
+                <p><strong>Student ID:</strong> {{ selected_student.reg_no }}</p>
+                <p><strong>Password:</strong> {{ selected_student.reg_no }}</p>
+                <hr>
+                <p>To access your results:</p>
+                <ol>
+                    <li>Visit our website: <a href="https://auntyannesschools.com.ng">https://auntyannesschools.com.ng</a></li>
+                    <li>Log in using your Student ID and Password.</li>
+                    <li>Navigate to the "Results" section to view and download your results.</li>
+                </ol>
+                <button class="btn btn-success no-print" onclick="window.print()">Print</button>
+            {% else %}
+                <p>Select a student to view credentials.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            // Initialize Select2
+            if ($('#student_id').length) {
+                $('#student_id').select2({
+                    placeholder: "Select a student",
+                    allowClear: true
+                });
+        
+                // Handle selection change
+                $('#student_id').on('change', function() {
+                    const studentId = $(this).val();
+                    const csrfToken = $('#csrf_token').val();
+
+                    if (studentId) {
+                        fetch(`/admin/get-student/${studentId}`, {
+                            headers: {
+                                "Content-Type": "application/json",
+                                "X-CSRFToken": csrfToken
+                            }
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! status: ${response.status}`);
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            if (data.error) {
+                                console.error(data.error);
+                                document.getElementById('print-section').innerHTML = `
+                                    <p class="text-danger">Student not found.</p>`;
+                                return;
+                            }
+                            document.getElementById('print-section').innerHTML = `
+                                <h3>Student Login Credentials</h3>
+                                <p><strong>Name:</strong> ${data.first_name} ${data.last_name}</p>
+                                <p><strong>Student ID:</strong> ${data.reg_no}</p>
+                                <p><strong>Password:</strong> ${data.reg_no}</p>
+                                <hr>
+                                <p>To access your results:</p>
+                                <ol>
+                                    <li>Visit our websitesssssssssssssssssss: <a href="https://auntyannesschools.com.ng">https://auntyannesschools.com.ng</a></li>
+                                    <li>Log in using your Student ID and Password.</li>
+                                    <li>Navigate to the "Results" section to view and download your results.</li>
+                                </ol>
+                                <button class="btn btn-success no-print" onclick="window.print()">Print</button>`;
+                        })
+                        .catch(error => {
+                            console.error('Error fetching student data:', error);
+                        });
+                    } else {
+                        document.getElementById('print-section').innerHTML = `
+                            <p>Select a student to view credentials.</p>`;
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

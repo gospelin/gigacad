@@ -3,14 +3,12 @@
 {% block content %}
 <style>
     :root {
-        --primary-blue: #4e54c8;
+        --primary-blue: #0A2558;
         --light-blue: #8f94fb;
-        --hover-blue: #3c40a4;
+        --hover-blue: #081D45;
         --dark-blue: #6d74c7;
         --white: #ffffff;
         --light-gray: #f8f9fa;
-        --dark-gray: #333333;
-        --toggle-button-background: #e9ecef;
     }
 
     .select-page-header {
@@ -46,13 +44,83 @@
     .btn-primary:hover {
         background-color: var(--hover-blue);
     }
-
+    
+    /* General Alert Styling */
+    .alert {
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 1rem;
+    }
+    
+    .alert i {
+        font-size: 1.5rem;
+        margin-right: 10px;
+    }
+    
+    /* Success Alert */
+    .alert-success {
+        background-color: #d4edda;
+        border-left: 4px solid #28a745;
+        color: #155724;
+    }
+    
+    .alert-success i {
+        color: #28a745;
+    }
+    
+    /* Info Alert */
+    .alert-info {
+        background-color: #d1ecf1;
+        border-left: 4px solid #17a2b8;
+        color: #0c5460;
+    }
+    
+    .alert-info i {
+        color: #17a2b8;
+    }
+    
+    /* Warning Alert */
     .alert-warning {
-        background-color: var(--toggle-button-background);
-        border-color: var(--light-gray);
-        color: var(--dark-gray);
+        background-color: #fff3cd;
+        border-left: 4px solid #ffc107;
+        color: #856404;
+    }
+    
+    .alert-warning i {
+        color: #ffc107;
+    }
+    
+    /* Danger Alert */
+    .alert-danger {
+        background-color: #f8d7da;
+        border-left: 4px solid #dc3545;
+        color: #721c24;
+    }
+    
+    .alert-danger i {
+        color: #dc3545;
+    }
+    
+    /* Dismiss Button */
+    .alert .close {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        color: inherit;
+        opacity: 0.8;
+        text-shadow: none;
+    }
+    
+    .alert .close:hover {
+        opacity: 1;
     }
 
+    
     @media (max-width: 576px) {
         .select-page-header h1 {
             font-size: 1.5rem;
@@ -60,7 +128,7 @@
     }
 </style>
 
-<div class="container-fluid">
+<div class="container">
     <div class="select-page-header animate__animated animate__fadeInDown">
         <h1>Select Term and Session to View Results</h1>
     </div>

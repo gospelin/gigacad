@@ -12,7 +12,7 @@
             <div class="card shadow-sm">
                 <div class="card-body">
                     <h5 class="card-title">Overall Performance</h5>
-                    <p class="card-text">Average: <span id="overall-performance">{{ overall_performance }}</span></p>
+                    <p class="card-text">Average: <span id="overall-performance">{{ average }}</span></p>
                 </div>
             </div>
         </div>
@@ -65,61 +65,60 @@
 
 {% block scripts %}
     <script>
-        // Dummy data for charts and cards
-        const overallPerformance = {{ overall_performance|default(85) }};
-        const totalAttendance = {{ total_attendance|default(90) }};
-        const totalSubjects = {{ total_subjects|default(8) }};
-        const bestGrade = '{{ best_grade|default("A") }}';
-
-        $('#overall-performance').text(overallPerformance);
-        $('#total-attendance').text(totalAttendance);
-        $('#total-subjects').text(totalSubjects);
-        $('#best-grade').text(bestGrade);
-
-        // Performance Overview Chart
-        const performanceChartCtx = document.getElementById('performanceChart').getContext('2d');
-        const performanceChart = new Chart(performanceChartCtx, {
-            type: 'line',
-            data: {
-                labels: ['Term 1', 'Term 2', 'Term 3'],
-                datasets: [{
-                    label: 'Performance',
-                    data: [75, 80, 85],
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
+        document.addEventListener('DOMContentLoaded', function () {
+            const overallPerformance = {{ average|tojson }};
+            const totalAttendance = {{ total_attendance|tojson }};
+            const totalSubjects = {{ total_subjects|tojson }};
+            const bestGrade = {{ best_grade|tojson }};
+        
+            console.log('Overall Performance:', overallPerformance);
+            console.log('Total Attendance:', totalAttendance);
+        
+            const performanceChartCtx = document.getElementById('performanceChart').getContext('2d');
+            const performanceChart = new Chart(performanceChartCtx, {
+                type: 'line',
+                data: {
+                    labels: ['First Term', 'Second Term', 'Third Term'],
+                    datasets: [{
+                        label: 'Performance',
+                        data: [{{ average|tojson }}], // Replace with dynamic data if applicable
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
                     }
                 }
-            }
-        });
-
-        // Attendance Overview Chart
-        const attendanceChartCtx = document.getElementById('attendanceChart').getContext('2d');
-        const attendanceChart = new Chart(attendanceChartCtx, {
-            type: 'bar',
-            data: {
-                labels: ['January', 'February', 'March', 'April', 'May'],
-                datasets: [{
-                    label: '# of Days Present',
-                    data: [20, 18, 22, 19, 21],
-                    backgroundColor: 'rgba(255, 206, 86, 0.2)',
-                    borderColor: 'rgba(255, 206, 86, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
+            });
+            
+            // Attendance Overview Chart
+            const attendanceChartCtx = document.getElementById('attendanceChart').getContext('2d');
+            const attendanceChart = new Chart(attendanceChartCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['September', 'October', 'November', 'December'],
+                    datasets: [{
+                        label: '# of Days Present',
+                        data: [20, 22, 22, 12],
+                        backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                        borderColor: 'rgba(255, 206, 86, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
                     }
                 }
-            }
+            });
         });
+        
     </script>
 {% endblock scripts %}
