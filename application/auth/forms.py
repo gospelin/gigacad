@@ -205,7 +205,6 @@ class SessionForm(FlaskForm):
     submit = SubmitField("Update Academic Session and Term")
 
 
-
 class classForm(FlaskForm):
     class_name = SelectField(
         "Class",
@@ -228,10 +227,23 @@ class classForm(FlaskForm):
         ],
     )
     submit = SubmitField("View Classes")
+    
+# class ClassForm(FlaskForm):
+#     class_id = HiddenField("Class ID")  # For editing
+#     name = StringField("Class Name", validators=[DataRequired()]) 
+#     section = SelectField(
+#         "Section",
+#         choices=[
+#             ("Nursery", "Nursery"),
+#             ("Basic", "Basic"),
+#             ("Secondary", "Secondary"),
+#             ("Senior Secondary", "Senior Secondary"),
+#         ],
+#         validators=[DataRequired()],
+#     )
+#     submit = SubmitField("Submit")
 
-    # Create a form for each subject's result entry
-
-
+# Create a form for each subject's result entry
 class SubjectResultForm(FlaskForm):
     subject_id = HiddenField("Subject ID")  # Hidden field to store subject ID
     class_assessment = IntegerField(

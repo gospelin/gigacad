@@ -890,7 +890,7 @@ def manage_subjects():
 
     # Display only active subjects for the current session
     subjects = (
-        Subject.query.filter_by(deactivated=False).order_by(Subject.section).all()
+        Subject.query.all().order_by(Subject.section)
     )
     subjects_by_section = {}
     for subject in subjects:
@@ -1141,140 +1141,6 @@ def get_student(student_id):
     return jsonify({"error": "Student not found"}), 404
 
 
-
-# @admin_bp.route("/broadsheet/<string:class_name>", methods=["GET", "POST"])
-# @login_required
-# def broadsheet(class_name):
-#     try:
-#         # Decode and normalize class_name
-#         class_name = unquote(class_name).strip()
-        
-#         # Get the current session and term directly from the Session model
-#         current_session, current_term = Session.get_current_session_and_term(include_term=True)
-
-#         if not current_session or not current_term:
-#             flash("Current session or term is not set", "alert-danger")
-#             return redirect(url_for("admins.students_by_class", class_name=class_name))
-
-#         # # Fetch the selected session object
-#         selected_session = Session.get_current_session()
-
-#         if not selected_session:
-#             flash(f"Session '{current_session}' not found.", "alert-danger")
-#             return redirect(url_for("admins.admin_dashboard"))
-
-#         # Fetch students and subjects based on class_name from StudentClassHistory
-#         student_class_histories = (
-#             StudentClassHistory.query.filter_by(
-#                 class_name=class_name, session_id=selected_session.id
-#             )
-#             .options(joinedload(StudentClassHistory.student))
-#             .all()
-#         )
-
-#         students = [history.student for history in student_class_histories]
-#         subjects = get_subjects_by_class_name(class_name=class_name)
-
-#         if not students or not subjects:
-#             flash(
-#                 f"No students or subjects found for class {class_name}.",
-#                 "alert-info",
-#             )
-#             return render_template(
-#                 "admin/results/broadsheet.html",
-#                 students=[],
-#                 subjects=[],
-#                 broadsheet_data=[],
-#                 subject_averages={},
-#                 class_name=class_name,
-#             )
-
-#         broadsheet_data = []
-#         subject_averages = {
-#             subject.id: {"total": 0, "count": 0} for subject in subjects
-#         }
-
-#         # Iterate through students and their results
-#         for student in students:
-#             student_results = {
-#                 "student": student,
-#                 "results": {
-#                     subject.id: {
-#                         "class_assessment": "",
-#                         "summative_test": "",
-#                         "exam": "",
-#                         "total": "",
-#                         "grade": "",
-#                         "remark": "",
-#                     }
-#                     for subject in subjects
-#                 },
-#                 "grand_total": "",
-#                 "average": "",
-#                 "cumulative_average": "",
-#                 "position": "",
-#             }
-
-#             # Fetch student results for the specific term and session
-#             results = Result.query.filter_by(
-#                 student_id=student.id, term=current_term, session=current_session
-#             ).all()
-
-#             # Process each result for the student
-#             for result in results:
-#                 if result.subject_id in student_results["results"]:
-#                     student_results["results"][result.subject_id] = {
-#                         "class_assessment": result.class_assessment or "",
-#                         "summative_test": result.summative_test or "",
-#                         "exam": result.exam or "",
-#                         "total": result.total or "",
-#                         "grade": result.grade or "",
-#                         "remark": result.remark or "",
-#                     }
-                    
-#                     if result.total is not None and result.total > 0:
-#                         subject_averages[result.subject_id]["total"] += result.total
-#                         subject_averages[result.subject_id]["count"] += 1
-            
-#                 # # Set grand total and average
-#                 student_results["grand_total"] = result.grand_total if result.grand_total > 0 else ""
-#                 student_results["cumulative_average"] = result.cumulative_average if result.cumulative_average else ""
-#                 student_results["average"] = result.term_average if result.term_average else ""
-#                 student_results["position"] = result.position if result.position else ""
-
-#             # Add student results to the broadsheet data
-#             broadsheet_data.append(student_results)
-
-#         # Calculate class averages for each subject
-#         for subject_id, values in subject_averages.items():
-#             values["average"] = (
-#                 round(values["total"] / values["count"], 1)
-#                 if values["count"]
-#                 else ""
-#             )
-
-#         # Sort students by their average
-#         broadsheet_data.sort(key=lambda x: x["average"], reverse=True)
-
-#         return render_template(
-#             "admin/results/broadsheet.html",
-#             students=students,
-#             subjects=subjects,
-#             broadsheet_data=broadsheet_data,
-#             subject_averages=subject_averages,
-#             class_name=class_name,
-#             current_session=current_session,
-#             current_term=current_term,
-#         )
-
-#     except Exception as e:
-#         app.logger.error(
-#             f"Error generating broadsheet for class_name: {class_name} - {str(e)}"
-#         )
-#         flash("An error occurred. Please try again later.", "alert-danger")
-#         return redirect(url_for("admins.admin_dashboard"))
-
-
 @admin_bp.route("/broadsheet/<string:class_name>", methods=["GET", "POST"])
 @login_required
 def broadsheet(class_name):
@@ -1467,3 +1333,74 @@ def download_broadsheet(class_name):
         flash("An error occurred while downloading the broadsheet. Please try again later.", "alert-danger")
         return redirect(url_for("admins.broadsheet", class_name=class_name))
 
+# @admin_bp.route("/add_class", methods=["GET", "POST"])
+# def add_class():
+#     form = classForm()
+#     if form.validate_on_submit():
+#         name = form.name.data
+#         section = form.section.data
+        
+#         existing_class = Classes.query.filter_by(name=name).first()
+        
+#         if existing_class is None:
+#             new_class = Classes.create_class(name=name, section=section)
+#             flash("{new_class} class created successfully!", "alert-success")
+    
+#     classes = Classes.query.all()
+#     return render_template(
+#         "admin/classes/manage_classes.html",
+#         form=form,
+#         classes=classes
+#     )
+    
+# @admin_bp.route("/manage_classes", methods=["GET", "POST"])
+# def manage_classes():
+#     form = ClassForm()
+#     if form.validate_on_submit():
+#         name = form.name.data
+#         section = form.section.data
+
+#         # Create a new class
+#         if "create" in request.form:
+#             try:
+#                 Classes.create_class(name=name, section=section)
+#                 flash("Class created successfully!", "alert-success")
+#             except Exception as e:
+#                 db.session.rollback()
+#                 flash(f"Error creating class {str(e)}", "alert-danger")
+
+#         # Edit an existing class
+#         elif "edit" in request.form:
+#             class_id = form.class_id.data  # Hidden field for identifying the class to edit
+#             cls = Classes.query.get(class_id)
+#             if cls:
+#                 try:
+#                     cls.edit_class(name=name, section=section)
+#                     flash("Class updated successfully!", "alert-success")
+#                 except Exception as e:
+#                     db.session.rollback()
+#                     flash(f"Error updating class: {str(e)}", "alert-danger")
+#             else:
+#                 flash("Class not found!", "alert-warning")
+
+#     # Fetch all classes to display
+#     classes = Classes.query.all()
+#     return render_template("admin/manage_classes.html", form=form, classes=classes)
+
+# @admin_bp.route("/delete-class/<int:class_id>", methods=["POST"])
+# def delete_class(class_id):
+#     cls = Classes.query.get(class_id)
+#     if cls:
+#         try:
+#             cls.delete_class()
+#             flash("Class deleted successfully!", "alert-success")
+#         except Exception as e:
+#             db.session.rollback()
+#             flash(f"Error deleting class: {str(e)}", "alert-danger")
+#     else:
+#         flash("Class not found!", "alert-warning")
+
+#     return redirect(url_for("admin.manage_classes")) 
+        
+        
+        
