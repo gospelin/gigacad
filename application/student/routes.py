@@ -6,6 +6,7 @@ from flask import (
     url_for,
     flash,
     request,
+    jsonify,
     current_app as app,
     make_response,
 )
@@ -21,6 +22,7 @@ from ..helpers import (
 
 from weasyprint import HTML
 
+
 @student_bp.route("/student_portal")
 @login_required
 def student_portal():
@@ -35,9 +37,12 @@ def student_portal():
             app.logger.warning(f"Student not found for user_id: {current_user.id}")
             return redirect(url_for("auth.login"))
 
-        app.logger.info(f"Accessing student portal for student_id: {student.id}, {student.first_name = } {student.last_name = }")
+        app.logger.info(
+            f"Accessing student portal for student_id: {student.id}, {student.first_name = } {student.last_name = }"
+        )
         return render_template(
-            "student/student_portal.html", student_id=student.id, student=student
+            "student/student_portal.html", student_id=student.id, student=student,
+            logo_url="auntyannesschools.com.ng/AAIS/application/static/images/MY_SCHOOL_LOGO.png",
         )
 
     except Exception as e:
@@ -46,7 +51,7 @@ def student_portal():
         return redirect(url_for("auth.login"))
 
 
-@student_bp.route("/student/<int:student_id>/profile")
+@student_bp.route("/student/<int:student_id>/profile", subdomain="portal")
 @login_required
 def student_profile(student_id):
     # Fetch the student details from the database
@@ -58,6 +63,7 @@ def student_profile(student_id):
         return redirect(url_for("main.index"))
 
     return render_template("student/student_profile.html", student=student)
+
 
 
 @student_bp.route("/select_results/<int:student_id>", methods=["GET", "POST"])
@@ -106,19 +112,26 @@ def view_results(student_id):
                 url_for("students.select_term_session", student_id=student.id)
             )
 
+        # Fetch session and student class history in a single query
+
         student_class = StudentClassHistory.get_class_by_session(
             student_id=student.id, session_year_str=session
         )
 
         if not student_class:
-            app.logger.error(f"No class history for {student.id} in {session.year}", "alert alert-danger")
+
+            app.logger.error(f"No class history for {student.id} in {session}")
+
+            app.logger.error(f"{student.first_name} {student.last_name} is not in any class as at {session}")
+            flash(f"{student.first_name} {student.last_name} is not in any class as at {session}")
+            return redirect(url_for("students.select_results", student_id=student.id))
 
         results = Result.query.filter_by(
             student_id=student.id, term=term, session=session
         ).all()
 
         if not results:
-            flash("No results found for this term or session", "alert alert-info")
+            flash("No results found for this term or session")
             app.logger.info(
                 f"No results found for student_id: {student_id}, term: {term}, session: {session}"
             )
@@ -169,6 +182,7 @@ def view_results(student_id):
 
         date_printed = datetime.now().strftime("%dth %B, %Y")
 
+
         app.logger.info(
             f"Results viewed for student_id: {student_id}, term: {term}, session: {session}"
         )
@@ -188,11 +202,13 @@ def view_results(student_id):
             date_issued=date_issued,
             date_printed=date_printed,
             position=position,
-            student_class=student_class
+            student_class=student_class,
         )
 
     except Exception as e:
-        app.logger.error(f"Error viewing results for student_id: {student_id} - {str(e)}")
+        app.logger.error(
+            f"Error viewing results for student_id: {student_id} - {str(e)}"
+        )
         flash("An error occurred. Please try again later.", "alert alert-danger")
         return redirect(url_for("students.select_results", student_id=student.id))
 
@@ -216,9 +232,15 @@ def download_results_pdf(student_id):
 
         if not term or not session:
             flash("Term and session must be specified.", "alert alert-info")
-            return redirect(
-                url_for("students.select_term_session", student_id=student.id)
-            )
+            return redirect(url_for("students.select_term_session", student_id=student.id))
+            
+        # Fetch session and student class history in a single query
+        student_class = StudentClassHistory.get_class_by_session(
+            student_id=student.id, session_year_str=session
+        )
+
+        if not student_class:
+            app.logger.error(f"No class history for {student.id} in {session.year}")
 
         results = Result.query.filter_by(
             student_id=student.id, term=term, session=session
@@ -274,12 +296,10 @@ def download_results_pdf(student_id):
         date_issued = results[0].date_issued if results else None
 
         # Get the absolute path to the static directory
-        static_path = os.path.join(
-            app.root_path, "static", "images", "MY_SCHOOL_LOGO.png"
-        )
+        static_path = os.path.join(app.root_path, "static", "images", "MY_SCHOOL_LOGO.png")
         static_url = f"file://{static_path}"
 
-        date_printed = datetime.now().strftime("%dth %B, %Y")
+        date_printed = datetime.now().strftime('%dth %B, %Y')
 
         rendered = render_template(
             "student/pdf_results.html",
@@ -298,6 +318,7 @@ def download_results_pdf(student_id):
             date_issued=date_issued,
             date_printed=date_printed,
             static_url=static_url,
+            student_class=student_class,
         )
 
         pdf = HTML(string=rendered).write_pdf()
