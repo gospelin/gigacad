@@ -6,220 +6,446 @@
     <title>{% block title %}Student Portal{% endblock %}</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" crossorigin="anonymous">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/boxicons/2.1.4/css/boxicons.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    
     <style>
+        /* Googlefont Poppins CDN Link */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap');
+        
         :root {
-            --primary-blue: #4e54c8;
+            --primary-blue: #0A2558;
             --light-blue: #8f94fb;
-            --hover-blue: #3c40a4;
+            --hover-blue: #081D45;
             --dark-blue: #6d74c7;
             --white: #ffffff;
             --light-gray: #f8f9fa;
         }
         
-        .navbar {
-            --bs-navbar-toggler-border-color: none;
-            --bs-navbar-toggler-border-radius: none; 
-            --bs-navbar-toggler-focus-width: none;
-            --bs-navbar-toggler-transition: box-shadow 0.15s ease-in-out;
-            --bs-navbar-toggler-icon-bg: none;
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
         }
-
-        body {
-            font-family: "Roboto", sans-serif;
-            background-color: var(--light-gray);
-        }
-
-        .navbar {
-            display: none;
-            background-color: var(--primary-blue);
-        }
-
-        .navbar-brand {
-            font-weight: 700;
-            color: var(--white);
-        }
-
-        .navbar-toggler-icon {
-            color: var(--white);
-            font-size: 1.5rem;
-        }
-        
-        .navbar-toggler {
-            border-color: var(--bs-navbar-toggler-border-color);
-            border-radius: var(--bs-navbar-toggler-border-radius);
-            transition: var(--bs-navbar-toggler-transition);
-        }
-        
-        .navbar-toggler .toggler-icon {
-            display: block;
-            position: relative;
-            width: 24px;
-            height: 2px;
-            background-color: var(--white);
-            margin: 6px auto;
-            transition: all 0.3s ease-in-out;
-        }
-
-        /* Static Sidebar for Desktop */
-        .sidebar {
+        .sidebar{
             position: fixed;
-            top: 0;
-            left: 0;
             height: 100%;
-            min-height: 100vh;
-            width: 250px;
+            width: 280px;
+            background: var(--primary-blue);
+            transition: all 0.5s ease;
             overflow-y: auto;
-            z-index: 1030;
         }
-
-        .sidebar a {
-            color: var(--white);
+        .sidebar.active{
+            width: 60px;
+        }
+        .sidebar .logo-details{
+            height: 80px;
+            display: flex;
+            align-items: center;
+        }
+        .sidebar .logo-details i{
+            font-size: 28px;
+            font-weight: 500;
+            color: #fff;
+            min-width: 60px;
+            text-align: center
+        }
+        .sidebar .logo-details .logo_name{
+            color: #fff;
+            font-size: 24px;
+            font-weight: 500;
+        }
+        .sidebar .nav-links{
+            margin-top: 10px;
+        }
+        .sidebar .nav-links li{
+            position: relative;
+            list-style: none;
+            /*  height: 50px;*/
+            height: auto;
+        }
+        .sidebar .nav-links li a{
+            /*  height: 100%;*/
+            height: 50px;
+            /*  width: 100%;*/
+            display: flex;
+            align-items: center;
             text-decoration: none;
-            padding: 10px 15px;
-            display: block;
+            transition: all 0.4s ease;
         }
-
-        .sidebar a:hover {
-            background-color: var(--hover-blue);
-            color: var(--white);
+        .sidebar .nav-links li a.active{
+            background: #081D45;
         }
-
-        .sidebar-header {
-            padding: 10px;
-            background-color: var(--dark-blue);
-            color: var(--white);
+        .sidebar .nav-links li a:hover{
+            background: #081D45;
         }
-
-        .offcanvas a {
-            color: var(--white);
-            text-decoration: none;
-            padding: 10px 15px;
-            display: block;
+        .sidebar .nav-links li i{
+            min-width: 60px;
+            text-align: center;
+            font-size: 18px;
+            color: #fff;
         }
-
-        .offcanvas a:hover {
-            background-color: var(--hover-blue);
-            color: var(--white);
+        .sidebar .nav-links li a .links_name{
+            color: #fff;
+            font-size: 15px;
+            font-weight: 400;
+            white-space: nowrap;
         }
         
-
-        .offcanvas-header {
-            border-bottom: 1px solid var(--light-blue);
-        }
-
-        .offcanvas-title {
-            font-weight: 700;
+        
+        /* Responsive Adjustments */
+        .sidebar .nav-links li a span.links_name {
+            display: inline-block;
         }
         
-        /* Common styles for both sidebar and offcanvas */
-        .sidebar, .offcanvas {
-            color: var(--white);
+        .sidebar .nav-links .log_out {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+        }
+        
+        .home-section{
+            position: relative;
+            background: #f5f5f5;
+            min-height: 100vh;
+            width: calc(100% - 240px);
+            left: 240px;
+            transition: all 0.5s ease;
+        }
+        .sidebar.active ~ .home-section{
+            width: calc(100% - 60px);
+            left: 60px;
+        }
+        .home-section nav{
+            display: flex;
+            justify-content: space-between;
+            height: 80px;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            position: fixed;
+            width: calc(100% - 240px);
+            left: 240px;
+            z-index: 100;
+            padding: 0 20px;
+            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+            transition: all 0.5s ease;
+        }
+        .sidebar.active ~ .home-section nav{
+            left: 60px;
+            width: calc(100% - 60px);
+        }
+        .home-section nav .sidebar-button{
+            display: flex;
+            align-items: center;
+            font-size: 24px;
+            font-weight: 500;
+        }
+        nav .sidebar-button i{
+            font-size: 35px;
+            margin-right: 10px;
+        }
+        .home-section nav .search-box{
+            position: relative;
+            height: 50px;
+            max-width: 550px;
+            width: 100%;
+            margin: 0 20px;
+        }
+        nav .search-box input{
+            height: 100%;
+            width: 100%;
+            outline: none;
+            background: #F5F6FA;
+            border: 2px solid #EFEEF1;
+            border-radius: 6px;
+            font-size: 18px;
+            padding: 0 15px;
+        }
+        nav .search-box .bx-search{
+            position: absolute;
+            height: 40px;
+            width: 40px;
+            background: #2697FF;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            border-radius: 4px;
+            line-height: 40px;
+            text-align: center;
+            color: #fff;
+            font-size: 22px;
+            transition: all 0.4 ease;
+        }
+        .home-section nav .profile-details{
+            display: flex;
+            align-items: center;
+            background: #F5F6FA;
+            border: 2px solid #EFEEF1;
+            border-radius: 6px;
+            height: 50px;
+            min-width: 190px;
+            padding: 0 15px 0 2px;
+        }
+        nav .profile-details img{
+            height: 40px;
+            width: 40px;
+            border-radius: 6px;
+            object-fit: cover;
+        }
+        nav .profile-details .admin_name{
+            font-size: 15px;
+            font-weight: 500;
+            color: #333;
+            margin: 0 10px;
+            white-space: nowrap;
+        }
+        nav .profile-details i{
+            font-size: 25px;
+            color: #333;
+        }
+        .home-section .home-content{
+            position: relative;
+            padding-top: 104px;
+        }
+        
+        .btn-primary {
             background-color: var(--primary-blue);
-            transition: width 0.3s ease-in-out, transform 0.3s ease-in-out;
+            border: none;
+            color: var(--white);
         }
         
-        .btn-close {
-            color: var(--white);
+        .btn-primary:hover {
+            background-color: var(--hover-blue);
+        }
+        
+        /* General Alert Styling */
+        .alert {
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+        
+        .alert i {
+            font-size: 1.5rem;
+            margin-right: 10px;
+        }
+        
+        /* Success Alert */
+        .alert-success {
+            background-color: #d4edda;
+            border-left: 4px solid #28a745;
+            color: #155724;
+        }
+        
+        .alert-success i {
+            color: #28a745;
+        }
+        
+        /* Info Alert */
+        .alert-info {
+            background-color: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            color: #0c5460;
+        }
+        
+        .alert-info i {
+            color: #17a2b8;
+        }
+        
+        /* Warning Alert */
+        .alert-warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            color: #856404;
+        }
+        
+        .alert-warning i {
+            color: #ffc107;
+        }
+        
+        /* Danger Alert */
+        .alert-danger {
+            background-color: #f8d7da;
+            border-left: 4px solid #dc3545;
+            color: #721c24;
+        }
+        
+        .alert-danger i {
+            color: #dc3545;
+        }
+        
+        /* Dismiss Button */
+        .alert .close {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            color: inherit;
+            opacity: 0.8;
+            text-shadow: none;
+        }
+        
+        .alert .close:hover {
             opacity: 1;
         }
-
-        .main-content {
-            margin-left: 250px;
-            padding-top: 30px;
+        
+        /* Responsive Media Query */
+        @media (max-width: 1240px) {
+            .sidebar{
+                width: 60px;
+            }
+            .sidebar.active{
+                width: 220px;
+            }
+            .home-section{
+                width: calc(100% - 60px);
+                left: 60px;
+            }
+            .sidebar.active ~ .home-section{
+                left: 220px;
+                width: calc(100% - 220px);
+                overflow: hidden;
+            }
+            .home-section nav{
+                width: calc(100% - 60px);
+                left: 60px;
+            }
+            .sidebar.active ~ .home-section nav{
+                width: calc(100% - 220px);
+                left: 220px;
+            }
         }
-
-        /* Offcanvas for Mobile/Smaller Screens */
-        @media (max-width: 767px) {
-            .sidebar {
-                position: static;
-                height: 100vh;
+        @media (max-width: 1150px) {
+            .home-content .sales-boxes{
+                flex-direction: column;
+            }
+            .home-content .sales-boxes .box{
                 width: 100%;
+                overflow-x: scroll;
+                margin-bottom: 30px;
+            }
+            .home-content .sales-boxes .top-sales{
+                margin: 0;
+            }
+        }
+        @media (max-width: 1000px) {
+            .overview-boxes .box{
+                width: calc(100% / 2 - 15px);
+                margin-bottom: 15px;
+            }
+        }
+        @media (max-width: 700px) {
+            nav .sidebar-button .dashboard,
+            nav .profile-details .admin_name,
+            nav .profile-details i{
                 display: none;
             }
-            
-            .offcanvas {
-                --bs-offcanvas-width: 230px;
+            .home-section nav .profile-details{
+                height: 50px;
+                min-width: 40px;
             }
-            
-            .navbar {
-                display: block;
-            }
-
-            .navbar-toggler {
-                display: block;
-            }
-
-            .main-content {
-                margin-left: 0;
-                padding-top: 100px;
+            .home-content .sales-boxes .sales-details{
+                width: 560px;
             }
         }
-
-        /* Highlight active link */
-        .nav-link.active {
-            background-color: var(--hover-blue);
-            color: var(--white) !important;
+        @media (max-width: 550px) {
+            .overview-boxes .box{
+                width: 100%;
+                margin-bottom: 15px;
+            }
+            .sidebar.active ~ .home-section nav .profile-details{
+                display: none;
+            }
         }
-
+        @media (max-width: 400px) {
+            .sidebar{
+                width: 0;
+            }
+            .sidebar.active{
+                width: 60px;
+            }
+            .home-section{
+                width: 100%;
+                left: 0;
+            }
+            .sidebar.active ~ .home-section{
+                left: 60px;
+                width: calc(100% - 60px);
+            }
+            .home-section nav{
+                width: 100%;
+                left: 0;
+            }
+            .sidebar.active ~ .home-section nav{
+                left: 60px;
+                width: calc(100% - 60px);
+            }
+        }
     </style>
 </head>
 <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg fixed-top">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">Student Portal</a>
-            <div class="d-flex align-items-center">
-                <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu" aria-controls="offcanvasMenu">
-                    <span class="navbar-toggler-icon"><i class="fas fa-bars"></i></span>
-                </button>
+    <div id="sidebar" class="d-flex flex-column min-vh-100 sidebar">
+        <div class="d-flex align-items-center mb-4 logo-details">
+            <i class="bx bxl-c-plus-plus text-white fs-3"></i>
+            <span class="logo_name">Student Portal</span>
+        </div>
+        <ul id="nav-links" class="flex-column list-unstyled nav-links">
+            <li class="nav-item"><a href="{{ url_for('students.student_portal') }}" class="active"><i class="bx bx-grid-alt"></i><span class="links_name">Dashboard</span></a></li>
+            <li class="nav-item"><a href="{{ url_for('students.student_profile', student_id=current_user.student.id) }}"><i class="fas fa-user"></i><span class="links_name">Profile</span></a></li>
+            <li class="nav-item"><a href="{{ url_for('students.select_results', student_id=current_user.student.id) }}"><i class="fas fa-file-alt"></i><span class="links_name">Results</span></a></li>
+            <li class="nav-item"><a href="#"><i class="fas fa-calendar-check"></i><span class="links_name">Attendance</span></a></li>
+            <li class="nav-item"><a href="#"><i class="fas fa-clock"></i><span class="links_name">Timetable</span></a></li>
+            <li class="nav-item"><a href="#"><i class="bx bx-cog"></i><span class="links_name">Setting</span></a></li>
+            <li class="log_out"><a href="{{ url_for('auth.logout') }}"><i class="bx bx-log-out"></i><span class="links_name">Log out</span></a></li>
+         </ul>
+    </div>
+    <section class="home-section">
+        <nav>
+            <div class="sidebar-button">
+                <i class="bx bx-menu sidebarBtn"></i>
+                <span class="dashboard">Dashboard</span>
             </div>
-        </div>
-    </nav>
+            <div class="search-box">
+                <input type="text" placeholder="Search..." />
+                <i class="bx bx-search"></i>
+            </div>
+            <div class="profile-details">
+                <img src="images/profile.jpg" alt="" />
+                <span class="admin_name">{{current_user.first_name}}{{current_user.last_name}}</span>
+                <i class="bx bx-chevron-down"></i>
+            </div>
+        </nav>
+        <main class="flex-fill home-content container mt-0">
+            {% for category, message in get_flashed_messages(with_categories=True) %}
+                <div class="alert {{ category }} mt-3">{{ message }}</div>
+            {% endfor %}
+            {% block content %}{% endblock %}
+        </main>
+    </section>
+    
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.0/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+{% block scripts %}{% endblock %}
 
-    <!-- Static Sidebar for Larger Screens -->
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <h2 class="text-center py-3">Student Portal</h2>
-        </div>
-        <a href="{{ url_for('main.index') }}" class="nav-link {% if request.endpoint == 'main.index' %}active{% endif %}" aria-current="{% if request.endpoint == 'main.index' %}page{% endif %}"><i class="fas fa-home"></i> Home</a>
-        <a href="{{ url_for('students.student_portal') }}" class="nav-link {% if request.endpoint == 'students.student_portal' %}active{% endif %}" aria-current="{% if request.endpoint == 'students.student_portal' %}page{% endif %}"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-        <a href="{{ url_for('students.student_profile', student_id=current_user.student.id) }}" class="nav-link {% if request.endpoint == 'students.student_profile' %}active{% endif %}" aria-current="{% if request.endpoint == 'students.student_profile' %}page{% endif %}"><i class="fas fa-user"></i> Profile</a>
-        <a href="{{ url_for('students.select_results', student_id=current_user.student.id) }}" class="nav-link {% if request.endpoint == 'students.select_results' %}active{% endif %}"><i class="fas fa-file-alt" aria-current="{% if request.endpoint == 'students.select_results' %}page{% endif %}"></i> Results</a>
-        <a href="#" class="nav-link {% if request.endpoint == 'students.attendance' %}active{% endif %}"><i class="fas fa-calendar-check"></i> Attendance</a>
-        <a href="#" class="nav-link {% if request.endpoint == 'students.timetable' %}active{% endif %}"><i class="fas fa-clock"></i> Timetable</a>
-        <a href="{{ url_for('auth.logout') }}" class="nav-link {% if request.endpoint == 'auth.logout' %}active{% endif %}"><i class="fas fa-sign-out-alt"></i> Logout</a>
-    </div>
-
-    <!-- Offcanvas Menu for Smaller Screens -->
-    <div class="offcanvas  offcanvas-start custom-offcanvas-width" tabindex="-1" id="offcanvasMenu" aria-labelledby="offcanvasMenuLabel">
-        <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="offcanvasMenuLabel">Menu</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-        </div>
-        <div class="offcanvas-body">
-            <a href="{{ url_for('main.index') }}" class="nav-link {% if request.endpoint == 'main.index' %}active{% endif %}" aria-current="{% if request.endpoint == 'main.index' %}page{% endif %}"><i class="fas fa-home"></i> Home</a>
-            <a href="{{ url_for('students.student_portal') }}" class="nav-link {% if request.endpoint == 'students.student_portal' %}active{% endif %}" aria-current="{% if request.endpoint == 'students.student_portal' %}page{% endif %}"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-            <a href="{{ url_for('students.student_profile', student_id=current_user.student.id) }}" class="nav-link {% if request.endpoint == 'students.student_profile' %}active{% endif %}" aria-current="{% if request.endpoint == 'students.student_profile' %}page{% endif %}"><i class="fas fa-user"></i> Profile</a>
-            <a href="{{ url_for('students.select_results', student_id=current_user.student.id) }}" class="nav-link {% if request.endpoint == 'students.select_results' %}active{% endif %}"><i class="fas fa-file-alt" aria-current="{% if request.endpoint == 'students.select_results' %}page{% endif %}"></i> Results</a>
-            <a href="#" class="nav-link {% if request.endpoint == 'students.attendance' %}active{% endif %}"><i class="fas fa-calendar-check"></i> Attendance</a>
-            <a href="#" class="nav-link {% if request.endpoint == 'students.timetable' %}active{% endif %}"><i class="fas fa-clock"></i> Timetable</a>
-            <a href="{{ url_for('auth.logout') }}" class="nav-link {% if request.endpoint == 'auth.logout' %}active{% endif %}"><i class="fas fa-sign-out-alt"></i> Logout</a>
-        </div>
-    </div>
-
-    <!-- Main Content -->
-    <div class="container main-content">
-        {% for message in get_flashed_messages() %}
-            <div class="alert alert-warning mt-3">{{ message }}</div>
-        {% endfor %}
-        {% block content %}{% endblock %}
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.0/dist/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    {% block scripts %}{% endblock %}
+<script>
+    let sidebar = document.querySelector(".sidebar");
+    let sidebarBtn = document.querySelector(".sidebarBtn");
+    sidebarBtn.onclick = function () {
+        sidebar.classList.toggle("active");
+        if (sidebar.classList.contains("active")) {
+            sidebarBtn.classList.replace("bx-menu", "bx-menu-alt-right");
+        } else sidebarBtn.classList.replace("bx-menu-alt-right", "bx-menu");
+    };
+</script>
+        
 </body>
 </html>
