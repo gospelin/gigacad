@@ -1,0 +1,265 @@
+ body {
+    background: url('/static/images/background_image.jpg') no-repeat center center fixed;
+    background-size: cover;
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.overlay {
+    background: rgba(0, 0, 0, 0.4);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    min-height: 100vh;
+    z-index: 1;
+}
+
+.content-container {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+.login-card {
+    background: #ffffff;
+    width: 100%;
+    max-width: 450px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.login-header {
+    background: linear-gradient(90deg, #4e54c8, #8f94fb);
+    color: white;
+    text-align: center;
+    padding: 20px;
+}
+
+.login-header .school-logo {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+}
+
+.login-header .welcome-text {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.login-header .portal-text {
+    font-size: 1rem;
+    margin-top: 5px;
+}
+
+.login-body {
+    padding: 30px;
+}
+
+.form-control {
+    display: flex;
+    align-items: center;
+    position: relative;
+    margin-bottom: 20px;
+    background: #f7f8fa;
+    padding: 10px;
+    border: 1px solid #dce0e3;
+    border-radius: 6px;
+}
+
+.form-control input {
+    flex-grow: 1;
+    border: none;
+    background: none;
+    outline: none;
+    font-size: 1rem;
+    color: #333;
+}
+
+.form-control .toggle-password {
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: #888;
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(90deg, #4e54c8, #8f94fb);
+    color: white;
+    border: none;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.btn-primary:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(90deg, #3c40a4, #6d74c7);
+    transform: translateY(-2px);
+}
+
+.toggle-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.toggle-buttons button {
+    flex: 1;
+    padding: 10px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    border: 1px solid #4e54c8;
+    background: #e9ecef;
+    color: #4e54c8;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-right: 10px;
+}
+
+.toggle-buttons button:last-child {
+    margin-right: 0;
+}
+
+.toggle-buttons .active {
+    background: #4e54c8;
+    color: white;
+}
+
+.password-container {
+    position: relative;
+}
+
+.password-container .form-control {
+    padding-right: 40px;
+}
+
+.password-container .toggle-password {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+}
+
+.back-home {
+    text-align: center;
+    margin-top: 12px;
+}
+
+.back-home a {
+    color: #4e54c8;
+    text-decoration: none;
+    font-size: 1rem;
+}
+
+.back-home a:hover {
+    text-decoration: underline;
+}
+
+
+/* General Alert Styling */
+.alert {
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.alert i {
+  font-size: 1.5rem;
+  margin-right: 10px;
+}
+
+/* Success Alert */
+.alert-success {
+  background-color: #d4edda;
+  border-left: 4px solid #28a745;
+  color: #155724;
+}
+
+.alert-success i {
+  color: #28a745;
+}
+
+/* Info Alert */
+.alert-info {
+  background-color: #d1ecf1;
+  border-left: 4px solid #17a2b8;
+  color: #0c5460;
+}
+
+.alert-info i {
+  color: #17a2b8;
+}
+
+/* Warning Alert */
+.alert-warning {
+  background-color: #fff3cd;
+  border-left: 4px solid #ffc107;
+  color: #856404;
+}
+
+.alert-warning i {
+  color: #ffc107;
+}
+
+/* Danger Alert */
+.alert-danger {
+  background-color: #f8d7da;
+  border-left: 4px solid #dc3545;
+  color: #721c24;
+}
+
+.alert-danger i {
+  color: #dc3545;
+}
+
+/* Dismiss Button */
+.alert .close {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  color: inherit;
+  opacity: 0.8;
+  text-shadow: none;
+}
+
+.alert .close:hover {
+  opacity: 1;
+}
+
+
+@media (max-width: 768px) {
+    .login-card {
+        min-height: 100vh;
+    }
+    
+    .back-home {
+        margin-top: 45px;
+    }
+    
+    .login-header {
+        padding: 10px;
+        height: 50%;
+    }
+    
+}
+
+

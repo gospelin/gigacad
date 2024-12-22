@@ -1,22 +1,16 @@
 {% extends "layout.html" %}
 {% block content %}
 
-<div
-    class="jumbotron bg-success text-white text-center py-5"
-    style="
-        background: url('static/images/DSC_0184.JPG') no-repeat center center;
-        background-size: cover;
-    "
->
+<div class="jumbotron text-white text-center py-5">
     <div class="overlay"></div>
     <div class="container content">
-        <h1 class="display-4 animated fadeInDown">
+        <h1 class="display-4 animated fadeInDown" data-aos="zoom-out">
             Welcome to {{ school_name }}
         </h1>
-        <h2 class="lead my-4 animated fadeIn">
-            Where Practical Learning Meets Knowledge and Confidence
+        <h2 class="lead my-4 animated fadeIn" data-aos="fade-up">
+            Where Practical Learning Enhances Knowledge and Confidence
         </h2>
-        <p class="lead animated fadeInUp">
+        <p class="lead animated fadeInUp" data-aos="fade-right">
             We are committed to providing a transformative education experience
             that equips students with practical skills, empowers them with
             knowledge, and instills the confidence to excel in a rapidly
@@ -40,7 +34,7 @@
 
 <div class="container mt-5 mb-5">
     <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-4" data-aos="fade-right" data-aos-duration="3000">
             <div class="card mb-4 shadow-sm">
                 <div class="card-header bg-primary text-white">
                     <h4 class="my-0 font-weight-normal">Practical Learning</h4>
@@ -56,7 +50,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4" data-aos="fade-up" data-aos-duration="6000">
             <div class="card mb-4 shadow-sm">
                 <div class="card-header bg-info text-white">
                     <h4 class="my-0 font-weight-normal">
@@ -75,7 +69,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4" data-aos="fade-left" data-aos-duration="9000">
             <div class="card mb-4 shadow-sm">
                 <div class="card-header bg-success text-white">
                     <h4 class="my-0 font-weight-normal">Confidence Building</h4>
@@ -95,19 +89,60 @@
     </div>
 </div>
 
-<section id="testimonials" class="py-5 bg-light">
-  <div class="container text-center">
-    <h2 class="mb-4">What Parents Say</h2>
-    <div class="row justify-content-center">
-      <div class="col-md-8">
-        <blockquote class="blockquote">
-          <p>"Aunty Anne's International School has transformed my child's learning experience. The staff is incredible, and the facilities are top-notch."</p>
-          <footer class="blockquote-footer">Mrs. Johnson, Parent</footer>
-        </blockquote>
-      </div>
+<div class="container mt-5 mb-5">
+    <h2 class="section-heading text-center">What People Say About Us</h2>
+    <div id="testimonialCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <blockquote class="testimonial">
+                    <p>
+                        "{{ school_name }} has provided me with a nurturing
+                        environment to grow both academically and personally.
+                        The school's dedication and innovative
+                        approach to education have truly set me on a path to
+                        success."
+                    </p>
+                    <footer>- Mrs. Anyanwu, Alumni</footer>
+                </blockquote>
+            </div>
+            <div class="carousel-item">
+                <blockquote class="testimonial">
+                     <p>
+                        "As a parent, I am extremely pleased with the holistic
+                        education my child is receiving at {{ school_name }}.
+                        The emphasis on both academics and character development
+                        is remarkable, and I have seen tremendous growth in my
+                        child's confidence and abilities."
+                    </p>
+                    <footer>- Mr. Ezechukwu Chukwudi, Parent</footer>
+                </blockquote>
+            </div>
+            <div class="carousel-item">
+                <blockquote class="testimonial">
+                   <p>
+                        "The teachers at {{ school_name }} are incredibly
+                        supportive and dedicated. They go above and beyond to
+                        ensure each student understands the material and feels
+                        confident in their abilities."
+                    </p>
+                    <footer>- Victoria Uwadiegwu, Current Student</footer>
+                </blockquote>
+            </div>
+            <div class="carousel-item">
+                <blockquote class="testimonial">
+                   <p>
+                        "I have seen my child's academic performance and social
+                        skills improve significantly since joining {{
+                        school_name }}. The school's focus on a well-rounded
+                        education is truly commendable."
+                    </p>
+                    <footer>- Beckley Gideon, Parent</footer>
+                </blockquote>
+            </div>
+        </div>
     </div>
-  </div>
-</section>
+</div>
+
 
 <section id="contact-us" class="py-5">
   <div class="container text-center">
