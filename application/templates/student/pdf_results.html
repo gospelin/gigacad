@@ -229,105 +229,97 @@
     }
 </style>
 
-<div class="watermark">Aunty Anne's Int'l School</div> 
-    <div class="print-view"> 
-        <div class="school-header"> 
-            <img src="{{ static_url }}" alt="School Logo" class="school-logo">
-            <div class="school-info"> 
-                <h1>{{ school_name }}</h1> 
-                <p>6 OOMNNE DRIVE, ABAYI, ABA, ABIA STATE</p> 
-                <h2>Report Sheet for {{ term }} {{ session }} Academic Session</h2> 
-            </div> 
-        </div>
-        <table class="details">
-            <tr>
-                <td><strong>Name:</strong></td>
-                <td>{{ student.first_name }} {{ student.middle_name[0] if student.middle_name else '' }} {{ student.last_name }}</td>
-                <td><strong>Class:</strong></td>
-                <td>{{ student_class }}</td>
-            </tr>
-            <tr>
-                <td><strong>Student ID:</strong></td>
-                <td>AAIS/0559/00{{ student.id }}</td>
-                <td><strong>Reopening Date:</strong></td>
-                <td>{{ next_term_begins }}</td>
-            </tr>
-            <tr>
-                <td><strong>Gender:</strong></td>
-                <td>{{ student.gender }}</td>
-                <td><strong>Last Term Average:</strong></td>
-                <td>{{ last_term_average if last_term_average else 'N/A' }}</td>
-            </tr>
-            <tr>
-                <td><strong>Cumulative Average:</strong></td>
-                <td>{{ cumulative_average }}</td>
-                <td><strong>Average for the Term:</strong></td>
-                <td>{{ average }}</td>
-            </tr>
-        </table>
+<div class="print-view"> 
+    <div class="school-header"> 
+        <img src="{{ static_url }}" alt="School Logo" class="school-logo">
+        <div class="school-info"> 
+            <h1>{{ school_name }}</h1> 
+            <p>6 OOMNNE DRIVE, ABAYI, ABA, ABIA STATE</p> 
+            <h2>Report Sheet for {{ term }} {{ session }} Academic Session</h2> 
+        </div> 
+    </div>
+    <table class="details">
+        <tr>
+            <td><strong>Name:</strong></td>
+            <td>{{ student.first_name }} {{ student.middle_name[0] if student.middle_name else '' }} {{ student.last_name }}</td>
+            <td><strong>Class:</strong></td>
+            <td>{{ student_class }}</td>
+        </tr>
+        <tr>
+            <td><strong>Student ID:</strong></td>
+            <td>AAIS/0559/00{{ student.id }}</td>
+            <td><strong>Reopening Date:</strong></td>
+            <td>{{ next_term_begins }}</td>
+        </tr>
+        <tr>
+            <td><strong>Gender:</strong></td>
+            <td>{{ student.gender }}</td>
+            <td><strong>Last Term Average:</strong></td>
+            <td>{{ last_term_average if last_term_average else 'N/A' }}</td>
+        </tr>
+        <tr>
+            <td><strong>Cumulative Average:</strong></td>
+            <td>{{ cumulative_average }}</td>
+            <td><strong>Average for the Term:</strong></td>
+            <td>{{ average }}</td>
+        </tr>
+    </table>
 
-        <table class="table">
-            <thead>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Subjects</th>
+                <th>Class Work (20)</th>
+                <th>Summative Test (20)</th>
+                <th>Exam (60)</th>
+                <th>Total (100)</th>
+                <th>Grade</th>
+                <th>Remark</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for result in results %}
+                {% set class_assessment = result.class_assessment if result.class_assessment is not none else 0 %}
+                {% set summative_test = result.summative_test if result.summative_test is not none else 0 %}
+                {% set exam = result.exam if result.exam is not none else 0 %}
+                {% set total = result.total if result.total is not none else 0 %}
+                {% set grade = result.grade if result.grade is not none else '-' %}
+                {% set remark = result.remark if result.remark is not none else '-' %}
+
                 <tr>
-                    <th>Subjects</th>
-                    <th>Class Work (20)</th>
-                    <th>Summative Test (20)</th>
-                    <th>Exam (60)</th>
-                    <th>Total (100)</th>
-                    <th>Grade</th>
-                    <th>Remark</th>
+                    <td class="text-left">{{ result.subject.name }}</td>
+                    <td>{{ class_assessment }}</td>
+                    <td>{{ summative_test }}</td>
+                    <td>{{ exam }}</td>
+                    <td>{{ total }}</td>
+                    <td>{{ grade }}</td>
+                    <td>{{ remark }}</td>
                 </tr>
-            </thead>
-            <tbody>
-                {% for result in results %}
-                    {% set class_assessment = result.class_assessment if result.class_assessment is not none else 0 %}
-                    {% set summative_test = result.summative_test if result.summative_test is not none else 0 %}
-                    {% set exam = result.exam if result.exam is not none else 0 %}
-                    {% set total = result.total if result.total is not none else 0 %}
-                    {% set grade = result.grade if result.grade is not none else '-' %}
-                    {% set remark = result.remark if result.remark is not none else '-' %}
+            {% endfor %}
+            <tr>
+                <td><strong>Grand Total</strong></td>
+                <td colspan="3"></td>
+                <td><strong>{{ grand_total.total }}</strong></td>
+                <td colspan="2"></td>
+            </tr>
+        </tbody>
+    </table>
 
-                    <tr>
-                        <td class="text-left">{{ result.subject.name }}</td>
-                        <td>{{ class_assessment }}</td>
-                        <td>{{ summative_test }}</td>
-                        <td>{{ exam }}</td>
-                        <td>{{ total }}</td>
-                        <td>{{ grade }}</td>
-                        <td>{{ remark }}</td>
-                    </tr>
-                {% endfor %}
-                <tr>
-                    <td><strong>Grand Total</strong></td>
-                    <td colspan="3"></td>
-                    <td><strong>{{ grand_total.total }}</strong></td>
-                    <td colspan="2"></td>
-                </tr>
-            </tbody>
-        </table>
+    <div class="remarks">
+        <p><strong>Remarks:</strong> {{ remarks if remarks else 'N/A' }}</p>
+    </div>
 
-        <div class="remarks">
-            <p><strong>Remarks:</strong> {{ remarks if remarks else 'N/A' }}</p>
+    <div class="footer">
+        <div class="signature">
+            <p>_______________________</p>
+            <p><strong>Principal's Signature</strong></p>
         </div>
-
-        <div class="footer">
-            <div class="signature">
-                <p>_______________________</p>
-                <p><strong>Principal's Signature</strong></p>
-            </div>
-            <div>
-                <p><strong>Date Issued:</strong> {{ date_issued }}</p>
-                <p><strong>Date Printed:</strong> {{ date_printed }}</p>
-            </div>
+        <div>
+            <p><strong>Date Issued:</strong> {{ date_issued }}</p>
+            <p><strong>Date Printed:</strong> {{ date_printed }}</p>
         </div>
-
-
-
-
-
-
-
-
+    </div>
+</div>
 
 
 {#
@@ -558,4 +550,5 @@
         </div>
     </div>
 </div>
+
 #}
