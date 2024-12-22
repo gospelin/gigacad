@@ -1,4 +1,4 @@
-{% extends "base.html" %} {% block content %}
+{% extends "student/base.html" %} {% block content %}
 
 <style>
     /* General Styles */
@@ -283,13 +283,10 @@
 <div class="container mt-5 print-view">
     <div class="row justify-content-center">
         <div class="col-lg-8">
-            {% for message in get_flashed_messages() %}
-                <div class="alert alert-warning mt-3">{{ message }}</div>
-            {% endfor %}
             <div class="card border-0 shadow-lg">
                 <div class="card-body">
                     <div class="school-header">
-                        <img src="{{url_for('static', filename='images/MY_SCHOOL_LOGO.png')}}" alt="School Logo" class="img-fluid school-logo" width="60">
+                        <img src="../static/images/MY_SCHOOL_LOGO.png" alt="School Logo" class="img-fluid school-logo" width="60">
                         <div class="school-info">
                             <h1 class="card-title text-center text-uppercase">{{ school_name }}</h1>
                             <p style="color: pink;" class="text-center card-text">6 OOMNNE DRIVE, ABAYI, ABA, ABIA STATE</p>
@@ -362,12 +359,12 @@
 
                                     {% if total > 0 %}
                                         <tr>
-                                            <td style="color: #28a745;" class="text-uppercase">{{ result.subject.name }}</td>
+                                            <td style="color: #28a745;" class="text-uppercase"> {{ result.subject.name }} </td>
 
                                             {% if class_assessment < 10 %}
                                                 <td class="text-center" style="color: red;">{{ class_assessment }}</td>
                                             {% else %}
-                                                <td class="text-center">{{ class_assessment }}</td>
+                                                <td class="text-center" style="color: #333;">{{ class_assessment }}</td>
                                             {% endif %}
 
                                             {% if summative_test < 10 %}

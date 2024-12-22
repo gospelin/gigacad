@@ -4,153 +4,136 @@
 
 {% block content %}
 <div class="row">
+    <!-- Stats Cards -->
     <div class="col-md-3">
-        <div class="card text-white bg-primary mb-3">
+        <div class="card mb-3" style="background: var(--primary-blue); color: var(--white);">
             <div class="card-body">
-                <h5 class="card-title">Total Students</h5>
-                <p class="card-text" id="total-students">234</p>
+                <h5 style="color: #fff;" class="card-title">Total Students</h5>
+                <p style="color: #fff;" class="card-text" id="total-students">234</p>
             </div>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card text-white bg-success mb-3">
+        <div class="card mb-3" style="background: var(--dark-blue); color: var(--white);">
             <div class="card-body">
-                <h5 class="card-title">Total Teachers</h5>
-                <p class="card-text" id="total-teachers">20</p>
+                <h5 style="color: #fff;" class="card-title">Total Teachers</h5>
+                <p style="color: #fff;" class="card-text" id="total-teachers">20</p>
             </div>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card text-white bg-warning mb-3">
+        <div class="card mb-3" style="background: var(--light-blue); color: var(--white);">
             <div class="card-body">
-                <h5 class="card-title">Total Parents</h5>
-                <p class="card-text" id="total-parents">115</p>
+                <h5 style="color: var(--white);" class="card-title">Total Parents</h5>
+                <p style="color: var(--white);" class="card-text" id="total-parents">115</p>
             </div>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card text-white bg-danger mb-3">
+        <div class="card mb-3" style="background: var(--hover-blue); color: var(--white);">
             <div class="card-body">
-                <h5 class="card-title">Total Classes</h5>
-                <p class="card-text" id="total-classes">10</p>
+                <h5 style="color: var(--white);" class="card-title">Total Classes</h5>
+                <p style="color: var(--white);" class="card-text" id="total-classes">10</p>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Charts Section -->
 <div class="row">
     <div class="col-md-6">
-        <div class="card">
+        <div class="card mb-3" style="background: var(--light-background); border: 1px solid var(--border-gray);">
             <div class="card-body">
-                <h5 class="card-title">Student Enrollment</h5>
+                <h5 class="card-title" style="color: var(--white);">Student Enrollment</h5>
                 <canvas id="studentChart"></canvas>
             </div>
         </div>
     </div>
     <div class="col-md-6">
-        <div class="card">
+        <div class="card mb-3" style="background: var(--light-background); border: 1px solid var(--border-gray);">
             <div class="card-body">
-                <h5 class="card-title">Teacher Distribution</h5>
+                <h5 class="card-title" style="color: var(--white);">Teacher Distribution</h5>
                 <canvas id="teacherChart"></canvas>
             </div>
         </div>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
 {% endblock %}
 
 {% block scripts %}
-    <script>
-     $(document).ready(function () {
-                $(".sidebar-toggler").on("click", function () {
-                    $(".sidebar").toggleClass("open");
-                    setTimeout(function () {
-                        studentChart.resize();
-                        teacherChart.resize();
-                    }, 300);
-                });
-            });
+<script>
+    $(document).ready(function () {
+        // Sidebar toggle logic
+        $(".sidebar-toggler").on("click", function () {
+            $(".sidebar").toggleClass("open");
+        });
 
-            $(document).ready(function () {
-                var path = window.location.pathname;
-                if (path.includes("dashboard")) {
-                    $("#dashboard-link").addClass("active");
-                } else if (path.includes("approve_students")) {
-                    $("#students-link").addClass("active");
-                }
-            });
+        // Highlight active link
+        var path = window.location.pathname;
+        if (path.includes("dashboard")) {
+            $("#dashboard-link").addClass("active");
+        }
 
-            const totalStudents = 234;
-            const totalTeachers = 20;
-            const totalParents = 115;
-            const totalClasses = 10;
-
-            $("#total-students").text(totalStudents);
-            $("#total-teachers").text(totalTeachers);
-            $("#total-parents").text(totalParents);
-            $("#total-classes").text(totalClasses);
-
-            const studentChartCtx = document.getElementById("studentChart").getContext("2d");
-            const studentChart = new Chart(studentChartCtx, {
-                type: "bar",
-                data: {
-                    labels: ["Basic 1", "Basic 2", "Basic 3", "Basic 4", "Basic 5"],
-                    datasets: [{
-                        label: "# of Students",
-                        data: [12, 19, 3, 5, 2],
-                        backgroundColor: "rgba(54, 162, 235, 0.2)",
-                        borderColor: "rgba(54, 162, 235, 1)",
-                        borderWidth: 1,
-                    }],
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                        },
+        // Initialize Student Chart
+        const studentChartCtx = document.getElementById("studentChart").getContext("2d");
+        const studentChart = new Chart(studentChartCtx, {
+            type: "bar",
+            data: {
+                labels: ["Basic 1", "Basic 2", "Basic 3", "Basic 4", "Basic 5"],
+                datasets: [{
+                    label: "# of Students",
+                    data: [12, 19, 3, 5, 2],
+                    backgroundColor: "rgba(78, 84, 200, 0.7)",
+                    borderColor: "rgba(78, 84, 200, 1)",
+                    borderWidth: 1,
+                }],
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
                     },
                 },
-            });
+            },
+        });
 
-            const teacherChartCtx = document.getElementById("teacherChart").getContext("2d");
-            const teacherChart = new Chart(teacherChartCtx, {
-                type: "pie",
-                data: {
-                    labels: ["Math", "Science", "English", "History", "Art"],
-                    datasets: [{
-                        label: "# of Teachers",
-                        data: [3, 5, 2, 4, 6],
-                        backgroundColor: [
-                            "rgba(255, 99, 132, 0.2)",
-                            "rgba(54, 162, 235, 0.2)",
-                            "rgba(255, 206, 86, 0.2)",
-                            "rgba(75, 192, 192, 0.2)",
-                            "rgba(153, 102, 255, 0.2)",
-                        ],
-                        borderColor: [
-                            "rgba(255, 99, 132, 1)",
-                            "rgba(54, 162, 235, 1)",
-                            "rgba(255, 206, 86, 1)",
-                            "rgba(75, 192, 192, 1)",
-                            "rgba(153, 102, 255, 1)",
-                        ],
-                        borderWidth: 1,
-                    }],
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: "top",
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function (tooltipItem) {
-                                    return tooltipItem.label + ": " + tooltipItem.raw;
-                                },
-                            },
-                        },
+        // Initialize Teacher Chart
+        const teacherChartCtx = document.getElementById("teacherChart").getContext("2d");
+        const teacherChart = new Chart(teacherChartCtx, {
+            type: "pie",
+            data: {
+                labels: ["Math", "Science", "English", "History", "Art"],
+                datasets: [{
+                    data: [3, 5, 2, 4, 6],
+                    backgroundColor: [
+                        "rgba(78, 84, 200, 0.7)",
+                        "rgba(143, 148, 251, 0.7)",
+                        "rgba(72, 201, 176, 0.7)",
+                        "rgba(255, 159, 64, 0.7)",
+                        "rgba(255, 99, 132, 0.7)",
+                    ],
+                    borderColor: [
+                        "rgba(78, 84, 200, 1)",
+                        "rgba(143, 148, 251, 1)",
+                        "rgba(72, 201, 176, 1)",
+                        "rgba(255, 159, 64, 1)",
+                        "rgba(255, 99, 132, 1)",
+                    ],
+                    borderWidth: 1,
+                }],
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: "top",
                     },
                 },
-            });
-    </script>
+            },
+        });
+    });
+</script>
 {% endblock %}
-
