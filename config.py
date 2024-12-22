@@ -16,7 +16,7 @@ class Config:
     DB_USER = os.getenv("DB_USER", "your_mysql_username")
     DB_PASSWORD = os.getenv("DB_PASSWORD", "your_mysql_password")
     DB_HOST = os.getenv("DB_HOST", "localhost")
-    DB_NAME = os.getenv("DB_NAME", "auntyan1_school_database")
+    DB_NAME = os.getenv("DB_NAME", "school_database")
 
     # Construct the MySQL connection string
     SQLALCHEMY_DATABASE_URI = (
@@ -50,7 +50,7 @@ class ProductionConfig(Config):
     """Production configuration."""
 
     DEBUG = False
-    SERVER_NAME = "auntyannesschools.com.ng"
+    # SERVER_NAME = "auntyannesschools.com.ng"
     # SERVER_NAME = "176.74.18.130"
     # MySQL URI is already set in the base Config class and will be used here
 
