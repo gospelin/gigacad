@@ -50,7 +50,7 @@ class ProductionConfig(Config):
     """Production configuration."""
 
     DEBUG = False
-    # SERVER_NAME = "auntyannesschools.com.ng"
+    SERVER_NAME = "auntyannesschools.com.ng"
     # SERVER_NAME = "176.74.18.130"
     # MySQL URI is already set in the base Config class and will be used here
 
