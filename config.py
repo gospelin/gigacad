@@ -16,7 +16,7 @@ class Config:
     DB_USER = os.getenv("DB_USER", "your_mysql_username")
     DB_PASSWORD = os.getenv("DB_PASSWORD", "your_mysql_password")
     DB_HOST = os.getenv("DB_HOST", "localhost")
-    DB_NAME = os.getenv("DB_NAME", "school_database")
+    DB_NAME = os.getenv("DB_NAME", "auntyan1_school_database")
 
     # Construct the MySQL connection string
     SQLALCHEMY_DATABASE_URI = (
