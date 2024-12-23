@@ -1,0 +1,67 @@
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+alembic = "==1.13.1"
+babel = "==2.14.0"
+blinker = "==1.8.1"
+click = "==8.1.7"
+colorama = "==0.4.6"
+dnspython = "==2.6.1"
+email-validator = "==2.1.1"
+flask = "==3.0.3"  # Adjusted to allow Flask 2.x
+flask-admin = "==1.6.1"
+flask-babelex = "==0.9.4"
+flask-login = "==0.6.3"
+flask-mail = "==0.9.1"
+flask-migrate = "==4.0.7"
+flask-principal = "==0.4.0"
+flask-security = "*"
+flask-sqlalchemy = "==3.1.1"  # Adjusted for compatibility
+flask-wtf = "==1.2.1"
+greenlet = "==3.0.3"
+gunicorn = "==22.0.0"
+idna = "==3.7"
+iniconfig = "==2.0.0"
+itsdangerous = "==2.2.0"
+jinja2 = "*"
+mako = "==1.3.3"
+markupsafe = "==2.1.5"
+mysqlclient = "==2.2.4"
+passlib = "==1.7.4"
+pluggy = "==1.5.0"
+pymysql = "==1.1.1"
+pytest = "==8.2.0"
+python-dotenv = "==1.0.1"
+speaklater = "==1.3"
+sqlalchemy = "==2.0.30"  # Ensure compatibility with Flask-SQLAlchemy
+typing-extensions = "==4.11.0"
+waitress = "==3.0.0"
+werkzeug = "==3.0.3"  # Adjusted for compatibility
+wtforms = "==3.1.2"
+packaging = "==24.0"
+Brotli = "==1.1.0"
+cffi = "==1.16.0"
+cssselect2 = "==0.7.0"
+et-xmlfile = "==1.1.0"
+exceptiongroup= "==1.2.1"
+fonttools = "==4.53.0"
+html5lib = "==1.1"
+openpyxl = "==3.1.5"
+pillow = "==10.3.0"
+pycparser = "==2.22"
+pydyf = "==0.10.0"
+pyphen = "==0.15.0"
+six = "==1.16.0"
+tinycss2 = "==1.3.0"
+tomli = "==2.0.1"
+weasyprint = "==62.2"
+webencodings = "==0.5.1"
+zopfli = "==0.2.3"
+
+[dev-packages]
+
+[requires]
+python_version = "3.10"

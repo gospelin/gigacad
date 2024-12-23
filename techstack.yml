@@ -1,0 +1,546 @@
+repo_name: gospelin/AAIS
+report_id: b6ecd1c0b01265212be504fbbafb4bfe
+version: 0.1
+repo_type: Public
+timestamp: '2024-07-27T08:12:22+00:00'
+requested_by: gospelin
+provider: github
+branch: main
+detected_tools_count: 40
+tools:
+- name: CSS 3
+  description: The latest evolution of the Cascading Style Sheets language
+  website_url: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS3
+  open_source: true
+  hosted_saas: false
+  category: Languages & Frameworks
+  sub_category: Languages
+  image_url: https://img.stackshare.io/service/6727/css.png
+  detection_source_url: https://github.com/gospelin/AAIS
+  detection_source: Repo Metadata
+- name: Jinja
+  description: Full featured template engine for Python
+  website_url: https://palletsprojects.com/p/jinja/
+  license: BSD-3-Clause
+  open_source: true
+  hosted_saas: false
+  category: Languages & Frameworks
+  sub_category: Templating Languages & Extensions
+  image_url: https://img.stackshare.io/service/2303/New_Project__20_.png
+  detection_source_url: https://github.com/gospelin/AAIS/blob/main/requirements.txt
+  detection_source: requirements.txt
+  last_updated_by: dependabot[bot]
+  last_updated_on: 2024-06-25 03:51:56.000000000 Z
+- name: Mako
+  description: Template library written in Python
+  website_url: https://github.com/zzzeek/mako
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Languages & Frameworks
+  sub_category: Templating Languages & Extensions
+  image_url: https://img.stackshare.io/service/3583/default_43e3ee00dcc48a40f6fcba33551e4f5a99a10537.png
+  detection_source_url: https://github.com/gospelin/AAIS
+  detection_source: Repo Metadata
+- name: Python
+  description: A clear and powerful object-oriented programming language, comparable
+    to Perl, Ruby, Scheme, or Java.
+  website_url: https://www.python.org
+  open_source: true
+  hosted_saas: false
+  category: Languages & Frameworks
+  sub_category: Languages
+  image_url: https://img.stackshare.io/service/993/pUBY5pVj.png
+  detection_source_url: https://github.com/gospelin/AAIS
+  detection_source: Repo Metadata
+- name: MySQL
+  description: The world's most popular open source database
+  website_url: http://www.mysql.com
+  open_source: true
+  hosted_saas: false
+  category: Data Stores
+  sub_category: Databases
+  image_url: https://img.stackshare.io/service/1025/logo-mysql-170x170.png
+  detection_source_url: https://github.com/gospelin/AAIS/blob/main/requirements.txt
+  detection_source: requirements.txt
+  last_updated_by: gospelin
+  last_updated_on: 2024-06-09 02:47:57.000000000 Z
+- name: SQLAlchemy
+  description: The Python SQL Toolkit and Object Relational Mapper
+  website_url: http://www.sqlalchemy.org/
+  version: 2.0.30
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Data Stores
+  sub_category: Object Relational Mapper (ORM)
+  image_url: https://img.stackshare.io/service/1839/q5uAkmy7.png
+  detection_source_url: https://github.com/gospelin/AAIS/blob/main/requirements.txt
+  detection_source: requirements.txt
+  last_updated_by: gospelin
+  last_updated_on: 2024-05-09 05:10:32.000000000 Z
+- name: Git
+  description: Fast, scalable, distributed revision control system
+  website_url: http://git-scm.com/
+  open_source: true
+  hosted_saas: false
+  category: Build, Test, Deploy
+  sub_category: Version Control System
+  image_url: https://img.stackshare.io/service/1046/git.png
+  detection_source_url: https://github.com/gospelin/AAIS
+  detection_source: Repo Metadata
+- name: GitHub Actions
+  description: Automate your workflow from idea to production
+  website_url: https://github.com/features/actions
+  open_source: false
+  hosted_saas: true
+  category: Build, Test, Deploy
+  sub_category: Continuous Integration
+  image_url: https://img.stackshare.io/service/11563/actions.png
+  detection_source_url: https://github.com/gospelin/AAIS/blob/main/.github/workflows/python-package.yml
+  detection_source: ".github/workflows/python-package.yml"
+  last_updated_by: gospelin
+  last_updated_on: 2024-06-09 12:29:58.000000000 Z
+- name: PyPI
+  description: A repository of software for the Python programming language
+  website_url: https://pypi.org/
+  open_source: false
+  hosted_saas: false
+  category: Build, Test, Deploy
+  sub_category: Hosted Package Repository
+  image_url: https://img.stackshare.io/service/12572/-RIWgodF_400x400.jpg
+  detection_source_url: https://github.com/gospelin/AAIS/blob/main/requirements.txt
+  detection_source: requirements.txt
+  last_updated_by: gospelin
+  last_updated_on: 2024-05-05 04:44:36.000000000 Z
+- name: pytest
+  description: A full-featured Python testing tool to help you write better programs
+  website_url: http://pytest.org/latest/
+  version: 8.2.0
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Build, Test, Deploy
+  sub_category: Testing Frameworks
+  image_url: https://img.stackshare.io/service/4586/Lu99Qe0Z_400x400.png
+  detection_source_url: https://github.com/gospelin/AAIS/blob/main/requirements.txt
+  detection_source: requirements.txt
+  last_updated_by: gospelin
+  last_updated_on: 2024-05-05 16:00:19.000000000 Z
+- name: Shell
+  description: A shell is a text-based terminal, used for manipulating programs and
+    files. Shell scripts typically manage program execution.
+  website_url: https://en.wikipedia.org/wiki/Shell_script
+  open_source: false
+  hosted_saas: false
+  category: Languages & Frameworks
+  sub_category: Languages
+  image_url: https://img.stackshare.io/service/4631/default_c2062d40130562bdc836c13dbca02d318205a962.png
+  detection_source_url: https://github.com/gospelin/AAIS
+  detection_source: Repo Metadata
+- name: Babel
+  description: Internationalization utilities
+  package_url: https://pypi.org/project/Babel
+  version: 2.14.0
+  license: BSD-3-Clause
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: PyPI Packages
+  image_url: https://img.stackshare.io/package/19888/default_680f9274a97353753534797409b2c06b6bd32266.png
+  detection_source_url: https://github.com/gospelin/AAIS/blob/main/requirements.txt
+  detection_source: requirements.txt
+  last_updated_by: gospelin
+  last_updated_on: 2024-05-05 04:44:36.000000000 Z
+- name: Flask
+  description: A simple framework for building complex web applications
+  package_url: https://pypi.org/project/Flask
+  version: 3.0.3
+  license: BSD-3-Clause
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: PyPI Packages
+  image_url: https://img.stackshare.io/package/19834/default_58dbe7b4d7ec447b62773209af0f9a31bbabf5bd.png
+  detection_source_url: https://github.com/gospelin/AAIS/blob/main/requirements.txt
+  detection_source: requirements.txt
+  last_updated_by: gospelin
+  last_updated_on: 2024-05-19 12:19:42.000000000 Z
+- name: Flask-Admin
+  description: Simple and extensible admin interface framework for Flask
+  package_url: https://pypi.org/project/Flask-Admin
+  version: 1.6.1
+  license: BSD-3-Clause
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: PyPI Packages
+  image_url: https://img.stackshare.io/package/20344/default_91c74a917ce2203b163fd91cab34b3501a3802a9.png
+  detection_source_url: https://github.com/gospelin/AAIS/blob/main/requirements.txt
+  detection_source: requirements.txt
+  last_updated_by: gospelin
+  last_updated_on: 2024-05-19 12:19:42.000000000 Z
+- name: Flask-Login
+  description: User session management for Flask
+  package_url: https://pypi.org/project/Flask-Login
+  version: 0.6.3
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: PyPI Packages
+  image_url: https://img.stackshare.io/package/20091/default_5d939a1a27846185eb6de438be4bf77b84b4ee87.png
+  detection_source_url: https://github.com/gospelin/AAIS/blob/main/requirements.txt
+  detection_source: requirements.txt
+  last_updated_by: gospelin
+  last_updated_on: 2024-05-19 12:19:42.000000000 Z
+- name: Flask-Mail
+  description: Flask extension for sending email
+  package_url: https://pypi.org/project/Flask-Mail
+  version: 0.9.1
+  license: BSD-3-Clause
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: PyPI Packages
+  image_url: https://img.stackshare.io/package/pypi/image.png
+  detection_source_url: https://github.com/gospelin/AAIS/blob/main/requirements.txt
+  detection_source: requirements.txt
+  last_updated_by: gospelin
+  last_updated_on: 2024-05-19 12:19:42.000000000 Z
+- name: Flask-Migrate
+  description: SQLAlchemy database migrations for Flask applications using Alembic
+  package_url: https://pypi.org/project/Flask-Migrate
+  version: 4.0.7
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: PyPI Packages
+  image_url: https://img.stackshare.io/package/20329/default_cf6b540611cb9b9b5d016a661f54f50ad3400f1a.png
+  detection_source_url: https://github.com/gospelin/AAIS/blob/main/requirements.txt
+  detection_source: requirements.txt
+  last_updated_by: gospelin
+  last_updated_on: 2024-05-19 12:19:42.000000000 Z
+- name: Flask-SQLAlchemy
+  description: Adds SQLAlchemy support to your Flask application
+  package_url: https://pypi.org/project/Flask-SQLAlchemy
+  version: 3.1.1
+  license: BSD-3-Clause
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: PyPI Packages
+  image_url: https://img.stackshare.io/package/19941/default_aacb529ceff756b62765790d8d6787a041d514ff.png
+  detection_source_url: https://github.com/gospelin/AAIS/blob/main/requirements.txt
+  detection_source: requirements.txt
+  last_updated_by: gospelin
+  last_updated_on: 2024-05-19 12:19:42.000000000 Z
+- name: Flask-WTF
+  description: Simple integration of Flask and WTForms
+  package_url: https://pypi.org/project/Flask-WTF
+  version: 1.2.1
+  license: BSD-3-Clause
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: PyPI Packages
+  image_url: https://img.stackshare.io/package/20060/default_eed7014d799b4e750aea7c37ab970b4b62c0cf42.png
+  detection_source_url: https://github.com/gospelin/AAIS/blob/main/requirements.txt
+  detection_source: requirements.txt
+  last_updated_by: gospelin
+  last_updated_on: 2024-05-19 12:19:42.000000000 Z
+- name: MarkupSafe
+  description: Safely add untrusted strings to HTML/XML markup
+  package_url: https://pypi.org/project/MarkupSafe
+  version: 2.1.5
+  license: BSD-3-Clause
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: PyPI Packages
+  image_url: https://img.stackshare.io/package/19945/default_0b0a94e1bdf3e64deeccb23892ca2335bdc30e4f.png
+  detection_source_url: https://github.com/gospelin/AAIS/blob/main/requirements.txt
+  detection_source: requirements.txt
+  last_updated_by: gospelin
+  last_updated_on: 2024-05-05 04:44:36.000000000 Z
+- name: PyMySQL
+  description: Pure Python MySQL Driver
+  package_url: https://pypi.org/project/PyMySQL
+  version: 1.1.1
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: PyPI Packages
+  image_url: https://img.stackshare.io/package/19880/default_3863c7bb51d307217c188e059f67ca417c51efe3.png
+  detection_source_url: https://github.com/gospelin/AAIS/blob/main/requirements.txt
+  detection_source: requirements.txt
+  last_updated_by: gospelin
+  last_updated_on: 2024-06-09 02:47:57.000000000 Z
+- name: WTForms
+  description: A flexible forms validation and rendering library for Python web development
+  package_url: https://pypi.org/project/WTForms
+  version: 3.1.2
+  license: BSD-3-Clause
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: PyPI Packages
+  image_url: https://img.stackshare.io/package/20615/default_7382161db21ae3cf11739d4242ed42a7278e7489.png
+  detection_source_url: https://github.com/gospelin/AAIS/blob/main/requirements.txt
+  detection_source: requirements.txt
+  last_updated_by: gospelin
+  last_updated_on: 2024-05-05 04:44:36.000000000 Z
+- name: Werkzeug
+  description: The comprehensive WSGI web application library
+  package_url: https://pypi.org/project/Werkzeug
+  version: 3.0.3
+  license: BSD-3-Clause
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: PyPI Packages
+  image_url: https://img.stackshare.io/package/19890/default_87fc2af3f2409064833512bb6fc5b04443a2e6aa.png
+  detection_source_url: https://github.com/gospelin/AAIS/blob/main/requirements.txt
+  detection_source: requirements.txt
+  last_updated_by: dependabot[bot]
+  last_updated_on: 2024-06-25 03:46:19.000000000 Z
+- name: alembic
+  description: A database migration tool for SQLAlchemy
+  package_url: https://pypi.org/project/alembic
+  version: 1.13.1
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: PyPI Packages
+  image_url: https://img.stackshare.io/package/19961/default_61e35171bd9c0e5c5b88b2e4221ca242576ad8c0.png
+  detection_source_url: https://github.com/gospelin/AAIS/blob/main/requirements.txt
+  detection_source: requirements.txt
+  last_updated_by: gospelin
+  last_updated_on: 2024-05-09 05:10:32.000000000 Z
+- name: blinker
+  description: Fast, simple object-to-object and broadcast signaling
+  package_url: https://pypi.org/project/blinker
+  version: 1.8.1
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: PyPI Packages
+  image_url: https://img.stackshare.io/package/20273/default_847617f8273bac4dd5921370b0684f29c3397a68.png
+  detection_source_url: https://github.com/gospelin/AAIS/blob/main/requirements.txt
+  detection_source: requirements.txt
+  last_updated_by: gospelin
+  last_updated_on: 2024-05-05 04:44:36.000000000 Z
+- name: click
+  description: Composable command line interface toolkit
+  package_url: https://pypi.org/project/click
+  version: 8.1.7
+  license: BSD-3-Clause
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: PyPI Packages
+  image_url: https://img.stackshare.io/package/19830/default_74a61b43bdb9fc0cba2978316b9976f43545029b.png
+  detection_source_url: https://github.com/gospelin/AAIS/blob/main/requirements.txt
+  detection_source: requirements.txt
+  last_updated_by: gospelin
+  last_updated_on: 2024-05-05 04:44:36.000000000 Z
+- name: colorama
+  description: Cross-platform colored terminal text
+  package_url: https://pypi.org/project/colorama
+  version: 0.4.6
+  license: BSD-3-Clause
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: PyPI Packages
+  image_url: https://img.stackshare.io/package/19845/default_accee5d2b8ed75c2245f13504daf75b1cbc8cc9f.png
+  detection_source_url: https://github.com/gospelin/AAIS/blob/main/requirements.txt
+  detection_source: requirements.txt
+  last_updated_by: gospelin
+  last_updated_on: 2024-05-05 04:44:36.000000000 Z
+- name: dnspython
+  description: DNS toolkit
+  package_url: https://pypi.org/project/dnspython
+  version: 2.6.1
+  license: Other
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: PyPI Packages
+  image_url: https://img.stackshare.io/package/20249/default_47b8ee8db82e43d9eef35923435bd8cc855f3a1b.png
+  detection_source_url: https://github.com/gospelin/AAIS/blob/main/requirements.txt
+  detection_source: requirements.txt
+  last_updated_by: gospelin
+  last_updated_on: 2024-05-09 05:10:32.000000000 Z
+- name: email_validator
+  description: A robust email syntax and deliverability validation library for Python
+    2.x/3.x
+  package_url: https://pypi.org/project/email_validator
+  version: 2.1.1
+  license: Unlicense
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: PyPI Packages
+  image_url: https://img.stackshare.io/package/pypi/image.png
+  detection_source_url: https://github.com/gospelin/AAIS/blob/main/requirements.txt
+  detection_source: requirements.txt
+  last_updated_by: gospelin
+  last_updated_on: 2024-05-09 05:10:32.000000000 Z
+- name: greenlet
+  description: Lightweight in-process concurrent programming
+  package_url: https://pypi.org/project/greenlet
+  version: 3.0.3
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: PyPI Packages
+  image_url: https://img.stackshare.io/package/20137/default_e3ea003987b13e5c9b8c9000c748b25a9c0d9ecd.png
+  detection_source_url: https://github.com/gospelin/AAIS/blob/main/requirements.txt
+  detection_source: requirements.txt
+  last_updated_by: gospelin
+  last_updated_on: 2024-05-05 16:00:19.000000000 Z
+- name: gunicorn
+  description: WSGI HTTP Server for UNIX
+  package_url: https://pypi.org/project/gunicorn
+  version: 22.0.0
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: PyPI Packages
+  image_url: https://img.stackshare.io/package/19931/default_74a0c20721d3a0a1484d69586401591fe8993db2.png
+  detection_source_url: https://github.com/gospelin/AAIS/blob/main/requirements.txt
+  detection_source: requirements.txt
+  last_updated_by: gospelin
+  last_updated_on: 2024-06-09 02:47:57.000000000 Z
+- name: idna
+  description: Internationalized Domain Names in Applications
+  package_url: https://pypi.org/project/idna
+  version: '3.7'
+  license: BSD-3-Clause
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: PyPI Packages
+  image_url: https://img.stackshare.io/package/19863/default_f24e00e4cb7620e436f9d06e0305070e1335922a.png
+  detection_source_url: https://github.com/gospelin/AAIS/blob/main/requirements.txt
+  detection_source: requirements.txt
+  last_updated_by: gospelin
+  last_updated_on: 2024-05-09 05:10:32.000000000 Z
+- name: iniconfig
+  description: Brain-dead simple config-ini parsing
+  package_url: https://pypi.org/project/iniconfig
+  version: 2.0.0
+  open_source: false
+  hosted_saas: false
+  category: Build, Test, Deploy
+  sub_category: Package Managers
+  image_url: https://img.stackshare.io/package/pypi/image.png
+  detection_source_url: https://github.com/gospelin/AAIS/blob/main/requirements.txt
+  detection_source: requirements.txt
+  last_updated_by: gospelin
+  last_updated_on: 2024-06-09 02:47:57.000000000 Z
+- name: itsdangerous
+  description: Various helpers to pass data to untrusted environments and back
+  package_url: https://pypi.org/project/itsdangerous
+  version: 2.2.0
+  license: BSD-3-Clause
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: PyPI Packages
+  image_url: https://img.stackshare.io/package/19989/default_b1f1fc9c4c59a78443018e01395203ba8c61dcde.png
+  detection_source_url: https://github.com/gospelin/AAIS/blob/main/requirements.txt
+  detection_source: requirements.txt
+  last_updated_by: gospelin
+  last_updated_on: 2024-05-05 04:44:36.000000000 Z
+- name: packaging
+  description: Core utilities for Python packages
+  package_url: https://pypi.org/project/packaging
+  version: '24.0'
+  license: BSD-3-Clause,Apache-2.0
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: PyPI Packages
+  image_url: https://img.stackshare.io/package/19894/default_f716e4bc541a9eb6e3f5b7a20d7c35355075b0b4.png
+  detection_source_url: https://github.com/gospelin/AAIS/blob/main/requirements.txt
+  detection_source: requirements.txt
+  last_updated_by: gospelin
+  last_updated_on: 2024-05-05 16:00:19.000000000 Z
+- name: passlib
+  description: Comprehensive password hashing framework supporting over 30 schemes
+  package_url: https://pypi.org/project/passlib
+  version: 1.7.4
+  license: BSD-3-Clause
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: PyPI Packages
+  image_url: https://img.stackshare.io/package/19992/default_aa5b3e77340c2bb80cd8e6a59cd82909abcdcd63.png
+  detection_source_url: https://github.com/gospelin/AAIS/blob/main/requirements.txt
+  detection_source: requirements.txt
+  last_updated_by: gospelin
+  last_updated_on: 2024-05-05 04:44:36.000000000 Z
+- name: pluggy
+  description: Plugin and hook calling mechanisms for python
+  package_url: https://pypi.org/project/pluggy
+  version: 1.5.0
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: PyPI Packages
+  image_url: https://img.stackshare.io/package/20041/default_77eeab9aff24a2723c1f19fed32966a15b17d874.png
+  detection_source_url: https://github.com/gospelin/AAIS/blob/main/requirements.txt
+  detection_source: requirements.txt
+  last_updated_by: gospelin
+  last_updated_on: 2024-05-05 16:00:19.000000000 Z
+- name: python-dotenv
+  description: Add .env support to your django/flask apps in development and deployments
+  package_url: https://pypi.org/project/python-dotenv
+  version: 1.0.1
+  license: BSD-3-Clause
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: PyPI Packages
+  image_url: https://img.stackshare.io/package/20095/default_3141eabecdd8efa55de73a33c43f2ac0d5bbf954.png
+  detection_source_url: https://github.com/gospelin/AAIS/blob/main/requirements.txt
+  detection_source: requirements.txt
+  last_updated_by: gospelin
+  last_updated_on: 2024-05-09 05:10:32.000000000 Z
+- name: speaklater
+  description: Implements a lazy string for python useful for use with gettext
+  package_url: https://pypi.org/project/speaklater
+  version: '1.3'
+  license: Other
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: PyPI Packages
+  image_url: https://img.stackshare.io/package/pypi/image.png
+  detection_source_url: https://github.com/gospelin/AAIS/blob/main/requirements.txt
+  detection_source: requirements.txt
+  last_updated_by: gospelin
+  last_updated_on: 2024-05-05 04:44:36.000000000 Z
+- name: waitress
+  description: Waitress WSGI server
+  package_url: https://pypi.org/project/waitress
+  version: 3.0.0
+  license: ZPL-2.1
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: PyPI Packages
+  image_url: https://img.stackshare.io/package/20080/default_1b6ee2407cdedc6ad8878ee707164428880e399a.png
+  detection_source_url: https://github.com/gospelin/AAIS/blob/main/requirements.txt
+  detection_source: requirements.txt
+  last_updated_by: gospelin
+  last_updated_on: 2024-06-09 02:47:57.000000000 Z

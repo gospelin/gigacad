@@ -23,23 +23,9 @@
 
 <div class="container mt-5">
     <h1>Broadsheet</h1>
-    <form method="POST" action="{{ url_for('admins.broadsheet', entry_class=entry_class) }}">
-        {{ form.hidden_tag() }}
-        <div class="row mb-3">
-            <div class="col">
-                <label for="term" class="form-label">Term:</label>
-                {{ form.term(class="form-control") }}
-            </div>
-            <div class="col">
-                <label for="session" class="form-label">Session:</label>
-                {{ form.session(class="form-control") }}
-            </div>
-        </div>
-        <button type="submit" class="btn btn-primary">Generate Broadsheet</button>
-    </form>
 
     {% if broadsheet_data %}
-    <a href="{{ url_for('admins.download_broadsheet', entry_class=entry_class) }}?term={{ form.term.data }}&session={{ form.session.data }}" class="btn btn-success mt-3">Download Broadsheet</a>
+    <a href="{{ url_for('admins.download_broadsheet', class_name=class_name) }}?term={{ current_term }}&session={{ current_session }}" class="btn btn-primary mt-3">Download Broadsheet</a>
 
     <div class="table-responsive mt-3">
         <table class="table table-bordered">
@@ -67,17 +53,10 @@
                     <td>{{ subject.name }}</td>
                     {% for student_data in broadsheet_data %}
                     {% set result = student_data.results[subject.id] %}
-                    {% if result %}
-                    <td>{{ result.class_assessment }}</td>
-                    <td>{{ result.summative_test }}</td>
-                    <td>{{ result.exam }}</td>
-                    <td>{{ result.total }}</td>
-                    {% else %}
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                    {% endif %}
+                    <td>{{ result.class_assessment if result.class_assessment else "" }}</td>
+                    <td>{{ result.summative_test if result.summative_test else "" }}</td>
+                    <td>{{ result.exam if result.exam else "" }}</td>
+                    <td>{{ result.total if result.total else "" }}</td>
                     {% endfor %}
                     <td>{{ subject_averages[subject.id]['average'] }}</td>
                 </tr>
@@ -97,6 +76,13 @@
                     <td></td>
                 </tr>
                 <tr>
+                    <td>Cumulative Average</td>
+                    {% for student_data in broadsheet_data %}
+                    <td colspan="4">{{ student_data.cumulative_average }}</td>
+                    {% endfor %}
+                    <td></td>
+                </tr>
+                <tr>
                     <td>Position</td>
                     {% for student_data in broadsheet_data %}
                     <td colspan="4">{{ student_data.position }}</td>
@@ -107,6 +93,12 @@
         </table>
     </div>
     {% endif %}
+
+    <div class="text-center">
+        <a href="{{ url_for('admins.students_by_class', class_name=class_name) }}" class="btn btn-primary mt-3">Back to Students</a>
+        <a href="{{ url_for('admins.select_class') }}" class="btn btn-primary mt-3">Back to Classes</a>
+    </div>
 </div>
 
 {% endblock %}
+>>>>>>> 02b43f95b0e9e406235682e39821112800525dca

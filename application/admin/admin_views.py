@@ -30,7 +30,6 @@ class StudentAdmin(ModelView):
         "parent_phone_number",
         "address",
         "parent_occupation",
-        "entry_class",
         "previous_class",
         "state_of_origin",
         "local_government_area",
@@ -50,7 +49,6 @@ class StudentAdmin(ModelView):
         "parent_phone_number",
         "address",
         "parent_occupation",
-        "entry_class",
         "previous_class",
         "state_of_origin",
         "local_government_area",
@@ -62,9 +60,8 @@ class StudentAdmin(ModelView):
         "first_name",
         "last_name",
         "username",
-        "entry_class",
     ]
-    column_filters = ["approved", "entry_class"]
+    column_filters = ["approved"]
     list_template = "admin/student_admin.html"
 
     def is_accessible(self):

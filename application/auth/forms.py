@@ -7,8 +7,12 @@ from wtforms import (
     PasswordField,
     SelectMultipleField,
     FloatField,
+    IntegerField,
+    HiddenField,
+    FieldList,
+    FormField,
 )
-from wtforms.validators import DataRequired, Length, Optional
+from wtforms.validators import DataRequired, Length, Optional, NumberRange
 
 
 class StudentRegistrationForm(FlaskForm):
@@ -27,8 +31,8 @@ class StudentRegistrationForm(FlaskForm):
     )
     address = StringField("Address", validators=[Length(max=255)])
     parent_occupation = StringField("Parent Occupation", validators=[Length(max=100)])
-    entry_class = SelectField(
-        "Entry class",
+    class_name = SelectField(
+        "Current class",
         choices=[
             ("Creche"),
             ("Pre-Nursery"),
@@ -44,6 +48,7 @@ class StudentRegistrationForm(FlaskForm):
             ("JSS 1"),
             ("JSS 2"),
             ("JSS 3"),
+            ("SSS"),
         ],
         validate_choice=True,
     )
@@ -64,6 +69,7 @@ class StudentRegistrationForm(FlaskForm):
             ("JSS 1"),
             ("JSS 2"),
             ("JSS 3"),
+            ("SSS"),
         ],
         validate_choice=True,
     )
@@ -84,17 +90,13 @@ class ResultForm(FlaskForm):
             ("Third Term", "Third Term"),
         ],
         validators=[DataRequired()],
-        default="Third Term",
+        default="First Term",
     )
     session = SelectField(
-        "Select Session",
-        choices=[
-            ("2023/2024", "2023/2024"),
-            ("2024/2025", "2024/2025"),
-            ("2025/2026", "2025/2026"),
-        ],
+        "Select Session",  # This will be populated dynamically
+        choices=[],  # Start with an empty list, to be populated in the route
         validators=[DataRequired()],
-        default="2023/2024",
+        default="2024/2025",
     )
     next_term_begins = StringField("Next Term Begins", validators=[Optional()])
     date_issued = StringField("Date Issued", validators=[Optional()])
@@ -103,11 +105,32 @@ class ResultForm(FlaskForm):
     submit = SubmitField("Load Results")
 
 
-class LoginForm(FlaskForm):
-    username = StringField(
-        "Username", validators=[DataRequired(), Length(min=2, max=50)]
+class StudentLoginForm(FlaskForm):
+    identifier = StringField(
+        "Student ID or Username",
+        validators=[
+            DataRequired(message="This field is required."),
+            Length(min=3, max=50, message="Must be between 3 and 50 characters."),
+        ],
     )
-    password = PasswordField("Password", validators=[DataRequired()])
+    password = PasswordField(
+        "Password",
+        validators=[DataRequired(message="This field is required.")],
+    )
+    submit = SubmitField("Login")
+
+class AdminLoginForm(FlaskForm):
+    username = StringField(
+        "Username",
+        validators=[
+            DataRequired(message="This field is required."),
+            Length(min=3, max=50, message="Must be between 3 and 50 characters."),
+        ],
+    )
+    password = PasswordField(
+        "Password",
+        validators=[DataRequired(message="This field is required.")],
+    )
     submit = SubmitField("Login")
 
 
@@ -121,7 +144,69 @@ class EditStudentForm(FlaskForm):
         choices=[("male", "Male"), ("female", "Female")],
         validators=[DataRequired()],
     )
-    entry_class = SelectField(
+    class_name = SelectField(
+        "Current Class",
+        choices=[
+            ("Creche", "Creche"),
+            ("Pre-Nursery", "Pre-Nursery"),
+            ("Nursery 1", "Nursery 1"),
+            ("Nursery 2", "Nursery 2"),
+            ("Nursery 3", "Nursery 3"),
+            ("Basic 1", "Basic 1"),
+            ("Basic 2", "Basic 2"),
+            ("Basic 3", "Basic 3"),
+            ("Basic 4", "Basic 4"),
+            ("Basic 5", "Basic 5"),
+            ("Basic 6", "Basic 6"),
+            ("JSS 1", "JSS 1"),
+            ("JSS 2", "JSS 2"),
+            ("JSS 3", "JSS 3"),
+            ("SSS", "SSS"),
+        ],
+    )
+    submit = SubmitField("Update")
+
+
+class SubjectForm(FlaskForm):
+    name = StringField("Name (comma-separated)", validators=[DataRequired()])
+    section = SelectMultipleField(
+        "Section",
+        choices=[
+            ("Nursery", "Nursery"),
+            ("Basic", "Basic"),
+            ("Secondary", "Secondary"),
+            ("Senior Secondary", "Senior Secondary"),
+        ],
+        validators=[DataRequired()],
+    )  # Change to SelectMultipleField
+    submit = SubmitField("Add Subject")
+
+
+class DeleteForm(FlaskForm):
+    submit = SubmitField("Delete")
+
+
+class ApproveForm(FlaskForm):
+    pass
+
+class SessionForm(FlaskForm):
+    session = SelectField(
+        "Select Session",
+        choices=[],  # Populated dynamically in the route
+        validators=[DataRequired()],
+        default="2024/2025",
+    )
+    term = SelectField(
+        "Select Term",
+        choices=[],  # Populated dynamically in the route
+        validators=[DataRequired()],
+        default="First Term",
+    )
+    submit = SubmitField("Update Academic Session and Term")
+
+
+class classForm(FlaskForm):
+    class_name = SelectField(
         "Class",
         choices=[
             ("Creche", "Creche"),
@@ -138,51 +223,44 @@ class EditStudentForm(FlaskForm):
             ("JSS 1", "JSS 1"),
             ("JSS 2", "JSS 2"),
             ("JSS 3", "JSS 3"),
+            ("SSS", "SSS"),
         ],
     )
-    submit = SubmitField("Update")
+    submit = SubmitField("View Classes")
 
+# class ClassForm(FlaskForm):
+#     class_id = HiddenField("Class ID")  # For editing
+#     name = StringField("Class Name", validators=[DataRequired()])
+#     section = SelectField(
+#         "Section",
+#         choices=[
+#             ("Nursery", "Nursery"),
+#             ("Basic", "Basic"),
+#             ("Secondary", "Secondary"),
+#             ("Senior Secondary", "Senior Secondary"),
+#         ],
+#         validators=[DataRequired()],
+#     )
+#     submit = SubmitField("Submit")
 
-class SubjectForm(FlaskForm):
-    name = StringField("Name (comma-separated)", validators=[DataRequired()])
-    section = SelectMultipleField(
-        "Section",
-        choices=[
-            ("Nursery", "Nursery"),
-            ("Basic", "Basic"),
-            ("Secondary", "Secondary"),
-        ],
-        validators=[DataRequired()],
-    )  # Change to SelectMultipleField
-    submit = SubmitField("Add Subject")
-
-
-class DeleteForm(FlaskForm):
-    submit = SubmitField("Delete")
-
-
-class ApproveForm(FlaskForm):
-    pass
-
-
-class SelectTermSessionForm(FlaskForm):
-    term = SelectField(
-        "Term",
-        choices=[
-            ("First Term", "First Term"),
-            ("Second Term", "Second Term"),
-            ("Third Term", "Third Term"),
-        ],
-        validators=[DataRequired()],
+# Create a form for each subject's result entry
+class SubjectResultForm(FlaskForm):
+    subject_id = HiddenField("Subject ID")  # Hidden field to store subject ID
+    class_assessment = IntegerField(
+        "Class Assessment", validators=[Optional(), NumberRange(min=0, max=20)]
     )
-    session = SelectField(
-        "Select Session",
-        choices=[
-            ("2023/2024", "2023/2024"),
-            ("2024/2025", "2024/2025"),
-            ("2025/2026", "2025/2026"),
-        ],
-        validators=[DataRequired()],
-        default="2023/2024",
+    summative_test = IntegerField(
+        "Summative Test", validators=[Optional(), NumberRange(min=0, max=20)]
     )
-    submit = SubmitField("Generate Broadsheet")
+    exam = IntegerField("Exam", validators=[Optional(), NumberRange(min=0, max=60)])
+    total = IntegerField("Total", validators=[Optional(), NumberRange(min=0, max=100)])
+    grade = StringField("Grade", validators=[Optional()])
+    remark = StringField("Remark", validators=[Optional()])
+
+
+# Main form to handle all subjects
+class ManageResultsForm(FlaskForm):
+    subjects = FieldList(
+        FormField(SubjectResultForm)
+    )  # FieldList to handle multiple subjects dynamically
+    submit = SubmitField("Save Results")

@@ -1,4 +1,4 @@
-# Ignore python bytecode files
+p# Ignore python bytecode files
 *.pyc
 *.*.pyc
 
@@ -10,6 +10,9 @@ __pycache__/
 # Environment Variables
 .env
 .flaskenv
+config.py
+*.env
+*.flaskenv
 
 # Other files to ignore
 __pycache__/
@@ -19,6 +22,7 @@ migrations/
 venv/
 ENV/
 env/
+logs/
 .venv/
 .vscode/
 .idea/
@@ -27,6 +31,7 @@ env/
 .DS_Store
 Thumbs.db
 *.log
+*.log.*
 *.sqlite
 *.sqlite3
 .pytest_cache/

@@ -1,166 +1,167 @@
-{% extends "base.html" %} {% block title %}{{ student.first_name }} {{
-student.last_name }}'s Profile{% endblock %} {% block content %}
+{% extends "student/base.html" %}
+
+{% block title %}Student Profile{% endblock %}
+
+{% block content %}
 <style>
-    .profile-card {
-        border: none;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* General Styles */
+    body {
+        font-family: 'Roboto', sans-serif;
+        background-color: #f4f6f9;
+        color: #333;
+    }
+
+    .profile-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         overflow: hidden;
-        transition: transform 0.2s;
     }
-    .profile-card:hover {
-        transform: translateY(-10px);
-    }
+
     .profile-header {
-        background: linear-gradient(45deg, #007bff, #00c6ff);
-        color: white;
-        text-align: center;
-        padding: 20px;
-    }
-    .profile-picture {
-        font-size: 3rem;
+        display: flex;
+        flex-wrap: wrap;
+        background: linear-gradient(135deg, #6a11cb, #2575fc);
         color: #fff;
-        background: #6c757d;
+        padding: 2rem;
+    }
+
+    .profile-header img {
         width: 150px;
         height: 150px;
         border-radius: 50%;
+        border: 4px solid #fff;
+        object-fit: cover;
+        margin-right: 1.5rem;
+    }
+
+    .profile-header .profile-info {
+        flex: 1;
+    }
+
+    .profile-header .profile-info h1 {
+        font-size: 2.5rem;
+        margin: 0;
+    }
+
+    .profile-header .profile-info p {
+        font-size: 1.2rem;
+        margin: 0.5rem 0;
+    }
+
+    .profile-header .profile-actions {
         display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-top: -75px;
-        transition: transform 0.3s;
+        gap: 1rem;
+        margin-top: 1rem;
     }
-    .profile-picture:hover {
-        transform: scale(1.1);
+
+    .profile-header .profile-actions a {
+        padding: 0.75rem 1.5rem;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 5px;
+        background: rgba(255, 255, 255, 0.2);
+        transition: background 0.3s ease;
     }
-    .profile-info {
-        padding: 20px;
+
+    .profile-header .profile-actions a:hover {
+        background: rgba(255, 255, 255, 0.4);
     }
-    .profile-info p {
-        font-size: 1.1rem;
+
+    .profile-content {
+        padding: 2rem;
     }
-    .profile-info strong {
-        color: #007bff;
+
+    .profile-section {
+        margin-bottom: 2rem;
     }
-    .card-footer {
-        background: #f8f9fa;
+
+    .profile-section h2 {
+        font-size: 1.5rem;
+        color: #6a11cb;
+        margin-bottom: 1rem;
     }
-    .btn-secondary {
-        background: linear-gradient(45deg, #007bff, #00c6ff);
-        border: none;
-        transition: background 0.3s;
+
+    .profile-section .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
     }
-    .btn-secondary:hover {
-        background: linear-gradient(45deg, #0056b3, #0099cc);
+
+    .info-item {
+        background: #f8f9fc;
+        padding: 1rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
-    @keyframes slideIn {
-        from {
-            transform: translateY(20px);
-            opacity: 0;
-        }
-        to {
-            transform: translateY(0);
-            opacity: 1;
-        }
-    }
-    .profile-card {
-        animation: slideIn 0.5s ease-in-out;
+
+    .info-item strong {
+        display: block;
+        color: #6a11cb;
+        margin-bottom: 0.5rem;
     }
 </style>
 
-<div class="container mt-5 mb-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-10">
-            <div class="profile-card card">
-                <div class="profile-header">
-                    <i class="bi bi-person-circle profile-picture"></i>
-                    <h2>{{ student.first_name }} {{ student.last_name }}</h2>
-                    <p>Class: {{ student.entry_class }}</p>
+<div class="profile-container">
+    <div class="profile-header">
+        <img src="https://via.placeholder.com/150" alt="Profile Picture" class="img-thumbnail">
+        <div class="profile-info">
+            <h1>{{ student.first_name }}&nbsp;{{student.last_name}}</h1>
+            <p>Class: {{ class_name }}</p>
+            <div class="profile-actions">
+                <a href="#">Edit Profile</a>
+                <a href="#">View Results</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="profile-content">
+        <div class="profile-section">
+            <h2>Personal Information</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <strong>Full Name</strong>
+                    {{ student.first_name }}&nbsp;{{student.last_name}}
                 </div>
-                <div class="profile-info">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <p>
-                                <strong>First Name:</strong> {{
-                                student.first_name }}
-                            </p>
-                            <p>
-                                <strong>Middle Name:</strong> {{
-                                student.middle_name }}
-                            </p>
-                            <p>
-                                <strong>Last Name:</strong> {{ student.last_name
-                                }}
-                            </p>
-                            <p>
-                                <strong>Gender:</strong> {{
-                                student.gender.capitalize() }}
-                            </p>
-                            <p>
-                                <strong>Date of Birth:</strong> {{
-                                student.date_of_birth }}
-                            </p>
-                        </div>
-                        <div class="col-md-6">
-                            <p>
-                                <strong>Parent's Name:</strong> {{
-                                student.parent_name }}
-                            </p>
-                            <p>
-                                <strong>Parent's Phone:</strong> {{
-                                student.parent_phone_number }}
-                            </p>
-                            <p>
-                                <strong>Address:</strong> {{ student.address }}
-                            </p>
-                            <p>
-                                <strong>Parent's Occupation:</strong> {{
-                                student.parent_occupation }}
-                            </p>
-                            <p>
-                                <strong>Previous Class:</strong> {{
-                                student.previous_class }}
-                            </p>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <p>
-                                <strong>State of Origin:</strong> {{
-                                student.state_of_origin }}
-                            </p>
-                        </div>
-                        <div class="col-md-6">
-                            <p>
-                                <strong>LGA:</strong> {{
-                                student.local_government_area }}
-                            </p>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <p>
-                                <strong>Religion:</strong> {{ student.religion
-                                }}
-                            </p>
-                        </div>
-                        <div class="col-md-6">
-                            <p>
-                                <strong>Student ID:</strong> AAIS/0559/00{{
-                                student.id }}
-                            </p>
-                        </div>
-                    </div>
+                <div class="info-item">
+                    <strong>Date of Birth</strong>
+                    January 15, 2005
                 </div>
-                <div class="card-footer text-center">
-                    <a
-                        href="{{ url_for('students.student_portal', student_id=student.id) }}"
-                        class="btn btn-secondary"
-                        >Back to Portal</a
-                    >
+                <div class="info-item">
+                    <strong>Gender</strong>
+                    {{student.gender}}
+                </div>
+                <div class="info-item">
+                    <strong>Address</strong>
+                    123 Main Street, Springfield
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-section">
+            <h2>Parent/Guardian Details</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <strong>Parent's Name</strong>
+                    Jane Doe
+                </div>
+                <div class="info-item">
+                    <strong>Contact Number</strong>
+                    +123 456 7890
+                </div>
+                <div class="info-item">
+                    <strong>Email</strong>
+                    jane.doe@example.com
+                </div>
+                <div class="info-item">
+                    <strong>Occupation</strong>
+                    Engineer
                 </div>
             </div>
         </div>
     </div>
 </div>
+
 {% endblock %}

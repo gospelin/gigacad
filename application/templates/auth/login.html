@@ -1,77 +1,167 @@
-{% extends "layout.html" %} {% block content %}
-
-<style>
-    .main-content {
-        padding-top: 60px;
-        padding-bottom: 60px;
-    }
-
-    .card {
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        border: none;
-        border-radius: 10px;
-    }
-
-    .card-header {
-        background-color: #007bff;
-        color: white;
-        border-top-left-radius: 10px;
-        border-top-right-radius: 10px;
-    }
-
-    .card-body {
-        padding: 2rem;
-    }
-
-    .form-control {
-        border-radius: 5px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .btn-primary {
-        border-radius: 5px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    @media (max-width: 600px) {
-        .main-content {
-            padding-top: 30px;
-            padding-bottom: 30px;
-        }
-    }
-</style>
-
-<div class="main-content container">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            {% for message in get_flashed_messages() %}
-            <div class="alert alert-warning mt-3">{{ message }}</div>
-            {% endfor %}
-            <div class="card mt-5">
-                <div class="card-header text-center">
-                    <h3>Login</h3>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Aunty Anne's Int'l School</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" as="style" onload="this.rel='stylesheet'">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+</head>
+<body>
+    <div class="overlay"></div>
+    <div class="content-container">
+        <div class="login-card">
+            <div class="login-header">
+                <img src="{{ url_for('static', filename='images/school_logo.png') }}" alt="School Logo" loading="lazy" class="school-logo">
+                <div class="welcome-text">Welcome to Aunty Anne's Int'l School</div>
+                <div class="portal-text">Login to access the portal</div>
+            </div>
+            <div class="login-body">
+                <div class="toggle-buttons">
+                    <button type="button" id="studentLoginBtn" class="active">Student Login</button>
+                    <button type="button" id="adminLoginBtn">Admin Login</button>
                 </div>
-                <div class="card-body">
-                    <form method="POST" action="{{ url_for('auth.login') }}">
-                        {{ form.hidden_tag() }}
-                        <div class="form-group mb-3">
-                            {{ form.username.label(class="form-label fw-bold")
-                            }} {{ form.username(class="form-control",
-                            placeholder="Enter your username") }}
+                <form id="studentLoginForm" method="POST" action="{{ url_for('auth.login') }}">
+                    {{ student_form.hidden_tag() }}
+                    <div class="form-control">
+                        <input type="text" name="identifier" placeholder="Enter Student ID" aria-label="Student ID" required>
+                    </div>
+                    <div class="password-container">
+                        <input type="password" class="form-control" name="password" id="studentPasswordField" placeholder="Enter Password" aria-label="Password" required>
+                        <i class="fas fa-lock toggle-password" onclick="togglePasswordVisibility('studentPasswordField')"></i>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="studentLoginButton" onclick="showSpinner('studentLoginButton')">
+                        <span>Login</span>
+                        <div class="spinner-border spinner-border-sm ms-2" style="display: none;" role="status">
+                            <span class="visually-hidden">Loading...</span>
                         </div>
-                        <div class="form-group mb-3">
-                            {{ form.password.label(class="form-label fw-bold")
-                            }} {{ form.password(class="form-control",
-                            placeholder="Enter your password") }}
+                    </button>
+                </form>
+                <form id="adminLoginForm" method="POST" action="{{ url_for('auth.login') }}" style="display: none;">
+                    {{ admin_form.hidden_tag() }}
+                    <div class="form-control">
+                        <input type="text" name="username" placeholder="Enter Admin Username" aria-label="Admin Username" required>
+                    </div>
+                    <div class="password-container">
+                        <input type="password" class="form-control" name="password" id="adminPasswordField" placeholder="Enter Password" aria-label="Password" required>
+                        <i class="fas fa-lock toggle-password" onclick="togglePasswordVisibility('adminPasswordField')"></i>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="adminLoginButton" onclick="showSpinner('adminLoginButton')">
+                        <span>Login</span>
+                        <div class="spinner-border spinner-border-sm ms-2" style="display: none;" role="status">
+                            <span class="visually-hidden">Loading...</span>
                         </div>
-                        <div class="d-grid">
-                            {{ form.submit(class="btn btn-primary btn-block
-                            w-100") }}
-                        </div>
-                    </form>
+                    </button>
+                </form>
+                <div id="validationMessageContainer">
+                    {% for category, message in get_flashed_messages(with_categories=True) %}
+                        <div class="alert {{ category }} mt-3">{{ message }}</div>
+                    {% endfor %}
+                </div>
+                <div class="back-home">
+                    <a href="{{ url_for('main.index') }}"><i class="fas fa-home"></i> Back to School Website</a>
                 </div>
             </div>
         </div>
     </div>
-</div>
-{% endblock %}
+   
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const studentIDField = document.querySelector('input[name="identifier"]');
+            const validationMessageContainer = document.getElementById("validationMessageContainer");
+            const studentPasswordField = document.querySelector('input[name="password"]');
+            const adminIDField = document.querySelector('input[name="username"]');
+            const adminPasswordField = document.querySelector('input[name="password"]');
+        
+            // Regular expression for the format: AAIS/0559/{student_id:03}
+            const regex = /^AAIS\/0559\/\d{3}$/;
+        
+            // Validate while typing for student login only
+            studentIDField.addEventListener("input", () => {
+                const studentID = studentIDField.value.trim();
+        
+                // Clear previous validation message
+                validationMessageContainer.innerHTML = "";
+        
+                const validationMessage = document.createElement("div");
+                validationMessage.className = "alert mt-3";
+        
+                if (regex.test(studentID)) {
+                    // Valid format
+                    validationMessage.textContent = "✔️ Valid Student ID format.";
+                    validationMessage.classList.add("alert-success");
+                } else {
+                    // Invalid format
+                    validationMessage.textContent = "❌ Invalid format. Use AAIS/0559/studentID";
+                    validationMessage.classList.add("alert-danger");
+                }
+        
+                // Append the new validation message
+                validationMessageContainer.appendChild(validationMessage);
+            });
+        
+            // Toggle between student and admin login
+            document.getElementById('studentLoginBtn').addEventListener('click', () => {
+                document.getElementById('studentLoginForm').style.display = 'block';
+                document.getElementById('adminLoginForm').style.display = 'none';
+                document.getElementById('studentLoginBtn').classList.add('active');
+                document.getElementById('adminLoginBtn').classList.remove('active');
+        
+                // Clear validation messages and input for student ID
+                validationMessageContainer.innerHTML = "";
+                studentIDField.value = "";
+                studentPasswordField.value = "";
+            });
+            
+             // Toggle between admin and student login
+            document.getElementById('adminLoginBtn').addEventListener('click', () => {
+                document.getElementById('adminLoginForm').style.display = 'block';
+                document.getElementById('studentLoginForm').style.display = 'none';
+                document.getElementById('adminLoginBtn').classList.add('active');
+                document.getElementById('studentLoginBtn').classList.remove('active');
+        
+                // Clear validation messages and input for student ID
+                validationMessageContainer.innerHTML = "";
+                adminIDField.value = "";
+                studentPasswordField.value = "";
+            });
+        
+            document.getElementById('adminLoginBtn').addEventListener('click', () => {
+                document.getElementById('studentLoginForm').style.display = 'none';
+                document.getElementById('adminLoginForm').style.display = 'block';
+                document.getElementById('adminLoginBtn').classList.add('active');
+                document.getElementById('studentLoginBtn').classList.remove('active');
+        
+                // Clear student-specific fields and validation messages
+                studentIDField.value = "";
+                validationMessageContainer.innerHTML = "";
+            });
+        });
+        
+        // Toggle password visibility
+        function togglePasswordVisibility(id) {
+            const passwordField = document.getElementById(id);
+            const icon = passwordField.nextElementSibling;
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                icon.classList.replace('fa-lock', 'fa-lock-open');
+            } else {
+                passwordField.type = 'password';
+                icon.classList.replace('fa-lock-open', 'fa-lock');
+            }
+        }
+        
+        // Show spinner on login button
+        function showSpinner(buttonId) {
+            const button = document.getElementById(buttonId);
+            const spinner = button.querySelector(".spinner-border");
+            if (spinner) {
+                spinner.style.display = "inline-block";
+            }
+        }
+
+    </script>
+</body>
+</html>

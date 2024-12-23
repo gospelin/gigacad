@@ -1,0 +1,25 @@
+{% extends 'admin/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center">Manage Sessions</h1>
+    <h2 class="text-center">Current Session - {{ current_session }}</h2>
+    {% if current_term %}
+        <h3 class="text-center">Current Term - {{ current_term }}</h3>
+    {% endif %}
+    <form method="POST" action="{{ url_for('admins.manage_sessions') }}">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            <label for="session">Select Session</label>
+            {{ form.session(class="form-control", id="session") }}
+        </div>
+        <div class="form-group">
+            <label for="term">Select Term</label>
+            {{ form.term(class="form-control", id="term") }}
+        </div>
+        <div class="form-group">
+            {{ form.submit(class="btn btn-primary btn-block") }}
+        </div>
+    </form>
+</div>
+{% endblock %}

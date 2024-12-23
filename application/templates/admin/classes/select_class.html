@@ -1,0 +1,33 @@
+{% extends 'admin/base.html' %} {% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-lg">
+                <div class="card-body">
+                    <div class="school-header text-center mb-4">
+                        <img
+                            src="{{ url_for('static', filename='images/school_logo.png') }}"
+                            alt="School Logo"
+                            style="width: 100px"
+                        />
+                        <h1>Select Class </h1>
+                    </div>
+                    <form method="POST" action="{{ url_for('admins.select_class') }}">
+                        {{ class_form.hidden_tag() }}
+                        <div class="mb-3">
+                            <label for="class_name" class="form-label"
+                                >Select Class:</label
+                            >
+                            {{ class_form.class_name(class_='form-control') }}
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            Select Class
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

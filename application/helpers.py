@@ -1,15 +1,33 @@
-import random, string, time
+import random, string, time, openpyxl
 from . import db
-from flask import request, abort, flash
+from io import BytesIO
+from openpyxl.styles import Font, Border, Side, Alignment
+from openpyxl.utils import get_column_letter
+from flask import request, abort, current_app as app
 from .models import Student, Subject, Result
-from sqlalchemy.exc import SQLAlchemyError
 from functools import wraps
 from datetime import datetime
+from application.auth.forms import SubjectResultForm
 
 
 login_attempts = {}
 
+
 def rate_limit(limit, per):
+    """
+    Decorator function that limits the rate at which a function can be called.
+
+    Args:
+        limit (int): The maximum number of calls allowed within the specified time period.
+        per (int): The time period (in seconds) within which the maximum number of calls is allowed.
+
+    Returns:
+        function: The decorated function.
+
+    Raises:
+        HTTPException: If the maximum number of calls has been exceeded, a 429 Too Many Requests error is raised.
+    """
+
     def decorator(f):
         @wraps(f)
         def wrapped(*args, **kwargs):
@@ -31,6 +49,16 @@ def rate_limit(limit, per):
 
 
 def generate_unique_username(first_name, last_name):
+    """
+    Generate a unique username based on the given first name and last name.
+
+    Args:
+        first_name (str): The first name of the user.
+        last_name (str): The last name of the user.
+
+    Returns:
+        str: The generated unique username.
+    """
     username = f"{first_name.strip().lower()}.{last_name.strip().lower()}"
     existing_user = Student.query.filter_by(username=username).first()
     if existing_user:
@@ -83,249 +111,588 @@ def generate_remark(total):
         return "Failed"
 
 
+def generate_principal_remark(average):
+    if average >= 90:
+        remarks = [
+            "Exceptional performance! You are an inspiration to others.",
+            "Outstanding results! Keep setting high standards.",
+            "Excellent work! You’ve proven yourself as a top performer.",
+        ]
+    elif average >= 80:
+        remarks = [
+            "Very impressive performance! Aim for even higher success.",
+            "Great job! Your efforts are commendable.",
+            "Consistently good results. Keep striving for excellence."
+        ]
+    elif average >= 70:
+        remarks = [
+            "Good performance! With a little more effort, you’ll excel further.",
+            "You’ve done well, but there’s room for improvement.",
+            "Nice results! Strive for greater achievements."
+        ]
+    elif average >= 60:
+        remarks = [
+            "Fair performance. Keep pushing for better results.",
+            "You’re on the right track. Focus on improving your weaker areas.",
+            "A decent effort. Keep working hard to achieve more."
+        ]
+    elif average >= 50:
+        remarks = [
+            "An average performance. Aim for consistent improvement.",
+            "Your results are satisfactory, but you can do much better.",
+            "A fair effort. Focus and determination will lead to success."
+        ]
+    elif average >= 40:
+        remarks = [
+            "Below average. Significant improvement is required.",
+            "Your performance is concerning. Seek guidance to improve.",
+            "You need to focus more on your studies to succeed."
+        ]
+    elif average >= 30:
+        remarks = [
+            "Poor results. A lot more effort is needed.",
+            "Your performance requires immediate attention and action.",
+            "Seek extra help to address your challenges effectively."
+        ]
+    else:
+        remarks = [
+            "Unacceptable performance. Take your studies seriously.",
+            "Drastic improvement is needed to progress.",
+            "This performance is not satisfactory. Immediate action is required."
+        ]
+    import random
+    return random.choice(remarks)
+
+
+def generate_teacher_remark(average):
+    if average >= 90:
+        remarks = [
+            "Outstanding performance. Keep it up!",
+            "Your dedication to learning is inspiring. Well done!",
+            "An exemplary performance! Your efforts are commendable."
+        ]
+    elif average >= 80:
+        remarks = [
+            "A good performance! Focus on consistent excellence.",
+            "Your hard work is paying off. Keep aiming higher!",
+            "You’ve done very well. Aim to push your limits further."
+        ]
+    elif average >= 70:
+        remarks = [
+            "Good result, but practice more for perfection.",
+            "You’re doing well, but focus on weaker areas to improve further.",
+            "A good effort! Strive to achieve even better results."
+        ]
+    elif average >= 60:
+        remarks = [
+            "Fair result. Put in more effort.",
+            "You’re progressing, but focus on difficult topics.",
+            "With a bit more effort, your performance will improve significantly."
+        ]
+    elif average >= 50:
+        remarks = [
+            "An average performance. Work on improving your fundamentals.",
+            "You’ve done okay. Additional practice will help.",
+            "Keep working on weaker subjects to build a strong foundation."
+        ]
+    elif average >= 40:
+        remarks = [
+            "Below average understanding. Concentrate on improving your basics.",
+            "Your performance is concerning. Seek help to address challenges.",
+            "Weak results. Focus on understanding the core concepts."
+        ]
+    elif average >= 30:
+        remarks = [
+            "Very poor performance. A focused study plan is necessary.",
+            "You need additional support to overcome your difficulties.",
+            "Your results are below expectations. Put in much more effort."
+        ]
+    else:
+        remarks = [
+            "Unacceptable. Urgent attention to studies is required.",
+            "A very poor performance. Take your academics more seriously.",
+            "This is concerning. Take your academics more seriously."
+        ]
+    import random
+    return random.choice(remarks)
+
 def calculate_grand_total(results):
+    """Calculate the total score from all results."""
+    # return sum(result.total for result in results if result.total is not None)
     return sum(result.total for result in results)
 
 
 def get_last_term(current_term):
-    term_sequence = ["First Term", "Second Term", "Third Term"]
-    if current_term in term_sequence:
-        current_index = term_sequence.index(current_term)
-        last_index = current_index - 1 if current_index > 0 else None
-        return term_sequence[last_index] if last_index is not None else None
-    return None
+    """
+    Get the last term in sequence.
+    """
+    terms = ["First Term", "Second Term", "Third Term"]
+    index = terms.index(current_term)
+    return terms[index - 1] if index > 0 else None
 
 
 def calculate_average(results):
-    grand_total = 0
-    non_zero_subjects = 0
+    """
+    Calculate the average score based on non-zero totals.
+    """
+    total_sum = sum(result.total for result in results if result.total is not None)
+    non_zero_subjects = sum(1 for result in results if result.total is not None)
 
-    for result in results:
-        if result.total > 0:
-            grand_total += result.total
-            non_zero_subjects += 1
-
-    average = grand_total / non_zero_subjects if non_zero_subjects > 0 else 0
-
-    return average
-
-def calculate_cumulative_average(results, current_term_average):
-    last_term_average = 0
-    cumulative_average = current_term_average
-    if results:
-        last_term_average = (
-            float(results[0].last_term_average) if results[0].last_term_average else 0
-        )
-
-    if last_term_average and current_term_average:
-        cumulative_average = (last_term_average + current_term_average) / 2
-
-    return cumulative_average
+    return total_sum / non_zero_subjects if non_zero_subjects > 0 else 0, non_zero_subjects
 
 
-def get_subjects_by_entry_class(entry_class):
-    if "Nursery" in entry_class:
-        return Subject.query.filter_by(section="Nursery").all()
-    elif "Basic" in entry_class:
-        return Subject.query.filter_by(section="Basic").all()
+def calculate_cumulative_average(yearly_results):
+    """
+    Calculate the cumulative average over an academic year.
+    Divides the total score by the number of subjects with non-zero totals.
+    """
+    total_sum = sum(result.total for result in yearly_results if result.total is not None)
+    non_zero_subjects = sum(1 for result in yearly_results if result.total is not None)
+
+    return total_sum / non_zero_subjects if non_zero_subjects > 0 else 0
+
+
+def get_subjects_by_class_name(class_name, include_deactivated=False):
+    """Get subjects based on the student's class name from history.
+
+    Args:
+        class_name (str): The student's class name.
+        include_deactivated (bool): Whether to include deactivated subjects (for past sessions).
+
+    Returns:
+        list: A list of subjects based on the student's class name in ascending order.
+    """
+
+    # Determine section based on class_name
+    if "Nursery" in class_name:
+        query = Subject.query.filter_by(section="Nursery")
+    elif "Basic" in class_name:
+        query = Subject.query.filter_by(section="Basic")
+    elif "SSS" in class_name:
+        query = Subject.query.filter_by(section="Senior Secondary")
     else:
-        return Subject.query.filter_by(section="Secondary").all()
+        query = Subject.query.filter_by(section="Secondary")
+
+    # Include or exclude deactivated subjects based on the session context
+    if not include_deactivated:
+        query = query.filter_by(deactivated=False)
+
+    # Order the results by subject name in ascending order
+    return query.order_by(Subject.name.asc()).all()
 
 
+# Helper function to populate form with existing results
+def populate_form_with_results(form, subjects, results_dict):
+    for subject in subjects:
+        result = results_dict.get(subject.id)
+        subject_form = SubjectResultForm(
+            subject_id=subject.id,
+            class_assessment=result.class_assessment if result else 0,
+            summative_test=result.summative_test if result else 0,
+            exam=result.exam if result else 0,
+            total=result.total if result else 0,
+            grade=result.grade if result else "",
+            remark=result.remark if result else "",
+        )
+        form.subjects.append_entry(subject_form)
+        app.logger.info(f"Subject form added for subject ID {subject.id}")
 
 
-# def update_results(student, subjects, term, session, form):
-#     try:
-#         for subject in subjects:
-#             class_assessment = request.form.get(f"class_assessment_{subject.id}", '')
-#             summative_test = request.form.get(f"summative_test_{subject.id}", '')
-#             exam = request.form.get(f"exam_{subject.id}", '')
+def update_results(student, term, session_year, form, result_form):
+    """
+    Proceed with updating results for each subject.
+    """
+    for subject_form in form.subjects:
+        subject_id = subject_form.subject_id.data
+        class_assessment = subject_form.class_assessment.data
+        summative_test = subject_form.summative_test.data
+        exam = subject_form.exam.data
 
-#             # class_assessment = request.form.get(f"class_assessment_{subject.id}", "")
-#             # summative_test = request.form.get(f"summative_test_{subject.id}", "")
-#             # exam = request.form.get(f"exam_{subject.id}", "")
-#             # total = int(class_assessment or 0) + int(summative_test or 0) + int(exam or 0)
+        # Set to None if empty or blank, otherwise use the numeric value
+        class_assessment_value = None if not class_assessment else int(class_assessment)
+        summative_test_value = None if not summative_test else int(summative_test)
+        exam_value = None if not exam else int(exam)
 
-#             # Convert empty values to zero for calculations
-#             class_assessment_value = int(class_assessment) if class_assessment else None
-#             summative_test_value = int(summative_test) if summative_test else None
-#             exam_value = int(exam) if exam else None
-#             total = (class_assessment_value or 0) + (summative_test_value or 0) + (exam_value or 0)
-#             grade = calculate_grade(total)
-#             remark = generate_remark(total)
-
-
-#             result = Result.query.filter_by(student_id=student.id, subject_id=subject.id, term=term, session=session).first()
-
-#             if result:
-#                 result.class_assessment = class_assessment_value
-#                 result.summative_test = summative_test_value
-#                 result.exam = exam_value
-#                 result.total = total
-#                 result.grade = grade  # Adjust this to your grade calculation logic
-#                 result.remark = remark
-#                 result.next_term_begins = form.next_term_begins.data
-#                 result.last_term_average = form.last_term_average.data
-#                 result.position = form.position.data
-#                 result.date_issued=form.date_issued.data
-
-#             else:
-#                 new_result = Result(
-#                     student_id=student.id,
-#                     subject_id=subject.id,
-#                     term=term,
-#                     session=session,
-#                     class_assessment=class_assessment_value,
-#                     summative_test=summative_test_value,
-#                     exam=exam_value,
-#                     total=total,
-#                     grade=grade,  # Adjust this to your grade calculation logic
-#                     remark=remark,
-#                     next_term_begins=form.next_term_begins.data,
-#                     last_term_average=form.last_term_average.data,
-#                     position=form.position.data,
-#                     date_issued=form.date_issued.data,
-#                 )
-#                 db.session.add(new_result)
-
-#         db.session.commit()
-#     except Exception as e:
-#         db.session.rollback()
-#         raise e
-
-# def calculate_results(student_id, term, session):
-#     results = Result.query.filter_by(
-#         student_id=student_id, term=term, session=session
-#     ).all()
-#     grand_total = calculate_grand_total(results)
-#     average = round(calculate_average(results), 1)
-
-#     last_term = get_last_term(term)
-#     last_term_results = Result.query.filter_by(
-#         student_id=student_id, term=last_term, session=session
-#     ).all()
-#     last_term_average = round(
-#         calculate_average(last_term_results) if last_term_results else 0, 1
-#     )
-
-#     for res in results:
-#         res.last_term_average = last_term_average
-
-#     cumulative_average = round(calculate_cumulative_average(results, average), 1)
-#     results_dict = {result.subject_id: result for result in results}
-
-#     return results, grand_total, average, cumulative_average, results_dict
-
-
-def update_results(student, subjects, term, session, form):
-    try:
-        # Proceed with updating results for each subject
-        for subject in subjects:
-            class_assessment = request.form.get(f"class_assessment_{subject.id}", '')
-            summative_test = request.form.get(f"summative_test_{subject.id}", '')
-            exam = request.form.get(f"exam_{subject.id}", '')
-
-            # Convert empty values to zero for calculations
-            class_assessment_value = int(class_assessment) if class_assessment else None
-            summative_test_value = int(summative_test) if summative_test else None
-            exam_value = int(exam) if exam else None
+        # If all are None or 0, set total to None, otherwise calculate total
+        if (class_assessment_value in [None, 0] and
+            summative_test_value in [None, 0] and
+            exam_value in [None, 0]):
+            total = None
+        else:
             total = (
-                (class_assessment_value or 0)
-                + (summative_test_value or 0)
-                + (exam_value or 0)
+                (class_assessment_value if class_assessment_value else 0)
+                + (summative_test_value if summative_test_value else 0)
+                + (exam_value if exam_value else 0)
             )
-            grade = calculate_grade(total)
-            remark = generate_remark(total)
 
-            # Query existing result
-            result = Result.query.filter_by(
+        grand_total, average, cumulative_average, last_term_average, subjects_offered, principal_remark, teacher_remark  = calculate_results(student, term, session_year)
+
+        # Calculate grade and remark if total is not None
+        grade = calculate_grade(total) if total is not None else ''
+        remark = generate_remark(total) if total is not None else ''
+
+        result = Result.query.filter_by(
+            student_id=student.id,
+            subject_id=subject_id,
+            term=term,
+            session=session_year,
+        ).first()
+
+        if result:
+            result.class_assessment = class_assessment_value
+            result.summative_test = summative_test_value
+            result.exam = exam_value
+            result.total = total
+            result.grade = grade
+            result.remark = remark
+            result.grand_total = grand_total
+            result.term_average = average
+            result.last_term_average = last_term_average
+            result.cumulative_average = cumulative_average
+            result.subjects_offered = subjects_offered
+            result.principal_remark = principal_remark
+            result.teacher_remark = teacher_remark
+            result.next_term_begins = result_form.next_term_begins.data
+            result.position = result_form.position.data
+            result.date_issued = result_form.date_issued.data
+        else:
+            new_result = Result(
                 student_id=student.id,
-                subject_id=subject.id,
+                subject_id=subject_id,
                 term=term,
-                session=session,
-            ).first()
-
-            if result:
-                result.class_assessment = class_assessment_value
-                result.summative_test = summative_test_value
-                result.exam = exam_value
-                result.total = total
-                result.grade = grade
-                result.remark = remark
-                result.next_term_begins = form.next_term_begins.data
-                result.last_term_average = form.last_term_average.data
-                result.position = form.position.data
-                result.date_issued = form.date_issued.data
-            else:
-                new_result = Result(
-                    student_id=student.id,
-                    subject_id=subject.id,
-                    term=term,
-                    session=session,
-                    class_assessment=class_assessment_value,
-                    summative_test=summative_test_value,
-                    exam=exam_value,
-                    total=total,
-                    grade=grade,
-                    remark=remark,
-                    next_term_begins=form.next_term_begins.data,
-                    last_term_average=form.last_term_average.data,
-                    position=form.position.data,
-                    date_issued=form.date_issued.data,
-                )
-                db.session.add(new_result)
-
-        db.session.commit()
-    except Exception as e:
-        db.session.rollback()
-        raise e
+                session=session_year,
+                class_assessment=class_assessment_value,
+                summative_test=summative_test_value,
+                exam=exam_value,
+                total=total,
+                grade=grade,
+                remark=remark,
+                grand_total=grand_total,
+                term_average=average,
+                last_term_average=last_term_average,
+                cumulative_average=cumulative_average,
+                subjects_offered=subjects_offered,
+                principal_remark=principal_remark,
+                teacher_remark=teacher_remark,
+                next_term_begins=result_form.next_term_begins.data,
+                position=result_form.position.data,
+                date_issued=result_form.date_issued.data,
+            )
+            db.session.add(new_result)
+            app.logger.info(f"Result added: {new_result}")
+    db.session.commit()
 
 
-def calculate_results(student_id, term, session):
+
+
+def calculate_results(student, term, session_year):
     """
     Calculate student results and averages.
     """
 
     # Fetch results for the current term and session
     results = Result.query.filter_by(
-        student_id=student_id,
-        term=term,
-        session=session,  # Use session_year directly
+        student_id=student.id, term=term, session=session_year
     ).all()
 
-    flash(
-        f"Fetched {len(results)} results for the current term and session",
-        "alert alert-info",
-    )
+    # Calculate grand total and average for the current term
+    grand_total = sum(result.total for result in results if result.total is not None)
+    average, subjects_offered = calculate_average(results) if results else None
+    average = round(average, 1) if average else 0
+    app.logger.info(f"Grand total: {grand_total}, Average: {average}")
 
-    grand_total = calculate_grand_total(results)
-    average = round(calculate_average(results), 1)
-    flash(f"Grand total: {grand_total}, Average: {average}", "alert alert-info")
+    principal_remark = generate_principal_remark(average)
+    teacher_remark = generate_teacher_remark(average)
 
+    # Fetch all results for the academic year (cumulative calculation)
+    yearly_results = Result.query.filter_by(
+        student_id=student.id, session=session_year
+    ).all()
+
+    # Calculate cumulative average across the academic year
+    cumulative_average = round(calculate_cumulative_average(yearly_results), 1)
+    app.logger.info(f"Cumulative average: {cumulative_average}")
+
+    # Fetch and calculate last term's average
     last_term = get_last_term(term)
     last_term_results = Result.query.filter_by(
-        student_id=student_id,
-        term=last_term,
-        session=session,
+        student_id=student.id, term=last_term, session=session_year
     ).all()
 
-    if last_term_results:
-        flash(
-            f"Fetched {len(last_term_results)} results for the last term",
-            "alert alert-info",
+    last_term_average = (
+        round(calculate_average(last_term_results), 1) if last_term_results else 0
+    )
+
+    principal_remark = generate_principal_remark(average)
+    teacher_remark = generate_teacher_remark(average)
+
+    return grand_total, average, cumulative_average, last_term_average, subjects_offered, principal_remark, teacher_remark
+
+
+# def prepare_broadsheet_data(students, subjects, term, session_year):
+#     broadsheet_data = []
+#     subject_averages = {subject.id: {"total": 0, "count": 0} for subject in subjects}
+
+#     for student in students:
+#         student_results = {
+#             "student": student,
+#             "results": {subject.id: None for subject in subjects},
+#             "grand_total": 0,
+#             "average": 0,
+#             "position": None,
+#         }
+#         results = Result.query.filter_by(student_id=student.id, term=term, session=session_year).all()
+
+#         for result in results:
+#             student_results["results"][result.subject_id] = result
+
+#             if result.total is not None and result.total > 0:
+#                 subject_averages[result.subject_id]["total"] += result.total
+#                 subject_averages[result.subject_id]["count"] += 1
+#             student_results["position"] = result.position
+
+#             student_results.update({"grand_total": result.grand_total if result.grand_total else 0, "average": result.term_average if result.term_average else 0})
+#         broadsheet_data.append(student_results)
+
+#     for subject_id, values in subject_averages.items():
+#         values["average"] = round(values["total"] / values["count"], 1) if values["count"] > 0 else 0
+
+#     broadsheet_data.sort(key=lambda x: x["average"], reverse=True)
+#     return broadsheet_data, subject_averages
+
+def prepare_broadsheet_data(students, subjects, term, session_year):
+    broadsheet_data = []
+    subject_averages = {subject.id: {"total": 0, "count": 0} for subject in subjects}
+
+    for student in students:
+        student_results = {
+            "student": student,
+            "results": {subject.id: None for subject in subjects},
+            "grand_total": 0,
+            "average": 0,
+            "position": None,
+        }
+
+        # Fetch all results for the student
+        results = Result.query.filter_by(student_id=student.id, term=term, session=session_year).all()
+
+        for result in results:
+            if result.subject_id in student_results["results"]:
+                student_results["results"][result.subject_id] = result
+
+                if result.total is not None and result.total > 0:
+                    subject_averages[result.subject_id]["total"] += result.total
+                    subject_averages[result.subject_id]["count"] += 1
+
+            # Update grand_total, average, and position with defaults if values are missing
+            student_results["grand_total"] = (
+                result.grand_total if result.grand_total not in (None, "") else 0
+            )
+            student_results["average"] = (
+                result.term_average if result.term_average not in (None, "") else 0
+            )
+            student_results["position"] = result.position if result.position else None
+
+        broadsheet_data.append(student_results)
+
+    # Calculate averages for each subject
+    for subject_id, values in subject_averages.items():
+        values["average"] = (
+            round(values["total"] / values["count"], 1) if values["count"] > 0 else 0
         )
-    else:
-        flash("No results found for the last term", "alert alert-warning")
 
-    last_term_average = round(calculate_average(last_term_results), 1) if last_term_results else 0
+    # Safely sort the broadsheet by student averages
+    broadsheet_data.sort(
+        key=lambda x: float(x["average"]) if isinstance(x["average"], (int, float)) else 0,
+        reverse=True,
+    )
 
-    flash(f"Last term average: {last_term_average}", "alert alert-info")
+    return broadsheet_data, subject_averages
 
-    for res in results:
-        res.last_term_average = last_term_average
 
-    cumulative_average = round(calculate_cumulative_average(results, average), 1)
-    flash(f"Cumulative average: {cumulative_average}", "alert alert-info")
+def generate_excel_broadsheet(class_name, term, session_year, broadsheet_data, subjects, subject_averages):
+    workbook = openpyxl.Workbook()
+    sheet = workbook.active
+    sheet.title = f"Broadsheet_{class_name}_{term}"[:31]
 
-    results_dict = {result.subject_id: result for result in results}
-    return results, grand_total, average, cumulative_average, results_dict
+    # Define styles
+    header_font = Font(bold=True, size=16, name="Times New Roman")
+    sub_header_font = Font(bold=True, size=12, name="Times New Roman")
+    cell_font = Font(bold=True, size=12, name="Times New Roman")
+    border = Border(
+        left=Side(style="thin"),
+        right=Side(style="thin"),
+        top=Side(style="thin"),
+        bottom=Side(style="thin"),
+    )
+    alignment = Alignment(horizontal="center", vertical="center")
+
+    # Headers, Sub-Headers, and Data
+
+    # Merge cells from A1 to the column for Class Average
+    last_column = (
+        2 + len(broadsheet_data) * 4
+    )
+    sheet.merge_cells(
+        start_row=1, start_column=2, end_row=1, end_column=last_column
+    )
+    sheet["B1"].value = (
+        f"Broadsheet for {class_name} - Term: {term}, Academic Session: {session_year}  -  Generated on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+    )
+    sheet["B1"].alignment = Alignment(horizontal="center", vertical="center")
+    sheet["B1"].font = header_font
+
+    # Set column widths
+    subject_column_letter = get_column_letter(1)
+    sheet.column_dimensions[subject_column_letter].width = (
+        30  # Set subject column width to 30cm
+    )
+
+    class_average_column_letter = get_column_letter(last_column)
+    sheet.column_dimensions[class_average_column_letter].width = (
+        15  # Set class average width to 15 cm
+    )
+
+    # Write headers (now student names merged and centralized)
+    headers = [""]
+    for student_data in broadsheet_data:
+        student = student_data["student"]
+        headers.extend([f"{student.first_name} {student.last_name}", "", "", ""])
+    headers.append("Class Average")
+    sheet.append(headers)
+
+    # Merge and center student names across their 4 corresponding columns
+    for i, student_data in enumerate(broadsheet_data, start=2):
+        start_col = 2 + (i - 2) * 4
+        end_col = start_col + 3
+
+        # Set the width for C/A (start_col), S/T (start_col + 1), Exam (start_col + 2), and Total (start_col + 3)
+        sheet.column_dimensions[get_column_letter(start_col)].width = 7  # C/A width
+        sheet.column_dimensions[get_column_letter(start_col + 1)].width = (
+            7  # S/T width
+        )
+        sheet.column_dimensions[get_column_letter(start_col + 2)].width = (
+            7  # Exam width
+        )
+        sheet.column_dimensions[get_column_letter(start_col + 3)].width = (
+            7  # Total width
+        )
+
+        sheet.merge_cells(
+            start_row=2, start_column=start_col, end_row=2, end_column=end_col
+        )
+        cell = sheet.cell(row=2, column=start_col)
+        cell.alignment = Alignment(horizontal="center", vertical="center")
+        cell.font = sub_header_font
+
+    # Add sub-headers (C/A, S/T, Exam, Total) under each student name
+    sub_headers = ["Subjects"]
+    for _ in broadsheet_data:
+        sub_headers.extend(["C/A", "S/T", "Exam", "Total"])
+    sub_headers.append("")
+    sheet.append(sub_headers)
+
+    # Write data for each subject and student
+    for subject in subjects:
+        row = [subject.name]
+        for student_data in broadsheet_data:
+            result = student_data["results"][subject.id]
+            if result:
+                row.extend(
+                    [
+                        result.class_assessment if result.class_assessment else "",
+                        result.summative_test if result.summative_test else "",
+                        result.exam if result.exam else "",
+                        result.total if result.total else "",
+                    ]
+                )
+            else:
+                row.extend(["", "", "", ""])
+        row.append(
+            subject_averages[subject.id]["average"]
+            if subject_averages[subject.id]["average"]
+            else ""
+        )
+        sheet.append(row)
+
+    # Write grand totals, averages, and positions, ensuring values are not empty
+    sheet.append([""])
+    sheet.append(
+        ["Grand Total"]
+        + sum(
+            [
+                [
+                    "",
+                    "",
+                    "",
+                    (
+                        student_data["grand_total"]
+                        if student_data["grand_total"]
+                        else ""
+                    ),
+                ]
+                for student_data in broadsheet_data
+            ],
+            [],
+        )
+        + [""]
+    )
+    sheet.append(
+        ["Average"]
+        + sum(
+            [
+                [
+                    "",
+                    "",
+                    "",
+                    student_data["average"] if student_data["average"] else "",
+                ]
+                for student_data in broadsheet_data
+            ],
+            [],
+        )
+        + [""]
+    )
+    sheet.append(
+        ["Position"]
+        + sum(
+            [
+                ["", "", "", student_data["position"]]
+                for student_data in broadsheet_data
+            ],
+            [],
+        )
+        + [""]
+    )
+
+    # Set page orientation to landscape
+    sheet.page_setup.orientation = sheet.ORIENTATION_LANDSCAPE
+    sheet.page_setup.paperSize = sheet.PAPERSIZE_A4
+
+    # Margins (in inches)
+    sheet.page_margins.top = 0.75  # Top margin: 1.91 cm
+    sheet.page_margins.bottom = 0.75  # Bottom margin: 1.91 cm
+    sheet.page_margins.left = 0.252  # Left margin: 0.64 cm
+    sheet.page_margins.right = 0.252  # Right margin: 0.64 cm
+    sheet.page_margins.header = 0.299  # Header margin: 0.76 cm
+    sheet.page_margins.footer = 0.299  # Footer margin: 0.76 cm
+
+    for row in sheet.iter_rows(
+        min_row=1, max_row=sheet.max_row, min_col=1, max_col=sheet.max_column
+    ):
+        for cell in row:
+            cell.border = border
+            cell.font = cell_font
+
+            # Apply left alignment specifically to "Subjects" column, sub-headers, and result cells
+            if cell.column == 1:
+                cell.alignment = Alignment(horizontal="left")
+            else:
+                cell.alignment = alignment
+
+    # Save workbook to bytes buffer
+    output = BytesIO()
+    workbook.save(output)
+    output.seek(0)
+    return output
+
