@@ -126,7 +126,7 @@ class Student(db.Model, UserMixin):
     username = db.Column(db.String(50), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)
     gender = db.Column(db.String(10), nullable=False)
-    date_of_birth = db.Column(db.String(20), nullable=True)  # Stored as "YYYY-MM-DD"
+    date_of_birth = db.Column(db.Date, nullable=True)
     parent_name = db.Column(db.String(70), nullable=True)
     previous_class = db.Column(db.String(50), nullable=True)
     parent_phone_number = db.Column(db.String(11), nullable=True)
@@ -135,7 +135,7 @@ class Student(db.Model, UserMixin):
     state_of_origin = db.Column(db.String(50), nullable=True)
     local_government_area = db.Column(db.String(50), nullable=True)
     religion = db.Column(db.String(50), nullable=True)
-    date_registered = db.Column(db.String(19), nullable=True)  # Stored as "YYYY-MM-DD HH:MM:SS"
+    date_registered = db.Column(db.DateTime, server_default=db.func.now())
     approved = db.Column(db.Boolean, default=False)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     has_paid_fee = db.Column(db.Boolean, default=False)
