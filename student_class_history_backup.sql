@@ -1,0 +1,157 @@
+-- Table structure for `student_class_history`
+CREATE TABLE `student_class_history` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `student_id` int NOT NULL,
+  `session_id` int NOT NULL,
+  `class_name` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `session_id` (`session_id`),
+  KEY `student_id` (`student_id`),
+  CONSTRAINT `student_class_history_ibfk_1` FOREIGN KEY (`session_id`) REFERENCES `session` (`id`),
+  CONSTRAINT `student_class_history_ibfk_2` FOREIGN KEY (`student_id`) REFERENCES `student` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=159 DEFAULT CHARSET=utf8mb3;
+
+-- Data for `student_class_history`
+INSERT INTO student_class_history VALUES (1, 11, 1, 'Pre-Nursery');
+INSERT INTO student_class_history VALUES (2, 5, 1, 'Creche');
+INSERT INTO student_class_history VALUES (3, 6, 1, 'Creche');
+INSERT INTO student_class_history VALUES (4, 7, 1, 'Creche');
+INSERT INTO student_class_history VALUES (5, 8, 1, 'Creche');
+INSERT INTO student_class_history VALUES (6, 9, 1, 'Pre-Nursery');
+INSERT INTO student_class_history VALUES (7, 10, 1, 'Pre-Nursery');
+INSERT INTO student_class_history VALUES (8, 12, 1, 'Pre-Nursery');
+INSERT INTO student_class_history VALUES (9, 13, 1, 'Creche');
+INSERT INTO student_class_history VALUES (10, 14, 1, 'Nursery 3');
+INSERT INTO student_class_history VALUES (11, 15, 1, 'Pre-Nursery');
+INSERT INTO student_class_history VALUES (12, 16, 1, 'Pre-Nursery');
+INSERT INTO student_class_history VALUES (13, 17, 1, 'Nursery 1');
+INSERT INTO student_class_history VALUES (14, 18, 1, 'Pre-Nursery');
+INSERT INTO student_class_history VALUES (15, 19, 1, 'Nursery 1');
+INSERT INTO student_class_history VALUES (16, 20, 1, 'Nursery 1');
+INSERT INTO student_class_history VALUES (17, 78, 1, 'JSS 2');
+INSERT INTO student_class_history VALUES (18, 21, 1, 'Nursery 1');
+INSERT INTO student_class_history VALUES (19, 22, 1, 'Nursery 1');
+INSERT INTO student_class_history VALUES (20, 23, 1, 'Nursery 1');
+INSERT INTO student_class_history VALUES (21, 24, 1, 'Nursery 1');
+INSERT INTO student_class_history VALUES (22, 25, 1, 'Nursery 1');
+INSERT INTO student_class_history VALUES (23, 26, 1, 'Nursery 1');
+INSERT INTO student_class_history VALUES (24, 27, 1, 'Nursery 1');
+INSERT INTO student_class_history VALUES (25, 28, 1, 'Nursery 2');
+INSERT INTO student_class_history VALUES (26, 29, 1, 'Nursery 2');
+INSERT INTO student_class_history VALUES (27, 30, 1, 'Nursery 2');
+INSERT INTO student_class_history VALUES (28, 31, 1, 'Nursery 2');
+INSERT INTO student_class_history VALUES (29, 32, 1, 'Nursery 2');
+INSERT INTO student_class_history VALUES (30, 33, 1, 'Nursery 2');
+INSERT INTO student_class_history VALUES (31, 34, 1, 'Nursery 2');
+INSERT INTO student_class_history VALUES (32, 35, 1, 'Nursery 3');
+INSERT INTO student_class_history VALUES (33, 36, 1, 'Nursery 3');
+INSERT INTO student_class_history VALUES (34, 37, 1, 'Nursery 3');
+INSERT INTO student_class_history VALUES (35, 38, 1, 'Nursery 3');
+INSERT INTO student_class_history VALUES (36, 39, 1, 'Nursery 3');
+INSERT INTO student_class_history VALUES (37, 40, 1, 'Nursery 3');
+INSERT INTO student_class_history VALUES (38, 41, 1, 'Nursery 3');
+INSERT INTO student_class_history VALUES (39, 42, 1, 'Basic 1');
+INSERT INTO student_class_history VALUES (40, 43, 1, 'Basic 1');
+INSERT INTO student_class_history VALUES (41, 44, 1, 'Basic 1');
+INSERT INTO student_class_history VALUES (42, 46, 1, 'Basic 1');
+INSERT INTO student_class_history VALUES (43, 47, 1, 'Basic 1');
+INSERT INTO student_class_history VALUES (44, 48, 1, 'Basic 2');
+INSERT INTO student_class_history VALUES (45, 49, 1, 'Basic 2');
+INSERT INTO student_class_history VALUES (46, 50, 1, 'Basic 2');
+INSERT INTO student_class_history VALUES (47, 51, 1, 'Basic 2');
+INSERT INTO student_class_history VALUES (48, 52, 1, 'Basic 2');
+INSERT INTO student_class_history VALUES (49, 53, 1, 'Basic 2');
+INSERT INTO student_class_history VALUES (50, 54, 1, 'Basic 2');
+INSERT INTO student_class_history VALUES (51, 55, 1, 'Basic 3');
+INSERT INTO student_class_history VALUES (52, 56, 1, 'Basic 3');
+INSERT INTO student_class_history VALUES (53, 57, 1, 'Basic 3');
+INSERT INTO student_class_history VALUES (54, 58, 1, 'Basic 3');
+INSERT INTO student_class_history VALUES (56, 60, 1, 'Basic 3');
+INSERT INTO student_class_history VALUES (61, 66, 1, 'JSS 1');
+INSERT INTO student_class_history VALUES (62, 67, 1, 'JSS 1');
+INSERT INTO student_class_history VALUES (63, 68, 1, 'Basic 5');
+INSERT INTO student_class_history VALUES (64, 70, 1, 'Basic 5');
+INSERT INTO student_class_history VALUES (65, 71, 1, 'Basic 5');
+INSERT INTO student_class_history VALUES (66, 72, 1, 'Basic 5');
+INSERT INTO student_class_history VALUES (67, 73, 1, 'Basic 5');
+INSERT INTO student_class_history VALUES (68, 74, 1, 'JSS 1');
+INSERT INTO student_class_history VALUES (69, 76, 1, 'JSS 2');
+INSERT INTO student_class_history VALUES (70, 81, 1, 'JSS 1');
+INSERT INTO student_class_history VALUES (71, 65, 1, 'JSS 1');
+INSERT INTO student_class_history VALUES (72, 82, 1, 'Basic 1');
+INSERT INTO student_class_history VALUES (73, 83, 1, 'Basic 1');
+INSERT INTO student_class_history VALUES (74, 84, 1, 'JSS 2');
+INSERT INTO student_class_history VALUES (75, 85, 1, 'Basic 2');
+INSERT INTO student_class_history VALUES (76, 86, 1, 'Pre-Nursery');
+INSERT INTO student_class_history VALUES (78, 74, 2, 'JSS 3');
+INSERT INTO student_class_history VALUES (79, 65, 2, 'JSS 3');
+INSERT INTO student_class_history VALUES (80, 72, 2, 'JSS 1');
+INSERT INTO student_class_history VALUES (81, 73, 2, 'JSS 1');
+INSERT INTO student_class_history VALUES (82, 55, 2, 'Basic 4');
+INSERT INTO student_class_history VALUES (83, 56, 2, 'Basic 4');
+INSERT INTO student_class_history VALUES (87, 61, 1, 'Basic 4');
+INSERT INTO student_class_history VALUES (88, 63, 1, 'Basic 4');
+INSERT INTO student_class_history VALUES (89, 62, 1, 'Basic 4');
+INSERT INTO student_class_history VALUES (90, 61, 2, 'Basic 5');
+INSERT INTO student_class_history VALUES (91, 62, 2, 'Basic 5');
+INSERT INTO student_class_history VALUES (92, 63, 2, 'Basic 5');
+INSERT INTO student_class_history VALUES (93, 48, 2, 'Basic 3');
+INSERT INTO student_class_history VALUES (94, 49, 2, 'Basic 3');
+INSERT INTO student_class_history VALUES (95, 7, 2, 'Pre-Nursery');
+INSERT INTO student_class_history VALUES (96, 11, 2, 'Nursery 1');
+INSERT INTO student_class_history VALUES (97, 9, 2, 'Nursery 1');
+INSERT INTO student_class_history VALUES (98, 12, 2, 'Nursery 1');
+INSERT INTO student_class_history VALUES (99, 15, 2, 'Nursery 1');
+INSERT INTO student_class_history VALUES (100, 16, 2, 'Nursery 1');
+INSERT INTO student_class_history VALUES (101, 17, 2, 'Nursery 2');
+INSERT INTO student_class_history VALUES (102, 19, 2, 'Nursery 2');
+INSERT INTO student_class_history VALUES (103, 20, 2, 'Nursery 2');
+INSERT INTO student_class_history VALUES (104, 21, 2, 'Nursery 2');
+INSERT INTO student_class_history VALUES (105, 22, 2, 'Nursery 2');
+INSERT INTO student_class_history VALUES (106, 23, 2, 'Nursery 2');
+INSERT INTO student_class_history VALUES (107, 24, 2, 'Nursery 2');
+INSERT INTO student_class_history VALUES (108, 25, 2, 'Nursery 2');
+INSERT INTO student_class_history VALUES (109, 26, 2, 'Nursery 2');
+INSERT INTO student_class_history VALUES (110, 27, 2, 'Nursery 2');
+INSERT INTO student_class_history VALUES (111, 28, 2, 'Nursery 3');
+INSERT INTO student_class_history VALUES (112, 29, 2, 'Nursery 3');
+INSERT INTO student_class_history VALUES (113, 30, 2, 'Nursery 3');
+INSERT INTO student_class_history VALUES (114, 31, 2, 'Nursery 3');
+INSERT INTO student_class_history VALUES (115, 32, 2, 'Nursery 3');
+INSERT INTO student_class_history VALUES (116, 33, 2, 'Nursery 3');
+INSERT INTO student_class_history VALUES (117, 35, 2, 'Basic 1');
+INSERT INTO student_class_history VALUES (118, 36, 2, 'Basic 1');
+INSERT INTO student_class_history VALUES (119, 37, 2, 'Basic 1');
+INSERT INTO student_class_history VALUES (120, 38, 2, 'Basic 1');
+INSERT INTO student_class_history VALUES (121, 39, 2, 'Basic 1');
+INSERT INTO student_class_history VALUES (122, 40, 2, 'Basic 1');
+INSERT INTO student_class_history VALUES (123, 42, 2, 'Basic 2');
+INSERT INTO student_class_history VALUES (124, 43, 2, 'Basic 2');
+INSERT INTO student_class_history VALUES (125, 44, 2, 'Basic 2');
+INSERT INTO student_class_history VALUES (126, 46, 2, 'Basic 2');
+INSERT INTO student_class_history VALUES (127, 51, 2, 'Basic 3');
+INSERT INTO student_class_history VALUES (128, 53, 2, 'Basic 3');
+INSERT INTO student_class_history VALUES (130, 85, 2, 'Basic 3');
+INSERT INTO student_class_history VALUES (131, 58, 2, 'Basic 4');
+INSERT INTO student_class_history VALUES (133, 59, 2, 'Basic 4');
+INSERT INTO student_class_history VALUES (135, 59, 1, 'Basic 3');
+INSERT INTO student_class_history VALUES (137, 64, 1, 'Basic 4');
+INSERT INTO student_class_history VALUES (138, 64, 2, 'Basic 4');
+INSERT INTO student_class_history VALUES (139, 5, 2, 'Creche');
+INSERT INTO student_class_history VALUES (140, 6, 2, 'Creche');
+INSERT INTO student_class_history VALUES (142, 54, 2, 'Basic 3');
+INSERT INTO student_class_history VALUES (143, 87, 2, 'Basic 2');
+INSERT INTO student_class_history VALUES (144, 88, 2, 'Basic 2');
+INSERT INTO student_class_history VALUES (145, 89, 2, 'Nursery 1');
+INSERT INTO student_class_history VALUES (146, 90, 2, 'Nursery 1');
+INSERT INTO student_class_history VALUES (147, 91, 2, 'Nursery 1');
+INSERT INTO student_class_history VALUES (148, 92, 2, 'Nursery 1');
+INSERT INTO student_class_history VALUES (149, 93, 2, 'Nursery 2');
+INSERT INTO student_class_history VALUES (150, 94, 2, 'Nursery 2');
+INSERT INTO student_class_history VALUES (151, 95, 2, 'Pre-Nursery');
+INSERT INTO student_class_history VALUES (152, 96, 2, 'Pre-Nursery');
+INSERT INTO student_class_history VALUES (153, 97, 2, 'Creche');
+INSERT INTO student_class_history VALUES (154, 98, 2, 'Creche');
+INSERT INTO student_class_history VALUES (155, 99, 2, 'Pre-Nursery');
+INSERT INTO student_class_history VALUES (158, 57, 2, 'Basic 4');
+
