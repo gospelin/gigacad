@@ -12,13 +12,14 @@ def update_student_password_to_reg_no():
                 user = User.query.get(student.user_id)  # Fetch the linked User
                 if user:
                     # Update password to the student's reg_no
-                    user.set_password(student.reg_no)  # Hash the reg_no
-                    print(f"Password updated for Student ID {student.id}: {student.reg_no}")
+                    user.role = "student"  # Set user role to student
+                    user.active = True     # Set all users to active 
+                    print(f"Username updated for Student ID {student.id}: {student.reg_no}")
                 else:
                     print(f"No linked User found for Student ID {student.id}. Skipping.")
         
         db.session.commit()  # Commit all changes
-        print("All student passwords have been updated to their reg_no.")
+        print("All student usernames have been updated to their reg_no.")
 
 if __name__ == "__main__":
     update_student_password_to_reg_no()

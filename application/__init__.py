@@ -11,7 +11,7 @@ from logging.handlers import RotatingFileHandler
 # Initialize the extensions
 db = SQLAlchemy()
 migrate = Migrate()
-csrf = CSRFProtect()
+# csrf = CSRFProtect()
 
 
 # Function to create and configure the Flask application
@@ -27,7 +27,7 @@ def create_app(config_name=None):
     # Initialize extensions with the app
     db.init_app(app)
     migrate.init_app(app, db)
-    csrf.init_app(app)
+    csrf = CSRFProtect(app)
     login_manager.init_app(app)
     login_manager.login_view = "auth.login"
 

@@ -27,39 +27,30 @@ from ..helpers import (
 from weasyprint import HTML
 
 
-@student_bp.route("/student_portal")
+@student_bp.route("/portal")
 @login_required
 def student_portal():
     try:
-        if current_user.is_admin:
-            return redirect(url_for("admins.admin_dashboard"))
-
-        student = Student.query.filter_by(user_id=current_user.id).first()
-
-        if not student:
-            flash("Student not found", "alert-danger")
-            app.logger.warning(f"Student not found for user_id: {current_user.id}")
-            return redirect(url_for("auth.login"))
-
-        app.logger.info(
-            f"Accessing student portal for student_id: {student.id}, {student.first_name = } {student.last_name = }"
-        )
+        if current_user.role == "student":
+            app.logger.info(
+                f"Accessing student portal for student_id: {current_user.id}"
+            )
+            
+            # Check if session data exists for overall performance, attendance, etc.
+            overall_performance = session.get('average', 0)
+            total_attendance = session.get('total_attendance', 95)
+            total_subjects = session.get('total_subjects', 18)
+            best_grade = session.get('best_grade', 'N/A')
+            average = session.get('average', 0)
         
-        # Check if session data exists for overall performance, attendance, etc.
-        overall_performance = session.get('avetage', 0)
-        total_attendance = session.get('total_attendance', 95)
-        total_subjects = session.get('total_subjects', 18)
-        best_grade = session.get('best_grade', 'N/A')
-        average = session.get('average', 0)
-        
-        return render_template(
-            "student/student_portal.html", student_id=student.id, student=student,
-            overall_performance=overall_performance,
-            total_attendance=total_attendance,
-            total_subjects=total_subjects,
-            best_grade=best_grade,
-            average=average,
-        )
+            return render_template(
+                "student/student_portal.html",
+                overall_performance=overall_performance,
+                total_attendance=total_attendance,
+                total_subjects=total_subjects,
+                best_grade=best_grade,
+                average=average,
+            )
 
     except Exception as e:
         app.logger.error(f"Error accessing student portal: {str(e)}")
@@ -76,7 +67,7 @@ def student_profile(student_id):
 
 
     # Ensure the logged-in user is authorized to view this profile
-    if current_user.id != student.user_id and not current_user.is_admin:
+    if current_user.id != student.user_id:
         flash("You are not authorized to view this profile.", "alert-danger")
         return redirect(url_for("main.index"))
     
@@ -119,7 +110,8 @@ def view_results(student_id):
         student = Student.query.get_or_404(student_id)
 
         # Ensure the current user is authorized to view the student's results
-        if current_user.id != student.user_id and not current_user.is_admin:
+        # if current_user.id != student.user_id and not current_user.is_admin:
+        if current_user.id != student.user_id:
             flash("You are not authorized to view this profile.", "alert-danger")
             app.logger.warning(
                 f"Unauthorized access attempt by user_id: {current_user.id} for student_id: {student_id}"

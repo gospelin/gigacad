@@ -5,26 +5,50 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Admin Dashboard for managing school data including students, teachers, parents, and classes." />
     <meta name="keywords" content="Admin Dashboard, School Management, Students, Teachers, Classes" />
-    <meta name="author" content="Aunty Anne's Int'l School" />
+    <meta name="author" content="Aunty Anne's International School" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <title>{% block title %}Admin Dashboard{% endblock %}</title>
 
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <!-- FontAwesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <!-- Boxicons CDN Link -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/boxicons/2.1.4/css/boxicons.min.css" rel="stylesheet">
     
     <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet" />
-    <!--<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" onload="this.rel='stylesheet'" />-->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet"/>
 </head>
 <body>
+
+<!-- Modal -->
+<div class="modal fade" id="actionsModal" tabindex="-1" aria-labelledby="actionsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="actionsModalLabel">Student Actions</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="modal-message">Are you sure you want to perform this action?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="modal-confirm-action">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+    
 <nav id="sidebar" class="d-flex flex-column min-vh-100 sidebar">
   <div class="d-flex align-items-center mb-4 logo-details">
+      <a href="{{ url_for('admins.admin_dashboard') }}">
     <i class="bx bxl-c-plus-plus text-white fs-3"></i>
-    <span class="logo_name">Admin Dashboard</span>
+    <span class="logo_name">Admin Dashboard</span></a>
   </div>
 
   <ul id="nav-links" class="flex-column list-unstyled nav-links">
@@ -48,10 +72,14 @@
         </a>
         <div class="collapse" id="studentManagement">
             <ul class="nav flex-column ms-0">
-                <li><a href="#" class="text-white nav-link"><span>Add New Student</span></a></li>
-                <li><a href="{{ url_for('admins.approve_students') }}" class="text-white nav-link"><span>View All Students</span></a></li>
-                <li><a href="#" class="text-white nav-link"><span>Edit Student Details</span></a></li>
-                <li><a href="#" class="text-white nav-link"><span>Delete Student Records</span></a></li>
+                <li><a href="{{ url_for('admins.add_student') }}" class="text-white nav-link"><span>Add New Student</span></a></li>
+                <li><a href="{{ url_for('admins.students', action='view_students' ) }}" class="text-white nav-link"><span>View All Students</span></a></li>
+                <li><a href="{{ url_for('admins.students', action='toggle_approval_status') }}" class="text-white nav-link"><span>Approve/Deactivate Students</span></a></li>
+                <li><a href="{{ url_for('admins.students', action='edit') }}" class="text-white nav-link"><span>Edit Student Details</span></a></li>
+                <li><a href="{{ url_for('admins.students', action='toggle_fees_status') }}" class="text-white nav-link"><span>Check Fees Status</span></a></li>
+                <li><a href="{{ url_for('admins.students', action='delete_from_school') }}" class="text-white nav-link"><span>Delete Student Records</span></a></li>
+                <li><a href="{{ url_for('admins.select_class', action='promote') }}" class="text-white nav-link"><span>Promote Students</span></a></li>
+                <li><a href="{{ url_for('admins.select_class', action='demote') }}" class="text-white nav-link"><span>Demote Students</span></a></li>
                 <li><a href="#" class="text-white nav-link"><span>Bulk Upload Students</span></a></li>
                 <li><a href="#" class="text-white nav-link"><span>Search and Filter Students</span></a></li>
             </ul>
@@ -67,7 +95,8 @@
       <div class="collapse" id="classManagement">
           <ul class="nav flex-column ms-0">
                 <li><a href="#" class="nav-link text-white"><span>Add Class</span></a></li>
-                <li><a href="{{ url_for('admins.select_class') }}" class="nav-link text-white"><span>View Classes</span></a></li>
+                <li><a href="{{ url_for('admins.select_class', action='view_students') }}" class="nav-link text-white"><span>View Students by Classes</span></a></li>
+                <li><a href="{{ url_for('admins.select_class', action='delete_from_class') }}" class="text-white nav-link"><span>Delete Student From Class</span></a></li>
                 <li><a href="#" class="nav-link text-white"><span>Edit Class/Section Details</span></a></li>
                 <li><a href="#" class="nav-link text-white"><span>Assign Teachers to Classes</span></a></li>
             </ul>
@@ -99,10 +128,10 @@
       <div class="collapse" id="resultManagement">
           <ul class="nav flex-column ms-0">
                 <li><a href="#" class="nav-link text-white"><span>Add or Upload Results</span></a></li>
-                <li><a href="#" class="nav-link text-white"><span>View Results by Student</span></a></li>
-                <li><a href="#" class="nav-link text-white"><span>Edit Results</span></a></li>
-                <li><a href="#" class="nav-link text-white"><span>Generate and Download Reports</span></a></li>
-                <li><a href="{{ url_for('admins.print_student_message') }}" class="nav-link text-white"><span>Notify Students about Results Availability</span></a></li>
+                <li><a href="{{ url_for('admins.select_class', action='manage_result') }}" class="nav-link text-white"><span>Manage Results by Student</span></a></li>
+                <li><a href="{{ url_for('admins.select_class', action='generate_broadsheet') }}" class="nav-link text-white"><span>Edit Results by Broadsheet</span></a></li>
+                <li><a href="{{ url_for('admins.select_class', action='download_broadsheet') }}" class="nav-link text-white"><span>Download Broadsheet</span></a></li>
+                <li><a href="{{ url_for('admins.print_student_message') }}" class="nav-link text-white"><span>Notify Students</span></a></li>
             </ul>
       </div>
     </li>
@@ -173,21 +202,58 @@
     </div>
   </nav>
     <!-- Main Content -->
-   <main class="flex-fill home-content container mt-0">
-        {% for category, message in get_flashed_messages(with_categories=True) %}
-            <div class="alert {{ category }} mt-3">{{ message }}</div>
-        {% endfor %}
+   <main class="home-content container mt-0">
+        <div id="flash-messages-container" class="mt-3">
+            {% for category, message in get_flashed_messages(with_categories=True) %}
+                <div class="alert {{ category }} mt-3">{{ message }}</div>
+            {% endfor %}
+        </div>
         {% block content %}{% endblock %}
     </main>
-
 </section>
 
 <!-- JavaScript Libraries -->
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.0/dist/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-{% block scripts %}{% endblock %}
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+{% block scripts %}
+
+
+{% endblock %}
   <script>
+    // Spinner activator 
+     document.querySelectorAll('form').forEach(form => {
+        form.addEventListener('submit', event => {
+            const button = form.querySelector('button[type="submit"]');
+            if (button && !button.classList.contains('skip-spinner')) {
+                button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...';
+                button.disabled = true;
+            }
+        });
+    });
+    
+    // Handle modal confirmation
+    document.querySelectorAll('[data-bs-toggle="modal"]').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            const form = e.target.closest('form');
+            const actionDescription = this.getAttribute('data-action');
+            document.getElementById('modal-message').textContent = `Are you sure you want to ${actionDescription} this student?`;
+    
+            document.getElementById('modal-confirm-action').onclick = function() {
+                if (form) {
+                    form.submit();
+                }
+            };
+        });
+    });
+    
     // Highlight active navigation link based on current URL
     const navLinks = document.querySelectorAll("#nav-links .nav-link");
 
@@ -224,6 +290,20 @@
             sidebarBtn.classList.replace("bx-menu-alt-right", "bx-menu");
         }
     };
+    
+    function flash(message, category) {
+        const alertContainer = document.getElementById("flash-messages-container");
+    
+        const alertDiv = document.createElement("div");
+        alertDiv.className = `alert ${category} mt-3`;
+        alertDiv.textContent = message;
+    
+        alertContainer.appendChild(alertDiv);
+    
+        // Optionally, auto-remove the flash message after a timeout
+        setTimeout(() => alertDiv.remove(), 3000);
+    }
+    
 </script>
 </body>
 </html>
