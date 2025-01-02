@@ -63,7 +63,7 @@ body {
 }
 
 .card-text {
-     font-size: 1rem;
+    font-size: 1rem;
     color: var(--dark-gray);
     text-align: justify;
 }
@@ -99,19 +99,28 @@ body {
     color: var(--white);
 }
 
-/* Table Styles */
-/*.table-responsive {*/
-/*    overflow-x: auto;*/
-/*    margin-bottom: 1.5rem;*/
-/*}*/
+.animate {
+    animation: fadeInUp 1s ease-in-out;
+}
 
-/*.table thead th {*/
-/*    border-bottom: 2px solid #dee2e6;*/
-/*}*/
+.section-heading {
+    font-weight: 600;
+    margin-top: 50px;
+    text-align: center;
+    color: var(--dark-green);
+    font-size: 2rem;
+    position: relative;
+}
 
-/*.table tbody tr td {*/
-/*    vertical-align: middle;*/
-/*}*/
+.section-heading::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 4px;
+    background-color: var(--primary-green);
+    margin: 10px auto;
+    border-radius: 2px;
+}
 
 
 /* General Alert Styling */
@@ -188,10 +197,6 @@ body {
 .alert .close:hover {
   opacity: 1;
 }
-
-
-
-
 
 
 /* Navigation styling */
@@ -310,8 +315,6 @@ body {
 }
 
 
-
-
 /* Footer */
 .footer {
     background: linear-gradient(165deg, var(--dark-green), var(--dark-red));
@@ -324,7 +327,7 @@ body {
 
 .footer a {
     color: var(--white);
-    /*// transition: color 0.3s ease;*/
+    transition: color 0.3s ease;
     text-decoration: none;
     transition: color 0.3s ease-in-out;
 }
@@ -332,8 +335,6 @@ body {
 .footer a:hover {
     color: #ddd;
 }
-
-
 
 .footer h5 {
     font-size: 1.2rem;
@@ -496,7 +497,7 @@ body {
     }
     
     .school-name {
-        font-size: 0.875rem;
+        font-size: 0.75rem;
     }
 
    .jumbotron {

@@ -138,7 +138,7 @@ class EditStudentForm(FlaskForm):
     first_name = StringField("First Name", validators=[DataRequired()])
     middle_name = StringField("Middle Name", validators=[Length(max=50)])
     last_name = StringField("Last Name", validators=[DataRequired()])
-    username = StringField("Username", validators=[DataRequired()])
+    reg_no = StringField("Registration ID", validators=[DataRequired()])
     gender = SelectField(
         "Gender",
         choices=[("male", "Male"), ("female", "Female")],
@@ -262,5 +262,5 @@ class SubjectResultForm(FlaskForm):
 class ManageResultsForm(FlaskForm):
     subjects = FieldList(
         FormField(SubjectResultForm)
-    )  # FieldList to handle multiple subjects dynamically
+    )
     submit = SubmitField("Save Results")

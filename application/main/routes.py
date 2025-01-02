@@ -5,13 +5,13 @@ from flask import (
     redirect,
     url_for,
     flash,
+    Response,
     current_app as app
 )
 from ..models import Student, User, StudentClassHistory, Session
 from ..auth.forms import StudentRegistrationForm
 
 from ..helpers import (
-    generate_unique_username,
     db,
     random,
     string,
@@ -19,19 +19,35 @@ from ..helpers import (
 
 @main_bp.route("/")
 @main_bp.route("/index")
-@main_bp.route("/home")
 def index():
     return render_template(
-        "main/index.html", title="Home", school_name="Aunty Anne's Int'l School"
+        "main/index.html", title="Home", school_name="Aunty Anne's International School"
     )
 
 
 @main_bp.route("/about_us")
 def about_us():
     return render_template(
-        "main/about_us.html", title="About Us", school_name="Aunty Anne's Int'l School"
+        "main/about_us.html", title="About Us", school_name="Aunty Anne's International School"
     )
 
+@main_bp.route('/sitemap.xml')
+def sitemap():
+    # Example list of static routes (add dynamic URLs as needed)
+    urls = [
+        {'loc': url_for('main.index', _external=True), 'lastmod': '2025-01-01'},
+        {'loc': url_for('main.about_us', _external=True), 'lastmod': '2025-01-01'},
+        {'loc': url_for('students.student_portal', _external=True), 'lastmod': '2025-01-01'},
+        {'loc': url_for('main.student_registration', _external=True), 'lastmod': '2024-12-23'}
+    ]
+    
+    # Generate XML
+    xml = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
+    for url in urls:
+        xml.append(f"<url><loc>{url['loc']}</loc><lastmod>{url['lastmod']}</lastmod></url>")
+    xml.append('</urlset>')
+    
+    return Response("\n".join(xml), content_type='application/xml')
 
 @main_bp.route("/register/student", methods=["GET", "POST"])
 def student_registration():
@@ -41,10 +57,6 @@ def student_registration():
     )  
     try:
         if form.validate_on_submit():
-            # Generate a unique username and temporary password
-            username = generate_unique_username(
-                form.first_name.data, form.last_name.data
-            )
             temporary_password = "".join(
                 random.choices(string.ascii_letters + string.digits, k=8)
             )
