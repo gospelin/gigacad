@@ -5,20 +5,15 @@ Manage Results
 {% endblock %}
 
 <style>
-    .school-header h1 {
-        font-size: 2.5rem;
-        color: #007bff; /* School brand color */
-        margin-bottom: 10px;
-    }
-    
-    .school-header h2 {
-        font-size: 1.8rem;
-        color: #6c757d; /* Subtle secondary color */
+    .card-body .school-header h2 {
+        font-size: 1.5rem;
+        color: #6c757d;
+        margin-top: 10px;
     }
     
     .school-header img {
-        margin-bottom: 15px;
-        border-radius: 50%; /* Circular logo */
+        margin-bottom: 30px;
+        border-radius: 50%;
         border: 2px solid #007bff;
     }
 
@@ -49,18 +44,22 @@ Manage Results
     .table {
         border-collapse: collapse;
         background-color: #fff;
+        table-layout: auto;
+        width: 100%;
+        min-width: 1200px;
     }
 
     .table-responsive {
         overflow-x: auto;
         margin-bottom: 30px;
-        max-height: 400px; /* Adjust based on your needs */
+        max-height: 400px; 
         overflow-y: auto;
-        -webkit-overflow-scrolling: touch; /* For mobile users */
+        -ms-overflow-scrolling: touch; 
+        position: relative;
     }
     
     .table thead {
-        background-color: #007bff; /* Blue header */
+        background-color: #007bff;
         color: white;
     }
 
@@ -75,21 +74,37 @@ Manage Results
     .table td, .table th {
         text-align: center;
         vertical-align: middle;
-        padding: 12px; /* Comfortable padding */
-    }
-
-    .btn-sm {
-        font-size: 0.875rem;
-        padding: 0.25rem 0.5rem;
+        font-size: 0.85rem;
+        padding: 6px;
+        min-width: 35px;
     }
     
+    .table th:first-child,
+    .table td:first-child {
+        position: sticky;
+        left: 0;
+        background-color: #f8f9fa;
+        z-index: 2000;
+    }
+    
+    .table th:first-child {
+        z-index: 2050;
+        text-align: left; 
+    }
+    
+    .table-responsive {
+        overflow-x: auto;
+        overflow-y: hidden; 
+        margin-bottom: 30px;
+        position: relative; 
+        -ms-overflow-scrolling: touch;
+    }
     .progress, .progress-stacked {
         height: 25px;
         border-radius: 5px;
         --bs-progress-bar-bg: #4e54c8;
        
     }
-    
     .progress-bar {
         font-size: 1rem;
         line-height: 25px;
@@ -99,12 +114,19 @@ Manage Results
 
     @media (max-width: 768px) {
         .table {
-            font-size: 0.9rem; /* Slightly smaller font for smaller screens */
+            font-size: 0.9rem; 
         }
-    
-        .btn-lg {
-            font-size: 1rem;
-            padding: 0.75rem 1rem;
+        .table th,
+        .table td {
+            font-size: 0.75rem;
+            padding: 5px;
+        }
+        .school-header h2 {
+            font-size: 0.5rem;
+        }
+
+        .btn {
+            font-size: 0.8rem;
         }
     
         .card {
@@ -117,14 +139,8 @@ Manage Results
 
         .table-responsive {
             margin-bottom: 10px;
-            /* Adjusted for mobile responsiveness */
         }
 
-        /* Added for mobile responsiveness */
-        .input-group-text {
-            width: 100%;
-            text-align: left;
-        }
 
         .form-control {
             width: 100%;
@@ -135,144 +151,168 @@ Manage Results
             margin-bottom: 10px;
         }
     }
+    
+     @media (max-width: 576px) {
+        .table th,
+        .table td {
+            font-size: 0.7rem;
+            padding: 3px;
+        }
+
+        .school-header h2 {
+            font-size: 0.5rem;
+        }
+
+        .btn {
+            font-size: 0.7rem;
+        }
+    }
 </style>
 
 {% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-10">
-            <div class="card border-0 shadow-lg">
-                <div class="card-body">
-                    <div class="school-header text-center mb-4">
-                        <img
-                            src="{{ url_for('static', filename='images/school_logo.png') }}"
-                            alt="School Logo"
-                            style="width: 100px"
-                            class="img-fluid"
-                        />
-                        <h1>Aunty Anne's Int'l School</h1>
-                        <h2>Student Results</h2>
-                    </div>
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <div class="card text-center shadow-sm">
-                                <div class="card-body text-center">
-                                    <h5 class="card-title">Current Term</h5>
-                                    <p class="card-text">{{ term }}</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="card text-center shadow-sm">
-                                <div class="card-body text-center">
-                                    <h5 class="card-title">Session</h5>
-                                    <p class="card-text">{{ session }}</p>
-                                </div>
-                            </div>
+<div class="mt-0">
+    <div class="card border-0 shadow row justify-content-center">
+        <div class="card-body">
+            <div class="school-header text-center mb-4">
+                <img
+                    src="{{ url_for('static', filename='images/school_logo.png') }}"
+                    alt="School Logo"
+                    style="width: 100px"
+                    class="img-fluid"
+                />
+            </div>
+            <form method="POST" action="{{ url_for('admins.update_result', class_name=class_name, student_id=student.id, action=action) }}">
+                {{ form.hidden_tag() }}
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text">First Name:</span>
+                            <span class="form-control" aria-label="First Name">{{ student.first_name }}</span>
                         </div>
                     </div>
-                    <form method="POST" action="{{ url_for('admins.manage_results', class_name=class_name, student_id=student.id) }}">
-                        {{ form.hidden_tag() }}
-                        
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <div class="input-group">
-                                    <span class="input-group-text">First Name:</span>
-                                    <span class="form-control" aria-label="First Name">{{ student.first_name }}</span>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="input-group">
-                                    <span class="input-group-text">Last Name:</span>
-                                    <span class="form-control" aria-label="Last Name">{{ student.last_name }}</span>
-                                </div>
-                            </div>
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text">Last Name:</span>
+                            <span class="form-control" aria-label="Last Name">{{ student.last_name }}</span>
                         </div>
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <div class="input-group">
-                                    <label for="next_term_begins" class="input-group-text">
-                                        <span class="input-group-text">
-                                            <i class="bi bi-calendar3"></i> Reopening Date
-                                        </span>
-                                    </label>
-                                    <input
-                                        type="text"
-                                        id="next_term_begins"
-                                        name="next_term_begins"
-                                        class="form-control"
-                                        value="{{ next_term_begins if next_term_begins is not none else '' }}"
-                                    />
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="input-group">
-                                    <label for="last_term_average" class="input-group-text">Last Term Average:</label>
-                                    <input
-                                        type="number"
-                                        id="last_term_average"
-                                        name="last_term_average"
-                                        class="form-control"
-                                        value="{{ last_term_average if last_term_average else '' }}"
-                                        readonly
-                                    />
-                                </div>
-                            </div>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text">Term:</span>
+                            <span class="form-control" aria-label="Term">{{ term }}</span>
                         </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text">Academic Session:</span>
+                            <span class="form-control" aria-label="Academic Session">{{ session }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <label for="next_term_begins" class="input-group-text">
+                                <span class="input-group-text">
+                                    <i class="bi bi-calendar3"></i> Reopening Date
+                                </span>
+                            </label>
+                            <input type="text" id="next_term_begins"
+                                name="next_term_begins"
+                                class="form-control"
+                                value="{{ next_term_begins if next_term_begins is not none else '' }}"
+                            />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <label for="date_issued" class="input-group-text">Date Issued:</label>
+                            <input
+                                type="text"
+                                id="date_issued"
+                                name="date_issued"
+                                class="form-control"
+                                value="{{ date_issued if date_issued else '' }}"
+                            />
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text">Class:</span>
+                            <span class="form-control" aria-label="Class Name">{{ class_name }}</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text">Grand Total:</span>
+                            <span class="form-control" aria-label="Grand Total">{{ grand_total if grand_total is not none else '' }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <label for="last_term_average" class="input-group-text">Last Term Average:</label>
+                            <input
+                                type="number"
+                                id="last_term_average"
+                                name="last_term_average"
+                                class="form-control"
+                                value="{{ last_term_average if last_term_average is not none else '' }}"
+                                readonly
+                            />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text">Cumulative Average:</span>
+                            <span class="form-control" aria-label="Cumulative Average">{{ cumulative_average if cumulative_average is not none else '' }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text">Average for the Term:</span>
+                            <span class="form-control" aria-label="Average for the Term">{{ average if average is not none else '' }}</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <label for="position" class="input-group-text">Position:</label>
+                            <input
+                                type="text"
+                                id="position"
+                                name="position"
+                                class="form-control"
+                                value="{{ position if position else '' }}"
+                            />
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text">Principal Remark:</span>
+                            <span class="form-control" aria-label="Principal Remark">{{ principal_remark if principal_remark is not none else '' }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text">Teacher Remark:</span>
+                            <span class="form-control" aria-label="Principal Remark">{{ teacher_remark if teacher_remark is not none else '' }}</span>
+                        </div>
+                    </div>
+                </div>
 
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <div class="input-group">
-                                    <label for="position" class="input-group-text">Position:</label>
-                                    <input
-                                        type="text"
-                                        id="position"
-                                        name="position"
-                                        class="form-control"
-                                        value="{{ position if position else '' }}"
-                                    />
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="input-group">
-                                    <span class="input-group-text">Cumulative Average:</span>
-                                    <span class="form-control" aria-label="Cumulative Average">{{ cumulative_average if cumulative_average is not none else '' }}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <div class="input-group">
-                                    <span class="input-group-text">Average for the Term:</span>
-                                    <span class="form-control" aria-label="Average for the Term">{{ average if average is not none else '' }}</span>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="input-group">
-                                    <label for="date_issued" class="input-group-text">Date Issued:</label>
-                                    <input
-                                        type="text"
-                                        id="date_issued"
-                                        name="date_issued"
-                                        class="form-control"
-                                        value="{{ date_issued if date_issued else '' }}"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <div class="input-group">
-                                    <span class="input-group-text">Class:</span>
-                                    <span class="form-control" aria-label="Class Name">{{ class_name }}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div style="width: 100%;" class="table-responsive">
-                            <table class="table table-bordered">
+                <div class="table-responsive">
+                        <table class="table table-bordered">
                                 <thead>
                                     <tr>
                                         <th>Subject</th>
@@ -283,69 +323,122 @@ Manage Results
                                         <th>Grade</th>
                                         <th>Remark</th>
                                     </tr>
-                                </thead>                                                
-                                    <tbody>
-                                        {% for subject, subject_form in subject_results %}
-                                            <tr>
-                                                <input type="hidden" name="subjects-{{ loop.index0 }}-subject_id" value="{{ subject.id }}">
+                                </thead>      
+                                <tbody>
+                                    {% for subject, subject_form in subject_results %}
+                                    <tr>
+                                        <!-- Hidden Input for Subject ID -->
+                                        <input 
+                                            type="hidden" 
+                                            name="subjects-{{ loop.index0 }}-subject_id" 
+                                            value="{{ subject.id }}"
+                                            data-subject-id="{{ subject.id }}"
+                                        >
+                                
+                                        <!-- Subject Name -->
+                                        <td>{{ subject.name }}</td>
+                                
+                                        <!-- Class Assessment -->
+                                        <td>
+                                            {{ subject_form.class_assessment(
+                                                id="class_assessment_{{ subject.id }}",
+                                                class="form-control result-input class-assessment",
+                                                value=results_dict.get(subject.id).class_assessment if results_dict.get(subject.id) is not none else ''
+                                            ) | safe }}
+                                            <input type="hidden" data-subject-id="{{ subject.id }}">
+                                        </td>
+                                        
+                                        <!-- Summative Test -->
+                                        <td>
+                                            {{ subject_form.summative_test(
+                                                id="summative_test_{{ subject.id }}",
+                                                class="form-control result-input summative-test",
+                                                value=results_dict.get(subject.id).summative_test if results_dict.get(subject.id) is not none else ''
+                                            ) | safe }}
+                                            <input type="hidden" data-subject-id="{{ subject.id }}">
+                                        </td>
+                                        
+                                        <!-- Exam -->
+                                        <td>
+                                            {{ subject_form.exam(
+                                                id="exam_{{ subject.id }}",
+                                                class="form-control result-input exam",
+                                                value=results_dict.get(subject.id).exam if results_dict.get(subject.id) is not none else ''
+                                            ) | safe }}
+                                            <input type="hidden" data-subject-id="{{ subject.id }}">
+                                        </td>
 
-                                                <!-- Subject Name -->
-                                                <td>{{ subject.name }}</td>
+                                
+                                        <!-- Total (read-only) -->
+                                        <td>
+                                            {{ subject_form.total(
+                                                class="form-control total",
+                                                readonly=true,
+                                                value=results_dict.get(subject.id).total if results_dict.get(subject.id) is not none else ''
+                                            ) }}
+                                        </td>
+                                
+                                        <!-- Grade (read-only) -->
+                                        <td>
+                                            {{ subject_form.grade(
+                                                class="form-control grade",
+                                                readonly=true,
+                                                value=results_dict.get(subject.id).grade if results_dict.get(subject.id) else ''
+                                            ) }}
+                                        </td>
+                                
+                                        <!-- Remark (read-only) -->
+                                        <td>
+                                            {{ subject_form.remark(
+                                                class="form-control remark",
+                                                readonly=true,
+                                                value=results_dict.get(subject.id).remark if results_dict.get(subject.id) else ''
+                                            ) }}
+                                        </td>
+                                
+                                        <!-- Status Indicator -->
+                                        <td>
+                                            <span id="status_{{ subject.id }}" class="status-indicator"></span>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
 
-                                                <!-- Class Assessment -->
-                                                <td>{{ subject_form.class_assessment(class="form-control class-assessment", value=results_dict.get(subject.id).class_assessment if results_dict.get(subject.id) is not none else '') }}</td>
-
-                                                <!-- Summative Test -->
-                                                <td>{{ subject_form.summative_test(class="form-control summative-test", value=results_dict.get(subject.id).summative_test if results_dict.get(subject.id) is not none else '') }}</td>
-
-                                                <!-- Exam -->
-                                                <td>{{ subject_form.exam(class="form-control exam", value=results_dict.get(subject.id).exam if results_dict.get(subject.id) is not none else '') }}</td>
-
-                                                <!-- Total (read-only) -->
-                                                <td>{{ subject_form.total(class="form-control total", readonly=true, value=results_dict.get(subject.id).total if results_dict.get(subject.id) is not none else '') }}</td>
-
-                                                <!-- Grade (read-only) -->
-                                                <td>{{ subject_form.grade(class="form-control grade", readonly=true, value=results_dict.get(subject.id).grade if results_dict.get(subject.id)  else '') }}</td>
-                                                <!-- Remark (read-only) -->
-                                                <td>{{ subject_form.remark(class="form-control remark", readonly=true, value=results_dict.get(subject.id).remark if results_dict.get(subject.id) else '') }}</td>
-                                            </tr>
-                                        {% endfor %}
-                                    </tbody>
-
-                            </table>
-                        </div>
-                        <div class="progress mb-4">
-                            <div 
-                                id="resultProgressBar" 
-                                class="progress-bar progress-bar-striped" 
-                                role="progressbar" 
-                                style="width: 0%;" 
-                                aria-valuenow="0" 
-                                aria-valuemin="0" 
-                                aria-valuemax="100">
-                                0%
-                            </div>
-                        </div>
-                    
-                        <button type="submit" class="btn btn-primary mt-3"><i class="bi bi-save"></i> Save Results</button>
-                    </form>
-                    
-                    
-                    <div class="text-center mt-4">
-                        <a href="{{ url_for('admins.students_by_class', class_name=class_name) }}" class="btn btn-primary mt-3">
-                            <i class="bi bi-arrow-left"></i> Back
-                        </a>
-                    </div>
-                    
+                    </table>
                 </div>
+                <div class="progress mb-4">
+                    <div 
+                        id="resultProgressBar" 
+                        class="progress-bar progress-bar-striped" 
+                        role="progressbar" 
+                        style="width: 0%;" 
+                        aria-valuenow="0" 
+                        aria-valuemin="0" 
+                        aria-valuemax="100">
+                        0%
+                    </div>
+                </div>
+            
+                <button type="submit" class="btn btn-primary mt-3"><i class="bi bi-save"></i> Save Results</button>
+            </form>
+            <div class="text-center mt-4">
+                <a href="{{ url_for('admins.students_by_class', class_name=class_name, action=action) }}" class="btn btn-primary mt-3">
+                    <i class="bi bi-arrow-left"></i> Back
+                </a>
             </div>
+            
         </div>
     </div>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 {% endblock %}
 
 {% block scripts %}
 <script>
+ // Get CSRF token from meta tag
+const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    
 document.addEventListener("DOMContentLoaded", function () {
     // Attach event listeners to update totals and progress bar
     const progressBar = document.getElementById("resultProgressBar");
@@ -394,12 +487,61 @@ document.addEventListener("DOMContentLoaded", function () {
             field.addEventListener("input", updateTotal);
         });
     });
-
+    
+    
     // Initial update for progress bar in case fields are pre-filled
     updateProgress();
 });
 
+let saveTimeout;
+ 
+$(document).on("blur", ".result-input", function () {
+    clearTimeout(saveTimeout);
+
+    const $row = $(this).closest("tr"); // Get the current table row
+    const subjectId = $row.find("input[type='hidden'][data-subject-id]").val();
+    if (!subjectId) {
+        console.error("Subject ID is missing.");
+        return; // Do not proceed
+    }
+    // Get values of all related fields in the current row
+    const classAssessment = $row.find(".class-assessment").val();
+    const summativeTest = $row.find(".summative-test").val();
+    const exam = $row.find(".exam").val();
+    const studentID = {{ student.id|tojson }}
+
+    const requestData = {
+        subject_id: subjectId,
+        student_id: studentID,
+        class_assessment: classAssessment,
+        summative_test: summativeTest,
+        exam: exam,
+        next_term_begins: $('#next_term_begins').val(),
+        position: $('#position').val(),
+        date_issued: $('#date_issued').val(),
+    };
+    console.log("Sending data:", requestData);
+    saveTimeout = setTimeout(() => {
+        $.ajax({
+            url: "/admin/update_result_field",
+            method: "POST", 
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken,
+            },
+            credentials: 'same-origin',
+            data: JSON.stringify(requestData),
+            success: function (response) {
+                console.log(response.message);
+                $row.find(".status-indicator").text("Saved").addClass("text-success").fadeOut(2000);
+            },
+            error: function (xhr) {
+                console.error("Error saving result:", xhr.responseJSON?.message || "Unknown error");
+                $row.find(".status-indicator").text("Error").addClass("text-danger").fadeOut(2000);
+            },
+        });
+    }, 300);
+});
 </script>
 
 {% endblock scripts %}
-

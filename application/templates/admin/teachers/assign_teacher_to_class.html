@@ -1,0 +1,30 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<h2>Assign Teacher to Class</h2>
+
+<form method="post">
+    {{ form.hidden_tag() }}
+    
+    <div class="form-group">
+        {{ form.teacher.label(class="form-label") }}
+        {{ form.teacher(class="form-control") }}
+    </div>
+    
+    <div class="form-group">
+        {{ form.class_name.label(class="form-label") }}
+        {{ form.class_name(class="form-control") }}
+    </div>
+    
+    <div class="form-group">
+        <div class="form-check">
+            {{ form.is_form_teacher(class="form-check-input") }}
+            {{ form.is_form_teacher.label(class="form-check-label") }}
+        </div>
+    </div>
+    
+    <button type="submit" class="btn btn-primary">{{ form.submit.label }}</button>
+</form>
+
+{% endblock %}
+

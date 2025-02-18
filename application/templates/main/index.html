@@ -1,6 +1,16 @@
 {% extends "layout.html" %}
 {% block content %}
 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" />
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+
+<script>
+    AOS.init({
+        duration: 1200,
+        once: true,
+    });
+</script>
+
 <div class="jumbotron text-white text-center py-5">
     <div class="overlay"></div>
     <div class="container content">
@@ -8,25 +18,22 @@
             Welcome to {{ school_name }}
         </h1>
         <h2 class="lead my-4 animated fadeIn" data-aos="fade-up">
-            Where Practical Learning Enhances Knowledge and Confidence
+            Where Practical Knowledge Enhances Learning and Confidence
         </h2>
         <p class="lead animated fadeInUp" data-aos="fade-right">
-            We are committed to providing a transformative education experience
-            that equips students with practical skills, empowers them with
-            knowledge, and instills the confidence to excel in a rapidly
+            We are committed to providing transformative educational experiences
+            that equip students with practical skills, empower them with
+            knowledge, and instill the confidence to excel in a rapidly
             changing world.
         </p>
     </div>
 </div>
 
 <section id="about-us" class="py-5 bg-light">
-  <div class="container text-center">
-    <h2 class="mb-4">About Us</h2>
+  <div class="container animate text-center">
+    <h2 class="section-heading mb-4" data-aos="fade-up">About Us</h2>
     <p class="lead">
-        Aunty Anne's International School is dedicated to nurturing
-        young minds and providing them with a holistic education. Our
-        focus on practical learning, knowledge, and confidence sets us
-        apart as a leading institution for excellence in education.
+        At Aunty Anne's International School, we are committed to nurturing young minds and offering a well-rounded education. With a strong emphasis on practical learning, knowledge, and building confidence, this sets us apart as a leading institution for excellence in education.
     </p>
     <a href="{{ url_for('main.about_us') }}" class="btn btn-primary">Learn More</a>
   </div>
@@ -146,7 +153,7 @@
 
 <section id="contact-us" class="py-5">
   <div class="container text-center">
-    <h2 class="mb-4">Get in Touch</h2>
+    <h2 class="section-heading mb-4">Get in Touch</h2>
     <p>We'd love to hear from you! Contact us for any inquiries or support.</p>
     <a href="#" class="btn btn-primary">Contact Us</a>
   </div>

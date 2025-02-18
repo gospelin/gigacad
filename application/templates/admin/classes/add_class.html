@@ -1,0 +1,34 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<h2>Add Class</h2>
+
+<form method="POST" action="{{ url_for('admins.add_class') }}">
+    {{ form.hidden_tag() }}
+
+    <div class="mb-3">
+        {{ form.name.label(class="form-label") }}
+        {{ form.name(class="form-control") }}
+    </div>
+
+    <div class="mb-3">
+        {{ form.section.label(class="form-label") }}
+        {{ form.section(class="form-control") }}
+    </div>
+    
+    <div class="mb-3">
+        {{ form.hierarchy.label(class="form-label") }}
+        {{ form.hierarchy(class="form-control") }}
+    </div>
+
+    <button type="submit" class="btn btn-primary">{{ form.submit_create.label.text }}</button>
+</form>
+
+<hr>
+<h3>Existing Classes</h3>
+<ul>
+    {% for cls in classes %}
+    <li>{{ cls.name }} ({{ cls.section }})</li>
+    {% endfor %}
+</ul>
+{% endblock %}
