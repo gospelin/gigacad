@@ -95,6 +95,7 @@
       <div class="collapse" id="classManagement">
           <ul class="nav flex-column ms-0">
                 <li><a href="#" class="nav-link text-white"><span>Add Class</span></a></li>
+                <li><a href="{{ url_for('admins.manage_classes') }}" class="nav-link text-white"><span>Manage Classes</span></a></li>
                 <li><a href="{{ url_for('admins.select_class', action='view_students') }}" class="nav-link text-white"><span>View Students by Classes</span></a></li>
                 <li><a href="{{ url_for('admins.select_class', action='delete_from_class') }}" class="text-white nav-link"><span>Delete Student From Class</span></a></li>
                 <li><a href="#" class="nav-link text-white"><span>Edit Class/Section Details</span></a></li>
@@ -114,7 +115,8 @@
                 <li><a href="#" class="nav-link text-white"><span>Add New Subject</span></a></li>
                 <li><a href="{{ url_for('admins.manage_subjects') }}" class="nav-link text-white"><span>View Subjects</span></a></li>
                 <li><a href="#" class="nav-link text-white"><span>Edit Subject Details</span></a></li>
-                <li><a href="#" class="nav-link text-white"><span>Assign Subjects to Classes</span></a></li>
+                <li><a href="{{ url_for('admins.assign_subject_to_class') }}" class="nav-link text-white"><span>Assign Subjects to Classes</span></a></li>
+                <li><a href="{{ url_for('admins.assign_subject_to_teacher') }}" class="nav-link text-white"><span>Assign Subjects to Teachers</span></a></li>
             </ul>
       </div>
     </li>
@@ -140,14 +142,14 @@
     <li class="nav-item">
       <a href="#teachertManagement" class="nav-link text-white" data-bs-toggle="collapse" data-bs-target="#teacherManagement"  aria-expanded="false">
           <i class="fas fa-chalkboard-teacher icon"></i> 
-          <span>Teacher Management</span>
+          <span>Staff Management</span>
       </a>
       <div class="collapse" id="teacherManagement">
           <ul class="nav flex-column ms-0">
-                <li><a href="#" class="nav-link text-white"><span>Add New Teacher</span></a></li>
+                <li><a href="{{ url_for('admins.manage_teachers') }}" class="nav-link text-white"><span>Add New Staff</span></a></li>
                 <li><a href="#" class="nav-link text-white"><span>View All Teachers</span></a></li>
                 <li><a href="#" class="nav-link text-white"><span>Edit Teacher Details</span></a></li>
-                <li><a href="#" class="nav-link text-white"><span>Assign Teachers to Classes</span></a></li>
+                <li><a href="{{ url_for('admins.assign_teacher_to_class') }}" class="nav-link text-white"><span>Assign Teachers to Classes</span></a></li>
             </ul>
       </div>
     </li>

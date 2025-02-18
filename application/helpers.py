@@ -4,7 +4,7 @@ from io import BytesIO
 from openpyxl.styles import Font, Border, Side, Alignment
 from openpyxl.utils import get_column_letter
 from flask import request, abort, current_app as app
-from .models import Student, Subject, Result
+from .models import Student, Subject, Result, Classes, Teacher
 from functools import wraps
 from datetime import datetime
 from application.auth.forms import SubjectResultForm
@@ -12,7 +12,28 @@ from collections import defaultdict
 
 login_attempts = {}
 
+def generate_employee_id(section):
+    """Generate a unique employee ID based on section and current year."""
+    section_code = {
+        "Nursery": "NRY",
+        "Primary": "PRI",
+        "Secondary": "SEC",
+    }.get(section, "OTH")  # Default to "OTH" if section not found
 
+    year = datetime.now().year
+    last_teacher = Teacher.query.filter(
+        Teacher.employee_id.like(f"AAIS-{section_code}-{year}-%")
+    ).order_by(Teacher.id.desc()).first()
+
+    if last_teacher:
+        last_number = int(last_teacher.employee_id.split("-")[-1])
+        new_number = f"{last_number + 1:03d}"
+    else:
+        new_number = "001"
+
+    return f"AAIS-{section_code}-{year}-{new_number}"
+    
+    
 def rate_limit(limit, per):
     """
     Decorator function that limits the rate at which a function can be called.
@@ -47,40 +68,20 @@ def rate_limit(limit, per):
 
     return decorator
     
-def group_and_sort_students(students):
+def group_students_by_class(students):
     """
-    Groups and sorts students by class name using the class hierarchy.
+    Groups students by class name based on the hierarchy.
     """
-    # Define the class hierarchy
-    class_hierarchy = [
-        "Creche",
-        "Pre-Nursery",
-        "Nursery 1",
-        "Nursery 2",
-        "Nursery 3",
-        "Basic 1",
-        "Basic 2",
-        "Basic 3",
-        "Basic 4",
-        "Basic 5",
-        "Basic 6",
-        "JSS 1",
-        "JSS 2",
-        "JSS 3",
-        "SSS",
-    ]
-    class_order = {class_name: index for index, class_name in enumerate(class_hierarchy)}
-
-    # Group students by their class name
     students_classes = defaultdict(list)
-    for student, class_name in students:
+    for student, class_name, _ in students:
         students_classes[class_name].append(student)
-
-    # Sort the class names based on the hierarchy
-    sorted_class_names = sorted(
-        students_classes.keys(), key=lambda x: class_order.get(x, float('inf'))
+    
+    # Sort classes by their hierarchy
+    sorted_classes = sorted(
+        students_classes.items(),
+        key=lambda item: Classes.query.filter_by(name=item[0]).first().hierarchy,
     )
-    return {class_name: students_classes[class_name] for class_name in sorted_class_names}
+    return dict(sorted_classes)
 
 def calculate_grade(total):
     if total >= 95:

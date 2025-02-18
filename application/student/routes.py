@@ -12,7 +12,7 @@ from flask import (
     make_response,
 )
 from flask_login import login_required, current_user
-from ..models import Student, Result, Session, StudentClassHistory
+from ..models import Student, Result, Session, StudentClassHistory, RoleEnum, Classes
 from ..auth.forms import ResultForm
 from ..helpers import (
     get_last_term,
@@ -27,11 +27,11 @@ from ..helpers import (
 from weasyprint import HTML
 
 
-@student_bp.route("/portal")
+@student_bp.route("/dashboard")
 @login_required
 def student_portal():
     try:
-        if current_user.role == "student":
+        if current_user.role == RoleEnum.STUDENT:
             app.logger.info(
                 f"Accessing student portal for student_id: {current_user.id}"
             )
@@ -51,6 +51,8 @@ def student_portal():
                 best_grade=best_grade,
                 average=average,
             )
+        else:
+            redirect(url_for("auth.login"))
 
     except Exception as e:
         app.logger.error(f"Error accessing student portal: {str(e)}")
@@ -71,9 +73,7 @@ def student_profile(student_id):
         flash("You are not authorized to view this profile.", "alert-danger")
         return redirect(url_for("main.index"))
     
-    class_name = StudentClassHistory.get_class_by_session(
-            student_id=student.id, session_year_str=session_year
-        )
+    class_name = student.get_class_by_session(session_year=session_year)
 
     return render_template("student/student_profile.html", student=student, class_name=class_name)
 
@@ -128,9 +128,7 @@ def view_results(student_id):
 
         # Fetch session and student class history in a single query
 
-        class_name = StudentClassHistory.get_class_by_session(
-            student_id=student.id, session_year_str=session_year
-        )
+        class_name = student.get_class_by_session(session_year=session_year)
 
         if not class_name:
             flash(f"{student.first_name} {student.last_name} is not in any class as at {session_year}", "alert-info")
@@ -221,15 +219,13 @@ def download_results_pdf(student_id):
 
         term = request.args.get("term")
         session = request.args.get("session")
-
+   
         if not term or not session:
             flash("Term and session must be specified.", "alert-danger")
             return redirect(url_for("students.select_term_session", student_id=student.id))
             
         # Fetch session and student class history in a single query
-        class_name = StudentClassHistory.get_class_by_session(
-            student_id=student.id, session_year_str=session
-        )
+        class_name = student.get_class_by_session(session_year=session)
 
         if not class_name:
             app.logger.error(f"No class history for {student.id} in {session.year}")

@@ -392,18 +392,34 @@
                             {% if action not in ['view_students', 'generate_broadsheet', 'download_broadsheet'] %}
                                 <td>
                                     {% if action == 'promote' %}
-                                        <form action="{{ url_for('admins.promote_student', class_name=class_name, student_id=student.id, action=action) }}" method="POST">
+                                       {# <form action="{{ url_for('admins.promote_student', class_name=class_name, student_id=student.id, action=action) }}" method="POST">
                                             {{ form.hidden_tag() }}
                                             <button type="submit" class="btn btn-primary skip-spinner" data-bs-toggle="modal" data-bs-target="#actionsModal" data-action="promote" data-student-id="{{ student.id }}">Promote</button>
+                                        </form> #}
+                                        
+                                        <form method="POST" action="{{ url_for('admins.promote_student', class_name=class_name, student_id=student.id, action=action) }}">
+                                            {{ form.hidden_tag() }}
+                                            <label for="session_choice">Promote to:</label>
+                                            <select name="session_choice" id="session_choice" class="form-control">
+                                                <option value="current">Current Session</option>
+                                                <option value="next">Next Session</option>
+                                            </select>
+                                            <button type="submit" class="btn btn-primary mt-3 skip-spinner" data-bs-toggle="modal" data-bs-target="#actionsModal" data-action="promote" data-student-id="{{ student.id }}">Promote</button>
                                         </form>
+
                                     {% elif action == 'edit' %}
                                         <a class="btn btn-primary mt-3" href="{{ url_for('admins.edit_student', class_name=class_name, student_id=student.id, action=action) }}">Edit</a>
                                     {% elif action == 'manage_result' %}
                                         <a class="btn btn-primary mt-3" href="{{ url_for('admins.manage_results', class_name=class_name, student_id=student.id, action=action) }}">Manage Results</a>
                                     {% elif action == 'demote' %}
-                                        <form action="{{ url_for('admins.demote_student', class_name=class_name, student_id=student.id, action=action) }}" method="POST">
+                                        <form method="POST" action="{{ url_for('admins.demote_student', class_name=class_name, student_id=student.id, action=action) }}">
                                             {{ form.hidden_tag() }}
-                                            <button type="submit" class="btn btn-warning skip-spinner" data-bs-toggle="modal" data-bs-target="#actionsModal" data-action="demote" data-student-id="{{ student.id }}">Demote</button>
+                                            <label for="session_choice">Promote to:</label>
+                                            <select name="session_choice" id="session_choice" class="form-control">
+                                                <option value="current">Current Session</option>
+                                                <option value="next">Next Session</option>
+                                            </select>
+                                            <button type="submit" class="btn btn-primary mt-3 skip-spinner" data-bs-toggle="modal" data-bs-target="#actionsModal" data-action="demote" data-student-id="{{ student.id }}">Demote</button>
                                         </form>
                                     {% elif action == 'delete_from_class' %}
                                         <form action="{{ url_for('admins.delete_student_record', class_name=class_name, student_id=student.id, action=action) }}" method="POST">
