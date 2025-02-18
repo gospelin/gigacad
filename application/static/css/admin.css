@@ -42,7 +42,6 @@
 }
 
 body {
-  /*overflow-x: auto; */
   font-family: 'Poppins', sans-serif;
   box-sizing: border-box;
 }
@@ -51,20 +50,21 @@ body {
   position: fixed;
   height: 100%;
   min-height: 100vh;
-  width: 280px;
+  width: 50px;
   background: var(--background);
-  transition: all 0.5s ease;
+  /*transition: all 0.5s ease;*/
   overflow-y: auto;
 }
 
 .sidebar.active {
-  width: 50px;
+  width: 280px;
 }
 
-.sidebar .logo-details {
+.sidebar .logo-details a {
   height: 80px;
   display: flex;
   align-items: center;
+  text-decoration: none;
 }
 
 .sidebar .logo-details i {
@@ -97,7 +97,8 @@ body {
   display: flex;
   align-items: center;
   text-decoration: none;
-  transition: all 0.4s ease;
+  /*transition: all 0.4s ease;*/
+  white-space: nowrap;
 }
 
 .sidebar .nav-links li a.active {
@@ -118,7 +119,7 @@ body {
 /* Dropdown Specific Styles */
 .sidebar .collapse {
   display: none;
-  transition: all 0.3s ease-in-out;
+  /*transition: all 0.3s ease-in-out;*/
 }
 
 .sidebar .collapse.show {
@@ -128,30 +129,32 @@ body {
 }
 
 .sidebar .collapse ul li a {
+  font-size: 0.85rem;
   padding-left: 45px;
 }
 
 /* Responsive Adjustments */
 .sidebar .nav-links li a span {
-  display: block;
+  display: none;
 }
 
 .sidebar.active .nav-links li a span {
-  display: none;
+  display: block;
 }
 
 .home-section {
   position: relative;
-  background: var(--light-gray-alt);
+  /*background: var(--light-gray-alt);*/
+  background: var(--white);
   min-height: 100vh;
-  width: calc(100% - 280px);
-  left: 280px;
+  width: calc(100% - 50px);
+  left: 50px;
   transition: all 0.5s ease;
 }
 
 .sidebar.active ~ .home-section {
-  width: calc(100% - 50px);
-  left: 50px;
+  width: calc(100% - 280px);
+  left: 280px;
 }
 
 .home-section nav {
@@ -162,8 +165,8 @@ body {
   display: flex;
   align-items: center;
   position: fixed;
-  width: calc(100% - 280px);
-  left: 280px;
+  width: calc(100% - 50px);
+  left: 50px;
   z-index: 100;
   padding: 0 20px;
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
@@ -171,8 +174,8 @@ body {
 }
 
 .sidebar.active ~ .home-section nav {
-  left: 50px;
-  width: calc(100% - 50px);
+  left: 280px;
+  width: calc(100% - 280px);
 }
 
 .home-section nav .sidebar-button {
@@ -217,22 +220,8 @@ nav .profile-details i {
 
 .home-section .home-content {
   position: relative;
-  padding-top: 104px;
+  padding-top: 90px;
 }
-
-/* Table Styles */
-/*.table-responsive {*/
-/*  overflow-x: auto;*/
-/*  margin-bottom: 1.5rem;*/
-/*}*/
-
-/*.table thead th {*/
-/*  border-bottom: 2px solid var(--border-gray);*/
-/*}*/
-
-/*.table tbody tr td {*/
-/*  vertical-align: middle;*/
-/*}*/
 
 .btn-primary {
   background-color: var(--primary-blue);
@@ -342,35 +331,29 @@ nav .profile-details i {
     
     @media (max-width: 400px) {
         .sidebar {
+            width: 0;
+        }
+        .sidebar.active {
             width: 250px;
             z-index: 1030;
         }
-    
-        .sidebar.active {
-            width: 0;
-        }
-    
         .home-section {
             width: 100%;
             left: 0;
         }
-    
         .sidebar.active ~ .home-section {
-            left: 0px;
-            width: 100%;
-        }
-        
-        .home-section nav {
-            width: calc(100% - 250px);
-            left: 250px;
-        }
-    
-        .sidebar.active ~ .home-section nav {
             left: 0;
             width: 100%;
         }
-    
-        .sidebar.active ~ .home-section nav .profile-details {
+        .home-section nav {
+            width: 100%;
+            left: 0;
+        }
+        .sidebar.active ~ .home-section nav {
+            left: 250px;
+            width: 100%;
+        }
+        .sidebar ~ .home-section nav .profile-details {
             display: none;
         }
     }

@@ -50,9 +50,6 @@
                     </div>
                     <button type="submit" class="btn btn-primary" id="adminLoginButton" onclick="showSpinner('adminLoginButton')">
                         <span>Login</span>
-                        <div class="spinner-border spinner-border-sm ms-2" style="display: none;" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
                     </button>
                 </form>
                 <div id="validationMessageContainer">
@@ -153,14 +150,15 @@
             }
         }
         
-        // Show spinner on login button
-        function showSpinner(buttonId) {
-            const button = document.getElementById(buttonId);
-            const spinner = button.querySelector(".spinner-border");
-            if (spinner) {
-                spinner.style.display = "inline-block";
-            }
-        }
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', event => {
+                const button = form.querySelector('button[type="submit"]');
+                if (button) {
+                    button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...';
+                    button.disabled = true;
+                }
+            });
+        });
 
     </script>
 </body>

@@ -1,0 +1,105 @@
+{% extends "admin/base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Manage Teachers</h2>
+
+    <!-- Add/Edit Teacher Form -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Add/Edit Teacher</h5>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('admins.manage_teachers') }}">
+                {{ form.hidden_tag() }}
+                <div class="mb-3">
+                    {{ form.id(class="form-control") }}
+                </div>
+                <div class="mb-3">
+                    <label for="first_name" class="form-label">First Name</label>
+                    {{ form.first_name(class="form-control") }}
+                </div>
+                <div class="mb-3">
+                    <label for="last_name" class="form-label">Last Name</label>
+                    {{ form.last_name(class="form-control") }}
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    {{ form.email(class="form-control") }}
+                </div>
+                <div class="mb-3">
+                    <label for="phone_number" class="form-label">Phone Number</label>
+                    {{ form.phone_number(class="form-control") }}
+                </div>
+                <div class="mb-3">
+                    <label for="section" class="form-label">Section</label>
+                    {{ form.section(class="form-control") }}
+                </div>
+                <button type="submit" class="btn btn-primary">{{ form.submit.label }}</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Teachers Table -->
+    <div class="card">
+        <div class="card-header">
+            <h5>Existing Teachers</h5>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Employee ID</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Section</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for teacher in teachers %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ teacher.employee_id }}</td>
+                        <td>{{ teacher.first_name }}</td>
+                        <td>{{ teacher.last_name }}</td>
+                        <td>{{ teacher.email }}</td>
+                        <td>{{ teacher.phone_number }}</td>
+                        <td>{{ teacher.section }}</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm" 
+                                onclick="editTeacher({{ teacher.id }}, '{{ teacher.first_name }}', '{{ teacher.last_name }}', '{{ teacher.email }}', '{{ teacher.phone_number }}', '{{ teacher.section }}')">
+                                Edit
+                            </button>
+                            <form method="POST" action="{{ url_for('admins.delete_teacher', teacher_id=teacher.id) }}" class="d-inline">
+                                {{ form.hidden_tag() }}
+                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center">No teachers available.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function editTeacher(id, firstName, lastName, email, phoneNumber, section) {
+        document.querySelector('input[name="id"]').value = id;
+        document.querySelector('input[name="first_name"]').value = firstName;
+        document.querySelector('input[name="last_name"]').value = lastName;
+        document.querySelector('input[name="email"]').value = email;
+        document.querySelector('input[name="phone_number"]').value = phoneNumber;
+        document.querySelector('select[name="section"]').value = section;
+    }
+</script>
+{% endblock scripts %}

@@ -1,0 +1,78 @@
+<!-- templates/teacher_profile.html -->
+{% extends 'teacher/base.html' %}
+
+{% block content %}
+  <div class="container">
+    <h1>Teacher Profile</h1>
+    
+    <!-- Profile Form -->
+    <form method="POST">
+      {{ profile_form.hidden_tag() }}
+      <div class="form-group">
+        <label for="first_name">First Name</label>
+        {{ profile_form.first_name(class="form-control") }}
+      </div>
+      <div class="form-group">
+        <label for="last_name">Last Name</label>
+        {{ profile_form.last_name(class="form-control") }}
+      </div>
+      <div class="form-group">
+        <label for="phone_number">Phone Number</label>
+        {{ profile_form.phone_number(class="form-control") }}
+      </div>
+      <div class="form-group">
+        <label for="email">Email</label>
+        {{ profile_form.email(class="form-control") }}
+      </div>
+      <div class="form-group">
+        <label for="section">Section</label>
+        {{ profile_form.section(class="form-control") }}
+      </div>
+      <div class="form-group">
+        {{ profile_form.submit_edit(class="btn btn-primary") }}
+      </div>
+    </form>
+
+    <!-- Assigned Subjects -->
+    <h2>Subjects Taught</h2>
+    <ul>
+      {% for subject in assigned_subjects %}
+        <li>{{ subject.name }} 
+            <a href="{{ url_for('teachers.remove_subject', subject_id=subject.id) }}" class="btn btn-danger btn-sm">Remove</a>
+        </li>
+      {% endfor %}
+    </ul>
+
+    <form method="POST" action="{{ url_for('teachers.assign_subjects') }}">
+      {{ subject_form.hidden_tag() }}
+      <div class="form-group">
+        <label for="subject">Select Subject</label>
+        {{ subject_form.subject(class="form-control") }}
+      </div>
+      <div class="form-group">
+        {{ subject_form.submit(class="btn btn-success") }}
+      </div>
+    </form>
+
+    <!-- Assigned Classes -->
+    <h2>Classes Assigned</h2>
+    <ul>
+      {% for class_ in assigned_classes %}
+        <li>{{ class_.name }} 
+            <a href="{{ url_for('teachers.remove_class', class_id=class_.id) }}" class="btn btn-danger btn-sm">Remove</a>
+        </li>
+      {% endfor %}
+    </ul>
+
+    <form method="POST" action="{{ url_for('teachers.assign_classes') }}">
+      {{ class_form.hidden_tag() }}
+      <div class="form-group">
+        <label for="class_name">Select Class</label>
+        {{ class_form.class_name(class="form-control") }}
+      </div>
+      <div class="form-group">
+        {{ class_form.submit(class="btn btn-success") }}
+      </div>
+    </form>
+  </div>
+{% endblock %}
