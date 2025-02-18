@@ -12,7 +12,7 @@
                         />
                         <h1>Select Class </h1>
                     </div>
-                    <form method="POST" action="{{ url_for('admins.select_class') }}">
+                    <form method="POST" action="{{ url_for('admins.select_class', action=action ) }}">
                         {{ class_form.hidden_tag() }}
                         <div class="mb-3">
                             <label for="class_name" class="form-label"

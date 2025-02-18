@@ -1,0 +1,103 @@
+<table id="results-table" class="table table-striped">
+   <thead>
+        <tr>
+            <th>Registration ID</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            {% if action not in ['view_students', 'generate_broadsheet', 'download_broadsheet'] %}
+                <th>Actions</th>
+            {% endif %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for student in students %}
+        <tr class="table-row" data-fee-status="{{ 'paid' if student.has_paid_fee else 'unpaid' }}" data-approval-status="{{ 'approved' if student.approved else 'pending' }}">
+            <td>{{ student.reg_no }}</td>
+            <td>{{ student.first_name }}</td>
+            <td>{{ student.last_name }}</td>
+            {% if action not in ['view_students', 'generate_broadsheet', 'download_broadsheet'] %}
+                <td>
+                    {% if action == 'promote' %}
+                        <form action="{{ url_for('admins.promote_student', class_name=class_name, student_id=student.id, action=action) }}" method="POST">
+                            {{ form.hidden_tag() }}
+                            <button type="submit" class="btn btn-primary skip-spinner" data-bs-toggle="modal" data-bs-target="#actionsModal" data-action="promote" data-student-id="{{ student.id }}">Promote</button>
+                        </form>
+                    {% elif action == 'edit' %}
+                        <a class="btn btn-primary mt-3" href="{{ url_for('admins.edit_student', class_name=class_name, student_id=student.id, action=action) }}">Edit</a>
+                    {% elif action == 'manage_result' %}
+                        <a class="btn btn-primary mt-3" href="{{ url_for('admins.manage_results', class_name=class_name, student_id=student.id, action=action) }}">Manage Results</a>
+                    {% elif action == 'demote' %}
+                        <form action="{{ url_for('admins.demote_student', class_name=class_name, student_id=student.id, action=action) }}" method="POST">
+                            {{ form.hidden_tag() }}
+                            <button type="submit" class="btn btn-warning skip-spinner" data-bs-toggle="modal" data-bs-target="#actionsModal" data-action="demote" data-student-id="{{ student.id }}">Demote</button>
+                        </form>
+                    {% elif action == 'delete_from_class' %}
+                        <form action="{{ url_for('admins.delete_student_record', class_name=class_name, student_id=student.id, action=action) }}" method="POST">
+                            {{ form.hidden_tag() }}
+                            <button type="submit" class="delete-btn btn btn-danger skip-spinner" data-bs-toggle="modal" data-bs-target="#actionsModal" data-action="delete" data-student-id="{{ student.id }}">Delete</button>
+                        </form>
+
+                    {% endif %}
+                </td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<div class="pagination-container d-flex justify-content-center my-4">
+    <ul id="pagination" class="pagination">
+        {% if pagination.has_prev %}
+            <li class="page-item">
+                <a href="{{ url_for('admins.search_students_by_class', class_name=class_name, action=action, page=pagination.prev_num) }}" 
+                   class="page-link pagination-link pagination-sm">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+            </li>
+        {% endif %}
+        
+        {% for page in pagination.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=1) %}
+            {% if page %}
+                <li class="page-item {{ 'active' if page == pagination.page }}">
+                    <a class="page-link pagination-link pagination-sm" 
+                       href="{{ url_for('admins.search_students_by_class', class_name=class_name, action=action, page=page) }}">
+                        {{ page }}
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">…</span>
+                </li>
+            {% endif %}
+        {% endfor %}
+        
+        {% if pagination.has_next %}
+            <li class="page-item">
+                <a href="{{ url_for('admins.search_students_by_class', class_name=class_name, action=action, page=pagination.next_num) }}" 
+                   class="page-link pagination-link pagination-sm">
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+            </li>
+        {% endif %}
+    </ul>
+</div>
+<div id="loading-spinner" class="text-center d-none my-2">
+    <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div>
+<!-- Broadsheet and Print Buttons -->
+    <div class="text-center">
+        <a href="{{ url_for('admins.select_class', action=action) }}" class="btn btn-primary mt-3">Back to Classes</a>
+        
+        {% if action == 'generate_broadsheet' %}
+        <a href="{{ url_for('admins.broadsheet', class_name=class_name, action=action ) }}" class="btn btn-secondary mt-3">Generate Broadsheet</a>
+        {% endif %}
+        
+        {% if action == 'download_broadsheet' %}
+        <a href="{{ url_for('admins.download_broadsheet', class_name=class_name, action=action) }}" class="btn btn-primary mt-3">Download Broadsheet</a>
+        {% endif %}
+        
+        {% if action == 'view_students' %}
+        <button onclick="printStudentDetails()" class="btn btn-primary mt-3">Print Student Details</button>
+        {% endif %}
+    </div>

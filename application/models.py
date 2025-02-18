@@ -2,7 +2,32 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from application import db
 from flask_login import UserMixin
 from datetime import datetime
+from sqlalchemy import Enum
 
+class RoleEnum(Enum):
+    ADMIN = "admin"
+    STUDENT = "student"
+    TEACHER = "teacher"
+
+# Association Tables
+class_teacher = db.Table(
+    "class_teacher",
+    db.Column("class_id", db.Integer, db.ForeignKey("classes.id"), primary_key=True),
+    db.Column("teacher_id", db.Integer, db.ForeignKey("teacher.id"), primary_key=True),
+    db.Column("is_form_teacher", db.Boolean, default=False)
+)
+
+class_subject = db.Table(
+    "class_subject",
+    db.Column("class_id", db.Integer, db.ForeignKey("classes.id"), primary_key=True),
+    db.Column("subject_id", db.Integer, db.ForeignKey("subject.id"), primary_key=True),
+)
+
+teacher_subject = db.Table(
+    "teacher_subject",
+    db.Column("teacher_id", db.Integer, db.ForeignKey("teacher.id"), primary_key=True),
+    db.Column("subject_id", db.Integer, db.ForeignKey("subject.id"), primary_key=True),
+)
 
 class Session(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -16,7 +41,6 @@ class Session(db.Model):
     @staticmethod
     def get_current_session():
         return Session.query.filter_by(is_current=True).first()
-        # return session.year if session else None
 
     @staticmethod
     def get_current_session_and_term(include_term=False):
@@ -24,10 +48,8 @@ class Session(db.Model):
         session = Session.query.filter_by(is_current=True).first()
         if not session:
             return None, None if include_term else None
+        return (session, session.current_term) if include_term else session
 
-        if include_term:
-            return session.year, session.current_term
-        return session.year
 
     @staticmethod
     def set_current_session(session_id, term):
@@ -44,78 +66,63 @@ class Session(db.Model):
             return new_session
         return None
 
-# class Classes(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     name = db.Column(db.String(100), nullable=False)
-#     section = db.Column(db.String(50), nullable=True)
-
-#     # Relationship with Subjects (A class can offer many subjects)
-#     subjects = db.relationship("Subject", backref="class_offered", lazy=True)
-
-#     # Relationship with Results (A class will have results for its students)
-#     results = db.relationship("Result", backref="class_result", lazy=True)
-
-#     def __repr__(self):
-#         return f"<Class {self.name}>"
-
-#     @classmethod
-#     def create_class(cls, name, section):
-#         """Helper function to create a new class."""
-#         new_class = cls(name=name, section=section)
-#         db.session.add(new_class)
-#         db.session.commit()
-#         return new_class
-
-#     def edit_class(self, name=None, section=None):
-#         """Helper function to edit an existing class."""
-#         if name:
-#             self.name = name
-#         if section:
-#             self.section = section
-#         db.session.commit()
-
-#     def delete_class(self):
-#         """Helper function to delete an existing class."""
-#         db.session.delete(self)
-#         db.session.commit()
-
-
 class StudentClassHistory(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     student_id = db.Column(db.Integer, db.ForeignKey("student.id"), nullable=False)
     session_id = db.Column(db.Integer, db.ForeignKey("session.id"), nullable=False)
-    class_name = db.Column(db.String(50), nullable=False)
-    # class_id = db.Column(db.Integer, db.ForeignKey("classes.id"), nullable=False)
+    class_id = db.Column(db.Integer, db.ForeignKey("classes.id"), nullable=False)
 
-    student = db.relationship("Student", backref="class_history", lazy=True)
+    # student = db.relationship("Student", backref="class_history", lazy=True)
     session = db.relationship("Session", backref="class_history", lazy=True)
-    # classes = db.relationship("Class, backref="class_history", lazy=True)
-
-    @classmethod
-    def get_class_by_session(cls, student_id, session_year_str):
-        """
-        Get the student's class for a given academic session.
-        If the session is a string, retrieve the session object first.
-        """
-        # If session is passed as a string (e.g., "2023/2024"), get the session object
-        if isinstance(session_year_str, str):
-            session_year = Session.query.filter_by(year=session_year_str).first()
-        else:
-            session_year = session_year_str  # Assume session is an object
-
-        if not session_year:
-            # Log or handle the case where the session doesn't exist
-            return None
-
-        # Query the class history for the student in the specified session
-        class_history = cls.query.filter_by(
-            student_id=student_id, session_id=session_year.id
-        ).first()
-
-        return class_history.class_name if class_history else None
+    class_ref = db.relationship("Classes", backref="class_history", lazy=True)
 
     def __repr__(self):
-        return f"<StudentClassHistory Student: {self.student_id}, Class: {self.class_name}, Session: {self.session.year}>"
+        return f"<StudentClassHistory Student: {self.student_id}, Class: {self.class_ref.name}, Session: {self.session.year}>"
+
+
+# class Student(db.Model, UserMixin):
+#     id = db.Column(db.Integer, primary_key=True)
+#     reg_no = db.Column(db.String(50), nullable=True)
+#     first_name = db.Column(db.String(50), nullable=False)
+#     middle_name = db.Column(db.String(50), nullable=True)
+#     last_name = db.Column(db.String(50), nullable=False)
+#     gender = db.Column(db.String(10), nullable=False)
+#     date_of_birth = db.Column(db.String(20), nullable=True)
+#     parent_name = db.Column(db.String(70), nullable=True)
+#     parent_phone_number = db.Column(db.String(11), nullable=True)
+#     address = db.Column(db.String(255), nullable=True)
+#     parent_occupation = db.Column(db.String(100), nullable=True)
+#     state_of_origin = db.Column(db.String(50), nullable=True)
+#     local_government_area = db.Column(db.String(50), nullable=True)
+#     religion = db.Column(db.String(50), nullable=True)
+#     date_registered = db.Column(db.String(19), nullable=True)
+#     approved = db.Column(db.Boolean, default=False)
+#     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+#     has_paid_fee = db.Column(db.Boolean, nullable=False, default=False)
+
+#     results = db.relationship("Result", backref="student", lazy=True)
+#     class_history = db.relationship("StudentClassHistory", backref="student", lazy=True)
+
+#     def get_current_class(self):
+#         latest_class = self.class_history[-1] if self.class_history else None
+#         return latest_class.class_ref.name if latest_class else None
+
+#     def get_class_by_session(self, session_year):
+#         # If session is passed as a string (e.g., "2023/2024"), get the session object
+#         if isinstance(session_year, str):
+#             session_id = Session.query.filter_by(year=session_year).first()
+#         else:
+#             session_id = session_year
+
+#         # Filter class history by session_id
+#         class_history_entry = next(
+#             (entry for entry in self.class_history if entry.session_id == session_id),
+#             None
+#         )
+#         # If found, return the class name; otherwise, return None
+#         return class_history_entry.class_ref.name if class_history_entry else None
+
+# # Your models start here
 
 class Student(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -123,75 +130,107 @@ class Student(db.Model, UserMixin):
     first_name = db.Column(db.String(50), nullable=False)
     middle_name = db.Column(db.String(50), nullable=True)
     last_name = db.Column(db.String(50), nullable=False)
-    username = db.Column(db.String(50), unique=True, nullable=False)
-    password = db.Column(db.String(200), nullable=False)
     gender = db.Column(db.String(10), nullable=False)
-    date_of_birth = db.Column(db.Date, nullable=True)
+    date_of_birth = db.Column(db.String(20), nullable=True)
     parent_name = db.Column(db.String(70), nullable=True)
-    previous_class = db.Column(db.String(50), nullable=True)
     parent_phone_number = db.Column(db.String(11), nullable=True)
     address = db.Column(db.String(255), nullable=True)
     parent_occupation = db.Column(db.String(100), nullable=True)
     state_of_origin = db.Column(db.String(50), nullable=True)
     local_government_area = db.Column(db.String(50), nullable=True)
     religion = db.Column(db.String(50), nullable=True)
-    date_registered = db.Column(db.DateTime, server_default=db.func.now())
+    date_registered = db.Column(db.String(19), nullable=True)
     approved = db.Column(db.Boolean, default=False)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-    has_paid_fee = db.Column(db.Boolean, default=False)
 
     results = db.relationship("Result", backref="student", lazy=True)
+    class_history = db.relationship("StudentClassHistory", backref="student", lazy=True)
+    fee_payments = db.relationship("FeePayment", backref="student", lazy=True)
 
-    @staticmethod
-    def get_latest_class(student_id):
-        """
-        Get the student's latest class by finding the latest session.
-        Requires student_id to be passed since this is a static method.
-        """
-        latest_session = Student.get_latest_session(student_id)
-        return Student.get_class_by_session(student_id, latest_session)
+    def get_current_class(self):
+        latest_class = self.class_history[-1] if self.class_history else None
+        return latest_class.class_ref.name if latest_class else None
 
-    @staticmethod
-    def get_latest_session(student_id):
-        """
-        Get the most recent session from the class history.
-        Requires student_id to be passed since this is a static method.
-        """
-        latest_class_history = (
-            StudentClassHistory.query.filter_by(student_id=student_id)
-            .order_by(StudentClassHistory.id.desc())
-            .first()
+    def get_class_by_session(self, session_year):
+        # If session is passed as a string (e.g., "2023/2024"), get the session object
+        if isinstance(session_year, str):
+            session_id = Session.query.filter_by(year=session_year).first()
+        else:
+            session_id = session_year
+
+        # Filter class history by session_id
+        class_history_entry = next(
+            (entry for entry in self.class_history if entry.session_id == session_id),
+            None
         )
-        return latest_class_history.session if latest_class_history else None
+        # If found, return the class name; otherwise, return None
+        return class_history_entry.class_ref.name if class_history_entry else None
 
-    def __repr__(self):
-        return f"<Student {self.first_name} {self.last_name}>"
-
-
-class User(db.Model, UserMixin):
+class FeePayment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(50), unique=True, nullable=False)
-    password_hash = db.Column(db.String(200), nullable=False)
-    is_admin = db.Column(db.Boolean, default=False)
-    student = db.relationship("Student", backref="user", uselist=False)
+    student_id = db.Column(db.Integer, db.ForeignKey("student.id"), nullable=False)
+    session_id = db.Column(db.Integer, db.ForeignKey("session.id"), nullable=False)
+    term = db.Column(db.String(20), nullable=False)
+    has_paid_fee = db.Column(db.Boolean, nullable=False, default=False)
 
     def __repr__(self):
-        return f"<User {self.username}>"
+        return f"<FeePayment Student: {self.student_id}, Session: {self.session_id}, Term: {self.term}, Paid: {self.has_paid_fee}>"
 
-    def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
+class Classes(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), unique=True, nullable=True)
+    section = db.Column(db.String(20), nullable=True)
+    hierarchy = db.Column(db.Integer, unique=True, nullable=False)
 
-    def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
+    # Relationships
+    subjects = db.relationship(
+        "Subject", secondary="class_subject", back_populates="classes", lazy="dynamic"
+    )
+    teachers = db.relationship(
+        "Teacher", secondary="class_teacher", back_populates="classes", lazy="dynamic"
+    )
+
+    def __repr__(self):
+        return f"<Class {self.name} ({self.section}) - Hierarchy: {self.hierarchy}>"
+
+class Teacher(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    first_name = db.Column(db.String(50), nullable=False)
+    last_name = db.Column(db.String(50), nullable=False)
+    phone_number = db.Column(db.String(50), nullable=True)
+    email = db.Column(db.String(100), unique=True, nullable=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    employee_id = db.Column(db.String(20), unique=True, nullable=False)
+    section = db.Column(db.String(20), nullable=False)
+
+    # Relationships
+    classes = db.relationship(
+        "Classes", secondary="class_teacher", back_populates="teachers", lazy="dynamic"
+    )
+    subjects = db.relationship(
+        "Subject", secondary="teacher_subject", back_populates="teachers", lazy="dynamic"
+    )
+
+    def is_form_teacher_for_class(self, class_id):
+        """Check if the teacher is a form teacher for a specific class."""
+        return any(teacher.is_form_teacher for teacher in self.classes.filter_by(id=class_id).all())
 
 
 class Subject(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
-    section = db.Column(db.String(20), nullable=False)
-    deactivated = db.Column(db.Boolean, nullable=False, default=False)  # New attribute
+    section = db.Column(db.String(20), nullable=True)
+    deactivated = db.Column(db.Boolean, nullable=False, default=False)
+
+    classes = db.relationship(
+        "Classes", secondary="class_subject", back_populates="subjects", lazy="dynamic"
+    )
+    teachers = db.relationship(
+        "Teacher", secondary="teacher_subject", back_populates="subjects", lazy="dynamic"
+    )
 
     results = db.relationship("Result", backref="subject", lazy=True)
+
     __table_args__ = (db.UniqueConstraint("name", "section", name="_name_section_uc"),)
 
     def __repr__(self):
@@ -227,5 +266,27 @@ class Result(db.Model):
     created_at = db.Column(db.String(19), nullable=True)
     date_issued = db.Column(db.String(100), nullable=True)
 
+    __table_args__ = (db.UniqueConstraint('student_id', 'subject_id', 'term', 'session', name='unique_result'),)
+
     def __repr__(self):
         return f"<Result Student ID: {self.student_id}, Subject ID: {self.subject_id}>"
+
+
+class User(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50), unique=True, nullable=False)
+    password_hash = db.Column(db.String(200), nullable=False)
+    role = db.Column(Enum(RoleEnum.ADMIN, RoleEnum.STUDENT, RoleEnum.TEACHER), nullable=False)
+    active = db.Column(db.Boolean, default=True)
+    student = db.relationship("Student", backref="user", uselist=False)
+
+    def __repr__(self):
+        return f"<User {self.username}>"
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+

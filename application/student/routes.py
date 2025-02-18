@@ -12,7 +12,7 @@ from flask import (
     make_response,
 )
 from flask_login import login_required, current_user
-from ..models import Student, Result, Session, StudentClassHistory
+from ..models import Student, Result, Session, StudentClassHistory, RoleEnum, Classes
 from ..auth.forms import ResultForm
 from ..helpers import (
     get_last_term,
@@ -27,39 +27,32 @@ from ..helpers import (
 from weasyprint import HTML
 
 
-@student_bp.route("/student_portal")
+@student_bp.route("/dashboard")
 @login_required
 def student_portal():
     try:
-        if current_user.is_admin:
-            return redirect(url_for("admins.admin_dashboard"))
+        if current_user.role == RoleEnum.STUDENT:
+            app.logger.info(
+                f"Accessing student portal for student_id: {current_user.id}"
+            )
 
-        student = Student.query.filter_by(user_id=current_user.id).first()
+            # Check if session data exists for overall performance, attendance, etc.
+            overall_performance = session.get('average', 0)
+            total_attendance = session.get('total_attendance', 95)
+            total_subjects = session.get('total_subjects', 18)
+            best_grade = session.get('best_grade', 'N/A')
+            average = session.get('average', 0)
 
-        if not student:
-            flash("Student not found", "alert-danger")
-            app.logger.warning(f"Student not found for user_id: {current_user.id}")
-            return redirect(url_for("auth.login"))
-
-        app.logger.info(
-            f"Accessing student portal for student_id: {student.id}, {student.first_name = } {student.last_name = }"
-        )
-
-        # Check if session data exists for overall performance, attendance, etc.
-        overall_performance = session.get('avetage', 0)
-        total_attendance = session.get('total_attendance', 95)
-        total_subjects = session.get('total_subjects', 18)
-        best_grade = session.get('best_grade', 'N/A')
-        average = session.get('average', 0)
-
-        return render_template(
-            "student/student_portal.html", student_id=student.id, student=student,
-            overall_performance=overall_performance,
-            total_attendance=total_attendance,
-            total_subjects=total_subjects,
-            best_grade=best_grade,
-            average=average,
-        )
+            return render_template(
+                "student/student_portal.html",
+                overall_performance=overall_performance,
+                total_attendance=total_attendance,
+                total_subjects=total_subjects,
+                best_grade=best_grade,
+                average=average,
+            )
+        else:
+            redirect(url_for("auth.login"))
 
     except Exception as e:
         app.logger.error(f"Error accessing student portal: {str(e)}")
@@ -76,13 +69,11 @@ def student_profile(student_id):
 
 
     # Ensure the logged-in user is authorized to view this profile
-    if current_user.id != student.user_id and not current_user.is_admin:
+    if current_user.id != student.user_id:
         flash("You are not authorized to view this profile.", "alert-danger")
         return redirect(url_for("main.index"))
 
-    class_name = StudentClassHistory.get_class_by_session(
-            student_id=student.id, session_year_str=session_year
-        )
+    class_name = student.get_class_by_session(session_year=session_year)
 
     return render_template("student/student_profile.html", student=student, class_name=class_name)
 
@@ -119,7 +110,8 @@ def view_results(student_id):
         student = Student.query.get_or_404(student_id)
 
         # Ensure the current user is authorized to view the student's results
-        if current_user.id != student.user_id and not current_user.is_admin:
+        # if current_user.id != student.user_id and not current_user.is_admin:
+        if current_user.id != student.user_id:
             flash("You are not authorized to view this profile.", "alert-danger")
             app.logger.warning(
                 f"Unauthorized access attempt by user_id: {current_user.id} for student_id: {student_id}"
@@ -136,9 +128,7 @@ def view_results(student_id):
 
         # Fetch session and student class history in a single query
 
-        class_name = StudentClassHistory.get_class_by_session(
-            student_id=student.id, session_year_str=session_year
-        )
+        class_name = student.get_class_by_session(session_year=session_year)
 
         if not class_name:
             flash(f"{student.first_name} {student.last_name} is not in any class as at {session_year}", "alert-info")
@@ -235,9 +225,7 @@ def download_results_pdf(student_id):
             return redirect(url_for("students.select_term_session", student_id=student.id))
 
         # Fetch session and student class history in a single query
-        class_name = StudentClassHistory.get_class_by_session(
-            student_id=student.id, session_year_str=session
-        )
+        class_name = student.get_class_by_session(session_year=session)
 
         if not class_name:
             app.logger.error(f"No class history for {student.id} in {session.year}")

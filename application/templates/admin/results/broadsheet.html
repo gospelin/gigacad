@@ -2,103 +2,234 @@
 {% block content %}
 
 <style>
-    .table-responsive {
-        overflow-x: auto;
+    .container-fluid {
+        margin-bottom: 20px;
     }
 
-    .table th, .table td {
+    .table-container {
+        overflow-x: auto;
+        margin-top: 15px;
+        position: relative;
+    }
+
+     /* Sticky style only applies to the 'Subjects' column */
+    .table .subjects-col {
+        {% if broadsheet_data|length >= 5 %}
+        position: sticky;
+        left: 0;
+        background-color: #f8f9fa;
+        z-index: 2;
+        {% endif %}
+        max-width: 200px;
+    }
+
+    .table .subjects-col:first-child {
+        z-index: 3;
+    }
+
+    .narrow-column {
+        max-width: 200px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .table-responsive {
+        display: table;
+        width: 100%;
+    }
+
+    .table {
+        table-layout: auto;
+        width: 100%;
+        min-width: 1200px;
+    }
+
+    .table th,
+    .table td {
         text-align: center;
         vertical-align: middle;
+        font-size: 0.85rem;
+        padding: 6px;
+        min-width: 65px;
+        max-width: 80px;
     }
 
-    @media (max-width: 768px) {
-        .table-responsive {
-            width: 100%;
-            overflow-y: hidden;
-            -ms-overflow-style: -ms-autohiding-scrollbar;
-            border: 0;
-        }
+    input[type="number"] {
+        padding: 6px;
+        font-size: 0.85rem;
+        text-align: center;
     }
+
+    .btn {
+        font-size: 0.9rem;
+    }
+
+   @media (max-width: 768px) {
+    .table th,
+    .table td {
+        font-size: 0.8rem;
+        padding: 4px;
+    }
+
+    input[type="number"] {
+        font-size: 0.8rem;
+        padding: 4px;
+    }
+
+    .subjects-col {
+        font-weight: bold;
+        text-align: left;
+        background-color: #fff;
+        padding-left: 8px;
+    }
+
+    h1 {
+        font-size: 1.4rem;
+    }
+
+    .btn {
+        font-size: 0.85rem;
+        padding: 6px 12px;
+    }
+}
+
+@media (max-width: 576px) {
+    .table th,
+    .table td {
+        font-size: 0.75rem;
+        padding: 4px;
+    }
+
+    input[type="number"] {
+        font-size: 0.75rem;
+        padding: 3px;
+    }
+
+    .subjects-col {
+        font-weight: bold;
+        text-align: left;
+        background-color: #fff;
+        padding-left: 6px;
+        font-size: 0.8rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    h1 {
+        font-size: 1.2rem;
+        text-align: center;
+    }
+
+    .btn {
+        font-size: 0.75rem;
+        padding: 5px 10px;
+    }
+
+    .narrow-column {
+        max-width: 80px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 0.75rem;
+        padding: 3px;
+    }
+}
+
 </style>
 
-<div class="container mt-5">
-    <h1>Broadsheet</h1>
+<div class="container-fluid mt-3">
+    <h1>Broadsheet for {{ class_name }}</h1>
 
     {% if broadsheet_data %}
-    <a href="{{ url_for('admins.download_broadsheet', class_name=class_name) }}?term={{ current_term }}&session={{ current_session }}" class="btn btn-primary mt-3">Download Broadsheet</a>
+    <a href="{{ url_for('admins.download_broadsheet', class_name=class_name, action=action) }}" class="btn btn-primary mt-3">Download Broadsheet</a>
 
-    <div class="table-responsive mt-3">
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th rowspan="2">Subjects</th>
-                    {% for student_data in broadsheet_data %}
-                    <th colspan="4">{{ student_data.student.first_name }} {{ student_data.student.last_name }}</th>
+    <form method="POST" action="{{ url_for('admins.update_broadsheet', class_name=class_name, action=action) }}">
+        {{ form.hidden_tag() }}
+        <div class="table-container">
+            <table class="table table-bordered table-responsive">
+                <thead>
+                    <tr>
+                        <th class="subjects-col {% if broadsheet_data|length < 5 %}narrow-column{% endif %}" rowspan="2">Subjects</th>
+                        {% for student_data in broadsheet_data %}
+                        <th colspan="4">{{ student_data.student.first_name }} {{ student_data.student.last_name }}</th>
+                        {% endfor %}
+                        <th>Class Average</th>
+                    </tr>
+                    <tr>
+                        {% for student in students %}
+                        <th>C/A</th>
+                        <th>S/T</th>
+                        <th>Exam</th>
+                        <th>Total</th>
+                        {% endfor %}
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for subject in subjects %}
+                    <tr>
+                        <td class="subjects-col {% if broadsheet_data|length < 5 %}narrow-column{% endif %}">{{ subject.name }}</td>
+                        {% for student_data in broadsheet_data %}
+                        {% set result = student_data.results.get(subject.id) %}
+                        <td>
+                            <input type="number" name="results[{{ student_data.student.id }}][{{ subject.id }}][class_assessment]"
+                                   value="{{ result.class_assessment if result and result.class_assessment is not none else '' }}"
+                                   class="form-control" min="0" max="20"/>
+                        </td>
+                        <td>
+                            <input type="number" name="results[{{ student_data.student.id }}][{{ subject.id }}][summative_test]"
+                                   value="{{ result.summative_test if result and result.summative_test is not none else '' }}"
+                                   class="form-control" min="0" max="20"/>
+                        </td>
+                        <td>
+                            <input type="number" name="results[{{ student_data.student.id }}][{{ subject.id }}][exam]"
+                                   value="{{ result.exam if result and result.exam is not none else '' }}"
+                                   class="form-control" min="0" max="60"/>
+                        </td>
+                        <td>{{ result.total if result and result.total is not none else '' }}</td>
+                        {% endfor %}
+                        <td>{{ subject_averages[subject.id]['average'] if subject_averages[subject.id]['average'] is not none else 'N/A' }}</td>
+                    </tr>
                     {% endfor %}
-                    <th>Class Average</th>
-                </tr>
-                <tr>
-                    {% for student in students %}
-                    <th>C/A</th>
-                    <th>S/T</th>
-                    <th>Exam</th>
-                    <th>Total</th>
-                    {% endfor %}
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for subject in subjects %}
-                <tr>
-                    <td>{{ subject.name }}</td>
-                    {% for student_data in broadsheet_data %}
-                    {% set result = student_data.results[subject.id] %}
-                    <td>{{ result.class_assessment if result.class_assessment else "" }}</td>
-                    <td>{{ result.summative_test if result.summative_test else "" }}</td>
-                    <td>{{ result.exam if result.exam else "" }}</td>
-                    <td>{{ result.total if result.total else "" }}</td>
-                    {% endfor %}
-                    <td>{{ subject_averages[subject.id]['average'] }}</td>
-                </tr>
-                {% endfor %}
-                <tr>
-                    <td>Grand Total</td>
-                    {% for student_data in broadsheet_data %}
-                    <td colspan="4">{{ student_data.grand_total }}</td>
-                    {% endfor %}
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>Average</td>
-                    {% for student_data in broadsheet_data %}
-                    <td colspan="4">{{ student_data.average }}</td>
-                    {% endfor %}
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>Cumulative Average</td>
-                    {% for student_data in broadsheet_data %}
-                    <td colspan="4">{{ student_data.cumulative_average }}</td>
-                    {% endfor %}
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>Position</td>
-                    {% for student_data in broadsheet_data %}
-                    <td colspan="4">{{ student_data.position }}</td>
-                    {% endfor %}
-                    <td></td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+                    <tr>
+                        <td>Grand Total</td>
+                        {% for student_data in broadsheet_data %}
+                        <td colspan="4">{{ student_data.grand_total if student_data.grand_total is not none else '' }}</td>
+                        {% endfor %}
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Average</td>
+                        {% for student_data in broadsheet_data %}
+                        <td colspan="4">{{ student_data.average if student_data.average is not none else '' }}</td>
+                        {% endfor %}
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Cumulative Average</td>
+                        {% for student_data in broadsheet_data %}
+                        <td colspan="4">{{ student_data.cumulative_average if student_data.cumulative_average is not none else '' }}</td>
+                        {% endfor %}
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Position</td>
+                        {% for student_data in broadsheet_data %}
+                        <td colspan="4">{{ student_data.position if student_data.position is not none else '' }}</td>
+                        {% endfor %}
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Save Changes</button>
+    </form>
     {% endif %}
 
-    <div class="text-center">
-        <a href="{{ url_for('admins.students_by_class', class_name=class_name) }}" class="btn btn-primary mt-3">Back to Students</a>
-        <a href="{{ url_for('admins.select_class') }}" class="btn btn-primary mt-3">Back to Classes</a>
+    <div class="text-center mt-2">
+        <a href="{{ url_for('admins.students_by_class', class_name=class_name, action=action) }}" class="btn btn-primary mt-3">Back to Students</a>
+        <a href="{{ url_for('admins.select_class', action=action) }}" class="btn btn-primary mt-3">Back to Classes</a>
     </div>
 </div>
 
 {% endblock %}
->>>>>>> 02b43f95b0e9e406235682e39821112800525dca

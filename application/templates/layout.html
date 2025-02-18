@@ -3,19 +3,35 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Welcome to {{ school_name }}. Transformative education with practical learning, knowledge, and confidence.">
-  <meta name="keywords" content="Aunty Anne's International School, Aunty Anne's Int'l School, Aunty Anne's School,  Education in Aba, Best Schools in Aba, Best Schools in Abia, Knowledge and Confidence">
-  <meta name="author" content="Aunty Anne's Int'l School">
-  <meta property="og:title" content="{{ title }} | Aunty Anne's Int'l School">
-  <meta property="og:description" content="In Aunty Anne's Int'l School, we provide education focused on practical learning and confidence-building.">
-  <meta property="og:image" content="{{url_for('static', filename='images/school_logo.png') }}">
+  <title>Welcome to Aunty Anne's International School | Excellence in Education</title>
+  <meta name="description" content="Explore Aunty Anne's International School – dedicated to practical learning, knowledge, and confidence-building for young minds.">
+  <meta name="keywords" content="Aunty Anne's International School, Aunty Anne's, Auntie Anne's, Aunty Annes, Aunty Anne's Int'l School, AAIS, Best Schools in Nigeria, Private Schools in Aba, Best Schools in Aba, Best Schools in Abia, Education in Aba, Knowledge and Confidence">
+  <meta name="author" content="Aunty Anne's International School">
+  <meta property="og:title" content="{{ title }} | Aunty Anne's International School">
+  <meta property="og:description" content="In Aunty Anne's International School, we provide education focused on practical learning and confidence-building.">
+  <meta name="apple-mobile-web-app-title" content="Aunty Anne's International School" />
+  <meta property="og:image" content="{{ url_for('static', filename='images/favicons/favicon.ico') }}">
   <meta property="og:url" content="{{ request.url }}">
-  <meta name="twitter:card" content="{{ url_for('static', filename='images/school_logo.png') }}">
-  <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" as="style" onload="this.rel='stylesheet'">
+  <meta name="twitter:image" content="{{ url_for('static', filename='images/favicons/favicon-96x96.png') }}">
+  <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-  <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
+  <link rel="icon" type="image/png" href="/static/images/favicons/favicon-96x96.png" sizes="96x96" />
+  <link rel="icon" type="image/svg+xml" href="/static/images/favicons/favicon.svg" />
+  <link rel="shortcut icon" href="/static/images/favicons/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/static/images/favicons/apple-touch-icon.png" />
+  <link rel="manifest" href="/static/images/favicons/site.webmanifest" />
+  <link rel="canonical" href="https://auntyannesschools.com.ng">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" />
-  <title>{{ title }} | Aunty Anne's International School</title>
+  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+
+<script>
+    AOS.init({
+        duration: 1200,
+        once: true,
+    });
+</script>
 
   <script type="application/ld+json">
   {
@@ -31,10 +47,25 @@
     },
     "telephone": "+234-806-967-8968",
     "email": "auntyannesschools@gmail.com",
-    "url": "https://auntyannesschools.com.ng"
+    "url": "https://auntyannesschools.com.ng",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://auntyannesschools.com.ng/static/images/school_logo.png",
+      "description": "Aunty Anne's International School Logo"
+    },
+    "founder": {
+      "@type": "Person",
+      "name": "Gospel Isaac"
+    },
+    "sameAs": [
+      "https://facebook.com/auntyannesschools",
+      "https://twitter.com/auntyannesschools",
+      "https://instagram.com/auntyannesschools"
+    ]
   }
   </script>
 </head>
+
 
 <body>
   <div class="d-flex flex-column min-vh-100">
