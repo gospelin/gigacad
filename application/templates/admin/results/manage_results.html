@@ -520,16 +520,16 @@ $(document).on("blur", ".result-input", function () {
         position: $('#position').val(),
         date_issued: $('#date_issued').val(),
     };
-    console.log("Sending data:", requestData); // Log the data for debugging
+    console.log("Sending data:", requestData);
     saveTimeout = setTimeout(() => {
         $.ajax({
             url: "/admin/update_result_field",
-            method: "POST",             // HTTP method
+            method: "POST", 
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken, // CSRF token for security
+                'X-CSRFToken': csrfToken,
             },
-            credentials: 'same-origin', // Ensures cookies are sent with the request
+            credentials: 'same-origin',
             data: JSON.stringify(requestData),
             success: function (response) {
                 console.log(response.message);

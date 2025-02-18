@@ -19,6 +19,7 @@ from ..helpers import (
 
 @main_bp.route("/")
 @main_bp.route("/index")
+@main_bp.route("/home")
 def index():
     return render_template(
         "main/index.html", title="Home", school_name="Aunty Anne's International School"
@@ -31,23 +32,88 @@ def about_us():
         "main/about_us.html", title="About Us", school_name="Aunty Anne's International School"
     )
 
+# @main_bp.route('/sitemap.xml')
+# def sitemap():
+#     # Example list of static routes (add dynamic URLs as needed)
+#     urls = [
+#         {'loc': url_for('main.index', _external=True), 'lastmod': '2025-01-01'},
+#         {'loc': url_for('main.about_us', _external=True), 'lastmod': '2025-01-01'},
+#         {'loc': url_for('students.student_portal', _external=True), 'lastmod': '2025-01-01'},
+#         {'loc': url_for('auth.login', _external=True), 'lastmod': '2025-01-03'},
+#         {'loc': url_for('main.student_registration', _external=True), 'lastmod': '2024-12-23'},
+#         {'loc': url_for('admins.admin_dashboard', _external=True), 'lastmod': '2025-01-03'}
+#     ]
+    
+#     # Generate XML
+#     xml = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
+#     for url in urls:
+#         xml.append(f"<url><loc>{url['loc']}</loc><lastmod>{url['lastmod']}</lastmod></url>")
+#     xml.append('</urlset>')
+    
+#     return Response("\n".join(xml), content_type='application/xml')
+    
+# @app.route('/sitemap.xml')
+# def sitemap():
+#     pages = [
+#         {
+#             'loc': 'https://auntyannesschools.com.ng/',
+#             'priority': '1.0',
+#             'changefreq': 'daily'
+#         },
+#         {
+#             'loc': 'https://auntyannesschools.com.ng/about',
+#             'priority': '0.8',
+#             'changefreq': 'monthly'
+#         },
+#         # Add more pages here
+#     ]
+#     sitemap_xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
+#     sitemap_xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+
+#     for page in pages:
+#         sitemap_xml += f"""
+#         <url>
+#             <loc>{page['loc']}</loc>
+#             <priority>{page['priority']}</priority>
+#             <changefreq>{page['changefreq']}</changefreq>
+#         </url>
+#         """
+
+#     sitemap_xml += '</urlset>'
+#     return Response(sitemap_xml, mimetype='application/xml')
+
 @main_bp.route('/sitemap.xml')
 def sitemap():
-    # Example list of static routes (add dynamic URLs as needed)
-    urls = [
-        {'loc': url_for('main.index', _external=True), 'lastmod': '2025-01-01'},
-        {'loc': url_for('main.about_us', _external=True), 'lastmod': '2025-01-01'},
-        {'loc': url_for('students.student_portal', _external=True), 'lastmod': '2025-01-01'},
-        {'loc': url_for('main.student_registration', _external=True), 'lastmod': '2024-12-23'}
+    # Static URLs
+    static_urls = [
+        {'loc': url_for('main.index', _external=True), 'lastmod': '2025-01-26', 'priority': '1.0', 'changefreq': 'hourly'},
+        {'loc': url_for('main.about_us', _external=True), 'lastmod': '2025-01-26', 'priority': '0.9', 'changefreq': 'hourly'},
+        {'loc': url_for('students.student_portal', _external=True), 'lastmod': '2025-01-26', 'priority': '0.8', 'changefreq': 'weekly'},
+        {'loc': url_for('auth.login', _external=True), 'lastmod': '2025-01-26', 'priority': '0.5', 'changefreq': 'monthly'},
+        {'loc': url_for('main.student_registration', _external=True), 'lastmod': '2024-12-23', 'priority': '0.7', 'changefreq': 'monthly'},
+        {'loc': url_for('admins.admin_dashboard', _external=True), 'lastmod': '2025-01-03', 'priority': '0.6', 'changefreq': 'weekly'}
     ]
     
+    # Additional dynamic URLs (if needed)
+    # dynamic_urls = get_dynamic_urls()  # Implement a function to fetch dynamic URLs
+    # Combine static and dynamic URLs
+    urls = static_urls  # + dynamic_urls
+
     # Generate XML
-    xml = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
+    sitemap_xml = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
     for url in urls:
-        xml.append(f"<url><loc>{url['loc']}</loc><lastmod>{url['lastmod']}</lastmod></url>")
-    xml.append('</urlset>')
+        sitemap_xml.append(f"""
+        <url>
+            <loc>{url['loc']}</loc>
+            <lastmod>{url['lastmod']}</lastmod>
+            <priority>{url['priority']}</priority>
+            <changefreq>{url['changefreq']}</changefreq>
+        </url>
+        """)
+    sitemap_xml.append('</urlset>')
     
-    return Response("\n".join(xml), content_type='application/xml')
+    return Response("\n".join(sitemap_xml), content_type='application/xml')
+
 
 @main_bp.route("/register/student", methods=["GET", "POST"])
 def student_registration():

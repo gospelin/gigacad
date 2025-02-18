@@ -11,91 +11,58 @@
                     <form method="POST" autocomplete="off">
                         {{ form.hidden_tag() }}
                         <div class="form-group mb-3">
-                            {{ form.first_name.label(class="form-label fw-bold")
-                            }} {{ form.first_name(class="form-control
-                            shadow-sm", placeholder="Enter first name") }}
+                            {{ form.first_name.label(class="form-label fw-bold") }} 
+                            {{ form.first_name(class="form-control shadow-sm", placeholder="Enter first name") }}
                         </div>
                         <div class="form-group mb-3">
-                            {{ form.last_name.label(class="form-label fw-bold")
-                            }} {{ form.last_name(class="form-control shadow-sm",
-                            placeholder="Enter last name") }}
+                            {{ form.last_name.label(class="form-label fw-bold")}} 
+                            {{ form.last_name(class="form-control shadow-sm", placeholder="Enter last name") }}
                         </div>
                         <div class="form-group mb-3">
-                            {{ form.middle_name.label(class="form-label
-                            fw-bold") }} {{ form.middle_name(class="form-control
-                            shadow-sm", placeholder="Enter middle name") }}
+                            {{ form.middle_name.label(class="form-label fw-bold") }} 
+                            {{ form.middle_name(class="form-control shadow-sm", placeholder="Enter middle name") }}
                         </div>
                         <div class="form-group mb-3">
                             {{ form.gender.label(class="form-label fw-bold") }}
-                            {{ form.gender(class="form-control shadow-sm",
-                            placeholder="Select gender") }}
+                            {{ form.gender(class="form-control shadow-sm", placeholder="Select gender") }}
                         </div>
                         <div class="form-group mb-3">
-                            {{ form.date_of_birth.label(class="form-label
-                            fw-bold") }} {{
-                            form.date_of_birth(class="form-control shadow-sm",
-                            placeholder="Enter date of birth") }}
+                            {{ form.date_of_birth.label(class="form-label fw-bold") }} 
+                            {{ form.date_of_birth(class="form-control shadow-sm", placeholder="Enter date of birth") }}
                         </div>
                         <div class="form-group mb-3">
-                            {{ form.parent_name.label(class="form-label
-                            fw-bold") }} {{ form.parent_name(class="form-control
-                            shadow-sm", placeholder="Enter parent's name") }}
+                            {{ form.parent_name.label(class="form-label fw-bold") }} 
+                            {{ form.parent_name(class="form-control shadow-sm", placeholder="Enter parent's name") }}
                         </div>
                         <div class="form-group mb-3">
-                            {{ form.parent_phone_number.label(class="form-label
-                            fw-bold") }} {{
-                            form.parent_phone_number(class="form-control
-                            shadow-sm", placeholder="Enter parent's phone
-                            number") }}
+                            {{ form.parent_phone_number.label(class="form-label fw-bold") }} 
+                            {{ form.parent_phone_number(class="form-control shadow-sm", placeholder="Enter parent's phone number") }}
                         </div>
                         <div class="form-group mb-3">
                             {{ form.address.label(class="form-label fw-bold") }}
-                            {{ form.address(class="form-control shadow-sm",
-                            placeholder="Enter address") }}
+                            {{ form.address(class="form-control shadow-sm", placeholder="Enter address") }}
                         </div>
                         <div class="form-group mb-3">
-                            {{ form.parent_occupation.label(class="form-label
-                            fw-bold") }} {{
-                            form.parent_occupation(class="form-control
-                            shadow-sm", placeholder="Enter parent's occupation")
-                            }}
+                            {{ form.parent_occupation.label(class="form-label fw-bold") }} 
+                            {{ form.parent_occupation(class="form-control shadow-sm", placeholder="Enter parent's occupation") }}
                         </div>
                         <div class="form-group mb-3">
-                            {{ form.class_name.label(class="form-label
-                            fw-bold") }} {{ form.class_name(class="form-control
-                            shadow-sm", placeholder="Enter entry class") }}
+                            {{ form.class_id.label(class="form-label fw-bold") }} 
+                            {{ form.class_id(class="form-control shadow-sm", placeholder="Enter entry class") }}
                         </div>
                         <div class="form-group mb-3">
-                            {{ form.previous_class.label(class="form-label
-                            fw-bold") }} {{
-                            form.previous_class(class="form-control shadow-sm",
-                            placeholder="Enter previous class") }}
+                            {{ form.state_of_origin.label(class="form-label fw-bold") }} 
+                            {{ form.state_of_origin(class="form-control shadow-sm", placeholder="Enter state of origin") }}
                         </div>
                         <div class="form-group mb-3">
-                            {{ form.state_of_origin.label(class="form-label
-                            fw-bold") }} {{
-                            form.state_of_origin(class="form-control shadow-sm",
-                            placeholder="Enter state of origin") }}
+                            {{ form.local_government_area.label(class="form-label fw-bold") }} 
+                            {{ form.local_government_area(class="form-control shadow-sm", placeholder="Enter local government area") }}
                         </div>
                         <div class="form-group mb-3">
-                            {{
-                            form.local_government_area.label(class="form-label
-                            fw-bold") }} {{
-                            form.local_government_area(class="form-control
-                            shadow-sm", placeholder="Enter local government
-                            area") }}
+                            {{ form.religion.label(class="form-label fw-bold")}} 
+                            {{ form.religion(class="form-control shadow-sm", placeholder="Enter religion") }}
                         </div>
-                        <div class="form-group mb-3">
-                            {{ form.religion.label(class="form-label fw-bold")
-                            }} {{ form.religion(class="form-control shadow-sm",
-                            placeholder="Enter religion") }}
-                        </div>
-                        <button
-                            type="submit"
-                            class="btn btn-primary w-100 shadow-sm"
-                        >
-                            Add Student
-                        </button>
+                        <button type="submit" class="btn btn-primary w-100 shadow-sm">Add Student</button>
                     </form>
                 </div>
             </div>

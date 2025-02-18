@@ -36,6 +36,7 @@ def create_app(config_name=None):
     from application.admin import admin_bp
     from application.main import main_bp
     from application.student import student_bp
+    from application.teacher import teacher_bp
 
     # app.register_blueprint(auth_bp)
     # app.register_blueprint(admin_bp, url_prefix="/admin")
@@ -45,8 +46,8 @@ def create_app(config_name=None):
     app.register_blueprint(auth_bp, subdomain="portal")
     app.register_blueprint(admin_bp, url_prefix="/admin", subdomain="portal")
     app.register_blueprint(main_bp)
-    app.register_blueprint(student_bp, subdomain="portal")
-
+    app.register_blueprint(student_bp, url_prefix="/student", subdomain="portal")
+    app.register_blueprint(teacher_bp, url_prefix="/teacher", subdomain="portal")
 
     # Set up logging for the app
     setup_logging(app)

@@ -1,7 +1,7 @@
 from . import auth_bp
 from flask import redirect, url_for, flash, render_template, request, current_app as app
 from flask_login import login_required, login_user, logout_user, current_user
-from application.models import User, Student
+from application.models import User, Student, RoleEnum
 from application.auth.forms import StudentLoginForm, AdminLoginForm
 from application.helpers import rate_limit
 
@@ -94,7 +94,8 @@ from application.helpers import rate_limit
 
 #     return render_template("auth/login.html", title="Login", form=form)
 
-@auth_bp.route("/login", methods=["GET", "POST"])
+@auth_bp.route("/portal", methods=["GET", "POST"])
+@auth_bp.route("/portal/login", methods=["GET", "POST"])
 def login():
     if current_user.is_authenticated:
         return redirect_based_on_role(current_user)
@@ -136,6 +137,11 @@ def login():
     )
 
 
+# @auth_bp.route("/portal", methods=["GET", "POST"])
+# @auth_bp.route("/portal/login", methods=["GET", "POST"])
+# def login():
+#     return redirect("https://gigo.pythonanywhere.com/login", code=302)
+
 @auth_bp.route("/logout")
 @login_required
 def logout():
@@ -144,11 +150,11 @@ def logout():
     return redirect(url_for("auth.login"))
 
 def redirect_based_on_role(user):
-    if user.role == "admin":
+    if user.role == RoleEnum.ADMIN:
         return redirect(url_for("admins.admin_dashboard"))
-    elif user.role == "student":
+    elif user.role == RoleEnum.STUDENT:
         return redirect(url_for("students.student_portal"))
-    elif user.role == "teacher":
+    elif user.role == RoleEnum.TEACHER:
         return redirect(url_for("teachers.teacher_dashboard"))
     else:
         logout_user()

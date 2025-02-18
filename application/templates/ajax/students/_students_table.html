@@ -14,17 +14,21 @@
             {% endif %}
         </tr>
     </thead>
-    <tbody>
+   <tbody>
         {% for class_name, students in students_classes.items() %}
             {% for student in students %}
-                <tr class="table-row" data-fee-status="{{ 'paid' if student.has_paid_fee else 'unpaid' }}" data-approval-status="{{ 'approved' if student.approved else 'pending' }}">
+                {% set fee_payment = student.fee_payments | selectattr("session_id", "equalto", session.id) | selectattr("term", "equalto", current_term) | first %}
+                {% set has_paid_fee = fee_payment.has_paid_fee if fee_payment else False %}
+                <tr class="table-row" data-fee-status="{{ 'paid' if has_paid_fee else 'unpaid' }}" data-approval-status="{{ 'approved' if student.approved else 'pending' }}">
                     <td>{{ student.reg_no }}</td>
                     <td>{{ student.first_name | capitalize }}</td>
                     <td>{{ student.last_name | capitalize }}</td>
                     <td>{{ student.gender | capitalize }}</td>
                     <td>{{ class_name | upper if ("JSS" in class_name.upper() or "SSS" in class_name.upper()) else class_name | capitalize }}</td>
                     {% if action == 'toggle_fees_status' %}
-                        <td>{{ 'Paid' if student.has_paid_fee  else 'Not Paid' }}</td>
+                        <td data-fee-status="{{ 'paid' if has_paid_fee else 'unpaid' }}">
+                            {{ 'Paid' if has_paid_fee else 'Not Paid' }}
+                        </td>
                     {% endif %}
                     {% if action != 'view_students' %}
                         <td>
@@ -54,9 +58,9 @@
                             action="{{ url_for('admins.toggle_fee_status', student_id=student.id) }}" 
                             method="POST">
                             {{ form.hidden_tag() }}
-                            <button type="submit" class="btn btn-{{ 'secondary' if student.has_paid_fee else 'primary' }} skip-spinner async-action-form"
+                            <button type="submit" class="btn btn-{{ 'secondary' if has_paid_fee else 'primary' }} skip-spinner async-action-form"
                                     data-toggle="tooltip" title="Toggle Fee Status">
-                                {{ 'Mark as Not Paid' if student.has_paid_fee else 'Mark as Paid' }}
+                                {{ 'Mark as Not Paid' if has_paid_fee else 'Mark as Paid' }}
                             </button>
                         </form>
                         {% endif %}
