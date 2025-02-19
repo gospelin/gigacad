@@ -3,7 +3,7 @@ from flask import redirect, url_for, flash, render_template, request, current_ap
 from flask_login import login_required, login_user, logout_user, current_user
 from application.models import User, Student, RoleEnum
 from application.auth.forms import StudentLoginForm, AdminLoginForm
-from application.helpers import rate_limit
+# from application.helpers import rate_limit
 
 # @auth_bp.route("/", methods=["GET", "POST"])
 # @auth_bp.route("/login", methods=["GET", "POST"])

@@ -21,16 +21,18 @@ from ..helpers import (
 @main_bp.route("/index")
 @main_bp.route("/home")
 def index():
-    return render_template(
-        "main/index.html", title="Home", school_name="Aunty Anne's International School"
-    )
+    # return render_template(
+    #     "main/index.html", title="Home", school_name="Aunty Anne's International School"
+    # )
+    return redirect("https://auntyannesschools.com.ng", code=301)
 
 
 @main_bp.route("/about_us")
 def about_us():
-    return render_template(
-        "main/about_us.html", title="About Us", school_name="Aunty Anne's International School"
-    )
+    # return render_template(
+    #     "main/about_us.html", title="About Us", school_name="Aunty Anne's International School"
+    # )
+    return redirect("https://auntyannesschools.com.ng/about_us", code=301)
 
 # @main_bp.route('/sitemap.xml')
 # def sitemap():
@@ -43,15 +45,15 @@ def about_us():
 #         {'loc': url_for('main.student_registration', _external=True), 'lastmod': '2024-12-23'},
 #         {'loc': url_for('admins.admin_dashboard', _external=True), 'lastmod': '2025-01-03'}
 #     ]
-    
+
 #     # Generate XML
 #     xml = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
 #     for url in urls:
 #         xml.append(f"<url><loc>{url['loc']}</loc><lastmod>{url['lastmod']}</lastmod></url>")
 #     xml.append('</urlset>')
-    
+
 #     return Response("\n".join(xml), content_type='application/xml')
-    
+
 # @app.route('/sitemap.xml')
 # def sitemap():
 #     pages = [
@@ -93,7 +95,7 @@ def sitemap():
         {'loc': url_for('main.student_registration', _external=True), 'lastmod': '2024-12-23', 'priority': '0.7', 'changefreq': 'monthly'},
         {'loc': url_for('admins.admin_dashboard', _external=True), 'lastmod': '2025-01-03', 'priority': '0.6', 'changefreq': 'weekly'}
     ]
-    
+
     # Additional dynamic URLs (if needed)
     # dynamic_urls = get_dynamic_urls()  # Implement a function to fetch dynamic URLs
     # Combine static and dynamic URLs
@@ -111,7 +113,7 @@ def sitemap():
         </url>
         """)
     sitemap_xml.append('</urlset>')
-    
+
     return Response("\n".join(sitemap_xml), content_type='application/xml')
 
 

@@ -70,7 +70,7 @@ class StudentClassHistory(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     student_id = db.Column(db.Integer, db.ForeignKey("student.id"), nullable=False)
     session_id = db.Column(db.Integer, db.ForeignKey("session.id"), nullable=False)
-    class_id = db.Column(db.Integer, db.ForeignKey("classes.id"), nullable=False)
+    class_id = db.Column(db.Integer, db.ForeignKey("classes.id"), nullable=True)
 
     # student = db.relationship("Student", backref="class_history", lazy=True)
     session = db.relationship("Session", backref="class_history", lazy=True)
@@ -131,7 +131,7 @@ class Student(db.Model, UserMixin):
     middle_name = db.Column(db.String(50), nullable=True)
     last_name = db.Column(db.String(50), nullable=False)
     gender = db.Column(db.String(10), nullable=False)
-    date_of_birth = db.Column(db.String(20), nullable=True)
+    date_of_birth = db.Column(db.Date, nullable=True)
     parent_name = db.Column(db.String(70), nullable=True)
     parent_phone_number = db.Column(db.String(11), nullable=True)
     address = db.Column(db.String(255), nullable=True)
@@ -139,9 +139,10 @@ class Student(db.Model, UserMixin):
     state_of_origin = db.Column(db.String(50), nullable=True)
     local_government_area = db.Column(db.String(50), nullable=True)
     religion = db.Column(db.String(50), nullable=True)
-    date_registered = db.Column(db.String(19), nullable=True)
+    date_registered = db.Column(db.DateTime, server_default=db.func.now())
     approved = db.Column(db.Boolean, default=False)
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=True)
 
     results = db.relationship("Result", backref="student", lazy=True)
     class_history = db.relationship("StudentClassHistory", backref="student", lazy=True)
@@ -192,6 +193,16 @@ class Classes(db.Model):
 
     def __repr__(self):
         return f"<Class {self.name} ({self.section}) - Hierarchy: {self.hierarchy}>"
+
+    @classmethod
+    def get_next_class(cls, current_hierarchy):
+        """Returns the next class in the hierarchy based on the current hierarchy value."""
+        return cls.query.filter(cls.hierarchy > current_hierarchy).order_by(cls.hierarchy.asc()).first()
+
+    @classmethod
+    def get_previous_class(cls, current_hierarchy):
+        """Returns the previous class in the hierarchy based on the current hierarchy value."""
+        return cls.query.filter(cls.hierarchy < current_hierarchy).order_by(cls.hierarchy.desc()).first()
 
 class Teacher(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -263,7 +274,7 @@ class Result(db.Model):
     principal_remark = db.Column(db.String(100), nullable=True)
     teacher_remark = db.Column(db.String(100), nullable=True)
 
-    created_at = db.Column(db.String(19), nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.now())
     date_issued = db.Column(db.String(100), nullable=True)
 
     __table_args__ = (db.UniqueConstraint('student_id', 'subject_id', 'term', 'session', name='unique_result'),)
