@@ -80,49 +80,7 @@ class StudentClassHistory(db.Model):
         return f"<StudentClassHistory Student: {self.student_id}, Class: {self.class_ref.name}, Session: {self.session.year}>"
 
 
-# class Student(db.Model, UserMixin):
-#     id = db.Column(db.Integer, primary_key=True)
-#     reg_no = db.Column(db.String(50), nullable=True)
-#     first_name = db.Column(db.String(50), nullable=False)
-#     middle_name = db.Column(db.String(50), nullable=True)
-#     last_name = db.Column(db.String(50), nullable=False)
-#     gender = db.Column(db.String(10), nullable=False)
-#     date_of_birth = db.Column(db.String(20), nullable=True)
-#     parent_name = db.Column(db.String(70), nullable=True)
-#     parent_phone_number = db.Column(db.String(11), nullable=True)
-#     address = db.Column(db.String(255), nullable=True)
-#     parent_occupation = db.Column(db.String(100), nullable=True)
-#     state_of_origin = db.Column(db.String(50), nullable=True)
-#     local_government_area = db.Column(db.String(50), nullable=True)
-#     religion = db.Column(db.String(50), nullable=True)
-#     date_registered = db.Column(db.String(19), nullable=True)
-#     approved = db.Column(db.Boolean, default=False)
-#     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-#     has_paid_fee = db.Column(db.Boolean, nullable=False, default=False)
-
-#     results = db.relationship("Result", backref="student", lazy=True)
-#     class_history = db.relationship("StudentClassHistory", backref="student", lazy=True)
-
-#     def get_current_class(self):
-#         latest_class = self.class_history[-1] if self.class_history else None
-#         return latest_class.class_ref.name if latest_class else None
-
-#     def get_class_by_session(self, session_year):
-#         # If session is passed as a string (e.g., "2023/2024"), get the session object
-#         if isinstance(session_year, str):
-#             session_id = Session.query.filter_by(year=session_year).first()
-#         else:
-#             session_id = session_year
-
-#         # Filter class history by session_id
-#         class_history_entry = next(
-#             (entry for entry in self.class_history if entry.session_id == session_id),
-#             None
-#         )
-#         # If found, return the class name; otherwise, return None
-#         return class_history_entry.class_ref.name if class_history_entry else None
-
-# # Your models start here
+# Your models start here
 
 class Student(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
