@@ -1,3 +1,9 @@
+import sys
+import os
+
+# Get the absolute path of the project root directory
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 from application import create_app, db
 from application.models import Student, User
 
@@ -9,10 +15,11 @@ def update_student_password_to_reg_no():
         students = Student.query.all()  # Fetch all students
         for student in students:
             if student.reg_no:  # Ensure reg_no exists
-                user = User.query.get(student.user_id)  # Fetch the linked User
+                user = db.session.get(User, student.user_id)  # Fetch the linked User
                 if user:
                     # Update password to the student's reg_no
                     user.username = student.reg_no
+                    user.set_password(student.reg_no)
                     user.role = "student"  # Set user role to student
                     user.active = True     # Set all users to active
                     print(f"Username updated for Student ID {student.id}: {student.reg_no}")

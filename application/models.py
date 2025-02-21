@@ -152,20 +152,40 @@ class Student(db.Model, UserMixin):
         latest_class = self.class_history[-1] if self.class_history else None
         return latest_class.class_ref.name if latest_class else None
 
-    def get_class_by_session(self, session_year):
-        # If session is passed as a string (e.g., "2023/2024"), get the session object
-        if isinstance(session_year, str):
-            session_id = Session.query.filter_by(year=session_year).first()
-        else:
-            session_id = session_year
+    # def get_class_by_session(self, session_year):
+    #     # If session is passed as a string (e.g., "2023/2024"), get the session object
+    #     if isinstance(session_year, str):
+    #         session_id = Session.query.filter_by(year=session_year).first()
+    #     else:
+    #         session_id = session_year
 
-        # Filter class history by session_id
+    #     # Filter class history by session_id
+    #     class_history_entry = next(
+    #         (entry for entry in self.class_history if entry.session_id == session_id),
+    #         None
+    #     )
+    #     # If found, return the class name; otherwise, return None
+    #     return class_history_entry.class_ref.name if class_history_entry else None
+
+    def get_class_by_session(self, session_year):
+        session_obj = Session.query.filter_by(year=session_year).first()
+        session_id = session_obj.id if session_obj else None
+
+        if not session_id:
+            print(f"Session {session_year} not found!")
+            return None
+
+        print(f"Checking class history for session_id={session_id}")
+        for entry in self.class_history:
+            print(f"StudentClassHistory entry: session_id={entry.session_id}, class_name={entry.class_ref.name}")
+
         class_history_entry = next(
             (entry for entry in self.class_history if entry.session_id == session_id),
             None
         )
-        # If found, return the class name; otherwise, return None
+
         return class_history_entry.class_ref.name if class_history_entry else None
+
 
 class FeePayment(db.Model):
     id = db.Column(db.Integer, primary_key=True)

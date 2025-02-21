@@ -714,28 +714,88 @@ def delete_student_record(class_name, student_id, action):
     )
     return redirect(url_for("admins.students_by_class", class_name=class_name, action=action))
 
+# @admin_bp.route("/delete_student/<int:student_id>/<string:action>", methods=["POST"])
+# @login_required
+# def delete_student(student_id, action):
+#     """
+#     Delete a student and associated records.
+
+#     Args:
+#         student_id (int): The ID of the student to be deleted.
+
+#     Returns:
+#         redirect: Redirects to the student's class page.
+
+#     Raises:
+#         403: If the current user is not an admin.
+#         404: If the student with the given ID is not found.
+
+#     """
+#     if not current_user.role == RoleEnum.ADMIN:
+#         abort(403)  # Restrict access for non-admins
+
+#     form = DeleteForm()
+#     session_id = Session.query.filter_by(is_current=True).first().id
+
+#     if form.validate_on_submit():
+#         student = Student.query.get_or_404(student_id)
+#         student_class_history = (
+#             StudentClassHistory.query.filter_by(student_id=student.id)
+#             .order_by(StudentClassHistory.id.desc())
+#             .first()
+#         )
+
+#         try:
+#             # Delete all related results
+#             results = Result.query.filter_by(student_id=student.id).all()
+#             for result in results:
+#                 db.session.delete(result)
+
+#             # Delete the associated User account
+#             user = User.query.get(student.user_id)
+#             if user:
+#                 db.session.delete(user)
+
+#             # Delete all class history for the student
+#             class_history_records = StudentClassHistory.query.filter_by(
+#                 student_id=student.id
+#             ).all()
+#             for history in class_history_records:
+#                 db.session.delete(history)
+
+#             # Delete the student record itself
+#             db.session.delete(student)
+#             db.session.commit()
+
+#             flash(
+#                 "Student and associated records deleted successfully!",
+#                 "alert-success",
+#             )
+#         except Exception as e:
+#             db.session.rollback()
+#             flash(f"Error deleting student: {e}", "alert-danger")
+
+#     # Redirect to the student's class page, using the latest class from history or default if not found
+#     class_name = (
+#         student_class_history.class_ref.name
+#         if student_class_history and student_class_history.class_ref
+#         else "Unassigned"
+#     )
+#     return redirect(
+#         url_for(
+#             "admins.students", session_id=session_id, action=action, class_name=class_name,
+#         )
+#     )
+
 @admin_bp.route("/delete_student/<int:student_id>/<string:action>", methods=["POST"])
 @login_required
 def delete_student(student_id, action):
-    """
-    Delete a student and associated records.
-
-    Args:
-        student_id (int): The ID of the student to be deleted.
-
-    Returns:
-        redirect: Redirects to the student's class page.
-
-    Raises:
-        403: If the current user is not an admin.
-        404: If the student with the given ID is not found.
-
-    """
     if not current_user.role == RoleEnum.ADMIN:
-        abort(403)  # Restrict access for non-admins
+        abort(403)
 
     form = DeleteForm()
     session_id = Session.query.filter_by(is_current=True).first().id
+    class_name = "Unassigned"  # Default value
 
     if form.validate_on_submit():
         student = Student.query.get_or_404(student_id)
@@ -745,45 +805,40 @@ def delete_student(student_id, action):
             .first()
         )
 
+        # Get class name BEFORE any deletions (while session is active)
+        if student_class_history and student_class_history.class_ref:
+            class_name = student_class_history.class_ref.name
+
         try:
             # Delete all related results
             results = Result.query.filter_by(student_id=student.id).all()
             for result in results:
                 db.session.delete(result)
 
-            # Delete the associated User account
-            user = User.query.get(student.user_id)
+            # Delete associated User account
+            user = db.session.get(User, student.user_id)
             if user:
                 db.session.delete(user)
 
-            # Delete all class history for the student
+            # Delete class history records
             class_history_records = StudentClassHistory.query.filter_by(
                 student_id=student.id
             ).all()
             for history in class_history_records:
                 db.session.delete(history)
 
-            # Delete the student record itself
+            # Delete the student
             db.session.delete(student)
             db.session.commit()
 
-            flash(
-                "Student and associated records deleted successfully!",
-                "alert-success",
-            )
+            flash("Student and records deleted successfully!", "alert-success")
         except Exception as e:
             db.session.rollback()
             flash(f"Error deleting student: {e}", "alert-danger")
+            # Optionally re-get class_name if deletion failed (if needed)
 
-    # Redirect to the student's class page, using the latest class from history or default if not found
-    class_name = (
-        student_class_history.class_name if student_class_history else "Unassigned"
-    )
-    return redirect(
-        url_for(
-            "admins.students", session_id=session_id, action=action
-        )
-    )
+    # Redirect using the pre-fetched class_name
+    return redirect(url_for("admins.students", session_id=session_id, action=action, class_name=class_name))
 
 
 """"

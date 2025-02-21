@@ -127,7 +127,6 @@ def view_results(student_id):
             )
 
         # Fetch session and student class history in a single query
-
         class_name = student.get_class_by_session(session_year=session_year)
 
         if not class_name:
