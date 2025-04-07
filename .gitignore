@@ -1,42 +1,84 @@
-p# Ignore python bytecode files
-*.pyc
-*.*.pyc
-
-# Ignore virtual environment
+# Virtual Environment
 venv/
+.env
+
+# Python and Django
+*.pyc
 __pycache__/
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+*.egg
+dist/
+build/
+*.sqlite3  # If you ever use SQLite for testing
 
+# Django-specific
+migrations/  # Optional: Exclude migrations if you regenerate them often
+*.log
+local_settings.py  # If you create a local settings file
+thetutor_backup.sql  # PostgreSQL database backup
 
-# Environment Variables
+# Static and Media Files
+staticfiles/
+media/
+
+# Logs
+logs/
+*.log
+*.log.*
+
+# Environment and Secrets
 .env
 .flaskenv
-config.py
-*.env
 *.flaskenv
+.env.*
+*.env
+*.env.*
+secrets/
+*.key
+*.pem
 
-# Other files to ignore
-__pycache__/
-*.py[cod]
-*$py.class
-migrations/
-venv/
-ENV/
-env/
-logs/
-.venv/
+# Editor and IDE Files
 .vscode/
 .idea/
 *.sublime-project
 *.sublime-workspace
-.DS_Store
-Thumbs.db
-*.log
-*.log.*
-*.sqlite
-*.sqlite3
-.pytest_cache/
-.coverage
+*.code-workspace
+
+# OS-specific Files
+.DS_Store  # macOS
+Thumbs.db  # Windows
+*.bak
+*.swp
+*~
+
+# Dependency Management
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Testing and Coverage
 htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+*.py,cover
+.tox/
+.nox/
+.pytest_cache/
+
+# Build and Distribution
 dist/
 build/
-*.egg-info
+*.egg-info/
+
+# Miscellaneous
+*.tmp
+*.temp
+*.bak
+*.backup
+*.cache
+*.pid
+*.sock
