@@ -3,449 +3,346 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Teacher Portal{% endblock %}</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" crossorigin="anonymous">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/boxicons/2.1.4/css/boxicons.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    
+    <meta name="description" content="Teacher Dashboard for managing classes, students, and results.">
+    <meta name="keywords" content="Teacher Dashboard, School Management, Classes, Students, Results">
+    <meta name="author" content="Aunty Anne's International School">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{% block title %}Teacher Dashboard - AAIS{% endblock %}</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts (Poppins) -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Toastr.js -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Flatpickr -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+    <!-- jsPDF and SheetJS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
     <style>
-        /* Googlefont Poppins CDN Link */
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap');
-        
         :root {
             --primary-blue: #0A2558;
-            --light-blue: #8f94fb;
             --hover-blue: #081D45;
-            --dark-blue: #6d74c7;
-            --white: #ffffff;
             --light-gray: #f8f9fa;
+            --white: #ffffff;
         }
-        
-        *{
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--light-gray);
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
         }
-        .sidebar{
+
+        .sidebar {
             position: fixed;
-            height: 100%;
+            top: 0;
+            left: 0;
             width: 280px;
+            height: 100vh;
             background: var(--primary-blue);
-            transition: all 0.5s ease;
+            transition: width 0.3s ease;
             overflow-y: auto;
+            z-index: 1000;
         }
-        .sidebar.active{
-            width: 60px;
+
+        .sidebar.active {
+            width: 80px;
         }
-        .sidebar .logo-details{
+
+        .sidebar .logo-details {
             height: 80px;
             display: flex;
             align-items: center;
+            padding: 0 20px;
         }
-        .sidebar .logo-details i{
+
+        .sidebar .logo-details i {
             font-size: 28px;
-            font-weight: 500;
-            color: #fff;
+            color: var(--white);
             min-width: 60px;
-            text-align: center
+            text-align: center;
         }
-        .sidebar .logo-details .logo_name{
-            color: #fff;
-            font-size: 24px;
-            font-weight: 500;
+
+        .sidebar .logo-details .logo_name {
+            color: var(--white);
+            font-size: 20px;
+            font-weight: 600;
         }
-        .sidebar .nav-links{
-            margin-top: 10px;
+
+        .sidebar .nav-links {
+            padding: 10px 0;
         }
-        .sidebar .nav-links li{
-            position: relative;
+
+        .sidebar .nav-links li {
             list-style: none;
-            /*  height: 50px;*/
-            height: auto;
         }
-        .sidebar .nav-links li a{
-            /*  height: 100%;*/
-            height: 50px;
-            /*  width: 100%;*/
+
+        .sidebar .nav-links li a {
             display: flex;
             align-items: center;
+            height: 50px;
+            padding: 0 20px;
             text-decoration: none;
-            transition: all 0.4s ease;
+            color: var(--white);
+            transition: background 0.3s ease;
         }
-        .sidebar .nav-links li a.active{
-            background: #081D45;
+
+        .sidebar .nav-links li a:hover,
+        .sidebar .nav-links li a.active {
+            background: var(--hover-blue);
         }
-        .sidebar .nav-links li a:hover{
-            background: #081D45;
-        }
-        .sidebar .nav-links li i{
+
+        .sidebar .nav-links li i {
             min-width: 60px;
             text-align: center;
             font-size: 18px;
-            color: #fff;
         }
-        .sidebar .nav-links li a .links_name{
-            color: #fff;
+
+        .sidebar .nav-links li a .links_name {
             font-size: 15px;
             font-weight: 400;
             white-space: nowrap;
         }
-        
-        
-        /* Responsive Adjustments */
-        .sidebar .nav-links li a span.links_name {
-            display: inline-block;
+
+        .sidebar.active .nav-links li a .links_name {
+            display: none;
         }
-        
+
         .sidebar .nav-links .log_out {
             position: absolute;
-            bottom: 0;
+            bottom: 20px;
             width: 100%;
         }
-        
-        .home-section{
-            position: relative;
-            background: #f5f5f5;
+
+        .home-section {
+            margin-left: 280px;
             min-height: 100vh;
-            width: calc(100% - 240px);
-            left: 240px;
-            transition: all 0.5s ease;
+            background: var(--light-gray);
+            transition: margin-left 0.3s ease;
+            padding: 20px;
         }
-        .sidebar.active ~ .home-section{
-            width: calc(100% - 60px);
-            left: 60px;
+
+        .sidebar.active ~ .home-section {
+            margin-left: 60px;
         }
-        .home-section nav{
-            display: flex;
-            justify-content: space-between;
+
+        .home-section nav {
+            position: fixed;
+            top: 0;
+            left: 280px;
+            width: calc(100% - 280px);
             height: 80px;
-            background: #fff;
+            background: var(--white);
             display: flex;
             align-items: center;
-            position: fixed;
-            width: calc(100% - 240px);
-            left: 240px;
-            z-index: 100;
+            justify-content: space-between;
             padding: 0 20px;
-            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
-            transition: all 0.5s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            z-index: 999;
         }
-        .sidebar.active ~ .home-section nav{
+
+        .sidebar.active ~ .home-section nav {
             left: 60px;
-            width: calc(100% - 60px);
+            width: calc(100% - 80px);
         }
-        .home-section nav .sidebar-button{
+
+        .home-section nav .sidebar-button {
             display: flex;
             align-items: center;
             font-size: 24px;
-            font-weight: 500;
         }
-        nav .sidebar-button i{
-            font-size: 35px;
+
+        .home-section nav .sidebar-button i {
+            font-size: 30px;
+            cursor: pointer;
             margin-right: 10px;
         }
-        .home-section nav .search-box{
+
+        .home-section nav .search-box {
             position: relative;
-            height: 50px;
-            max-width: 550px;
+            height: 40px;
+            max-width: 400px;
             width: 100%;
-            margin: 0 20px;
         }
-        nav .search-box input{
+
+        .home-section nav .search-box input {
             height: 100%;
             width: 100%;
-            outline: none;
-            background: #F5F6FA;
-            border: 2px solid #EFEEF1;
-            border-radius: 6px;
-            font-size: 18px;
             padding: 0 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            outline: none;
         }
-        nav .search-box .bx-search{
-            position: absolute;
-            height: 40px;
-            width: 40px;
-            background: #2697FF;
-            right: 5px;
-            top: 50%;
-            transform: translateY(-50%);
-            border-radius: 4px;
-            line-height: 40px;
-            text-align: center;
-            color: #fff;
-            font-size: 22px;
-            transition: all 0.4 ease;
-        }
-        .home-section nav .profile-details{
+
+        .home-section nav .profile-details {
             display: flex;
             align-items: center;
-            background: #F5F6FA;
-            border: 2px solid #EFEEF1;
-            border-radius: 6px;
-            height: 50px;
-            min-width: 190px;
-            padding: 0 15px 0 2px;
+            background: var(--light-gray);
+            padding: 5px 10px;
+            border-radius: 5px;
         }
-        nav .profile-details img{
-            height: 40px;
+
+        .home-section nav .profile-details img {
             width: 40px;
-            border-radius: 6px;
+            height: 40px;
+            border-radius: 50%;
             object-fit: cover;
         }
-        nav .profile-details .admin_name{
-            font-size: 15px;
-            font-weight: 500;
-            color: #333;
+
+        .home-section nav .profile-details .admin_name {
             margin: 0 10px;
-            white-space: nowrap;
+            font-weight: 500;
         }
-        nav .profile-details i{
-            font-size: 25px;
-            color: #333;
+
+        .home-section .home-content {
+            padding-top: 100px;
         }
-        .home-section .home-content{
-            position: relative;
-            padding-top: 104px;
-        }
-        
+
         .btn-primary {
             background-color: var(--primary-blue);
-            border: none;
-            color: var(--white);
+            border-color: var(--primary-blue);
         }
-        
+
         .btn-primary:hover {
             background-color: var(--hover-blue);
+            border-color: var(--hover-blue);
         }
-        
-        /* General Alert Styling */
+
+        /* Alerts */
         .alert {
-            border-radius: 4px;
+            border-radius: 5px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            display: flex;
-            align-items: center;
-            padding: 1rem;
-            position: relative;
-            overflow: hidden;
-            margin-bottom: 1rem;
+            padding: 15px;
+            margin-bottom: 20px;
         }
-        
-        .alert i {
-            font-size: 1.5rem;
-            margin-right: 10px;
-        }
-        
-        /* Success Alert */
-        .alert-success {
-            background-color: #d4edda;
-            border-left: 4px solid #28a745;
-            color: #155724;
-        }
-        
-        .alert-success i {
-            color: #28a745;
-        }
-        
-        /* Info Alert */
-        .alert-info {
-            background-color: #d1ecf1;
-            border-left: 4px solid #17a2b8;
-            color: #0c5460;
-        }
-        
-        .alert-info i {
-            color: #17a2b8;
-        }
-        
-        /* Warning Alert */
-        .alert-warning {
-            background-color: #fff3cd;
-            border-left: 4px solid #ffc107;
-            color: #856404;
-        }
-        
-        .alert-warning i {
-            color: #ffc107;
-        }
-        
-        /* Danger Alert */
-        .alert-danger {
-            background-color: #f8d7da;
-            border-left: 4px solid #dc3545;
-            color: #721c24;
-        }
-        
-        .alert-danger i {
-            color: #dc3545;
-        }
-        
-        /* Dismiss Button */
-        .alert .close {
-            position: absolute;
-            top: 0.5rem;
-            right: 0.5rem;
-            color: inherit;
-            opacity: 0.8;
-            text-shadow: none;
-        }
-        
-        .alert .close:hover {
-            opacity: 1;
-        }
-        
-        /* Responsive Media Query */
-        @media (max-width: 1240px) {
-            .sidebar{
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
                 width: 60px;
             }
-            .sidebar.active{
+
+            .sidebar.active {
                 width: 220px;
             }
-            .home-section{
-                width: calc(100% - 60px);
-                left: 60px;
+
+            .home-section {
+                margin-left: 60px;
             }
-            .sidebar.active ~ .home-section{
+
+            .sidebar.active ~ .home-section {
+                margin-left: 220px;
+            }
+
+            .home-section nav {
+                left: 60px;
+                width: calc(100% - 60px);
+            }
+
+            .sidebar.active ~ .home-section nav {
                 left: 220px;
                 width: calc(100% - 220px);
-                overflow: hidden;
             }
-            .home-section nav{
-                width: calc(100% - 60px);
-                left: 60px;
-            }
-            .sidebar.active ~ .home-section nav{
-                width: calc(100% - 220px);
-                left: 220px;
-            }
-        }
-        @media (max-width: 1150px) {
-            .home-content .sales-boxes{
-                flex-direction: column;
-            }
-            .home-content .sales-boxes .box{
-                width: 100%;
-                overflow-x: scroll;
-                margin-bottom: 30px;
-            }
-            .home-content .sales-boxes .top-sales{
-                margin: 0;
-            }
-        }
-        @media (max-width: 1000px) {
-            .overview-boxes .box{
-                width: calc(100% / 2 - 15px);
-                margin-bottom: 15px;
-            }
-        }
-        @media (max-width: 700px) {
-            nav .sidebar-button .dashboard,
-            nav .profile-details .admin_name,
-            nav .profile-details i{
+
+            .home-section nav .search-box,
+            .home-section nav .profile-details .admin_name {
                 display: none;
-            }
-            .home-section nav .profile-details{
-                height: 50px;
-                min-width: 40px;
-            }
-            .home-content .sales-boxes .sales-details{
-                width: 560px;
-            }
-        }
-        @media (max-width: 550px) {
-            .overview-boxes .box{
-                width: 100%;
-                margin-bottom: 15px;
-            }
-            .sidebar.active ~ .home-section nav .profile-details{
-                display: none;
-            }
-        }
-        @media (max-width: 400px) {
-            .sidebar{
-                width: 0;
-            }
-            .sidebar.active{
-                width: 60px;
-            }
-            .home-section{
-                width: 100%;
-                left: 0;
-            }
-            .sidebar.active ~ .home-section{
-                left: 60px;
-                width: calc(100% - 60px);
-            }
-            .home-section nav{
-                width: 100%;
-                left: 0;
-            }
-            .sidebar.active ~ .home-section nav{
-                left: 60px;
-                width: calc(100% - 60px);
             }
         }
     </style>
 </head>
 <body>
-    <div id="sidebar" class="d-flex flex-column min-vh-100 sidebar">
-        <div class="d-flex align-items-center mb-4 logo-details">
-            <i class="bx bxl-c-plus-plus text-white fs-3"></i>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo-details">
+            <i class="fas fa-chalkboard-teacher"></i>
             <span class="logo_name">Teacher Dashboard</span>
         </div>
-        <ul id="nav-links" class="flex-column list-unstyled nav-links">
-            <li class="nav-item"><a href="{{ url_for('teachers.teacher_dashboard') }}" class="active"><i class="bx bx-grid-alt"></i><span class="links_name">Dashboard</span></a></li>
-            <li class="nav-item"><a href="#"><i class="fas fa-user"></i><span class="links_name">Profile</span></a></li>
-            <li class="nav-item"><a href="#"><i class="fas fa-file-alt"></i><span class="links_name">Results</span></a></li>
-            <li class="nav-item"><a href="#"><i class="fas fa-calendar-check"></i><span class="links_name">Attendance</span></a></li>
-            <li class="nav-item"><a href="#"><i class="fas fa-clock"></i><span class="links_name">Timetable</span></a></li>
-            <li class="nav-item"><a href="#"><i class="bx bx-cog"></i><span class="links_name">Setting</span></a></li>
-            <li class="log_out"><a href="{{ url_for('auth.logout') }}"><i class="bx bx-log-out"></i><span class="links_name">Log out</span></a></li>
-         </ul>
+        <ul class="nav-links">
+            <li><a href="{{ url_for('teachers.teacher_dashboard') }}" class="{% if request.endpoint == 'teachers.teacher_dashboard' %}active{% endif %}"><i class="fas fa-tachometer-alt"></i><span class="links_name">Dashboard</span></a></li>
+            <li><a href="{{ url_for('main.index') }}"><i class="fas fa-home"></i><span class="links_name">Home</span></a></li>
+            <li><a href="{{ url_for('teachers.profile') }}"><i class="fas fa-user"></i><span class="links_name">Profile</span></a></li>
+            <li><a href="{{ url_for('teachers.view_classes') }}"><i class="fas fa-list"></i><span class="links_name">View Classes</span></a></li>
+            <li><a href="{{ url_for('teachers.manage_students_select') }}"><i class="fas fa-users"></i><span class="links_name">Manage Students</span></a></li>
+            <li><a href="{{ url_for('teachers.view_subjects') }}"><i class="fas fa-book"></i><span class="links_name">View Subjects</span></a></li>
+            <li><a href="{{ url_for('teachers.manage_results_select') }}"><i class="fas fa-file-alt"></i><span class="links_name">Manage Results</span></a></li>
+            <li><a href="{{ url_for('teachers.broadsheet_select') }}"><i class="fas fa-table"></i><span class="links_name">Broadsheet</span></a></li>
+            <li><a href="#"><i class="fas fa-cog"></i><span class="links_name">Settings</span></a></li>
+            <li class="log_out"><a href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt"></i><span class="links_name">Log Out</span></a></li>
+        </ul>
     </div>
+
+    <!-- Main Section -->
     <section class="home-section">
         <nav>
             <div class="sidebar-button">
-                <i class="bx bx-menu sidebarBtn"></i>
+                <i class="fas fa-bars sidebarBtn"></i>
                 <span class="dashboard">Dashboard</span>
             </div>
             <div class="search-box">
-                <input type="text" placeholder="Search..." />
-                <i class="bx bx-search"></i>
+                <input type="text" placeholder="Search...">
             </div>
             <div class="profile-details">
-                <img src="images/profile.jpg" alt="" />
-                <span class="admin_name">{{current_user.first_name}}{{current_user.last_name}}</span>
-                <i class="bx bx-chevron-down"></i>
+                <img src="{{ url_for('static', filename='images/profile.jpg') }}" alt="Profile">
+                <span class="admin_name">{{ current_user.first_name }} {{ current_user.last_name }}</span>
+                <i class="fas fa-chevron-down"></i>
             </div>
         </nav>
-        <main class="flex-fill home-content container mt-0">
-            {% for category, message in get_flashed_messages(with_categories=True) %}
-                <div class="alert {{ category }} mt-3">{{ message }}</div>
-            {% endfor %}
-            {% block content %}{% endblock %}
-        </main>
-    </section>
-    
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.0/dist/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-{% block scripts %}{% endblock %}
 
-<script>
-    let sidebar = document.querySelector(".sidebar");
-    let sidebarBtn = document.querySelector(".sidebarBtn");
-    sidebarBtn.onclick = function () {
-        sidebar.classList.toggle("active");
-        if (sidebar.classList.contains("active")) {
-            sidebarBtn.classList.replace("bx-menu", "bx-menu-alt-right");
-        } else sidebarBtn.classList.replace("bx-menu-alt-right", "bx-menu");
-    };
-</script>
-        
+        <div class="home-content">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            {% block content %}{% endblock %}
+        </div>
+    </section>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.0/dist/jquery.min.js"></script>
+    <script>
+        const sidebar = document.querySelector(".sidebar");
+        const sidebarBtn = document.querySelector(".sidebarBtn");
+
+        sidebarBtn.addEventListener("click", () => {
+            sidebar.classList.toggle("active");
+            sidebarBtn.classList.toggle("fa-bars");
+            sidebarBtn.classList.toggle("fa-times");
+        });
+
+        // Toastr Configuration
+        toastr.options = {
+            "positionClass": "toast-top-right",
+            "timeOut": "5000",
+            "closeButton": true
+        };
+    </script>
+    {% block scripts %}{% endblock %}
 </body>
 </html>

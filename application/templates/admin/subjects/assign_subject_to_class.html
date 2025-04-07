@@ -1,16 +1,98 @@
 {% extends "admin/base.html" %}
 {% block content %}
-<h2>Assign Subject to Class</h2>
-<form method="post">
-    {{ form.hidden_tag() }}
-    <div class="form-group">
-        {{ form.class_name.label(class="form-label") }}
-        {{ form.class_name(class="form-control") }}
+<div class="container mt-3">
+    <h2>Assign Subjects to Classes</h2>
+
+    <form method="POST" class="mb-4">
+        {{ form.hidden_tag() }}
+        <div class="form-group mb-3">
+            {{ form.classes.label(class="form-label fw-bold") }}
+            {{ form.classes(class="form-control select2", id="classes") }}
+            <small class="form-text text-muted">{{ form.classes.description }}</small>
+            {% for error in form.classes.errors %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+        <div class="form-group mb-3">
+            {{ form.subjects.label(class="form-label fw-bold") }}
+            {{ form.subjects(class="form-control select2", id="subjects") }}
+            <small class="form-text text-muted">{{ form.subjects.description }}</small>
+            {% for error in form.subjects.errors %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+        <button type="submit" class="btn btn-primary">{{ form.submit.label }}</button>
+    </form>
+
+    <h3>Assigned Subjects by Class</h3>
+    {% if classes_with_subjects %}
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Class Name</th>
+                        <th>Assigned Subjects</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for class_name, subjects in classes_with_subjects.items() %}
+                    <tr>
+                        <td>{{ class_name }}</td>
+                        <td>
+                            {% if subjects %}
+                                <ul class="list-unstyled mb-0">
+                                    {% for subject in subjects %}
+                                        <li>
+                                            {{ subject.name }}
+                                            <form method="POST" 
+                                                  action="{{ url_for('admins.remove_subject_from_class') }}"
+                                                  class="d-inline"
+                                                  onsubmit="return confirm('Are you sure you want to remove {{ subject.name }} from {{ class_name }}?');">
+                                                {{ form.hidden_tag() }}
+                                                <input type="hidden" name="class_id" value="{{ subject.classes.filter_by(name=class_name).first().id }}">
+                                                <input type="hidden" name="subject_id" value="{{ subject.id }}">
+                                                <button type="submit" class="btn btn-link text-danger p-0 ms-2">Remove</button>
+                                            </form>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <span class="text-muted">No subjects assigned</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ url_for('admins.edit_subject_assignment', class_name=class_name) }}" 
+                               class="btn btn-sm btn-primary">Edit</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p class="text-muted">No classes or subjects found.</p>
+    {% endif %}
+
+    <div class="text-center mt-3">
+        <a href="{{ url_for('admins.manage_subjects') }}" class="btn btn-secondary">Back to Subjects</a>
     </div>
-    <div class="form-group">
-        {{ form.subject.label(class="form-label") }}
-        {{ form.subject(class="form-control") }}
-    </div>
-    <button type="submit" class="btn btn-primary">{{ form.submit.label }}</button>
-</form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+$(document).ready(function() {
+    $('#classes').select2({
+        placeholder: "Select classes",
+        allowClear: true,
+        width: '100%'
+    });
+    $('#subjects').select2({
+        placeholder: "Select subjects",
+        allowClear: true,
+        width: '100%'
+    });
+});
+</script>
 {% endblock %}

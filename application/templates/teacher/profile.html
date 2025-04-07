@@ -1,0 +1,29 @@
+{% extends "teacher/base.html" %}
+{% block title %}Profile{% endblock %}
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6">Profile</h1>
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <form method="POST" class="space-y-4">
+            {{ form.hidden_tag() }}
+            <div>
+                <label class="block text-sm font-medium text-gray-700">First Name</label>
+                {{ form.first_name(class="w-full p-2 border rounded") }}
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Last Name</label>
+                {{ form.last_name(class="w-full p-2 border rounded") }}
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Phone Number</label>
+                {{ form.phone_number(class="w-full p-2 border rounded") }}
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Section</label>
+                {{ form.section(class="w-full p-2 border rounded") }}
+            </div>
+            <button type="submit" class="bg-blue-600 text-white p-2 rounded hover:bg-blue-700">Update Profile</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

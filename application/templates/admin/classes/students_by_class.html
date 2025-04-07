@@ -24,7 +24,7 @@
         transform: scale(1.1);
     }
 
-     /* General Styling */
+    /* General Styling */
     .container {
         background-color: #ffffff;
         border-radius: 8px;
@@ -112,6 +112,7 @@
         justify-content: space-between;
         align-items: center;
         margin-bottom: 15px;
+        gap: 15px;
     }
 
     .search-bar {
@@ -142,14 +143,6 @@
         min-width: 200px;
     }
 
-    /* Action Buttons */
-    .btn {
-        border-radius: 5px;
-        padding: 8px 12px;
-        font-weight: 500;
-        margin: 2px;
-    }
-
     /* Modal Styling */
     .modal {
         display: none;
@@ -159,7 +152,6 @@
         top: 0;
         width: 100%;
         height: 100%;
-        /*overflow: hidden;*/
         background-color: rgba(0, 0, 0, 0.5);
     }
 
@@ -206,7 +198,6 @@
         border-radius: 50px;
         color: var(--primary-blue);
         background-color: #fff;
-        /*border: 1px solid #ddd;*/
         transition: background-color 0.3s, color 0.3s;
     }
 
@@ -236,7 +227,6 @@
         border-radius: 0 50px 50px 0;
     }
 
-     Media Queries for Pagination
     @media (min-width: 576px) {
         .pagination .page-item {
             margin: 0px 4px;
@@ -261,6 +251,7 @@
             padding: 3px;
         }
     }
+
     /* Media Queries for the page */
     @media (min-width: 576px) {
         .search-bar {
@@ -284,7 +275,7 @@
         }
 
         .stat-card {
-            margin: 0; /* Remove side margins */
+            margin: 0;
         }
 
         .filters {
@@ -311,19 +302,8 @@
         .btn {
             font-size: 0.85rem;
         }
-
     }
 </style>
-
-{#
-<nav aria-label="breadcrumb">
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="{{ url_for('admins.admin_dashboard') }}">Home</a></li>
-        <li class="breadcrumb-item"><a href="{{ url_for('admins.select_class', action=action) }}">Classes</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Students</li>
-    </ol>
-</nav>
-#}
 
 <div class="container-fluid mt-5">
     <!-- Stats Section -->
@@ -350,7 +330,6 @@
         </div>
     </div>
 
-
     <!-- Filters and Search -->
     <div class="filters mb-3 d-flex align-items-center gap-3">
         <input type="text" id="search-input" class="form-control search-bar" placeholder="Search students by name, class or ID...">
@@ -359,6 +338,11 @@
             <option value="paid">Fees Paid</option>
             <option value="unpaid">Fees Unpaid</option>
         </select>
+        <select name="enrollment_status" class="form-control filter-dropdown">
+            <option value="">Filter by Enrollment Status</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+        </select>
         <select name="approval_status" class="form-control filter-dropdown">
             <option value="">Filter by Approval Status</option>
             <option value="approved">Approved</option>
@@ -366,18 +350,20 @@
         </select>
     </div>
 
-
     {% if students %}
-        <h1 class="text-center mb-4">Students in {{ class_name }} for {{ current_session }} Academic Session</h1>
+        <h1 class="text-center mb-4">Students in {{ class_name }} for {{ session_year }} Academic Session</h1>
+        <h2 class="text-center">Term - {{ current_term }}</h2>
         <div class="container">
-
             <div class="table-responsive">
                 <table id="results-table" class="table table-striped">
-                   <thead>
+                    <thead>
                         <tr>
+                            <th>S/N</th>
                             <th>Registration ID</th>
                             <th>First Name</th>
                             <th>Last Name</th>
+                            <th>Enrollment Status</th>
+                            <th>Payment Status</th>
                             {% if action not in ['view_students', 'generate_broadsheet', 'download_broadsheet'] %}
                                 <th>Actions</th>
                             {% endif %}
@@ -385,52 +371,67 @@
                     </thead>
                     <tbody>
                         {% for student in students %}
-                        <tr class="table-row" data-fee-status="{{ 'paid' if student.has_paid_fee else 'unpaid' }}" data-approval-status="{{ 'approved' if student.approved else 'pending' }}">
-                            <td>{{ student.reg_no }}</td>
-                            <td>{{ student.first_name }}</td>
-                            <td>{{ student.last_name }}</td>
-                            {% if action not in ['view_students', 'generate_broadsheet', 'download_broadsheet'] %}
-                                <td>
-                                    {% if action == 'promote' %}
-                                       {# <form action="{{ url_for('admins.promote_student', class_name=class_name, student_id=student.id, action=action) }}" method="POST">
-                                            {{ form.hidden_tag() }}
-                                            <button type="submit" class="btn btn-primary skip-spinner" data-bs-toggle="modal" data-bs-target="#actionsModal" data-action="promote" data-student-id="{{ student.id }}">Promote</button>
-                                        </form> #}
-
-                                        <form method="POST" action="{{ url_for('admins.promote_student', class_name=class_name, student_id=student.id, action=action) }}">
-                                            {{ form.hidden_tag() }}
-                                            <label for="session_choice">Promote to:</label>
-                                            <select name="session_choice" id="session_choice" class="form-control">
-                                                <option value="current">Current Session</option>
-                                                <option value="next">Next Session</option>
-                                            </select>
-                                            <button type="submit" class="btn btn-primary mt-3 skip-spinner" data-bs-toggle="modal" data-bs-target="#actionsModal" data-action="promote" data-student-id="{{ student.id }}">Promote</button>
-                                        </form>
-
-                                    {% elif action == 'edit' %}
-                                        <a class="btn btn-primary mt-3" href="{{ url_for('admins.edit_student', class_name=class_name, student_id=student.id, action=action) }}">Edit</a>
-                                    {% elif action == 'manage_result' %}
-                                        <a class="btn btn-primary mt-3" href="{{ url_for('admins.manage_results', class_name=class_name, student_id=student.id, action=action) }}">Manage Results</a>
-                                    {% elif action == 'demote' %}
-                                        <form method="POST" action="{{ url_for('admins.demote_student', class_name=class_name, student_id=student.id, action=action) }}">
-                                            {{ form.hidden_tag() }}
-                                            <label for="session_choice">Promote to:</label>
-                                            <select name="session_choice" id="session_choice" class="form-control">
-                                                <option value="current">Current Session</option>
-                                                <option value="next">Next Session</option>
-                                            </select>
-                                            <button type="submit" class="btn btn-primary mt-3 skip-spinner" data-bs-toggle="modal" data-bs-target="#actionsModal" data-action="demote" data-student-id="{{ student.id }}">Demote</button>
-                                        </form>
-                                    {% elif action == 'delete_from_class' %}
-                                        <form action="{{ url_for('admins.delete_student_record', class_name=class_name, student_id=student.id, action=action) }}" method="POST">
-                                            {{ form.hidden_tag() }}
-                                            <button type="submit" class="delete-btn btn btn-danger skip-spinner" data-bs-toggle="modal" data-bs-target="#actionsModal" data-action="delete" data-student-id="{{ student.id }}">Delete</button>
-                                        </form>
-
-                                    {% endif %}
-                                </td>
-                            {% endif %}
-                        </tr>
+                            {% set fee_payment = student.fee_payments | selectattr("session_id", "equalto", current_session.id) | selectattr("term", "equalto", current_term) | first %}
+                            {% set has_paid_fee = fee_payment.has_paid_fee if fee_payment else False %}
+                            {% set enrollment = student.class_history | selectattr("session_id", "equalto", current_session.id) | first %}
+                            {% set is_active = enrollment.is_active_in_term(current_session.id, current_term) if enrollment else False %}
+                            <tr class="table-row"
+                                data-fee-status="{{ 'paid' if has_paid_fee else 'unpaid' }}"
+                                data-approval-status="{{ 'approved' if student.approved else 'pending' }}"
+                                data-enrollment-status="{{ 'active' if is_active else 'inactive' }}">
+                                <td>{{ loop.index }}</td>
+                                <td>{{ student.reg_no }}</td>
+                                <td>{{ student.first_name }}</td>
+                                <td>{{ student.last_name }}</td>
+                                <td>{{ 'Active' if is_active else 'Inactive' }}</td>
+                                <td>{{ 'Paid' if has_paid_fee else 'Unpaid' }}</td>
+                                {% if action not in ['view_students', 'generate_broadsheet', 'download_broadsheet'] %}
+                                    <td>
+                                        {% if action == 'promote' %}
+                                            <form method="POST" action="{{ url_for('admins.promote_student', class_name=class_name, student_id=student.id, action=action) }}">
+                                                {{ form.hidden_tag() }}
+                                                <label for="session_choice">Promote to:</label>
+                                                <select name="session_choice" id="session_choice" class="form-control">
+                                                    <option value="current">Current Session</option>
+                                                    <option value="next">Next Session</option>
+                                                </select>
+                                                <button type="submit" class="btn btn-primary mt-3 skip-spinner" data-bs-toggle="modal" data-bs-target="#actionsModal" data-action="promote" data-student-id="{{ student.id }}">Promote</button>
+                                            </form>
+                                        {% elif action == 'edit' %}
+                                            <a class="btn btn-primary mt-3" href="{{ url_for('admins.edit_student', class_name=class_name, student_id=student.id, action=action) }}">Edit</a>
+                                        {% elif action == 'manage_result' %}
+                                            <a class="btn btn-primary mt-3" href="{{ url_for('admins.manage_results', class_name=class_name, student_id=student.id, action=action) }}">Manage Results</a>
+                                        {% elif action == 'demote' %}
+                                            <form method="POST" action="{{ url_for('admins.demote_student', class_name=class_name, student_id=student.id, action=action) }}">
+                                                {{ form.hidden_tag() }}
+                                                <label for="session_choice">Demote to:</label>
+                                                <select name="session_choice" id="session_choice" class="form-control">
+                                                    <option value="current">Current Session</option>
+                                                    <option value="next">Next Session</option>
+                                                </select>
+                                                <button type="submit" class="btn btn-primary mt-3 skip-spinner" data-bs-toggle="modal" data-bs-target="#actionsModal" data-action="demote" data-student-id="{{ student.id }}">Demote</button>
+                                            </form>
+                                        {% elif action == 'delete_from_class' %}
+                                            <form action="{{ url_for('admins.delete_student_class_record', class_name=class_name, student_id=student.id, action=action) }}" method="POST">
+                                                {{ form.hidden_tag() }}
+                                                <button type="submit" class="delete-btn btn btn-danger skip-spinner" data-bs-toggle="modal" data-bs-target="#actionsModal" data-action="remove" data-student-id="{{ student.id }}">Remove student</button>
+                                            </form>
+                                        {% endif %}
+                                        <!-- Enrollment Actions -->
+                                        {% if is_active %}
+                                            <button class="btn btn-warning mt-3 skip-spinner leave-btn" data-student-id="{{ student.id }}"
+                                                    data-toggle="tooltip" title="Mark as Left">
+                                                Mark as Left
+                                            </button>
+                                        {% else %}
+                                            <button class="btn btn-success mt-3 skip-spinner reenroll-btn" data-student-id="{{ student.id }}"
+                                                    data-toggle="tooltip" title="Re-enroll">
+                                                Re-enroll
+                                            </button>
+                                        {% endif %}
+                                    </td>
+                                {% endif %}
+                            </tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -477,18 +478,13 @@
     <!-- Broadsheet and Print Buttons -->
     <div class="text-center">
         <a href="{{ url_for('admins.select_class', action=action) }}" class="btn btn-primary mt-3">Back to Classes</a>
-
         {% if action == 'generate_broadsheet' %}
-        <a href="{{ url_for('admins.broadsheet', class_name=class_name, action=action ) }}" class="btn btn-secondary mt-3">Generate Broadsheet</a>
+            <a href="{{ url_for('admins.broadsheet', class_name=class_name, action=action ) }}" class="btn btn-secondary mt-3">Generate Broadsheet</a>
         {% endif %}
-
         {% if action == 'download_broadsheet' %}
-        <a href="{{ url_for('admins.download_broadsheet', class_name=class_name, action=action) }}" class="btn btn-primary mt-3">Download Broadsheet</a>
+            <a href="{{ url_for('admins.download_broadsheet', class_name=class_name, action=action) }}" class="btn btn-primary mt-3">Download Broadsheet</a>
         {% endif %}
-
-        {% if action == 'view_students' %}
-        <button onclick="printStudentDetails()" class="btn btn-primary mt-3">Print Student Details</button>
-        {% endif %}
+        <button id="print-student-details" class="btn btn-primary mt-3">Print Student Details</button>
     </div>
 </div>
 
@@ -496,13 +492,12 @@
 
 {% block scripts %}
 <script>
-
-    // Get CSRF token from meta tag
+document.addEventListener("DOMContentLoaded", function () {
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-    const className = {{ class_name|tojson }}
-    const action = {{ action|tojson }}
+    const className = {{ class_name|tojson }};
+    const action = {{ action|tojson }};
+    const currentTerm = {{ current_term|tojson }};
 
-    // Constants for selectors and endpoints
     const selectors = {
         resultsTable: "#results-table tbody",
         pagination: ".pagination-container",
@@ -515,195 +510,228 @@
     };
 
     const endpoints = {
-        stats: `/admin/student_stats/${encodeURIComponent(className)}`,
+        stats: `/admin/class/student_stats/${encodeURIComponent(className)}?term=${currentTerm}`,
         search: `/admin/search_students_by_class/${encodeURIComponent(className)}/${encodeURIComponent(action)}`,
+        base: `/admin/students_by_class/${encodeURIComponent(className)}/${encodeURIComponent(action)}`,
+        leave: studentId => `/admin/student/${studentId}/leave`,
+        reenroll: studentId => `/admin/student/${studentId}/reenroll`,
     };
 
-    document.addEventListener("DOMContentLoaded", function () {
+    function initializeTooltips() {
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="tooltip"]'));
+        tooltipTriggerList.map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+    }
 
-        const resultsTableBody = document.querySelector(selectors.resultsTable);
-        const paginationContainer = document.querySelector(selectors.pagination);
-        const loadingSpinner = document.querySelector(selectors.loadingSpinner);
-        const searchInput = document.querySelector(selectors.searchInput);
-
-        const statsEndpoint = endpoints.stats;
-
-        // Helper: Initialize tooltips
-        function initializeTooltips() {
-            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            tooltipTriggerList.map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+    function toggleSpinner(show) {
+        if (show) {
+            document.querySelector(selectors.loadingSpinner).classList.remove('d-none');
+            document.querySelector(selectors.pagination).classList.add('d-none');
+        } else {
+            document.querySelector(selectors.loadingSpinner).classList.add('d-none');
+            document.querySelector(selectors.pagination).classList.remove('d-none');
         }
+    }
 
-        // Helper: Toggle spinner visibility
-        function toggleSpinner(show) {
-            if (show) {
-                loadingSpinner.classList.remove('d-none');
-                paginationContainer.classList.add('d-none');
-            } else {
-                loadingSpinner.classList.add('d-none');
-                paginationContainer.classList.remove('d-none');
-            }
-        }
+    function updateContent(selector, content) {
+        const element = document.querySelector(selector);
+        if (element) element.innerHTML = content;
+    }
 
-        // Helper: Update content of an element
-        function updateContent(selector, content) {
-            const element = document.querySelector(selector);
-            if (element) {
-                element.innerHTML = content;
-            }
-        }
-
-        // Helper: Fetch and update stats
-        function fetchStats() {
-            fetch(endpoints.stats)
-                .then(response => response.json())
-                .then(stats => {
-                    updateContent(selectors.totalStudentsStat, stats.total_students || 0);
-                    updateContent(selectors.approvedStudentsStat, stats.approved_students || 0);
-                    updateContent(selectors.feesPaidStat, stats.fees_paid || 0);
-                    updateContent(selectors.feesNotPaidStat, stats.fees_not_paid || 0);
-                })
-                .catch(error => console.error('Error fetching stats:', error));
-        }
-
-        // Helper: Fetch and update table
-        function fetchTable(url) {
-            toggleSpinner(true);
-            fetch(url,  {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': csrfToken, // Include CSRF token
-                },
-                credentials: 'same-origin',
+    function fetchStats() {
+        fetch(endpoints.stats)
+            .then(response => response.json())
+            .then(stats => {
+                updateContent(selectors.totalStudentsStat, stats.total_students || 0);
+                updateContent(selectors.approvedStudentsStat, stats.approved_students || 0);
+                updateContent(selectors.feesPaidStat, stats.fees_paid || 0);
+                updateContent(selectors.feesNotPaidStat, stats.fees_not_paid || 0);
             })
-                .then(response => response.text())
-                .then(html => {
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(html, 'text/html');
+            .catch(error => console.error('Error fetching stats:', error));
+    }
 
-                    updateContent(selectors.resultsTable, doc.querySelector('tbody').innerHTML || "");
-                    updateContent(selectors.pagination, doc.querySelector('.pagination-container').innerHTML || "");
+    function fetchTable(url) {
+        toggleSpinner(true);
+        fetch(url, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
+            credentials: 'same-origin',
+        })
+            .then(response => response.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                updateContent(selectors.resultsTable, doc.querySelector('tbody')?.innerHTML || "");
+                updateContent(selectors.pagination, doc.querySelector('.pagination-container')?.innerHTML || "");
+                initializeTooltips();
+                bindEnrollmentButtons();
+            })
+            .catch(error => console.error('Error fetching table:', error))
+            .finally(() => toggleSpinner(false));
+    }
 
-                    initializeTooltips(); // Reinitialize tooltips
-                })
-                .catch(error => console.error('Error fetching table:', error))
-                .finally(() => toggleSpinner(false));
-        }
+    function bindEnrollmentButtons() {
+        document.querySelectorAll('.leave-btn').forEach(btn => {
+            btn.removeEventListener('click', handleLeave);
+            btn.addEventListener('click', handleLeave);
+        });
+        document.querySelectorAll('.reenroll-btn').forEach(btn => {
+            btn.removeEventListener('click', handleReenroll);
+            btn.addEventListener('click', handleReenroll);
+        });
+    }
 
-         // Debounced Search Input Handler
-        let debounceTimer;
-        searchInput.addEventListener("input", (e) => {
-            clearTimeout(debounceTimer);
-            const query = e.target.value.trim();
-            debounceTimer = setTimeout(() => {
-                if (query.length >= 2) {
-                    // Fetch filtered results
-                    fetchTable(`${endpoints.search}?query=${encodeURIComponent(query)}&ajax=true`);
-                } else if (query.length === 0) {
-                    // Fetch all students when query is cleared
-                    fetchTable(`${endpoints.search}?ajax=true`);
+    function handleLeave(event) {
+        const studentId = event.target.dataset.studentId;
+        fetch(endpoints.leave(studentId), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    flash(data.message, "alert-info");
+                    refreshTable();
+                    fetchStats();
                 } else {
-                    // Display prompt for minimum characters
-                    updateContent(selectors.resultsTable, `
-                        <tr>
-                            <td colspan="6" class="text-center">Enter at least 2 characters to search.</td>
-                        </tr>
-                    `);
+                    flash(data.error || 'Failed to mark as left', "alert-danger");
                 }
-            }, 300); // Delay of 300ms
-        });
+            })
+            .catch(error => console.error('Error marking as left:', error));
+    }
 
-        paginationContainer.addEventListener('click', function (event) {
-            const link = event.target.closest('.pagination-link');
-            if (link) {
-                event.preventDefault();
-                const query = searchInput.value.trim();
-                const url = query.length >= 2
-                    ? `${link.href}&query=${encodeURIComponent(query)}`
-                    : link.href;
-                fetchTable(url);
-            }
-        });
+    function handleReenroll(event) {
+        const studentId = event.target.dataset.studentId;
+        fetch(endpoints.reenroll(studentId), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    flash(data.message, "alert-info");
+                    refreshTable();
+                    fetchStats();
+                } else {
+                    flash(data.error || 'Failed to re-enroll', "alert-danger");
+                }
+            })
+            .catch(error => console.error('Error re-enrolling:', error));
+    }
 
-        // Event: Filter and search
-        function filterAndSearch() {
-            const query = searchInput.value.toLowerCase();
-            const feeStatus = document.querySelector('select[name="fee_status"]').value || null;
-            const approvalStatus = document.querySelector('select[name="approval_status"]').value || null;
+    function printStudentDetails() {
+        const printWindow = window.open('', '_blank');
+        const className = document.querySelector('h1')?.textContent || 'Students List';
+        const term = document.querySelector('h2')?.textContent || '';
+        const table = document.querySelector('#results-table').cloneNode(true);
 
-            document.querySelectorAll('.table-row').forEach(row => {
-                const feeMatch = !feeStatus || row.dataset.feeStatus === feeStatus;
-                const approvalMatch = !approvalStatus || row.dataset.approvalStatus === approvalStatus;
-                const textMatch = row.innerText.toLowerCase().includes(query);
-                row.style.display = feeMatch && approvalMatch && textMatch ? '' : 'none';
+        const actionsHeader = table.querySelector('th:last-child');
+        if (actionsHeader && actionsHeader.textContent.trim() === 'Actions') {
+            const actionColumnIndex = actionsHeader.cellIndex;
+            table.querySelectorAll('tr').forEach(row => {
+                if (row.cells[actionColumnIndex]) {
+                    row.cells[actionColumnIndex].remove();
+                }
             });
         }
 
-        searchInput.addEventListener('input', filterAndSearch);
-        document.querySelectorAll('.filter-dropdown').forEach(dropdown => dropdown.addEventListener('change', filterAndSearch));
+        const printContent = `
+            <html>
+            <head>
+                <title>${className}</title>
+                <style>
+                    body { font-family: Arial, sans-serif; margin: 20px; }
+                    h1, h2 { text-align: center; margin-bottom: 10px; }
+                    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                    th { background-color: #333; color: white; }
+                    tr:nth-child(even) { background-color: #f2f2f2; }
+                    @media print { .no-print { display: none; } }
+                </style>
+            </head>
+            <body>
+                <h1>${className}</h1>
+                <h2>${term}</h2>
+                ${table.outerHTML}
+            </body>
+            </html>
+        `;
 
-        // Event delegation for dynamically added forms
-        document.body.addEventListener('submit', function (event) {
-            const form = event.target;
-            if (form.matches('.fees-form, .approval-form')) {
-                event.preventDefault();
+        printWindow.document.write(printContent);
+        printWindow.document.close();
+        printWindow.print();
+        printWindow.close();
+    }
 
-                const studentId = form.getAttribute('data-student-id');
-                const actionUrl = form.action;
+    function refreshTable() {
+        const query = document.querySelector(selectors.searchInput).value.trim();
+        const feeStatus = document.querySelector('select[name="fee_status"]').value || '';
+        const enrollmentStatus = document.querySelector('select[name="enrollment_status"]').value || '';
+        const approvalStatus = document.querySelector('select[name="approval_status"]').value || '';
+        const url = `${endpoints.base}?ajax=true&fee_status=${feeStatus}&enrollment_status=${enrollmentStatus}&approval_status=${approvalStatus}${query ? `&query=${encodeURIComponent(query)}` : ''}`;
+        fetchTable(url);
+    }
 
-                fetch(actionUrl, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRFToken': form.querySelector('[name="csrf_token"]').value
-                    }
-                })
+    let debounceTimer;
+    document.querySelector(selectors.searchInput).addEventListener("input", (e) => {
+        clearTimeout(debounceTimer);
+        const query = e.target.value.trim();
+        const feeStatus = document.querySelector('select[name="fee_status"]').value || '';
+        const enrollmentStatus = document.querySelector('select[name="enrollment_status"]').value || '';
+        const approvalStatus = document.querySelector('select[name="approval_status"]').value || '';
+        debounceTimer = setTimeout(() => {
+            const url = query.length >= 2
+                ? `${endpoints.search}?query=${encodeURIComponent(query)}&ajax=true&fee_status=${feeStatus}&enrollment_status=${enrollmentStatus}&approval_status=${approvalStatus}`
+                : `${endpoints.base}?ajax=true&fee_status=${feeStatus}&enrollment_status=${enrollmentStatus}&approval_status=${approvalStatus}`;
+            fetchTable(url);
+        }, 300);
+    });
+
+    document.querySelector(selectors.pagination).addEventListener('click', function (event) {
+        const link = event.target.closest('.pagination-link');
+        if (link) {
+            event.preventDefault();
+            const query = document.querySelector(selectors.searchInput).value.trim();
+            const feeStatus = document.querySelector('select[name="fee_status"]').value || '';
+            const enrollmentStatus = document.querySelector('select[name="enrollment_status"]').value || '';
+            const approvalStatus = document.querySelector('select[name="approval_status"]').value || '';
+            const url = `${link.href}&ajax=true&fee_status=${feeStatus}&enrollment_status=${enrollmentStatus}&approval_status=${approvalStatus}${query ? `&query=${encodeURIComponent(query)}` : ''}`;
+            fetchTable(url);
+        }
+    });
+
+    document.querySelectorAll('.filter-dropdown').forEach(dropdown => {
+        dropdown.addEventListener('change', refreshTable);
+    });
+
+    document.body.addEventListener('submit', function (event) {
+        const form = event.target;
+        if (form.matches('.fees-form, .approval-form, .promote-form, .demote-form')) {
+            event.preventDefault();
+            fetch(form.action, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
+                body: JSON.stringify(Object.fromEntries(new FormData(form))),
+            })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
                         flash(data.message, "alert-info");
-
-                        // Update the button dynamically for fee status
-                        if (form.classList.contains('fees-form')) {
-                            const button = form.querySelector('button');
-                            if (data.has_paid_fee) {
-                                button.textContent = 'Mark as Not Paid';
-                                button.classList.remove('btn-primary');
-                                button.classList.add('btn-secondary');
-                            } else {
-                                button.textContent = 'Mark as Paid';
-                                button.classList.remove('btn-secondary');
-                                button.classList.add('btn-primary');
-                            }
-                        }
-                        // Update the button dynamically for approval status
-                        if (form.classList.contains('approval-form')) {
-                            const button = form.querySelector('button');
-                            if (data.approved) {
-                                button.textContent = 'Deactivate';
-                                button.classList.remove('btn-primary');
-                                button.classList.add('btn-danger');
-                            } else {
-                                button.textContent = 'Approve';
-                                button.classList.remove('btn-danger');
-                                button.classList.add('btn-primary');
-                            }
-                        }
-
-                        // Fetch and update the stats after the action
+                        refreshTable();
                         fetchStats();
                     } else {
-                        flash(data.error || 'An error occurred while updating the student status.', "alert-danger");
+                        flash(data.error || 'An error occurred.', "alert-danger");
                     }
                 })
-                .catch(error => console.error('Error processing the action:', error));
-            }
-        });
-
-        // Initial fetch and setup
-        fetchStats();
-        initializeTooltips();
+                .catch(error => console.error('Error processing form:', error));
+        }
     });
 
+    // Add event listener for print button
+    document.getElementById('print-student-details').addEventListener('click', printStudentDetails);
+
+    fetchStats();
+    initializeTooltips();
+    bindEnrollmentButtons();
+});
 </script>
 {% endblock scripts %}

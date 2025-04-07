@@ -3,163 +3,590 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Aunty Anne's Int'l School</title>
+    <title>Login - Aunty Anne's International School</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" as="style" onload="this.rel='stylesheet'">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+    <!-- Custom Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Inter:wght@300;600&display=swap" rel="stylesheet">
+    <!-- Vanilla Tilt -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
+    <!-- Particles.js -->
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            overflow: hidden;
+            transition: background 0.5s ease;
+        }
+
+        body.dark-mode {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        }
+
+        #particles-js {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+        }
+
+        .login-card {
+            background: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 80px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            position: relative;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .login-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(120deg, rgba(30, 58, 138, 0.2), rgba(217, 119, 6, 0.2), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .login-card:hover::before {
+            opacity: 1;
+            animation: holographicShift 4s infinite;
+        }
+
+        .header-bg {
+            background: linear-gradient(90deg, #1e3a8a, #d97706);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-bg::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.3), transparent);
+            animation: pulseGlow 8s ease-in-out infinite;
+        }
+
+        .header-orb {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: radial-gradient(circle, #d97706, transparent);
+            top: -25px;
+            right: -25px;
+            border-radius: 50%;
+            filter: blur(15px);
+            animation: orbit 6s ease-in-out infinite;
+        }
+
+        .logo-glow {
+            position: relative;
+            animation: pulseLogo 2s infinite ease-in-out;
+        }
+
+        .logo-glow::after {
+            content: '';
+            position: absolute;
+            inset: -10px;
+            background: radial-gradient(circle, rgba(217, 119, 6, 0.3), transparent);
+            border-radius: 50%;
+            filter: blur(10px);
+            opacity: 0.5;
+            animation: glowPulse 2s infinite ease-in-out;
+        }
+
+        .toggle-btn.active {
+            background: #1e3a8a;
+            color: white;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .toggle-btn::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: #d97706;
+            transform: translateX(-50%);
+            transition: width 0.3s ease;
+        }
+
+        .toggle-btn:hover::after,
+        .toggle-btn.active::after {
+            width: 50%;
+        }
+
+        .input-glow {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .input-glow input {
+            border: 2px solid #e5e7eb;
+            transition: all 0.3s ease;
+            transform: translateY(0);
+        }
+
+        .input-glow:hover input {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-glow input:focus {
+            border-color: #d97706;
+            box-shadow: 0 0 15px rgba(217, 119, 6, 0.5);
+        }
+
+        .input-glow input::placeholder {
+            animation: typing 3s infinite steps(20);
+        }
+
+        .input-icon {
+            transition: color 0.3s ease;
+        }
+
+        .input-glow input:focus ~ .input-icon {
+            color: #d97706;
+        }
+
+        .submit-btn {
+            background: linear-gradient(90deg, #1e3a8a, #d97706);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(217, 119, 6, 0.3);
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(-100%);
+            transition: transform 0.5s ease;
+        }
+
+        .submit-btn:hover::before {
+            transform: translateX(100%);
+        }
+
+        .ripple {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: scale(0);
+            animation: rippleEffect 0.6s linear;
+            pointer-events: none;
+        }
+
+        .fingerprint {
+            position: absolute;
+            inset: 0;
+            background: url('https://www.transparenttextures.com/patterns/fingerprint.png');
+            opacity: 0;
+            animation: scan 1.5s ease-out forwards;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .progress-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: #d97706;
+            width: 0;
+            transition: width 1.5s ease;
+        }
+
+        /* Checkbox Styling */
+        .checkbox-glow input[type="checkbox"] {
+            appearance: none;
+            width: 1.25rem;
+            height: 1.25rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.25rem;
+            background: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .checkbox-glow input[type="checkbox"]:checked {
+            background: #d97706;
+            border-color: #d97706;
+        }
+
+        .checkbox-glow input[type="checkbox"]:checked::after {
+            content: '\f00c'; /* FontAwesome check icon */
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            color: white;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.75rem;
+        }
+
+        .checkbox-glow:hover input[type="checkbox"] {
+            border-color: #d97706;
+            box-shadow: 0 0 10px rgba(217, 119, 6, 0.3);
+        }
+
+        /* Animations */
+        @keyframes pulseGlow { 0%, 100% { transform: scale(1); opacity: 0.3; } 50% { transform: scale(1.2); opacity: 0.5; } }
+        @keyframes orbit { 0% { transform: translate(0, 0); } 50% { transform: translate(-10px, -10px); } 100% { transform: translate(0, 0); } }
+        @keyframes typing { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+        @keyframes rippleEffect { to { transform: scale(4); opacity: 0; } }
+        @keyframes slideIn { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes holographicShift { 0% { transform: translateX(-100%) skewX(-20deg); } 100% { transform: translateX(100%) skewX(20deg); } }
+        @keyframes pulseLogo { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        @keyframes glowPulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.6; } }
+        @keyframes scan { 0% { opacity: 0.5; transform: translateY(-100%); } 50% { opacity: 0.8; transform: translateY(0); } 100% { opacity: 0; transform: translateY(100%); } }
+    </style>
 </head>
-<body>
-    <div class="overlay"></div>
-    <div class="content-container">
-        <div class="login-card">
-            <div class="login-header">
-                <img src="{{ url_for('static', filename='images/school_logo.png') }}" alt="School Logo" loading="lazy" class="school-logo">
-                <div class="welcome-text">Welcome to Aunty Anne's Int'l School</div>
-                <div class="portal-text">Login to access the portal</div>
+<body class="min-h-screen flex items-center justify-center relative">
+    <!-- Particle Background -->
+    <div id="particles-js"></div>
+
+    <!-- Login Card -->
+    <div class="login-card w-full max-w-md mx-4 rounded-3xl z-10" data-tilt data-tilt-max="10" data-tilt-speed="400" data-tilt-perspective="1000">
+        <!-- Header -->
+        <div class="header-bg p-8 text-center relative">
+            <div class="header-orb"></div>
+            <div class="logo-glow inline-block">
+                <img src="{{ url_for('static', filename='images/school_logo.png') }}" alt="School Logo" loading="lazy" class="w-20 h-20 mx-auto rounded-full border-4 border-white shadow-lg transition-transform duration-500 hover:scale-110 hover:rotate-3">
             </div>
-            <div class="login-body">
-                <div class="toggle-buttons">
-                    <button type="button" id="studentLoginBtn" class="active">Student Login</button>
-                    <button type="button" id="adminLoginBtn">Admin Login</button>
-                </div>
-                <form id="studentLoginForm" method="POST" action="{{ url_for('auth.login') }}">
+            <h1 class="mt-4 text-xl font-bold font-['Syncopate'] text-white tracking-wide">Aunty Anne's International School</h1>
+            <p class="mt-2 text-sm font-['Inter'] text-white/80">Securely Access Your Portal</p>
+        </div>
+
+        <!-- Body -->
+        <div class="p-6 relative z-10">
+            <!-- Dark Mode Toggle -->
+            <div class="absolute top-4 right-4">
+                <button id="darkModeToggle" class="p-2 text-gray-600 hover:text-amber-600 transition-colors duration-300">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+
+            <!-- Toggle Buttons -->
+            <div class="flex justify-center mb-6 bg-gray-100 rounded-xl overflow-hidden shadow-inner relative z-10">
+                <button id="studentLoginBtn" class="toggle-btn active flex-1 py-3 px-4 text-gray-700 font-['Inter'] font-semibold text-sm transition-all duration-300 hover:bg-blue-900 hover:text-white">Student</button>
+                <button id="adminLoginBtn" class="toggle-btn flex-1 py-3 px-4 text-gray-700 font-['Inter'] font-semibold text-sm transition-all duration-300 hover:bg-blue-900 hover:text-white">Admin</button>
+            </div>
+
+            <!-- Form Container -->
+            <div id="formContainer" class="space-y-6 relative z-10">
+                <!-- Student Form -->
+                <form id="studentLoginForm" method="POST" action="{{ url_for('auth.login') }}" novalidate class="space-y-4 hidden animate-[slideIn_0.5s_ease-out] relative">
                     {{ student_form.hidden_tag() }}
-                    <div class="form-control">
-                        <input type="text" name="identifier" placeholder="Enter Student ID" aria-label="Student ID" required>
+                    <div class="input-glow">
+                        <input type="text" name="identifier" id="studentId" placeholder="Student ID (e.g., AAIS/0559/001)" aria-label="Student ID" autocomplete="username" required class="w-full py-3 px-12 rounded-lg bg-gray-50 text-gray-800 font-['Inter'] placeholder:text-gray-400 focus:outline-none">
+                        <i class="fas fa-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 input-icon"></i>
+                        <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-amber-600 cursor-pointer transition-colors duration-300 toggle-password">
+                            <i class="fas fa-eye" data-target="studentId"></i>
+                        </span>
+                        <small id="studentIdValidation" class="block mt-1 text-sm text-gray-600"></small>
                     </div>
-                    <div class="password-container">
-                        <input type="password" class="form-control" name="password" id="studentPasswordField" placeholder="Enter Password" aria-label="Password" required>
-                        <i class="fas fa-lock toggle-password" onclick="togglePasswordVisibility('studentPasswordField')"></i>
+                    <div class="input-glow">
+                        <input type="password" name="password" id="studentPasswordField" placeholder="Password" aria-label="Password" autocomplete="current-password" required class="w-full py-3 px-12 rounded-lg bg-gray-50 text-gray-800 font-['Inter'] placeholder:text-gray-400 focus:outline-none">
+                        <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 input-icon"></i>
+                        <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-amber-600 cursor-pointer transition-colors duration-300 toggle-password">
+                            <i class="fas fa-eye" data-target="studentPasswordField"></i>
+                        </span>
+                        <small id="studentPasswordValidation" class="block mt-1 text-sm text-gray-600"></small>
                     </div>
-                    <button type="submit" class="btn btn-primary" id="studentLoginButton" onclick="showSpinner('studentLoginButton')">
-                        <span>Login</span>
-                        <div class="spinner-border spinner-border-sm ms-2" style="display: none;" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
+                    <div class="checkbox-glow flex items-center space-x-2">
+                        {{ student_form.remember() }}
+                        <label for="student_remember" class="text-gray-700 font-['Inter'] text-sm">Remember Me</label>
+                    </div>
+                    <button type="submit" class="submit-btn w-full py-3 text-white font-['Syncopate'] font-semibold text-sm rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 relative overflow-hidden" id="studentLoginButton">
+                        <span>Access Now</span>
+                        <div class="inline-block ml-2 w-4 h-4 border-2 border-white rounded-full border-t-transparent animate-spin hidden"></div>
                     </button>
+                    <div class="progress-bar"></div>
                 </form>
-                <form id="adminLoginForm" method="POST" action="{{ url_for('auth.login') }}" style="display: none;">
+
+                <!-- Admin Form -->
+                <form id="adminLoginForm" method="POST" action="{{ url_for('auth.login') }}" novalidate class="space-y-4 hidden animate-[slideIn_0.5s_ease-out] relative">
                     {{ admin_form.hidden_tag() }}
-                    <div class="form-control">
-                        <input type="text" name="username" placeholder="Enter Admin Username" aria-label="Admin Username" required>
+                    <div class="input-glow">
+                        <input type="text" name="username" id="adminUsername" placeholder="Admin Username" aria-label="Admin Username" autocomplete="username" required class="w-full py-3 px-12 rounded-lg bg-gray-50 text-gray-800 font-['Inter'] placeholder:text-gray-400 focus:outline-none">
+                        <i class="fas fa-user-shield absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 input-icon"></i>
+                        <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-amber-600 cursor-pointer transition-colors duration-300 toggle-password">
+                            <i class="fas fa-eye" data-target="adminUsername"></i>
+                        </span>
+                        <small id="adminUsernameValidation" class="block mt-1 text-sm text-gray-600"></small>
                     </div>
-                    <div class="password-container">
-                        <input type="password" class="form-control" name="password" id="adminPasswordField" placeholder="Enter Password" aria-label="Password" required>
-                        <i class="fas fa-lock toggle-password" onclick="togglePasswordVisibility('adminPasswordField')"></i>
+                    <div class="input-glow">
+                        <input type="password" name="password" id="adminPasswordField" placeholder="Password" aria-label="Password" autocomplete="current-password" required class="w-full py-3 px-12 rounded-lg bg-gray-50 text-gray-800 font-['Inter'] placeholder:text-gray-400 focus:outline-none">
+                        <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 input-icon"></i>
+                        <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-amber-600 cursor-pointer transition-colors duration-300 toggle-password">
+                            <i class="fas fa-eye" data-target="adminPasswordField"></i>
+                        </span>
+                        <small id="adminPasswordValidation" class="block mt-1 text-sm text-gray-600"></small>
                     </div>
-                    <button type="submit" class="btn btn-primary" id="adminLoginButton" onclick="showSpinner('adminLoginButton')">
-                        <span>Login</span>
+                    <div class="checkbox-glow flex items-center space-x-2">
+                        {{ admin_form.remember() }}
+                        <label for="admin_remember" class="text-gray-700 font-['Inter'] text-sm">Remember Me</label>
+                    </div>
+                    <button type="submit" class="submit-btn w-full py-3 text-white font-['Syncopate'] font-semibold text-sm rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 relative overflow-hidden" id="adminLoginButton">
+                        <span>Access Now</span>
+                        <div class="inline-block ml-2 w-4 h-4 border-2 border-white rounded-full border-t-transparent animate-spin hidden"></div>
                     </button>
+                    <div class="progress-bar"></div>
                 </form>
-                <div id="validationMessageContainer">
-                    {% for category, message in get_flashed_messages(with_categories=True) %}
-                        <div class="alert {{ category }} mt-3">{{ message }}</div>
-                    {% endfor %}
-                </div>
-                <div class="back-home">
-                    <a href="{{ url_for('main.index') }}"><i class="fas fa-home"></i> Back to School Website</a>
-                </div>
+            </div>
+
+            <!-- Flash Messages -->
+            <div id="validationMessageContainer" class="mt-6 space-y-2 relative z-10">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="text-center text-sm text-{{ 'red-600' if category == 'alert-danger' else 'green-600' }}">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+            </div>
+
+            <!-- Back to Home -->
+            <div class="text-center mt-6 relative z-10">
+                <a href="{{ url_for('main.index') }}" class="inline-flex items-center px-4 py-2 text-gray-600 font-['Inter'] text-sm bg-gray-100 rounded-lg hover:text-amber-600 hover:bg-gray-200 transition-all duration-300">
+                    <i class="fas fa-arrow-left mr-2"></i> Return to Home
+                </a>
             </div>
         </div>
     </div>
-   
+
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            const studentIDField = document.querySelector('input[name="identifier"]');
-            const validationMessageContainer = document.getElementById("validationMessageContainer");
-            const studentPasswordField = document.querySelector('input[name="password"]');
-            const adminIDField = document.querySelector('input[name="username"]');
-            const adminPasswordField = document.querySelector('input[name="password"]');
-        
-            // Regular expression for the format: AAIS/0559/{student_id:03}
-            const regex = /^AAIS\/0559\/\d{3}$/;
-        
-            // Validate while typing for student login only
-            studentIDField.addEventListener("input", () => {
-                const studentID = studentIDField.value.trim();
-        
-                // Clear previous validation message
-                validationMessageContainer.innerHTML = "";
-        
-                const validationMessage = document.createElement("div");
-                validationMessage.className = "alert mt-3";
-        
-                if (regex.test(studentID)) {
-                    // Valid format
-                    validationMessage.textContent = "✔️ Valid Student ID format.";
-                    validationMessage.classList.add("alert-success");
-                } else {
-                    // Invalid format
-                    validationMessage.textContent = "❌ Invalid format. Use AAIS/0559/studentID";
-                    validationMessage.classList.add("alert-danger");
-                }
-        
-                // Append the new validation message
-                validationMessageContainer.appendChild(validationMessage);
+            // Particles.js Initialization
+            particlesJS("particles-js", {
+                particles: {
+                    number: { value: 50, density: { enable: true, value_area: 800 } },
+                    color: { value: "#d97706" },
+                    shape: { type: "circle" },
+                    opacity: { value: 0.5, random: true },
+                    size: { value: 3, random: true },
+                    line_linked: { enable: false },
+                    move: { enable: true, speed: 1, direction: "none", random: true, out_mode: "out" }
+                },
+                interactivity: {
+                    detect_on: "canvas",
+                    events: { onhover: { enable: true, mode: "repulse" }, onclick: { enable: true, mode: "push" }, resize: true },
+                    modes: { repulse: { distance: 100, duration: 0.4 }, push: { particles_nb: 4 } }
+                },
+                retina_detect: true
             });
-        
-            // Toggle between student and admin login
-            document.getElementById('studentLoginBtn').addEventListener('click', () => {
-                document.getElementById('studentLoginForm').style.display = 'block';
-                document.getElementById('adminLoginForm').style.display = 'none';
-                document.getElementById('studentLoginBtn').classList.add('active');
-                document.getElementById('adminLoginBtn').classList.remove('active');
-        
-                // Clear validation messages and input for student ID
-                validationMessageContainer.innerHTML = "";
-                studentIDField.value = "";
-                studentPasswordField.value = "";
-            });
-            
-             // Toggle between admin and student login
-            document.getElementById('adminLoginBtn').addEventListener('click', () => {
-                document.getElementById('adminLoginForm').style.display = 'block';
-                document.getElementById('studentLoginForm').style.display = 'none';
-                document.getElementById('adminLoginBtn').classList.add('active');
-                document.getElementById('studentLoginBtn').classList.remove('active');
-        
-                // Clear validation messages and input for student ID
-                validationMessageContainer.innerHTML = "";
-                adminIDField.value = "";
-                studentPasswordField.value = "";
-            });
-        
-            document.getElementById('adminLoginBtn').addEventListener('click', () => {
-                document.getElementById('studentLoginForm').style.display = 'none';
-                document.getElementById('adminLoginForm').style.display = 'block';
-                document.getElementById('adminLoginBtn').classList.add('active');
-                document.getElementById('studentLoginBtn').classList.remove('active');
-        
-                // Clear student-specific fields and validation messages
-                studentIDField.value = "";
-                validationMessageContainer.innerHTML = "";
-            });
-        });
-        
-        // Toggle password visibility
-        function togglePasswordVisibility(id) {
-            const passwordField = document.getElementById(id);
-            const icon = passwordField.nextElementSibling;
-            if (passwordField.type === 'password') {
-                passwordField.type = 'text';
-                icon.classList.replace('fa-lock', 'fa-lock-open');
-            } else {
-                passwordField.type = 'password';
-                icon.classList.replace('fa-lock-open', 'fa-lock');
-            }
-        }
-        
-        document.querySelectorAll('form').forEach(form => {
-            form.addEventListener('submit', event => {
-                const button = form.querySelector('button[type="submit"]');
-                if (button) {
-                    button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...';
-                    button.disabled = true;
-                }
-            });
-        });
 
+            // Elements
+            const studentBtn = document.getElementById('studentLoginBtn');
+            const adminBtn = document.getElementById('adminLoginBtn');
+            const studentIdField = document.getElementById('studentId');
+            const studentPasswordField = document.getElementById('studentPasswordField');
+            const adminUsernameField = document.getElementById('adminUsername');
+            const adminPasswordField = document.getElementById('adminPasswordField');
+            const validationMessageContainer = document.getElementById("validationMessageContainer");
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            const card = document.querySelector('.login-card');
+
+            const studentIdRegex = /^AAIS\/0559\/\d{3}$/;
+
+            // Validation Function
+            function validateInput(input, regex, messageElementId, type) {
+                const value = input.value.trim();
+                const messageElement = document.getElementById(messageElementId);
+                if (value) {
+                    if (regex.test(value)) {
+                        messageElement.textContent = "✔️ Valid " + type + " format.";
+                        messageElement.className = "block mt-1 text-sm text-green-600 animate-[slideIn_0.3s_ease-out]";
+                        input.classList.add('border-green-500');
+                        input.classList.remove('border-red-500');
+                    } else {
+                        messageElement.textContent = "❌ Invalid " + type + " format. Use " + (type === "Student ID" ? "AAIS/0559/XXX" : "a valid username") + ".";
+                        messageElement.className = "block mt-1 text-sm text-red-600 animate-[slideIn_0.3s_ease-out]";
+                        input.classList.add('border-red-500');
+                        input.classList.remove('border-green-500');
+                    }
+                } else {
+                    messageElement.textContent = "";
+                    input.classList.remove('border-green-500', 'border-red-500');
+                }
+            }
+
+            studentIdField.addEventListener("input", () => validateInput(studentIdField, studentIdRegex, 'studentIdValidation', 'Student ID'));
+            adminUsernameField.addEventListener("input", () => validateInput(adminUsernameField, /.+/, 'adminUsernameValidation', 'Username'));
+
+            [studentPasswordField, adminPasswordField].forEach(passwordField => {
+                passwordField.addEventListener("input", () => {
+                    const isStudent = passwordField.id === 'studentPasswordField';
+                    const messageElement = document.getElementById(isStudent ? 'studentPasswordValidation' : 'adminPasswordValidation');
+                    const value = passwordField.value.trim();
+                    if (value) {
+                        messageElement.textContent = "✔️ Password entered.";
+                        messageElement.className = "block mt-1 text-sm text-green-600 animate-[slideIn_0.3s_ease-out]";
+                        passwordField.classList.add('border-green-500');
+                        passwordField.classList.remove('border-red-500');
+                    } else {
+                        messageElement.textContent = "❌ Password cannot be empty.";
+                        messageElement.className = "block mt-1 text-sm text-red-600 animate-[slideIn_0.3s_ease-out]";
+                        passwordField.classList.add('border-red-500');
+                        passwordField.classList.remove('border-green-500');
+                    }
+                });
+            });
+
+            // Toggle Form
+            function toggleForm(type) {
+                const studentForm = document.getElementById('studentLoginForm');
+                const adminForm = document.getElementById('adminLoginForm');
+                if (type === 'student') {
+                    studentForm.classList.remove('hidden');
+                    studentForm.classList.add('block');
+                    adminForm.classList.add('hidden');
+                    adminForm.classList.remove('block');
+                    studentBtn.classList.add('active');
+                    adminBtn.classList.remove('active');
+                } else {
+                    adminForm.classList.remove('hidden');
+                    adminForm.classList.add('block');
+                    studentForm.classList.add('hidden');
+                    studentForm.classList.remove('block');
+                    adminBtn.classList.add('active');
+                    studentBtn.classList.remove('active');
+                }
+
+                clearFieldsAndMessages();
+                playHoverSound();
+            }
+
+            studentBtn.addEventListener('click', () => toggleForm('student'));
+            adminBtn.addEventListener('click', () => toggleForm('admin'));
+
+            function clearFieldsAndMessages() {
+                [studentIdField, studentPasswordField, adminUsernameField, adminPasswordField].forEach(field => {
+                    field.value = '';
+                    field.classList.remove('border-green-500', 'border-red-500');
+                });
+                ['studentIdValidation', 'studentPasswordValidation', 'adminUsernameValidation', 'adminPasswordValidation'].forEach(id => {
+                    document.getElementById(id).textContent = '';
+                });
+                validationMessageContainer.innerHTML = '';
+            }
+
+            // Password Visibility Toggle
+            function togglePasswordVisibility(targetId) {
+                const field = document.getElementById(targetId);
+                const inputGlow = field.closest('.input-glow');
+                const toggleIcon = inputGlow.querySelector('.toggle-password i');
+                if (!field || !toggleIcon) {
+                    console.warn(`Element with ID ${targetId} or its toggle icon not found`);
+                    return;
+                }
+                if (field.type === 'password') {
+                    field.type = 'text';
+                    toggleIcon.classList.replace('fa-eye', 'fa-eye-slash');
+                } else {
+                    field.type = 'password';
+                    toggleIcon.classList.replace('fa-eye-slash', 'fa-eye');
+                }
+                toggleIcon.parentElement.classList.add('animate-[spin_0.5s_ease]');
+                setTimeout(() => toggleIcon.parentElement.classList.remove('animate-[spin_0.5s_ease]'), 500);
+            }
+
+            document.querySelectorAll('.toggle-password i').forEach(icon => {
+                icon.addEventListener('click', () => togglePasswordVisibility(icon.getAttribute('data-target')));
+            });
+
+            // Form Submission with Fingerprint Effect and Progress Bar
+            document.querySelectorAll('form').forEach(form => {
+                form.addEventListener('submit', event => {
+                    const button = form.querySelector('button[type="submit"]');
+                    const progressBar = form.querySelector('.progress-bar');
+                    button.disabled = true;
+                    button.querySelector('.animate-spin').classList.remove('hidden');
+                    progressBar.style.width = '100%';
+                    const fingerprint = document.createElement('div');
+                    fingerprint.classList.add('fingerprint');
+                    form.appendChild(fingerprint);
+                    setTimeout(() => {
+                        fingerprint.remove();
+                        button.disabled = false;
+                        button.querySelector('.animate-spin').classList.add('hidden');
+                        progressBar.style.width = '0';
+                    }, 1500);
+                });
+            });
+
+            // Audio Feedback (Hosted Locally)
+            const hoverSound = new Audio('{{ url_for('static', filename='audio/hover.mp3') }}');
+            const clickSound = new Audio('{{ url_for('static', filename='audio/click.mp3') }}');
+            hoverSound.volume = 0.3;
+            clickSound.volume = 0.5;
+
+            function playHoverSound() { hoverSound.currentTime = 0; hoverSound.play().catch(() => {}); }
+            function playClickSound() { clickSound.currentTime = 0; clickSound.play().catch(() => {}); }
+
+            document.querySelectorAll('.toggle-btn, .submit-btn').forEach(btn => {
+                btn.addEventListener('mouseover', playHoverSound);
+                btn.addEventListener('click', playClickSound);
+            });
+
+            // Ripple Effect
+            document.querySelectorAll('.submit-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    const rect = btn.getBoundingClientRect();
+                    const ripple = document.createElement('span');
+                    ripple.classList.add('ripple');
+                    const size = Math.max(rect.width, rect.height);
+                    ripple.style.width = ripple.style.height = `${size}px`;
+                    ripple.style.left = `${e.clientX - rect.left - size / 2}px`;
+                    ripple.style.top = `${e.clientY - rect.top - size / 2}px`;
+                    btn.appendChild(ripple);
+                    setTimeout(() => ripple.remove(), 600);
+                });
+            });
+
+            // Holographic Effect
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            });
+
+            // Dark Mode Toggle with Local Storage
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.body.classList.add('dark-mode');
+                darkModeToggle.querySelector('i').classList.replace('fa-moon', 'fa-sun');
+            }
+            darkModeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                const isDark = document.body.classList.contains('dark-mode');
+                darkModeToggle.querySelector('i').classList.toggle('fa-moon', !isDark);
+                darkModeToggle.querySelector('i').classList.toggle('fa-sun', isDark);
+                localStorage.setItem('darkMode', isDark);
+                playClickSound();
+            });
+
+            // Vanilla Tilt
+            VanillaTilt.init(card, { max: 10, speed: 400, perspective: 1000, glare: true, 'max-glare': 0.2 });
+
+            // Initial Form State
+            toggleForm('student');
+        });
     </script>
 </body>
 </html>

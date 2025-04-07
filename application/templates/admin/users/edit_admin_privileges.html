@@ -1,0 +1,43 @@
+{% extends "admin/base.html" %}
+{% block content %}
+<div class="container mt-5">
+    <h1 class="session-header">Edit Privileges for: {{ admin.username }}</h1>
+    <div class="session-card">
+        <form method="POST" action="{{ url_for('admins.edit_admin_privileges', user_id=admin.id) }}">
+            {{ form.hidden_tag() }}
+            <h3 class="form-label mt-4">Privileges</h3>
+            <div class="form-check">
+                {{ form.can_manage_users(class="form-check-input", id="can_manage_users") }}
+                <label class="form-check-label" for="can_manage_users">Can Manage Users</label>
+            </div>
+            <div class="form-check">
+                {{ form.can_manage_sessions(class="form-check-input", id="can_manage_sessions") }}
+                <label class="form-check-label" for="can_manage_sessions">Can Manage Sessions</label>
+            </div>
+            <div class="form-check">
+                {{ form.can_manage_classes(class="form-check-input", id="can_manage_classes") }}
+                <label class="form-check-label" for="can_manage_classes">Can Manage Classes</label>
+            </div>
+            <div class="form-check">
+                {{ form.can_manage_results(class="form-check-input", id="can_manage_results") }}
+                <label class="form-check-label" for="can_manage_results">Can Manage Results</label>
+            </div>
+            <div class="form-check">
+                {{ form.can_manage_teachers(class="form-check-input", id="can_manage_teachers") }}
+                <label class="form-check-label" for="can_manage_teachers">Can Manage Teachers</label>
+            </div>
+            <div class="form-check">
+                {{ form.can_manage_subjects(class="form-check-input", id="can_manage_subjects") }}
+                <label class="form-check-label" for="can_manage_teachers">Can Manage Subjects</label>
+            </div>
+            <div class="form-check">
+                {{ form.can_view_reports(class="form-check-input", id="can_view_reports") }}
+                <label class="form-check-label" for="can_view_reports">Can View Reports</label>
+            </div>
+            <div class="form-group mt-4">
+                {{ form.submit(class="btn btn-primary") }}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,9 @@
+body {
+    font-family: 'Montserrat', sans-serif;
+}
+.sidebar {
+    transition: width 0.3s;
+}
+.nav-link.active {
+    background-color: #4b5563; /* gray-600 */
+}

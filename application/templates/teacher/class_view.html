@@ -1,0 +1,675 @@
+{% extends "teacher/base.html" %}
+{% block content %}
+
+<!-- Custom CSS for animations -->
+<style>
+    .fadeIn {
+        animation: fadeIn 0.5s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    .hover-scale {
+        transition: transform 0.2s ease-in-out;
+    }
+
+    .hover-scale:hover {
+        transform: scale(1.1);
+    }
+
+     /* General Styling */
+    .container {
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        padding: 30px;
+    }
+
+    h2, h1 {
+        font-weight: 600;
+        text-align: center;
+    }
+
+    /* Widgets Section */
+    .stats-widget {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+
+    .stat-card {
+        flex: 1;
+        background: #f9f9f9;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        padding: 15px;
+        text-align: center;
+        margin: 0 10px;
+    }
+
+    .stat-card h3 {
+        margin: 0;
+        font-size: 1.5rem;
+    }
+
+    .stat-card p {
+        margin: 5px 0 0;
+        color: #666;
+    }
+
+    /* Table Styling */
+    .table {
+        margin-top: 20px;
+    }
+
+    .table-responsive {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        position: relative;
+    }
+
+    .table thead {
+        background-color: #333;
+        color: #fff;
+    }
+
+    .table th, .table td {
+        padding: 10px;
+        vertical-align: middle;
+        font-size: 0.85rem;
+        word-wrap: nowrap;
+        white-space: normal;
+    }
+
+    .table-row:hover {
+        background-color: #f1f1f1;
+        cursor: pointer;
+    }
+
+    .form-control {
+        padding: 10px;
+    }
+
+    /* Action Buttons */
+    .btn {
+        border-radius: 5px;
+        padding: 8px 12px;
+        font-weight: 500;
+        margin: 2px;
+    }
+
+    /* Filter and Search Section */
+    .filters {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .search-bar {
+        flex: 1;
+        margin-right: 15px;
+    }
+
+    .filters input.search-bar::placeholder {
+        font-size: 0.8rem;
+        color: #6c757d;
+    }
+
+    .filter-dropdown {
+        width: 200px;
+    }
+
+    .search-bar, .filter-dropdown {
+        flex: 1 1 100%;
+        margin-bottom: 10px;
+    }
+
+    .filters input.search-bar,
+    .filters select.filter-dropdown {
+        font-size: 0.9rem;
+        padding: 0.5rem;
+        border-radius: 5px;
+        width: auto;
+        min-width: 200px;
+    }
+
+    /* Action Buttons */
+    .btn {
+        border-radius: 5px;
+        padding: 8px 12px;
+        font-weight: 500;
+        margin: 2px;
+    }
+
+    /* Modal Styling */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 2050;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        /*overflow: hidden;*/
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-content {
+        background-color: #fff;
+        margin: 15% auto;
+        padding: 20px;
+        border-radius: 8px;
+        max-width: 500px;
+    }
+
+    .modal-close {
+        float: right;
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #333;
+        cursor: pointer;
+    }
+
+    /* Pagination styling */
+    .pagination-container {
+        max-width: 100%;
+        padding: 10px 0;
+        display: flex;
+        justify-content: center;
+        margin: auto;
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .pagination .page-item {
+        margin: 0 4px;
+    }
+
+    .pagination .page-item .page-link {
+        padding: 8px 16px;
+        font-size: 1rem;
+        border-radius: 50px;
+        color: var(--primary-blue);
+        background-color: #fff;
+        /*border: 1px solid #ddd;*/
+        transition: background-color 0.3s, color 0.3s;
+    }
+
+    .pagination .page-item.active .page-link {
+        background-color: var(--primary-blue);
+        color: #fff;
+        font-weight: bold;
+        border: none;
+    }
+
+    .pagination .page-item .page-link:hover {
+        background-color: #e9ecef;
+        color: var(--background);
+        text-decoration: none;
+    }
+
+    .pagination .page-item.disabled .page-link {
+        color: #adb5bd;
+        pointer-events: none;
+    }
+
+    .pagination .page-item:first-child .page-link {
+        border-radius: 50px 0 0 50px;
+    }
+
+    .pagination .page-item:last-child .page-link {
+        border-radius: 0 50px 50px 0;
+    }
+
+     Media Queries for Pagination
+    @media (min-width: 576px) {
+        .pagination .page-item {
+            margin: 0px 4px;
+        }
+        .pagination .page-item .page-link {
+            padding: 8px 16px;
+            font-size: 1.1rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .pagination .page-item {
+            margin: 0px 4px;
+        }
+        .pagination .page-item .page-link {
+            padding: 3px 5px;
+            font-size: 0.9rem;
+        }
+
+        .pagination-container {
+            max-width: 100%;
+            padding: 3px;
+        }
+    }
+    /* Media Queries for the page */
+    @media (min-width: 576px) {
+        .search-bar {
+            margin-right: 15px;
+        }
+
+        .filter-dropdown {
+            flex: 1 1 auto;
+            margin-bottom: 0;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .container {
+            padding: 15px;
+        }
+
+        .stats-widget {
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .stat-card {
+            margin: 0; /* Remove side margins */
+        }
+
+        .filters {
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .filter-dropdown,
+        .search-bar {
+            flex: 1 1 auto;
+            margin-right: 0;
+        }
+
+        .table th, .table td {
+            padding: 5px;
+            font-size: 0.75rem;
+        }
+
+        .modal-content {
+            margin: 10% auto;
+            max-width: 90%;
+        }
+
+        .btn {
+            font-size: 0.85rem;
+        }
+
+    }
+</style>
+
+<div class="container mx-auto px-4 py-5">
+    <!-- Stats Section -->
+    <div class="stats-widget d-flex justify-content-between">
+        <div class="stat-card">
+            <i class="bi bi-person-fill"></i>
+            <h3 id="total-students" data-stat="total_students">0</h3>
+            <p>Total Students</p>
+        </div>
+        <div class="stat-card">
+            <i class="bi bi-check-circle-fill"></i>
+            <h3 id="approved-students" data-stat="approved_students">0</h3>
+            <p>Approved</p>
+        </div>
+        <div class="stat-card">
+            <i class="bi bi-wallet2"></i>
+            <h3 id="fees-paid" data-stat="fees_paid">0</h3>
+            <p>Fees Paid</p>
+        </div>
+        <div class="stat-card">
+            <i class="bi bi-wallet-x"></i>
+            <h3 id="fees-not-paid" data-stat="fees_not_paid">0</h3>
+            <p>Fees Not Paid</p>
+        </div>
+    </div>
+
+    <!-- Filters and Search -->
+    <div class="filters mb-3 d-flex align-items-center gap-3">
+        <input type="text" id="search-input" class="form-control search-bar" placeholder="Search students by name, class or ID...">
+        <select name="fee_status" class="form-control filter-dropdown">
+            <option value="">Filter by Fee Status</option>
+            <option value="paid">Fees Paid</option>
+            <option value="unpaid">Fees Unpaid</option>
+        </select>
+        <select name="approval_status" class="form-control filter-dropdown">
+            <option value="">Filter by Approval Status</option>
+            <option value="approved">Approved</option>
+            <option value="pending">Pending Approval</option>
+        </select>
+    </div>
+
+    {% if students %}
+        <h1 class="display-5 fw-bold text-center mb-4">{{ cls.name }} ({{ session.year }} - {{ term }} Term)</h1>
+        <div class="container">
+            <div class="table-responsive">
+                <table id="results-table" class="table table-hover table-striped align-middle">
+                    <thead>
+                        <tr>
+                            <th scope="col" class="py-3">Registration ID</th>
+                            <th scope="col" class="py-3">First Name</th>
+                            <th scope="col" class="py-3">Last Name</th>
+                            <th scope="col" class="py-3">Enrollment Status</th>
+                            <th scope="col" class="py-3">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                            {% set fee_payment = student.fee_payments | selectattr("session_id", "equalto", session.id) | selectattr("term", "equalto", term) | first %}
+                            {% set has_paid_fee = fee_payment.has_paid_fee if fee_payment else False %}
+                            {% set enrollment = student.class_history | selectattr("session_id", "equalto", session.id) | first %}
+                            {% set is_active = enrollment.is_active_in_term(session.id, term) if enrollment else False %}
+                            <tr class="table-row"
+                                data-fee-status="{{ 'paid' if has_paid_fee else 'unpaid' }}"
+                                data-approval-status="{{ 'approved' if student.approved else 'pending' }}"
+                                data-enrollment-status="{{ 'active' if is_active else 'inactive' }}">
+                                <td>{{ student.reg_no }}</td>
+                                <td>{{ student.first_name }}</td>
+                                <td>{{ student.last_name }}</td>
+                                <td>{{ 'Active' if is_active else 'Inactive' }}</td>
+                                <td>
+                                    <a class="btn btn-primary mt-3" href="{{ url_for('teachers.manage_results', class_id=cls.id, student_id=student.id, session_id=session.id, term=term) }}">Manage Results</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <p class="text-muted fst-italic">No students enrolled.</p>
+    {% endif %}
+    <h2 class="h4 fw-semibold text-muted mt-5 mb-4">Subjects</h2>
+    {% if subjects %}
+        <ul class="list-group list-group-flush">
+            {% for subject in subjects %}
+                <li class="list-group-item py-3">{{ subject.name }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="text-muted fst-italic">No subjects available.</p>
+    {% endif %}
+    <a href="{{ url_for('teachers.broadsheet', class_id=cls.id, session_id=session.id, term=term) }}" class="btn btn-primary mt-3">View Broadsheet</a>
+
+    <div class="text-center mt-2">
+        <a href="{{ url_for('teachers.manage_results_select') }}" class="btn btn-primary mt-3">Back to Class Selection</a>
+    </div>
+
+
+    {#
+    <div class="pagination-container d-flex justify-content-center my-4">
+        <ul class="pagination">
+            {% if pagination.has_prev %}
+                <li class="page-item">
+                    <a href="{{ url_for('admins.students_by_class', class_name=class_name, action=action, page=pagination.prev_num) }}"
+                       class="page-link pagination-link pagination-sm">
+                       <i class="bi bi-arrow-left"></i> Prev
+                    </a>
+                </li>
+            {% endif %}
+            {% for page in pagination.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=1) %}
+                {% if page %}
+                    <li class="page-item {{ 'active' if page == pagination.page }}">
+                        <a href="{{ url_for('admins.students_by_class', class_name=class_name, action=action, page=page) }}"
+                           class="page-link pagination-link pagination-sm">
+                           {{ page }}
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">…</span></li>
+                {% endif %}
+            {% endfor %}
+            {% if pagination.has_next %}
+                <li class="page-item">
+                    <a href="{{ url_for('admins.students_by_class', class_name=class_name, action=action, page=pagination.next_num) }}"
+                       class="page-link pagination-link pagination-sm">
+                       Next <i class="bi bi-arrow-right"></i>
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    </div>
+    <div id="loading-spinner" class="text-center d-none my-2">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    #}
+
+    {#
+    <!-- Broadsheet and Print Buttons -->
+    <div class="text-center">
+        <a href="{{ url_for('admins.select_class', action=action) }}" class="btn btn-primary mt-3">Back to Classes</a>
+        {% if action == 'generate_broadsheet' %}
+            <a href="{{ url_for('admins.broadsheet', class_name=class_name, action=action ) }}" class="btn btn-secondary mt-3">Generate Broadsheet</a>
+        {% endif %}
+        {% if action == 'download_broadsheet' %}
+            <a href="{{ url_for('admins.download_broadsheet', class_name=class_name, action=action) }}" class="btn btn-primary mt-3">Download Broadsheet</a>
+        {% endif %}
+        {% if action == 'view_students' %}
+            <button onclick="printStudentDetails()" class="btn btn-primary mt-3">Print Student Details</button>
+        {% endif %}
+    </div>
+
+    #}
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+{#
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    const className = {{ class_name|tojson }};
+    const action = {{ action|tojson }};
+    const currentTerm = {{ current_term|tojson }};
+
+    const selectors = {
+        resultsTable: "#results-table tbody",
+        pagination: ".pagination-container",
+        loadingSpinner: "#loading-spinner",
+        searchInput: "#search-input",
+        totalStudentsStat: '[data-stat="total_students"]',
+        approvedStudentsStat: '[data-stat="approved_students"]',
+        feesPaidStat: '[data-stat="fees_paid"]',
+        feesNotPaidStat: '[data-stat="fees_not_paid"]',
+    };
+
+    const endpoints = {
+        stats: `/admin/class/student_stats/${encodeURIComponent(className)}?term=${currentTerm}`,
+        search: `/admin/search_students_by_class/${encodeURIComponent(className)}/${encodeURIComponent(action)}`,
+        base: `/admin/students_by_class/${encodeURIComponent(className)}/${encodeURIComponent(action)}`,
+        leave: studentId => `/admin/student/${studentId}/leave`,
+        reenroll: studentId => `/admin/student/${studentId}/reenroll`,
+    };
+
+    function initializeTooltips() {
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="tooltip"]'));
+        tooltipTriggerList.map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+    }
+
+    function toggleSpinner(show) {
+        if (show) {
+            document.querySelector(selectors.loadingSpinner).classList.remove('d-none');
+            document.querySelector(selectors.pagination).classList.add('d-none');
+        } else {
+            document.querySelector(selectors.loadingSpinner).classList.add('d-none');
+            document.querySelector(selectors.pagination).classList.remove('d-none');
+        }
+    }
+
+    function updateContent(selector, content) {
+        const element = document.querySelector(selector);
+        if (element) element.innerHTML = content;
+    }
+
+    function fetchStats() {
+        fetch(endpoints.stats)
+            .then(response => response.json())
+            .then(stats => {
+                updateContent(selectors.totalStudentsStat, stats.total_students || 0);
+                updateContent(selectors.approvedStudentsStat, stats.approved_students || 0);
+                updateContent(selectors.feesPaidStat, stats.fees_paid || 0);
+                updateContent(selectors.feesNotPaidStat, stats.fees_not_paid || 0);
+            })
+            .catch(error => console.error('Error fetching stats:', error));
+    }
+
+    function fetchTable(url) {
+        toggleSpinner(true);
+        fetch(url, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
+            credentials: 'same-origin',
+        })
+            .then(response => response.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                updateContent(selectors.resultsTable, doc.querySelector('tbody')?.innerHTML || "");
+                updateContent(selectors.pagination, doc.querySelector('.pagination-container')?.innerHTML || "");
+                initializeTooltips();
+                bindEnrollmentButtons();
+            })
+            .catch(error => console.error('Error fetching table:', error))
+            .finally(() => toggleSpinner(false));
+    }
+
+    function bindEnrollmentButtons() {
+        document.querySelectorAll('.leave-btn').forEach(btn => {
+            btn.removeEventListener('click', handleLeave); // Prevent duplicate listeners
+            btn.addEventListener('click', handleLeave);
+        });
+        document.querySelectorAll('.reenroll-btn').forEach(btn => {
+            btn.removeEventListener('click', handleReenroll); // Prevent duplicate listeners
+            btn.addEventListener('click', handleReenroll);
+        });
+    }
+
+    function handleLeave(event) {
+        const studentId = event.target.dataset.studentId;
+        fetch(endpoints.leave(studentId), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    flash(data.message, "alert-info");
+                    refreshTable();
+                    fetchStats();
+                } else {
+                    flash(data.error || 'Failed to mark as left', "alert-danger");
+                }
+            })
+            .catch(error => console.error('Error marking as left:', error));
+    }
+
+    function handleReenroll(event) {
+        const studentId = event.target.dataset.studentId;
+        fetch(endpoints.reenroll(studentId), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    flash(data.message, "alert-info");
+                    refreshTable();
+                    fetchStats();
+                } else {
+                    flash(data.error || 'Failed to re-enroll', "alert-danger");
+                }
+            })
+            .catch(error => console.error('Error re-enrolling:', error));
+    }
+
+    function refreshTable() {
+        const query = document.querySelector(selectors.searchInput).value.trim();
+        const feeStatus = document.querySelector('select[name="fee_status"]').value || '';
+        const approvalStatus = document.querySelector('select[name="approval_status"]').value || '';
+        const url = `${endpoints.base}?ajax=true&fee_status=${feeStatus}&approval_status=${approvalStatus}${query ? `&query=${encodeURIComponent(query)}` : ''}`;
+        fetchTable(url);
+    }
+
+    let debounceTimer;
+    document.querySelector(selectors.searchInput).addEventListener("input", (e) => {
+        clearTimeout(debounceTimer);
+        const query = e.target.value.trim();
+        const feeStatus = document.querySelector('select[name="fee_status"]').value || '';
+        const approvalStatus = document.querySelector('select[name="approval_status"]').value || '';
+        debounceTimer = setTimeout(() => {
+            const url = query.length >= 2
+                ? `${endpoints.search}?query=${encodeURIComponent(query)}&ajax=true&fee_status=${feeStatus}&approval_status=${approvalStatus}`
+                : `${endpoints.base}?ajax=true&fee_status=${feeStatus}&approval_status=${approvalStatus}`;
+            fetchTable(url);
+        }, 300);
+    });
+
+    document.querySelector(selectors.pagination).addEventListener('click', function (event) {
+        const link = event.target.closest('.pagination-link');
+        if (link) {
+            event.preventDefault();
+            const query = document.querySelector(selectors.searchInput).value.trim();
+            const feeStatus = document.querySelector('select[name="fee_status"]').value || '';
+            const approvalStatus = document.querySelector('select[name="approval_status"]').value || '';
+            const url = `${link.href}&ajax=true&fee_status=${feeStatus}&approval_status=${approvalStatus}${query ? `&query=${encodeURIComponent(query)}` : ''}`;
+            fetchTable(url);
+        }
+    });
+
+    document.querySelectorAll('.filter-dropdown').forEach(dropdown => {
+        dropdown.addEventListener('change', refreshTable);
+    });
+
+    document.body.addEventListener('submit', function (event) {
+        const form = event.target;
+        if (form.matches('.fees-form, .approval-form, .promote-form, .demote-form')) {
+            event.preventDefault();
+            fetch(form.action, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
+                body: JSON.stringify(Object.fromEntries(new FormData(form))),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        flash(data.message, "alert-info");
+                        refreshTable();
+                        fetchStats();
+                    } else {
+                        flash(data.error || 'An error occurred.', "alert-danger");
+                    }
+                })
+                .catch(error => console.error('Error processing form:', error));
+        }
+    });
+
+    fetchStats();
+    initializeTooltips();
+    bindEnrollmentButtons();
+});
+
+</script>
+
+#}
+{% endblock scripts %}

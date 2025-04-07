@@ -1,7 +1,6 @@
 {% extends "admin/base.html" %}
 {% block content %}
 
-<!-- Custom CSS for animations -->
 <style>
     .fadeIn {
         animation: fadeIn 0.5s ease-in-out;
@@ -23,7 +22,7 @@
     .hover-scale:hover {
         transform: scale(1.1);
     }
-    
+
      /* General Styling */
     .container {
         background-color: #ffffff;
@@ -68,7 +67,7 @@
     .table {
         margin-top: 20px;
     }
-    
+
     .table-responsive {
         width: 100%;
         overflow-x: auto;
@@ -80,7 +79,7 @@
         background-color: #333;
         color: #fff;
     }
-    
+
     .table th, .table td {
         padding: 10px;
         vertical-align: middle;
@@ -93,7 +92,7 @@
         background-color: #f1f1f1;
         cursor: pointer;
     }
-    
+
     .form-control {
         padding: 10px;
     }
@@ -118,7 +117,7 @@
         flex: 1;
         margin-right: 15px;
     }
-    
+
     .filters input.search-bar::placeholder {
         font-size: 0.8rem;
         color: #6c757d;
@@ -127,12 +126,12 @@
     .filter-dropdown {
         width: 200px;
     }
-    
+
     .search-bar, .filter-dropdown {
         flex: 1 1 100%;
         margin-bottom: 10px;
     }
-    
+
     .filters input.search-bar,
     .filters select.filter-dropdown {
         font-size: 0.9rem;
@@ -140,14 +139,6 @@
         border-radius: 5px;
         width: auto;
         min-width: 200px;
-    }
-
-    /* Action Buttons */
-    .btn {
-        border-radius: 5px;
-        padding: 8px 12px;
-        font-weight: 500;
-        margin: 2px;
     }
 
     /* Modal Styling */
@@ -178,7 +169,7 @@
         color: #333;
         cursor: pointer;
     }
-    
+
     /* Pagination styling */
     .pagination-container {
         max-width: 100%;
@@ -187,7 +178,7 @@
         justify-content: center;
         margin: auto;
     }
-    
+
     .pagination {
         display: flex;
         justify-content: center;
@@ -195,11 +186,11 @@
         padding: 0;
         margin: 0;
     }
-    
+
     .pagination .page-item {
         margin: 0 4px;
     }
-    
+
     .pagination .page-item .page-link {
         padding: 8px 16px;
         font-size: 1rem;
@@ -209,33 +200,33 @@
         /*border: 1px solid #ddd;*/
         transition: background-color 0.3s, color 0.3s;
     }
-    
+
     .pagination .page-item.active .page-link {
         background-color: var(--primary-blue);
         color: #fff;
         font-weight: bold;
         border: none;
     }
-    
+
     .pagination .page-item .page-link:hover {
         background-color: #e9ecef;
         color: var(--background);
         text-decoration: none;
     }
-    
+
     .pagination .page-item.disabled .page-link {
         color: #adb5bd;
         pointer-events: none;
     }
-    
+
     .pagination .page-item:first-child .page-link {
         border-radius: 50px 0 0 50px;
     }
-    
+
     .pagination .page-item:last-child .page-link {
         border-radius: 0 50px 50px 0;
     }
-    
+
     /* Media Queries for Pagination */
     @media (min-width: 576px) {
         .pagination .page-item {
@@ -246,7 +237,7 @@
             font-size: 0.75rem;
         }
     }
-    
+
     @media (max-width: 576px) {
         .pagination .page-item {
             margin: 0px 4px;
@@ -255,7 +246,7 @@
             padding: 3px 5px;
             font-size: 0.75rem;
         }
-    
+
         .pagination-container {
             max-width: 100%;
             padding: 3px;
@@ -266,57 +257,124 @@
         .search-bar {
             margin-right: 15px;
         }
-    
+
         .filter-dropdown {
             flex: 1 1 auto;
             margin-bottom: 0;
         }
     }
-    
+
     @media (max-width: 576px) {
         .container {
             padding: 15px;
         }
-        
+
         .stats-widget {
             flex-direction: column;
             gap: 10px;
         }
-    
+
         .stat-card {
             margin: 0; /* Remove side margins */
         }
-        
+
         .filters {
             flex-direction: column;
             gap: 10px;
         }
-    
+
         .filter-dropdown,
         .search-bar {
             flex: 1 1 auto;
             margin-right: 0;
         }
-        
+
         .table th, .table td {
             padding: 5px;
             font-size: 0.75rem;
         }
-        
+
         .modal-content {
             margin: 10% auto;
             max-width: 90%;
         }
-        
+
         .btn {
             font-size: 0.85rem;
         }
-        
+
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 2050;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-content {
+        background-color: #fff;
+        margin: 10% auto;
+        padding: 25px;
+        border-radius: 8px;
+        max-width: 500px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .modal-close {
+        float: right;
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #333;
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+
+    .modal-close:hover {
+        color: #ff0000;
+    }
+
+    .modal-header {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 20px;
+    }
+
+    .modal-body label {
+        font-weight: 500;
+        margin-bottom: 5px;
+    }
+
+    .modal-body select {
+        width: 100%;
+        padding: 8px;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+        margin-bottom: 15px;
+    }
+
+    .modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 576px) {
+        .modal-content {
+            margin: 15% auto;
+            max-width: 90%;
+            padding: 15px;
+        }
     }
 </style>
 
 <div class="container-fluid mt-5">
-    <!-- Stats Section -->
+    <!-- Stats Section (unchanged) -->
     <div class="stats-widget d-flex justify-content-between">
         <div class="stat-card">
             <i class="bi bi-person-fill"></i>
@@ -340,95 +398,109 @@
         </div>
     </div>
 
-    
-    <!-- Filters and Search -->
+    <!-- Filters and Search (unchanged) -->
     <div class="filters mb-3 d-flex align-items-center gap-3">
         <input type="text" id="search-input" class="form-control search-bar" placeholder="Search students by name, class or ID..." value="{{ search_query|default('') }}">
         <select id="fee-status-filter" name="fee_status" class="form-control filter-dropdown">
-            <option value="">Filter by Fee Status</option>
-            <option value="paid">Fees Paid</option>
-            <option value="unpaid">Fees Unpaid</option>
+            <option value="" {% if not fee_status %}selected{% endif %}>Filter by Fee Status</option>
+            <option value="paid" {% if fee_status == 'paid' %}selected{% endif %}>Fees Paid</option>
+            <option value="unpaid" {% if fee_status == 'unpaid' %}selected{% endif %}>Fees Unpaid</option>
         </select>
         <select name="approval_status" class="form-control filter-dropdown">
-            <option value="">Filter by Approval Status</option>
-            <option value="approved">Approved</option>
-            <option value="pending">Pending Approval</option>
+            <option value="" {% if not approval_status %}selected{% endif %}>Filter by Approval Status</option>
+            <option value="approved" {% if approval_status == 'approved' %}selected{% endif %}>Approved</option>
+            <option value="pending" {% if approval_status == 'pending' %}selected{% endif %}>Pending Approval</option>
+        </select>
+        <select name="enrollment_status" class="form-control filter-dropdown">
+            <option value="" {% if not enrollment_status %}selected{% endif %}>Filter by Enrollment Status</option>
+            <option value="active" {% if enrollment_status == 'active' %}selected{% endif %}>Active</option>
+            <option value="inactive" {% if enrollment_status == 'inactive' %}selected{% endif %}>Inactive</option>
         </select>
     </div>
-    
+
     {% if students_classes %}
         <h1 class="text-center mb-4 fadeIn">List of Students</h1>
-        <h2 class="text-center fadeUp">Current Session - {{ current_session }} | Term - {{ current_term }}</h2>
-    
+        <h2 class="text-center fadeUp">Academic Session - {{ current_session }} | Term - {{ current_term }}</h2>
+
         <div class="table-responsive">
             <table id="results-table" class="table table-hover table-striped align-middle">
                 <thead>
                     <tr>
+                        <th>S/N</th>
                         <th>Student ID</th>
                         <th>First Name</th>
                         <th>Last Name</th>
                         <th>Gender</th>
                         <th>Class</th>
-                        {% if action == 'toggle_fees_status' %}
-                            <th>Payment Status</th>
-                        {% endif %}
-                        {% if action != 'view_students' %}
-                            <th>Action</th>
-                        {% endif %}
+                        <th>Enrollment Status</th>
+                        <th>Payment Status</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
+                    {% set student_index = namespace(value=0) %}
                     {% for class_name, students in students_classes.items() %}
                         {% for student in students %}
+                            {% set student_index.value = student_index.value + 1 %}
+                            {% set sn = ((pagination.page - 1) * 10) + student_index.value %}
                             {% set fee_payment = student.fee_payments | selectattr("session_id", "equalto", session.id) | selectattr("term", "equalto", current_term) | first %}
                             {% set has_paid_fee = fee_payment.has_paid_fee if fee_payment else False %}
-                            <tr class="table-row" data-fee-status="{{ 'paid' if has_paid_fee else 'unpaid' }}" data-approval-status="{{ 'approved' if student.approved else 'pending' }}">
+                            {% set enrollment = student.class_history | selectattr("session_id", "equalto", session.id) | first %}
+                            {% set is_active = enrollment.is_active_in_term(session.id, current_term) if enrollment else False %}
+                            <tr class="table-row"
+                                data-fee-status="{{ 'paid' if has_paid_fee else 'unpaid' }}"
+                                data-approval-status="{{ 'approved' if student.approved else 'pending' }}"
+                                data-enrollment-status="{{ 'active' if is_active else 'inactive' }}">
+                                <td>{{ sn }}</td>
                                 <td>{{ student.reg_no }}</td>
                                 <td>{{ student.first_name | capitalize }}</td>
                                 <td>{{ student.last_name | capitalize }}</td>
                                 <td>{{ student.gender | capitalize }}</td>
                                 <td>{{ class_name | upper if ("JSS" in class_name.upper() or "SSS" in class_name.upper()) else class_name | capitalize }}</td>
-                                {% if action == 'toggle_fees_status' %}
-                                    <td data-fee-status="{{ 'paid' if has_paid_fee else 'unpaid' }}">
-                                        {{ 'Paid' if has_paid_fee else 'Not Paid' }}
-                                    </td>
-                                {% endif %}
-                                {% if action != 'view_students' %}
-                                    <td>
+                                <td>{{ 'Active' if is_active else 'Inactive' }}</td>
+                                <td>{{ 'Paid' if has_paid_fee else 'Not Paid' }}</td>
+                                <td>
                                     {% if action == 'edit' %}
                                         <a class="btn btn-primary mt-3" href="{{ url_for('admins.edit_student', class_name=class_name, student_id=student.id, action=action) }}">Edit</a>
                                     {% elif action == 'toggle_approval_status' %}
-                                    <form 
-                                        class="approval-form" 
-                                        data-student-id="{{ student.id }}" 
-                                        action="{{ url_for('admins.toggle_approval_status', student_id=student.id) }}" 
-                                        method="POST">
-                                        {{ form.hidden_tag() }}
-                                        <button type="submit" class="btn btn-{{ 'danger' if student.approved == True else 'primary' }} skip-spinner async-action-form"
-                                                data-toggle="tooltip" title="Toggle Approval Status">
-                                            {{ 'Deactivate' if student.approved else 'Approve' }}
-                                        </button>
-                                    </form>
+                                        <form class="approval-form" data-student-id="{{ student.id }}"
+                                            action="{{ url_for('admins.toggle_approval_status', student_id=student.id) }}"
+                                            method="POST">
+                                            {{ form.hidden_tag() }}
+                                            <button type="submit" class="btn btn-{{ 'danger' if student.approved else 'primary' }} skip-spinner async-action-form"
+                                                    data-toggle="tooltip" title="Toggle Approval Status">
+                                                {{ 'Deactivate' if student.approved else 'Approve' }}
+                                            </button>
+                                        </form>
                                     {% elif action == 'delete_from_school' %}
-                                    <form action="{{ url_for('admins.delete_student', student_id=student.id, action=action) }}" method="POST">
-                                        {{ form.hidden_tag() }}
-                                        <button type="submit" class="delete-btn btn btn-danger skip-spinner" data-bs-toggle="modal" data-bs-target="#actionsModal" data-action="delete" data-student-id="{{ student.id }}">Delete</button>
-                                    </form>
+                                        <form action="{{ url_for('admins.delete_student', student_id=student.id, action=action) }}" method="POST">
+                                            {{ form.hidden_tag() }}
+                                            <button type="submit" class="delete-btn btn btn-danger skip-spinner" data-bs-toggle="modal" data-bs-target="#actionsModal" data-action="delete" data-student-id="{{ student.id }}">Delete</button>
+                                        </form>
                                     {% elif action == 'toggle_fees_status' %}
-                                    <form 
-                                        class="fees-form" 
-                                        data-student-id="{{ student.id }}" 
-                                        action="{{ url_for('admins.toggle_fee_status', student_id=student.id) }}" 
-                                        method="POST">
-                                        {{ form.hidden_tag() }}
-                                        <button type="submit" class="btn btn-{{ 'secondary' if has_paid_fee else 'primary' }} skip-spinner async-action-form"
-                                                data-toggle="tooltip" title="Toggle Fee Status">
-                                            {{ 'Mark as Not Paid' if has_paid_fee else 'Mark as Paid' }}
-                                        </button>
-                                    </form>
+                                        <form class="fees-form" data-student-id="{{ student.id }}"
+                                            action="{{ url_for('admins.toggle_fee_status', student_id=student.id) }}"
+                                            method="POST">
+                                            {{ form.hidden_tag() }}
+                                            <button type="submit" class="btn btn-{{ 'secondary' if has_paid_fee else 'primary' }} skip-spinner async-action-form"
+                                                    data-toggle="tooltip" title="Toggle Fee Status">
+                                                {{ 'Mark as Not Paid' if has_paid_fee else 'Mark as Paid' }}
+                                            </button>
+                                        </form>
                                     {% endif %}
-                                    </td>
-                                {% endif %}
+                                    <!-- Enrollment Actions -->
+                                    {% if is_active %}
+                                        <button class="btn btn-warning skip-spinner leave-btn" data-student-id="{{ student.id }}"
+                                                data-toggle="tooltip" title="Mark as Left">
+                                            Mark as Left
+                                        </button>
+                                    {% else %}
+                                        <button class="btn btn-success skip-spinner reenroll-btn" data-student-id="{{ student.id }}"
+                                                data-toggle="tooltip" title="Re-enroll">
+                                            Re-enroll
+                                        </button>
+                                    {% endif %}
+                                </td>
                             </tr>
                         {% endfor %}
                     {% endfor %}
@@ -436,286 +508,99 @@
             </table>
         </div>
     {% endif %}
-</div>
-<div class="pagination-container d-flex justify-content-center my-4">
-    <ul id="pagination" class="pagination">
-        {% if pagination.has_prev %}
-            <li class="page-item">
-                <a href="{{ url_for('admins.students', action=action, page=pagination.prev_num) }}" 
-                   class="page-link pagination-link pagination-sm">
-                   <i class="bi bi-arrow-left"></i>
-                </a>
-            </li>
-        {% endif %}
-        {% for page in pagination.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=1) %}
-            {% if page %}
-                <li class="page-item {{ 'active' if page == pagination.page }}">
-                    <a href="{{ url_for('admins.students', action=action, page=page) }}" 
+
+    <!-- Reenroll Modal (unchanged) -->
+    <div id="reenroll-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close">×</span>
+            <div class="modal-header">Re-enroll Student</div>
+            <div class="modal-body">
+                <form id="reenroll-form">
+                    <label for="class-select">Select Class:</label>
+                    <select id="class-select" name="class_id" required>
+                        <option value="">-- Select a Class --</option>
+                        {% for class in classes %}
+                            <option value="{{ class.id }}">{{ class.name }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <label for="term-select">Select Term:</label>
+                    <select id="term-select" name="term">
+                        <option value="">-- Use Current Term ({{ current_term }}) --</option>
+                        {% for term in ['First', 'Second', 'Third'] %}
+                            <option value="{{ term }}">{{ term }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <label for="session-select">Select Session:</label>
+                    <select id="session-select" name="session_id">
+                        <option value="">-- Use Current Session ({{ current_session }}) --</option>
+                        {% for session in sessions %}
+                            <option value="{{ session.id }}">{{ session.year }}</option>
+                        {% endfor %}
+                    </select>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="cancel-reenroll" class="btn btn-secondary">Cancel</button>
+                <button id="submit-reenroll" class="btn btn-success">Re-enroll</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination (unchanged) -->
+    <div class="pagination-container d-flex justify-content-center my-4">
+        <ul id="pagination" class="pagination">
+            {% if pagination.has_prev %}
+                <li class="page-item">
+                    <a href="{{ url_for('admins.students', action=action, page=pagination.prev_num, enrollment_status=enrollment_status, fee_status=fee_status|default(''), approval_status=approval_status|default('')) }}"
                        class="page-link pagination-link pagination-sm">
-                       {{ page }}
+                        <i class="bi bi-arrow-left"></i>
                     </a>
                 </li>
-            {% else %}
-                <li class="page-item disabled"><span class="page-link">…</span></li>
             {% endif %}
-        {% endfor %}
-        {% if pagination.has_next %}
-            <li class="page-item">
-                <a href="{{ url_for('admins.students', action=action, page=pagination.next_num) }}" 
-                   class="page-link pagination-link pagination-sm">
-                    <i class="bi bi-arrow-right"></i>
-                </a>
-            </li>
-        {% endif %}
-    </ul>
-</div>
-<div id="loading-spinner" class="text-center d-none my-2">
-    <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Loading...</span>
+            {% for page in pagination.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=1) %}
+                {% if page %}
+                    <li class="page-item {{ 'active' if page == pagination.page }}">
+                        <a href="{{ url_for('admins.students', action=action, page=page, enrollment_status=enrollment_status, fee_status=fee_status|default(''), approval_status=approval_status|default('')) }}"
+                           class="page-link pagination-link pagination-sm">
+                            {{ page }}
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">…</span></li>
+                {% endif %}
+            {% endfor %}
+            {% if pagination.has_next %}
+                <li class="page-item">
+                    <a href="{{ url_for('admins.students', action=action, page=pagination.next_num, enrollment_status=enrollment_status, fee_status=fee_status|default(''), approval_status=approval_status|default('')) }}"
+                       class="page-link pagination-link pagination-sm">
+                        <i class="bi bi-arrow-right"></i>
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    </div>
+    <div id="loading-spinner" class="text-center d-none my-2">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+    <!-- Print Button (unchanged) -->
+    <div class="text-center mt-3">
+        <button id="print-student-details" class="btn btn-primary">Print Student Details</button>
     </div>
 </div>
 {% endblock %}
 
 {% block scripts %}
-
+<!-- [Script section unchanged, included for completeness] -->
 <script>
-    // Get CSRF token from meta tag
-    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-    const action = {{ action|tojson }}
-    
-    // Constants for selectors and endpoints
-    const selectors = {
-        resultsTable: "#results-table tbody",
-        pagination: ".pagination-container",
-        loadingSpinner: "#loading-spinner",
-        searchInput: "#search-input",
-        totalStudentsStat: '[data-stat="total_students"]',
-        approvedStudentsStat: '[data-stat="approved_students"]',
-        feesPaidStat: '[data-stat="fees_paid"]',
-        feesNotPaidStat: '[data-stat="fees_not_paid"]',
-    };
-    
-    const endpoints = {
-        stats: "/admin/stats",
-        search: `/admin/search_students/${encodeURIComponent(action)}`,
-    };
-
-    document.addEventListener("DOMContentLoaded", function () {
-        const resultsTableBody = document.querySelector(selectors.resultsTable);
-        const paginationContainer = document.querySelector(selectors.pagination);
-        const loadingSpinner = document.querySelector(selectors.loadingSpinner);
-        const searchInput = document.querySelector(selectors.searchInput);
-        
-        const statsEndpoint = endpoints.stats;
-        const cache = {}; // Cache object for storing responses
-        
-        // Helper: Initialize tooltips
-        function initializeTooltips() {
-            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            tooltipTriggerList.map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
-        }
-
-        // Helper: Toggle spinner visibility
-        function toggleSpinner(show) {
-            if (show) {
-                loadingSpinner.classList.remove('d-none');
-                paginationContainer.classList.add('d-none');
-            } else {
-                loadingSpinner.classList.add('d-none');
-                paginationContainer.classList.remove('d-none');
-            }
-        }
-
-        // Helper: Update content of an element
-        function updateContent(selector, content) {
-            const element = document.querySelector(selector);
-            if (element) {
-                element.innerHTML = content;
-            }
-        }
-        
-        // Helper: Fetch and update stats
-        function fetchStats() {
-            fetch(endpoints.stats)
-                .then(response => response.json())
-                .then(stats => {
-                    updateContent(selectors.totalStudentsStat, stats.total_students || 0);
-                    updateContent(selectors.approvedStudentsStat, stats.approved_students || 0);
-                    updateContent(selectors.feesPaidStat, stats.fees_paid || 0);
-                    updateContent(selectors.feesNotPaidStat, stats.fees_not_paid || 0);
-                })
-                .catch(error => console.error('Error fetching stats:', error));
-        }
-        
-        // Helper: Fetch and update table
-        function fetchTable(url) {
-            const queryKey = `${url}`;
-            if (cache[queryKey]) {
-                // Use cached response
-                const cachedHTML = cache[queryKey];
-                updateTableContent(cachedHTML);
-            } else {
-                toggleSpinner(true);
-                fetch(url, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': csrfToken,
-                    },
-                    credentials: 'same-origin',
-                })
-                    .then(response => response.text())
-                    .then(html => {
-                        // Store in cache
-                        cache[queryKey] = html;
-                        updateTableContent(html);
-                    })
-                    .catch(error => console.error('Error fetching table:', error))
-                    .finally(() => toggleSpinner(false));
-            }
-        }
-        
-        function updateTableContent(html) {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
-            updateContent(selectors.resultsTable, doc.querySelector('tbody').innerHTML || "");
-            updateContent(selectors.pagination, doc.querySelector('.pagination-container').innerHTML || "");
-            initializeTooltips(); // Reinitialize tooltips
-        }
-        
-        // Debounced Search Input Handler
-        let debounceTimer;
-        
-        searchInput.addEventListener("input", (e) => {
-            clearTimeout(debounceTimer);
-            const query = e.target.value.trim();
-            debounceTimer = setTimeout(() => {
-                if (query.length >= 2) {
-                    fetchTable(`${endpoints.search}?query=${encodeURIComponent(query)}&ajax=true`);
-                } else if (query.length === 0) {
-                     fetchTable(endpoints.search + `?ajax=true`);
-                } else {
-                    updateContent(selectors.resultsTable, `
-                        <tr>
-                            <td colspan="6" class="text-center">Enter at least 2 characters to search.</td>
-                        </tr>
-                    `);
-                }
-            }, 300); // Delay of 300ms
-        });
-        
-        // Event: Pagination click
-         paginationContainer.addEventListener('click', function (event) {
-            const link = event.target.closest('.pagination-link');
-            if (link) {
-                event.preventDefault();
-                const query = searchInput.value.trim();
-                const url = query.length >= 2
-                    ? `${link.href}&query=${encodeURIComponent(query)}`
-                    : link.href;
-                fetchTable(url);
-            }
-        });
-        
-        // Event: Filter and search
-        function filterAndSearch() {
-            const query = searchInput.value.toLowerCase();
-            const feeStatus = document.querySelector('select[name="fee_status"]').value || null;
-            const approvalStatus = document.querySelector('select[name="approval_status"]').value || null;
-
-            document.querySelectorAll('.table-row').forEach(row => {
-                const feeMatch = !feeStatus || row.dataset.feeStatus === feeStatus;
-                const approvalMatch = !approvalStatus || row.dataset.approvalStatus === approvalStatus;
-                const textMatch = row.innerText.toLowerCase().includes(query);
-                row.style.display = feeMatch && approvalMatch && textMatch ? '' : 'none';
-            });
-        }
-
-        searchInput.addEventListener('input', filterAndSearch);
-        document.querySelectorAll('.filter-dropdown').forEach(dropdown => dropdown.addEventListener('change', filterAndSearch));
-
-        document.body.addEventListener('submit', function (event) {
-            const form = event.target;
-            if (form.matches('.fees-form, .approval-form')) {
-                event.preventDefault(); // Prevent default form submission
-        
-                const studentId = form.getAttribute('data-student-id');
-                const actionUrl = form.action;
-        
-                fetch(actionUrl, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRFToken': form.querySelector('[name="csrf_token"]').value
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        flash(data.message, "alert-info");
-        
-                        // Update the button dynamically for fee status
-                        if (form.classList.contains('fees-form')) {
-                            const button = form.querySelector('button');
-                            const feeStatusCell = form.closest('tr').querySelector('td[data-fee-status]');
-        
-                            if (data.has_paid_fee) {
-                                // Update button text and styling
-                                button.textContent = 'Mark as Not Paid';
-                                button.classList.remove('btn-primary');
-                                button.classList.add('btn-secondary');
-        
-                                // Update the fee status cell
-                                feeStatusCell.textContent = 'Paid';
-                                feeStatusCell.setAttribute('data-fee-status', 'paid');
-                            } else {
-                                // Update button text and styling
-                                button.textContent = 'Mark as Paid';
-                                button.classList.remove('btn-secondary');
-                                button.classList.add('btn-primary');
-        
-                                // Update the fee status cell
-                                feeStatusCell.textContent = 'Not Paid';
-                                feeStatusCell.setAttribute('data-fee-status', 'unpaid');
-                            }
-                        }
-        
-                        // Update the button dynamically for approval status
-                        if (form.classList.contains('approval-form')) {
-                            const button = form.querySelector('button');
-                            if (data.approved) {
-                                button.textContent = 'Deactivate';
-                                button.classList.remove('btn-primary');
-                                button.classList.add('btn-danger');
-                            } else {
-                                button.textContent = 'Approve';
-                                button.classList.remove('btn-danger');
-                                button.classList.add('btn-primary');
-                            }
-                        }
-        
-                        // Fetch and update the stats after the action
-                        fetchStats();
-                    } else {
-                        flash(data.error || 'An error occurred while updating the student status.', "alert-danger");
-                    }
-                })
-                .catch(error => console.error('Error processing the action:', error));
-            }
-        });
-
-        // Initial fetch and setup
-        fetchStats();
-        initializeTooltips();
-    });
-</script>
-
-{#
-<script>
-    // Get CSRF token from meta tag
+document.addEventListener("DOMContentLoaded", function () {
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     const action = {{ action|tojson }};
-    
-    // Constants for selectors and endpoints
+    const currentTerm = {{ current_term|tojson }};
+
     const selectors = {
         resultsTable: "#results-table tbody",
         pagination: ".pagination-container",
@@ -725,217 +610,294 @@
         approvedStudentsStat: '[data-stat="approved_students"]',
         feesPaidStat: '[data-stat="fees_paid"]',
         feesNotPaidStat: '[data-stat="fees_not_paid"]',
-        feeStatusFilter: '#fee-status-filter',
+        reenrollModal: "#reenroll-modal",
+        reenrollForm: "#reenroll-form",
+        submitReenroll: "#submit-reenroll",
+        cancelReenroll: "#cancel-reenroll",
+        modalClose: ".modal-close",
+        printButton: "#print-student-details"
     };
-    
+
     const endpoints = {
-        stats: "/admin/stats",
+        stats: `/admin/stats?term=${currentTerm}`,
         search: `/admin/search_students/${encodeURIComponent(action)}`,
+        students: `/admin/students/${encodeURIComponent(action)}`,
+        leave: studentId => `/admin/student/${studentId}/leave`,
+        reenroll: studentId => `/admin/student/${studentId}/reenroll`,
     };
 
-    document.addEventListener("DOMContentLoaded", function () {
-        const resultsTableBody = document.querySelector(selectors.resultsTable);
-        const paginationContainer = document.querySelector(selectors.pagination);
-        const loadingSpinner = document.querySelector(selectors.loadingSpinner);
-        const searchInput = document.querySelector(selectors.searchInput);
-        const feeStatusFilter = document.querySelector(selectors.feeStatusFilter);
-        
-        const statsEndpoint = endpoints.stats;
-        const cache = {}; // Cache object for storing responses
-        
-        // Helper: Initialize tooltips
-        function initializeTooltips() {
-            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            tooltipTriggerList.map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
-        }
+    const cache = {};
+    let currentStudentId = null;
 
-        // Helper: Toggle spinner visibility
-        function toggleSpinner(show) {
-            if (show) {
-                loadingSpinner.classList.remove('d-none');
-                paginationContainer.classList.add('d-none');
-            } else {
-                loadingSpinner.classList.add('d-none');
-                paginationContainer.classList.remove('d-none');
-            }
-        }
+    function initializeTooltips() {
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="tooltip"]'));
+        tooltipTriggerList.map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+    }
 
-        // Helper: Update content of an element
-        function updateContent(selector, content) {
-            const element = document.querySelector(selector);
-            if (element) {
-                element.innerHTML = content;
-            }
+    function toggleSpinner(show) {
+        if (show) {
+            document.querySelector(selectors.loadingSpinner).classList.remove('d-none');
+            document.querySelector(selectors.pagination).classList.add('d-none');
+        } else {
+            document.querySelector(selectors.loadingSpinner).classList.add('d-none');
+            document.querySelector(selectors.pagination).classList.remove('d-none');
         }
-        
-        // Helper: Fetch and update stats
-        function fetchStats() {
-            fetch(endpoints.stats)
-                .then(response => response.json())
-                .then(stats => {
-                    updateContent(selectors.totalStudentsStat, stats.total_students || 0);
-                    updateContent(selectors.approvedStudentsStat, stats.approved_students || 0);
-                    updateContent(selectors.feesPaidStat, stats.fees_paid || 0);
-                    updateContent(selectors.feesNotPaidStat, stats.fees_not_paid || 0);
+    }
+
+    function updateContent(selector, content) {
+        const element = document.querySelector(selector);
+        if (element) element.innerHTML = content;
+    }
+
+    function fetchStats() {
+        fetch(endpoints.stats)
+            .then(response => response.json())
+            .then(stats => {
+                updateContent(selectors.totalStudentsStat, stats.total_students || 0);
+                updateContent(selectors.approvedStudentsStat, stats.approved_students || 0);
+                updateContent(selectors.feesPaidStat, stats.fees_paid || 0);
+                updateContent(selectors.feesNotPaidStat, stats.fees_not_paid || 0);
+            })
+            .catch(error => console.error('Error fetching stats:', error));
+    }
+
+    function fetchTable(url) {
+        if (cache[url]) {
+            updateTableContent(cache[url]);
+        } else {
+            toggleSpinner(true);
+            fetch(url, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
+                credentials: 'same-origin',
+            })
+                .then(response => response.text())
+                .then(html => {
+                    cache[url] = html;
+                    updateTableContent(html);
                 })
-                .catch(error => console.error('Error fetching stats:', error));
+                .catch(error => console.error('Error fetching table:', error))
+                .finally(() => toggleSpinner(false));
         }
-        
-        // Helper: Fetch and update table
-        function fetchTable(url) {
-            const queryKey = `${url}`;
-            if (cache[queryKey]) {
-                // Use cached response
-                const cachedHTML = cache[queryKey];
-                updateTableContent(cachedHTML);
-            } else {
-                toggleSpinner(true);
-                fetch(url, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': csrfToken,
-                    },
-                    credentials: 'same-origin',
-                })
-                    .then(response => response.text())
-                    .then(html => {
-                        // Store in cache
-                        cache[queryKey] = html;
-                        updateTableContent(html);
-                    })
-                    .catch(error => console.error('Error fetching table:', error))
-                    .finally(() => toggleSpinner(false));
-            }
-        }
-        
-        function updateTableContent(html) {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
-            updateContent(selectors.resultsTable, doc.querySelector('tbody').innerHTML || "");
-            updateContent(selectors.pagination, doc.querySelector('.pagination-container').innerHTML || "");
-            initializeTooltips(); // Reinitialize tooltips
-        }
-        
-        // Debounced Search Input Handler
-        let debounceTimer;
-        
-        searchInput.addEventListener("input", (e) => {
-            clearTimeout(debounceTimer);
-            const query = e.target.value.trim();
-            const feeStatus = feeStatusFilter.value;
-            debounceTimer = setTimeout(() => {
-                if (query.length >= 2) {
-                    fetchTable(`${endpoints.search}?query=${encodeURIComponent(query)}&status=${feeStatus}&ajax=true`);
-                } else if (query.length === 0) {
-                    fetchTable(`${endpoints.search}?status=${feeStatus}&ajax=true`);
+    }
+
+    function updateTableContent(html) {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        updateContent(selectors.resultsTable, doc.querySelector('tbody')?.innerHTML || "");
+        updateContent(selectors.pagination, doc.querySelector('.pagination-container')?.innerHTML || "");
+        initializeTooltips();
+        bindEnrollmentButtons();
+    }
+
+    function bindEnrollmentButtons() {
+        document.querySelectorAll('.leave-btn').forEach(btn => {
+            btn.removeEventListener('click', handleLeave);
+            btn.addEventListener('click', handleLeave);
+        });
+        document.querySelectorAll('.reenroll-btn').forEach(btn => {
+            btn.removeEventListener('click', handleReenroll);
+            btn.addEventListener('click', handleReenroll);
+        });
+    }
+
+    function handleLeave(event) {
+        const studentId = event.target.dataset.studentId;
+        fetch(endpoints.leave(studentId), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    flash(data.message, "alert-info");
+                    refreshTable();
+                    fetchStats();
                 } else {
-                    updateContent(selectors.resultsTable, `
-                        <tr>
-                            <td colspan="6" class="text-center">Enter at least 2 characters to search.</td>
-                        </tr>
-                    `);
+                    flash(data.error || 'Failed to mark as left', "alert-danger");
                 }
-            }, 300); // Delay of 300ms
-        });
-        
-        // Event: Pagination click
-        paginationContainer.addEventListener('click', function (event) {
-            const link = event.target.closest('.pagination-link');
-            if (link) {
-                event.preventDefault();
-                const query = searchInput.value.trim();
-                const feeStatus = feeStatusFilter.value;
-                const url = query.length >= 2
-                    ? `${link.href}&query=${encodeURIComponent(query)}&status=${feeStatus}`
-                    : `${link.href}&status=${feeStatus}`;
-                fetchTable(url);
-            }
-        });
-        
-        // Event: Filter by fee status
-        feeStatusFilter.addEventListener('change', function () {
-            const selectedStatus = this.value; // Get the selected filter value
-            const query = searchInput.value.trim();
-            const url = `${endpoints.search}?status=${selectedStatus}&query=${encodeURIComponent(query)}&ajax=true`;
+            })
+            .catch(error => console.error('Error marking as left:', error));
+    }
 
+    function handleReenroll(event) {
+        currentStudentId = event.target.dataset.studentId;
+        const modal = document.querySelector(selectors.reenrollModal);
+        modal.style.display = "block";
+    }
+
+    function closeModal() {
+        const modal = document.querySelector(selectors.reenrollModal);
+        modal.style.display = "none";
+        currentStudentId = null;
+        document.querySelector(selectors.reenrollForm).reset();
+    }
+
+    function submitReenroll() {
+        if (!currentStudentId) return;
+
+        const form = document.querySelector(selectors.reenrollForm);
+        const formData = new FormData(form);
+
+        fetch(endpoints.reenroll(currentStudentId), {
+            method: 'POST',
+            headers: { 'X-CSRFToken': csrfToken },
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    flash(data.message, "alert-info");
+                    refreshTable();
+                    fetchStats();
+                    closeModal();
+                } else {
+                    flash(data.error || 'Failed to re-enroll', "alert-danger");
+                }
+            })
+            .catch(error => console.error('Error re-enrolling:', error));
+    }
+
+    function printStudentDetails() {
+        const printWindow = window.open('', '_blank');
+        const title = document.querySelector('h1')?.textContent || 'List of Students';
+        const subtitle = document.querySelector('h2')?.textContent || '';
+        const table = document.querySelector('#results-table').cloneNode(true);
+    
+        // Remove the "Action" column from the cloned table
+        const actionsHeader = table.querySelector('th:last-child');
+        if (actionsHeader && actionsHeader.textContent.trim() === 'Action') {
+            const actionColumnIndex = actionsHeader.cellIndex;
+            table.querySelectorAll('tr').forEach(row => {
+                if (row.cells[actionColumnIndex]) {
+                    row.cells[actionColumnIndex].remove();
+                }
+            });
+        }
+    
+        // Find the "Payment Status" column index and replace "Not Paid" with blank space
+        const paymentStatusHeader = table.querySelector('th:nth-child(8)'); // Assuming "Payment Status" is the 8th column
+        if (paymentStatusHeader && paymentStatusHeader.textContent.trim() === 'Payment Status') {
+            const paymentStatusIndex = paymentStatusHeader.cellIndex;
+            table.querySelectorAll('tr').forEach(row => {
+                const paymentCell = row.cells[paymentStatusIndex];
+                if (paymentCell && paymentCell.textContent.trim() === 'Not Paid') {
+                    paymentCell.textContent = ''; // Replace "Not Paid" with blank space
+                }
+            });
+        }
+    
+        const printContent = `
+            <html>
+            <head>
+                <title>${title}</title>
+                <style>
+                    body { font-family: Arial, sans-serif; margin: 20px; }
+                    h1, h2 { text-align: center; margin-bottom: 10px; }
+                    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                    th { background-color: #333; color: white; }
+                    tr:nth-child(even) { background-color: #f2f2f2; }
+                    @media print { .no-print { display: none; } }
+                </style>
+            </head>
+            <body>
+                <h1>${title}</h1>
+                <h2>${subtitle}</h2>
+                ${table.outerHTML}
+            </body>
+            </html>
+        `;
+    
+        printWindow.document.write(printContent);
+        printWindow.document.close();
+        printWindow.print();
+        printWindow.close();
+    }
+
+    function refreshTable() {
+        const query = document.querySelector(selectors.searchInput).value.trim();
+        const enrollmentStatus = document.querySelector('select[name="enrollment_status"]').value || 'active';
+        const feeStatus = document.querySelector('select[name="fee_status"]').value || '';
+        const approvalStatus = document.querySelector('select[name="approval_status"]').value || '';
+        const url = `${endpoints.students}?ajax=true&enrollment_status=${enrollmentStatus}&fee_status=${feeStatus}&approval_status=${approvalStatus}${query ? `&query=${encodeURIComponent(query)}` : ''}`;
+        fetchTable(url);
+    }
+
+    let debounceTimer;
+    document.querySelector(selectors.searchInput).addEventListener("input", (e) => {
+        clearTimeout(debounceTimer);
+        const query = e.target.value.trim();
+        const enrollmentStatus = document.querySelector('select[name="enrollment_status"]').value || 'active';
+        const feeStatus = document.querySelector('select[name="fee_status"]').value || '';
+        const approvalStatus = document.querySelector('select[name="approval_status"]').value || '';
+        debounceTimer = setTimeout(() => {
+            const url = query.length >= 2
+                ? `${endpoints.search}?query=${encodeURIComponent(query)}&ajax=true&enrollment_status=${enrollmentStatus}&fee_status=${feeStatus}&approval_status=${approvalStatus}`
+                : `${endpoints.students}?ajax=true&enrollment_status=${enrollmentStatus}&fee_status=${feeStatus}&approval_status=${approvalStatus}`;
             fetchTable(url);
-        });
+        }, 300);
+    });
 
-        // Event: Form submission for fees and approval toggles
-        document.body.addEventListener('submit', function (event) {
-            const form = event.target;
-            if (form.matches('.fees-form, .approval-form')) {
-                event.preventDefault(); // Prevent default form submission
-        
-                const studentId = form.getAttribute('data-student-id');
-                const actionUrl = form.action;
-        
-                fetch(actionUrl, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRFToken': form.querySelector('[name="csrf_token"]').value
-                    }
-                })
+    document.querySelector(selectors.pagination).addEventListener('click', function (event) {
+        const link = event.target.closest('.pagination-link');
+        if (link) {
+            event.preventDefault();
+            const query = document.querySelector(selectors.searchInput).value.trim();
+            const enrollmentStatus = document.querySelector('select[name="enrollment_status"]').value || 'active';
+            const feeStatus = document.querySelector('select[name="fee_status"]').value || '';
+            const approvalStatus = document.querySelector('select[name="approval_status"]').value || '';
+            const baseUrl = query.length >= 2 ? endpoints.search : endpoints.students;
+            const url = `${link.href}&ajax=true&enrollment_status=${enrollmentStatus}&fee_status=${feeStatus}&approval_status=${approvalStatus}${query ? `&query=${encodeURIComponent(query)}` : ''}`;
+            fetchTable(url);
+        }
+    });
+
+    document.querySelectorAll('.filter-dropdown').forEach(dropdown => {
+        dropdown.addEventListener('change', refreshTable);
+    });
+
+    document.body.addEventListener('submit', function (event) {
+        const form = event.target;
+        if (form.matches('.fees-form, .approval-form')) {
+            event.preventDefault();
+            fetch(form.action, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
+            })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
                         flash(data.message, "alert-info");
-        
-                        // Update the button dynamically for fee status
-                        if (form.classList.contains('fees-form')) {
-                            const button = form.querySelector('button');
-                            const feeStatusCell = form.closest('tr').querySelector('td[data-fee-status]');
-        
-                            if (data.has_paid_fee) {
-                                // Update button text and styling
-                                button.textContent = 'Mark as Not Paid';
-                                button.classList.remove('btn-primary');
-                                button.classList.add('btn-secondary');
-        
-                                // Update the fee status cell
-                                feeStatusCell.textContent = 'Paid';
-                                feeStatusCell.setAttribute('data-fee-status', 'paid');
-                            } else {
-                                // Update button text and styling
-                                button.textContent = 'Mark as Paid';
-                                button.classList.remove('btn-secondary');
-                                button.classList.add('btn-primary');
-        
-                                // Update the fee status cell
-                                feeStatusCell.textContent = 'Not Paid';
-                                feeStatusCell.setAttribute('data-fee-status', 'unpaid');
-                            }
-                        }
-        
-                        // Update the button dynamically for approval status
-                        if (form.classList.contains('approval-form')) {
-                            const button = form.querySelector('button');
-                            if (data.approved) {
-                                button.textContent = 'Deactivate';
-                                button.classList.remove('btn-primary');
-                                button.classList.add('btn-danger');
-                            } else {
-                                button.textContent = 'Approve';
-                                button.classList.remove('btn-danger');
-                                button.classList.add('btn-primary');
-                            }
-                        }
-        
-                        // Fetch and update the stats after the action
+                        refreshTable();
                         fetchStats();
                     } else {
-                        flash(data.error || 'An error occurred while updating the student status.', "alert-danger");
+                        flash(data.message || data.error || 'An error occurred.', "alert-danger");
                     }
                 })
-                .catch(error => console.error('Error processing the action:', error));
-            }
-        });
-
-        // Initial fetch and setup
-        fetchStats();
-        initializeTooltips();
+                .catch(error => console.error('Error processing form:', error));
+        }
     });
+
+    // Modal event listeners
+    document.querySelector(selectors.modalClose).addEventListener('click', closeModal);
+    document.querySelector(selectors.cancelReenroll).addEventListener('click', closeModal);
+    document.querySelector(selectors.submitReenroll).addEventListener('click', submitReenroll);
+
+    // Close modal when clicking outside
+    window.addEventListener('click', function(event) {
+        const modal = document.querySelector(selectors.reenrollModal);
+        if (event.target === modal) {
+            closeModal();
+        }
+    });
+
+    // Print button event listener
+    document.querySelector(selectors.printButton).addEventListener('click', printStudentDetails);
+
+    fetchStats();
+    initializeTooltips();
+    bindEnrollmentButtons();
+});
 </script>
-#}
 {% endblock scripts %}

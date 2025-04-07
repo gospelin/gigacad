@@ -1,73 +1,92 @@
-<table id="results-table" class="table table-hover table-striped align-middle">
-    <thead>
-        <tr>
-            <th>Student ID</th>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Gender</th>
-            <th>Class</th>
-            {% if action == 'toggle_fees_status' %}
+{% if message %}
+    <tr>
+        <td colspan="7" class="text-center">{{ message }}</td>
+    </tr>
+{% elif students_classes %}
+    <table id="results-table" class="table table-hover table-striped align-middle">
+        <thead>
+            <tr>
+                <th>S/N</th>
+                <th>Student ID</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Gender</th>
+                <th>Class</th>
+                <th>Enrollment Status</th>
                 <th>Payment Status</th>
-            {% endif %}
-            {% if action != 'view_students' %}
                 <th>Action</th>
-            {% endif %}
-        </tr>
-    </thead>
-   <tbody>
-        {% for class_name, students in students_classes.items() %}
-            {% for student in students %}
-                {% set fee_payment = student.fee_payments | selectattr("session_id", "equalto", session.id) | selectattr("term", "equalto", current_term) | first %}
-                {% set has_paid_fee = fee_payment.has_paid_fee if fee_payment else False %}
-                <tr class="table-row" data-fee-status="{{ 'paid' if has_paid_fee else 'unpaid' }}" data-approval-status="{{ 'approved' if student.approved else 'pending' }}">
-                    <td>{{ student.reg_no }}</td>
-                    <td>{{ student.first_name | capitalize }}</td>
-                    <td>{{ student.last_name | capitalize }}</td>
-                    <td>{{ student.gender | capitalize }}</td>
-                    <td>{{ class_name | upper if ("JSS" in class_name.upper() or "SSS" in class_name.upper()) else class_name | capitalize }}</td>
-                    {% if action == 'toggle_fees_status' %}
-                        <td data-fee-status="{{ 'paid' if has_paid_fee else 'unpaid' }}">
-                            {{ 'Paid' if has_paid_fee else 'Not Paid' }}
-                        </td>
-                    {% endif %}
-                    {% if action != 'view_students' %}
+            </tr>
+        </thead>
+        <tbody>
+            {% set student_index = namespace(value=0) %}
+            {% for class_name, students in students_classes.items() %}
+                {% for student in students %}
+                    {% set student_index.value = student_index.value + 1 %}
+                    {% set sn = ((pagination.page - 1) * 10) + student_index.value %}
+                    {% set fee_payment = student.fee_payments | selectattr("session_id", "equalto", session.id) | selectattr("term", "equalto", current_term) | first %}
+                    {% set has_paid_fee = fee_payment.has_paid_fee if fee_payment else False %}
+                    {% set enrollment = student.class_history | selectattr("session_id", "equalto", session.id) | first %}
+                    {% set is_active = enrollment.is_active_in_term(session.id, current_term) if enrollment else False %}
+                    <tr class="table-row"
+                        data-fee-status="{{ 'paid' if has_paid_fee else 'unpaid' }}"
+                        data-approval-status="{{ 'approved' if student.approved else 'pending' }}"
+                        data-enrollment-status="{{ 'active' if is_active else 'inactive' }}">
+                        <td>{{ sn }}</td>
+                        <td>{{ student.reg_no }}</td>
+                        <td>{{ student.first_name | capitalize }}</td>
+                        <td>{{ student.last_name | capitalize }}</td>
+                        <td>{{ student.gender | capitalize }}</td>
+                        <td>{{ class_name | upper if ("JSS" in class_name.upper() or "SSS" in class_name.upper()) else class_name | capitalize }}</td>
+                        <td>{{ 'Active' if is_active else 'Inactive' }}</td>
+                        <td>{{ 'Paid' if has_paid_fee else 'Not Paid' }}</td>
                         <td>
-                        {% if action == 'edit' %}
-                            <a class="btn btn-primary mt-3" href="{{ url_for('admins.edit_student', class_name=class_name, student_id=student.id, action=action) }}">Edit</a>
-                        {% elif action == 'toggle_approval_status' %}
-                        <form 
-                            class="approval-form" 
-                            data-student-id="{{ student.id }}" 
-                            action="{{ url_for('admins.toggle_approval_status', student_id=student.id) }}" 
-                            method="POST">
-                            {{ form.hidden_tag() }}
-                            <button type="submit" class="btn btn-{{ 'danger' if student.approved == True else 'primary' }} skip-spinner async-action-form"
-                                    data-toggle="tooltip" title="Toggle Approval Status">
-                                {{ 'Deactivate' if student.approved else 'Approve' }}
-                            </button>
-                        </form>
-                        {% elif action == 'delete_from_school' %}
-                        <form action="{{ url_for('admins.delete_student', student_id=student.id, action=action) }}" method="POST">
-                            {{ form.hidden_tag() }}
-                            <button type="submit" class="delete-btn btn btn-danger skip-spinner" data-bs-toggle="modal" data-bs-target="#actionsModal" data-action="delete" data-student-id="{{ student.id }}">Delete</button>
-                        </form>
-                        {% elif action == 'toggle_fees_status' %}
-                        <form 
-                            class="fees-form" 
-                            data-student-id="{{ student.id }}" 
-                            action="{{ url_for('admins.toggle_fee_status', student_id=student.id) }}" 
-                            method="POST">
-                            {{ form.hidden_tag() }}
-                            <button type="submit" class="btn btn-{{ 'secondary' if has_paid_fee else 'primary' }} skip-spinner async-action-form"
-                                    data-toggle="tooltip" title="Toggle Fee Status">
-                                {{ 'Mark as Not Paid' if has_paid_fee else 'Mark as Paid' }}
-                            </button>
-                        </form>
-                        {% endif %}
+                            {% if action == 'edit' %}
+                                <a class="btn btn-primary mt-3" href="{{ url_for('admins.edit_student', class_name=class_name, student_id=student.id, action=action) }}">Edit</a>
+                            {% elif action == 'toggle_approval_status' %}
+                                <form class="approval-form" data-student-id="{{ student.id }}"
+                                    action="{{ url_for('admins.toggle_approval_status', student_id=student.id) }}"
+                                    method="POST">
+                                    {{ form.hidden_tag() }}
+                                    <button type="submit" class="btn btn-{{ 'danger' if student.approved else 'primary' }} skip-spinner async-action-form"
+                                            data-toggle="tooltip" title="Toggle Approval Status">
+                                        {{ 'Deactivate' if student.approved else 'Approve' }}
+                                    </button>
+                                </form>
+                            {% elif action == 'delete_from_school' %}
+                                <form action="{{ url_for('admins.delete_student', student_id=student.id, action=action) }}" method="POST">
+                                    {{ form.hidden_tag() }}
+                                    <button type="submit" class="delete-btn btn btn-danger skip-spinner" data-bs-toggle="modal" data-bs-target="#actionsModal" data-action="delete" data-student-id="{{ student.id }}">Delete</button>
+                                </form>
+                            {% elif action == 'toggle_fees_status' %}
+                                <form class="fees-form" data-student-id="{{ student.id }}"
+                                    action="{{ url_for('admins.toggle_fee_status', student_id=student.id) }}"
+                                    method="POST">
+                                    {{ form.hidden_tag() }}
+                                    <button type="submit" class="btn btn-{{ 'secondary' if has_paid_fee else 'primary' }} skip-spinner async-action-form"
+                                            data-toggle="tooltip" title="Toggle Fee Status">
+                                        {{ 'Mark as Not Paid' if has_paid_fee else 'Mark as Paid' }}
+                                    </button>
+                                </form>
+                            {% endif %}
+                            {% if is_active %}
+                                <button class="btn btn-warning skip-spinner leave-btn" data-student-id="{{ student.id }}"
+                                        data-toggle="tooltip" title="Mark as Left">
+                                    Mark as Left
+                                </button>
+                            {% else %}
+                                <button class="btn btn-success skip-spinner reenroll-btn" data-student-id="{{ student.id }}"
+                                        data-toggle="tooltip" title="Re-enroll">
+                                    Re-enroll
+                                </button>
+                            {% endif %}
                         </td>
-                    {% endif %}
-                </tr>
+                    </tr>
+                {% endfor %}
             {% endfor %}
-        {% endfor %}
-    </tbody>
-</table>
+        </tbody>
+    </table>
+{% else %}
+    <tr>
+        <td colspan="7" class="text-center">No students found matching the current filters.</td>
+    </tr>
+{% endif %}

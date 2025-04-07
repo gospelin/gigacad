@@ -1,30 +1,88 @@
 {% extends "admin/base.html" %}
-
 {% block content %}
-<h2>Assign Teacher to Class</h2>
+<div class="max-w-7xl mx-auto p-6">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6">Assign Teacher to Class</h1>
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <form method="POST" class="space-y-4">
+            {{ form.hidden_tag() }}
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Teacher</label>
+                {{ form.teacher(class="w-full p-2 border rounded") }}
+                {% for error in form.teacher.errors %}
+                    <span class="text-red-500 text-sm">{{ error }}</span>
+                {% endfor %}
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Class</label>
+                {{ form.class_name(class="w-full p-2 border rounded") }}
+                {% for error in form.class_name.errors %}
+                    <span class="text-red-500 text-sm">{{ error }}</span>
+                {% endfor %}
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Session</label>
+                {{ form.session(class="w-full p-2 border rounded") }}
+                {% for error in form.session.errors %}
+                    <span class="text-red-500 text-sm">{{ error }}</span>
+                {% endfor %}
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Term</label>
+                {{ form.term(class="w-full p-2 border rounded") }}
+                {% for error in form.term.errors %}
+                    <span class="text-red-500 text-sm">{{ error }}</span>
+                {% endfor %}
+            </div>
+            <div>
+                {{ form.is_form_teacher() }}
+                <label for="{{ form.is_form_teacher.id }}" class="ml-2 text-sm text-gray-700">Assign as Form Teacher</label>
+            </div>
+            <button type="submit" class="bg-blue-600 text-white p-2 rounded hover:bg-blue-700">Assign</button>
+        </form>
 
-<form method="post">
-    {{ form.hidden_tag() }}
-    
-    <div class="form-group">
-        {{ form.teacher.label(class="form-label") }}
-        {{ form.teacher(class="form-control") }}
+        {% if grouped_assignments %}
+            <h2 class="text-xl font-semibold mt-6">All Teacher Assignments</h2>
+            <div class="mt-4">
+                {% for teacher, assignments in grouped_assignments.items() %}
+                    <div class="mb-6">
+                        <h3 class="text-lg font-medium text-gray-800">{{ teacher.last_name }}, {{ teacher.first_name }}</h3>
+                        <table class="w-full border-collapse mt-2">
+                            <thead>
+                                <tr class="bg-gray-200">
+                                    <th class="p-2 text-left">Class</th>
+                                    <th class="p-2 text-left">Session</th>
+                                    <th class="p-2 text-left">Term</th>
+                                    <th class="p-2 text-left">Form Teacher</th>
+                                    <th class="p-2 text-left">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for teacher_obj, class_, session, term, is_form_teacher in assignments %}
+                                    <tr class="border-t">
+                                        <td class="p-2">{{ class_.name }}</td>
+                                        <td class="p-2">{{ session.year }}</td>
+                                        <td class="p-2">{{ term }}</td>
+                                        <td class="p-2">{{ 'Yes' if is_form_teacher else 'No' }}</td>
+                                        <td class="p-2">
+                                            <form method="POST" action="{{ url_for('admins.remove_teacher_from_class') }}" class="inline">
+                                                {{ form.hidden_tag() }}  <!-- Use a new DeleteForm instance -->
+                                                <input type="hidden" name="teacher_id" value="{{ teacher_obj.id }}">
+                                                <input type="hidden" name="class_id" value="{{ class_.id }}">
+                                                <input type="hidden" name="session_id" value="{{ session.id }}">
+                                                <input type="hidden" name="term" value="{{ term }}">
+                                                <button type="submit" class="text-red-600 hover:underline">Delist</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="mt-4 text-gray-600">No teacher assignments found.</p>
+        {% endif %}
     </div>
-    
-    <div class="form-group">
-        {{ form.class_name.label(class="form-label") }}
-        {{ form.class_name(class="form-control") }}
-    </div>
-    
-    <div class="form-group">
-        <div class="form-check">
-            {{ form.is_form_teacher(class="form-check-input") }}
-            {{ form.is_form_teacher.label(class="form-check-label") }}
-        </div>
-    </div>
-    
-    <button type="submit" class="btn btn-primary">{{ form.submit.label }}</button>
-</form>
-
+</div>
 {% endblock %}
-

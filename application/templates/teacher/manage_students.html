@@ -1,0 +1,82 @@
+{% extends "teacher/base.html" %}
+{% block content %}
+<div class="max-w-7xl mx-auto p-6">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6">Manage Students - {{ cls.name }} ({{ session.year }} - {{ term }})</h1>
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        {% if students %}
+            <table class="w-full border-collapse">
+                <thead>
+                    <tr class="bg-gray-200">
+                        <th class="p-2 text-left">Name</th>
+                        <th class="p-2 text-left">Gender</th>
+                        {% if is_form_teacher %}
+                            <th class="p-2 text-left">Actions</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                        <tr class="border-t">
+                            <td class="p-2">{{ student.last_name }}, {{ student.first_name }} {{ student.middle_name }}</td>
+                            <td class="p-2">{{ student.gender }}</td>
+                            {% if is_form_teacher %}
+                                <td class="p-2">
+                                    <a href="#" class="text-blue-600 hover:underline edit-student" data-student-id="{{ student.id }}">Edit</a>
+                                </td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% if is_form_teacher %}
+                <div id="edit-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
+                    <div class="bg-white p-6 rounded-lg shadow-lg w-1/2">
+                        <form method="POST" class="space-y-4">
+                            {{ form.hidden_tag() }}
+                            <input type="hidden" name="student_id" id="student-id">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">First Name</label>
+                                {{ form.first_name(class="w-full p-2 border rounded") }}
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Last Name</label>
+                                {{ form.last_name(class="w-full p-2 border rounded") }}
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Middle Name</label>
+                                {{ form.middle_name(class="w-full p-2 border rounded") }}
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Gender</label>
+                                {{ form.gender(class="w-full p-2 border rounded") }}
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Class</label>
+                                {{ form.class_id(class="w-full p-2 border rounded") }}
+                            </div>
+                            <button type="submit" class="bg-blue-600 text-white p-2 rounded hover:bg-blue-700">Save</button>
+                            <button type="button" id="close-modal" class="bg-gray-600 text-white p-2 rounded hover:bg-gray-700">Cancel</button>
+                        </form>
+                    </div>
+                </div>
+            {% endif %}
+        {% else %}
+            <p class="text-gray-600">No students enrolled in this class for this session and term.</p>
+        {% endif %}
+    </div>
+</div>
+<script>
+    document.querySelectorAll('.edit-student').forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const studentId = link.dataset.studentId;
+            document.getElementById('student-id').value = studentId;
+            document.getElementById('edit-modal').classList.remove('hidden');
+            // Populate form with student data via AJAX if needed
+        });
+    });
+    document.getElementById('close-modal').addEventListener('click', () => {
+        document.getElementById('edit-modal').classList.add('hidden');
+    });
+</script>
+{% endblock %}

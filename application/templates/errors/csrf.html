@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+{% block title %}403 - CSRF Error{% endblock %}
+{% block content %}
+<div class="container text-center mt-5">
+    <h1 class="display-1">403</h1>
+    <h2>CSRF Error</h2>
+    <p class="lead">The form submission has expired or is invalid. Please try again.</p>
+    <a href="{{ url_for('auth.login') }}" class="btn btn-primary">Login Again</a>
+</div>
+{% endblock %}

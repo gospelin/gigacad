@@ -1,0 +1,36 @@
+{% extends "admin/base.html" %}
+{% block content %}
+<div class="container mt-5">
+    <h1 class="session-header">Admin Users</h1>
+    <div class="session-card">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for admin in admins %}
+                <tr>
+                    <td>{{ admin.username }}</td>
+                    <td>
+                        <a href="{{ url_for('admins.edit_admin', user_id=admin.id) }}" class="btn btn-sm btn-primary">Edit</a>
+                        <a href="{{ url_for('admins.edit_admin_privileges', user_id=admin.id) }}" class="btn btn-sm btn-info">Privileges</a>
+                        <form action="{{ url_for('admins.delete_admin', user_id=admin.id) }}" method="POST" style="display:inline;">
+                            {{ form.hidden_tag() }}
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this admin?');">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="2">No admin users found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="{{ url_for('admins.create_admin') }}" class="btn btn-primary mt-3">Create New Admin</a>
+    </div>
+</div>
+{% endblock %}

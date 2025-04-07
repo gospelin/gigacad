@@ -1,0 +1,68 @@
+{% extends "admin/base.html" %}
+{% block content %}
+<div class="container mt-5">
+    <h1 class="session-header">Create New Admin</h1>
+    <div class="session-card">
+        <form method="POST" action="{{ url_for('admins.create_admin') }}">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                <label for="username" class="form-label">Username</label>
+                {{ form.username(class="form-control", id="username") }}
+                {% for error in form.username.errors %}
+                    <span class="text-danger">{{ error }}</span>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                <label for="password" class="form-label">Password</label>
+                {{ form.password(class="form-control", id="password") }}
+                {% for error in form.password.errors %}
+                    <span class="text-danger">{{ error }}</span>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                <label for="confirm_password" class="form-label">Confirm Password</label>
+                {{ form.confirm_password(class="form-control", id="confirm_password") }}
+                {% for error in form.confirm_password.errors %}
+                    <span class="text-danger">{{ error }}</span>
+                {% endfor %}
+            </div>
+            <h3 class="form-label mt-4">Privileges</h3>
+            <!-- Privilege fields -->
+            <div class="form-check">
+                {{ form.can_manage_users(class="form-check-input", id="can_manage_users") }}
+                <label class="form-check-label" for="can_manage_users">Can Manage Users</label>
+            </div>
+            <div class="form-check">
+                {{ form.can_manage_sessions(class="form-check-input", id="can_manage_sessions") }}
+                <label class="form-check-label" for="can_manage_sessions">Can Manage Sessions</label>
+            </div>
+            <div class="form-check">
+                {{ form.can_manage_classes(class="form-check-input", id="can_manage_classes") }}
+                <label class="form-check-label" for="can_manage_classes">Can Manage Classes</label>
+            </div>
+            <div class="form-check">
+                {{ form.can_manage_results(class="form-check-input", id="can_manage_results") }}
+                <label class="form-check-label" for="can_manage_results">Can Manage Results</label>
+            </div>
+            <div class="form-check">
+                {{ form.can_manage_teachers(class="form-check-input", id="can_manage_teachers") }}
+                <label class="form-check-label" for="can_manage_teachers">Can Manage Teachers</label>
+            </div>
+            <div class="form-check">
+                {{ form.can_view_reports(class="form-check-input", id="can_view_reports") }}
+                <label class="form-check-label" for="can_view_reports">Can View Reports</label>
+            </div>
+            <!-- Add Recaptcha errors if applicable -->
+            <div class="form-group mt-4">
+                {{ form.recaptcha() }} <!-- Explicitly render Recaptcha -->
+                {% for error in form.recaptcha.errors %}
+                    <span class="text-danger">{{ error }}</span>
+                {% endfor %}
+            </div>
+            <div class="form-group mt-4">
+                {{ form.submit(class="btn btn-primary") }}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

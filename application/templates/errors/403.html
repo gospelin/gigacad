@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+{% block title %}403 - Forbidden{% endblock %}
+{% block content %}
+<div class="container text-center mt-5">
+    <h1 class="display-1">403</h1>
+    <h2>Forbidden</h2>
+    <p class="lead">You don’t have permission to access this page.</p>
+    <a href="{{ url_for('main.index') }}" class="btn btn-primary">Return to Home</a>
+</div>
+{% endblock %}

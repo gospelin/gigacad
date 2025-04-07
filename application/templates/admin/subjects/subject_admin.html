@@ -3,7 +3,7 @@
 {% block content %}
 <div class="container mt-5">
     {% for section, subjects in subjects_by_section.items() %}
-    <h2>{{ section }} Subjects</h2>
+    <h2>{{ section if section is not none else "General" }} Subjects</h2>
     <ul class="list-group">
         {% for subject in subjects %}
         <li class="list-group-item d-flex justify-content-between align-items-center">

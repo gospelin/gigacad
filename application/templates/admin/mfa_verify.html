@@ -1,0 +1,32 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+    <div class="container mt-5">
+        <h2>{{ title }}</h2>
+        {% if qr_code_url %}
+            <p>Please scan this QR code with Google Authenticator to set up MFA:</p>
+            <img src="{{ qr_code_url }}" alt="MFA QR Code" class="img-fluid mb-3">
+            <p>Or manually enter this secret: <strong>{{ mfa_secret }}</strong></p>
+        {% endif %}
+        <p>Enter the 6-digit code from your authenticator app:</p>
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            <div class="mb-3">
+                <label for="mfa_code" class="form-label">MFA Code</label>
+                <input type="text" class="form-control" id="mfa_code" name="mfa_code" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Verify</button>
+            <a href="{{ url_for('auth.logout') }}" class="btn btn-danger ml-2">Logout</a>
+        </form>
+    </div>
+    <script>
+        // Check if the flash message indicates logout and redirect
+        document.addEventListener('DOMContentLoaded', function() {
+            const flashMessages = document.querySelectorAll('.alert-success');
+            flashMessages.forEach(msg => {
+                if (msg.textContent.includes("You have been logged out")) {
+                    window.location.href = "{{ url_for('auth.login') }}";
+                }
+            });
+        });
+    </script>
+{% endblock %}

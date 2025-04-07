@@ -1,479 +1,463 @@
-{% extends "student/base.html" %} {% block content %}
-
+{% extends "student/base.html" %}
+{% block content %}
 <style>
-    /* General Styles */
-
-    .school-header {
-        margin-bottom: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: flex-start;
-    }
-
-    .table tr th {
-        text-transform: uppercase;
-        color: #fff;
-        vertical-align: middle;
-        background-color: #333;
-        border: 1px solid #fff;
-    }
-
-    .grading td {
-        font-size: 10pt;
-        padding-right: 5px;
-        white-space: nowrap;
+    :root {
+        --primary: #2a2a72;
+        --secondary: #c678dd;
+        --accent: #f7d794;
+        --text: #1a1a1a;
+        --background: #eef2f7;
+        --card-bg: #ffffff;
+        --shadow: rgba(0, 0, 0, 0.15);
+        --gradient: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
     }
 
     .print-view {
-        margin: 2mm;
-        padding: 3mm;
-        font-size: 10pt;
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background: var(--card-bg);
+        border-radius: 20px;
+        box-shadow: 0 10px 40px var(--shadow);
+        font-family: 'Montserrat', sans-serif;
     }
 
-    .table-bordered {
-        border: 1px solid #333;
-    }
-
-    .table-bordered th,
-    .table-bordered td {
-        border: 1px solid #333;
-        font-size: 8pt;
-    }
-
-    .details,
-    .text-end {
-        text-align: left;
-    }
-
-    .details {
-        margin: -30px 3px 0px -10px;
-        color: #333;
+    .school-header {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        margin-bottom: 2rem;
     }
 
     .school-logo {
-        margin-top: -30px;
         width: 100px;
-        margin-left: 10px;
+        margin-right: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     }
 
     .school-info {
-        margin-top: 5px;
+        flex: 1;
         text-align: center;
-        margin-left: 30px;
-        font-weight: bolder;
     }
 
-    .card {
-        margin-bottom: 5mm;
-        border: 1px solid #333;
-        box-shadow: none;
+    .school-info .card-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--primary);
+        margin: 0;
     }
 
-    .card-header {
-        padding: 5mm;
+    .school-info .card-text {
+        font-size: 1.1rem;
+        font-weight: 300;
+        color: var(--text);
+        margin: 0.5rem 0;
     }
 
-    .card-body {
-        padding: 5mm;
+    .school-info .card-subtitle {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 1.6rem;
+        font-weight: 600;
+        color: var(--secondary);
+        margin-top: 1rem;
     }
 
-    .card-title {
-        font-size: 18pt;
-        margin-top: 0;
-        color: #333;
+    .details {
+        margin-bottom: 2rem;
     }
 
-    .card-text {
-        font-size: 10pt;
-        color: #333;
+    .details table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 1rem;
     }
 
-    .card-subtitle {
-        font-size: 14pt;
-        margin-bottom: 5mm;
-        color: #333;
-    }
-
-    .table {
-        margin-bottom: 3mm;
-    }
-
-    .table tr th {
-        text-transform: uppercase;
-        color: #fff;
+    .details th, .details td {
+        padding: 0.8rem;
+        font-weight: 400;
+        border: 1px solid rgba(0, 0, 0, 0.1);
         vertical-align: middle;
-        /*background-color: #28a745;*/
+    }
+
+    .details th {
+        font-weight: 600;
+        color: var(--primary);
+        background: rgba(0, 0, 0, 0.03);
+    }
+
+    .table-bordered {
+        border: 2px solid var(--primary);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .table-bordered th {
+        background: var(--primary);
+        color: #fff;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+        font-size: 1.1rem;
+        text-transform: uppercase;
+        padding: 1rem;
         border: 1px solid #fff;
     }
 
-    .table tr td {
+    .table-bordered td {
+        font-size: 1rem;
+        padding: 1rem;
+        border: 1px solid rgba(0, 0, 0, 0.1);
         vertical-align: middle;
-        color: #333;
     }
 
-     .table th {
-        background-color: #333;
+    .subject-column { width: 50%; }
+    .classwork-column, .summative-column, .exam-column, .total-column, .grade-column, .remark-column { text-align: center; }
+
+    .grading {
+        margin-top: 1rem;
+    }
+
+    .grading table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .grading th, .grading td {
+        padding: 0.8rem;
+        font-size: 0.9rem;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+
+    .grading th {
+        background: var(--secondary);
         color: #fff;
+        font-weight: 600;
+    }
+
+    .remarks table {
+        width: 100%;
+        margin-top: 2rem;
+    }
+
+    .remarks td {
+        padding: 0.8rem;
+        font-size: 1rem;
+        border: none;
+    }
+
+    .remarks strong {
+        color: var(--primary);
+    }
+
+    .btn-primary {
+        background: var(--accent);
+        border: none;
+        padding: 0.9rem 2rem;
+        border-radius: 30px;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+        font-size: 1.1rem;
         text-transform: uppercase;
-        border: 1px solid #fff;
+        color: var(--text);
+        transition: all 0.3s ease;
     }
 
-
-    .table .subject-column {
-        width: 55%;
-        text-align: left; /* Maintain alignment for subjects */
-        text-transform: uppercase;
+    .btn-primary:hover {
+        background: #f1c40f;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
     }
 
-    .table .summative-column {
-        width: 10%;
-        text-align: center;
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        .print-view {
+            padding: 1rem;
+            margin: 1rem;
+        }
 
+        .school-header {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .school-logo {
+            margin: 0 auto 1rem;
+            width: 80px;
+        }
+
+        .school-info .card-title {
+            font-size: 2rem;
+        }
+
+        .school-info .card-subtitle {
+            font-size: 1.4rem;
+        }
+
+        .details table {
+            font-size: 0.9rem;
+        }
+
+        .details th, .details td {
+            padding: 0.5rem;
+            display: block;
+            width: 100%;
+            text-align: left;
+        }
+
+        .details tr {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 0.5rem;
+        }
+
+        .details th {
+            background: var(--primary);
+            color: #fff;
+            border-radius: 5px 5px 0 0;
+        }
+
+        .details td {
+            border-radius: 0 0 5px 5px;
+            background: rgba(0, 0, 0, 0.02);
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .table-bordered th, .table-bordered td {
+            font-size: 0.9rem;
+            padding: 0.5rem;
+        }
+
+        .grading table {
+            font-size: 0.8rem;
+        }
+
+        .grading th, .grading td {
+            padding: 0.5rem;
+            display: inline-block;
+            width: 33.33%; /* Stack 3 grades per row */
+            margin: 0;
+        }
+
+        .grading tr {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .grading th:first-child {
+            width: 100%;
+            background: var(--secondary);
+            border-radius: 5px 5px 0 0;
+        }
     }
 
-    .table .classwork-column {
-        width: 10%;
-        text-align: center;
-    }
+    @media (max-width: 576px) {
+        .school-info .card-title {
+            font-size: 1.5rem;
+        }
 
-    .table .remark-column {
-        width: 15%;
-        text-align: center;
-    }
+        .school-info .card-subtitle {
+            font-size: 1.2rem;
+        }
 
-    .grading td {
-        font-size: 10pt;
-        padding-right: 5px;
-        white-space: nowrap;
+        .details th, .details td {
+            font-size: 0.8rem;
+        }
+
+        .table-bordered th, .table-bordered td {
+            font-size: 0.8rem;
+            padding: 0.4rem;
+        }
+
+        .grading th, .grading td {
+            width: 50%; /* Stack 2 grades per row */
+        }
     }
 
     /* Print Styles */
     @media print {
         .print-view {
-            margin: 2mm auto;
-            padding: 3mm;
-            font-family: "Arial", sans-serif;
-            font-size: 10pt;
-        }
-
-        .table-bordered {
-            border: 1px solid #333;
-        }
-
-        .table-bordered th,
-        .table-bordered td {
-            border: 1px solid #333;
-            font-size: 10pt;
-        }
-
-        .details,
-        .text-end {
-            text-align: left;
-        }
-
-        .navbar,
-        .footer,
-        .top-bar,
-        .sidebar,
-        .btn {
-            display: none;
-        }
-
-        .school-header {
-            margin-bottom: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            font-family: "Arial Black", serif;
+            margin: 0;
+            padding: 0;
+            box-shadow: none;
+            border: none;
         }
 
         .school-logo {
             width: 80px;
-            margin-left: 10px;
         }
 
-        .school-info {
-            margin-top: 5px;
-            text-align: center;
-            margin-left: 30px;
-            font-weight: bolder;
+        .school-info .card-title {
+            font-size: 2rem;
         }
 
-        .card {
-            margin-bottom: 5mm;
-            border: 1px solid #28a745;
-            box-shadow: none;
+        .school-info .card-text {
+            font-size: 0.9rem;
         }
 
-        .card-header {
-            padding: 5mm;
+        .school-info .card-subtitle {
+            font-size: 1.4rem;
         }
 
-        .card-body {
-            padding: 5mm;
+        .table-bordered {
+            border: 1px solid var(--primary);
         }
 
-        .card-title {
-            font-size: 20pt;
-            margin-top: 0;
-            color: #28a745;
+        .btn-primary {
+            display: none;
         }
 
-        .card-text {
-            font-size: 10pt;
-            color: pink;
+        .details th, .details td {
+            display: table-cell;
+            width: auto;
         }
 
-        .card-subtitle {
-            font-size: 14pt;
-            margin-bottom: 5mm;
-            color: #28a745;
+        .details tr {
+            display: table-row;
         }
 
-        .table {
-            margin-bottom: 3mm;
+        .grading th, .grading td {
+            display: table-cell;
+            width: auto;
         }
 
-        .table tr th {
-            text-transform: uppercase;
-            color: #fff;
-            vertical-align: middle;
-            /*background-color: #28a745;*/
-            border: 1px solid #fff;
+        .grading tr {
+            display: table-row;
         }
 
-        .table tr td {
-            vertical-align: middle;
-            /*color: #28a745;*/
-        }
-
-        .grading td {
-            font-size: 10pt;
-            padding-right: 5px;
-            white-space: nowrap;
-        }
-
-        .remarks {
-            margin-top: 20px;
-        }
-
-        /* Watermark styling */
         body::before {
             content: "Aunty Anne's Int'l School Approved Result";
-            position: absolute;
+            position: fixed;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%) rotate(-48deg);
-            font-size: 3.5rem;
-            color: rgba(0, 0, 0, 0.03);
-            white-space: nowrap;
-            pointer-events: none;
-            z-index: 0;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 3rem;
+            color: rgba(0, 0, 0, 0.05);
+            z-index: -1;
         }
-
-        .print-view,
-        .container {
-            position: relative;
-            z-index: 1;
-        }
-    }
-
-    /* Mobile Styles */
-    @media (max-width: 768px) {
-        .card-subtitle {
-            font-size: 16px;
-            margin-bottom: 3mm;
-        }
-
-        .card-body {
-            padding: 3mm;
-        }
-
-        .card-title {
-            font-size: 18px;
-        }
-
-        .table {
-            margin-bottom: 3mm;
-        }
-
-        .details {
-            margin: 0px 3px 0px 0px;
-        }
-        .table-responsive {
-            width: 100%;
-            overflow-y: hidden;
-            -ms-overflow-style: -ms-autohiding-scrollbar;
-            border: 0;
-        }
-
     }
 </style>
 
-<div class="container mt-5 print-view">
+<div class="container mt-5 print-view animate__animated animate__fadeIn">
     <div class="row justify-content-center">
         <div class="col-lg-12">
-            <a href="{{ url_for('students.download_results_pdf', student_id=student.id, term=term, session=session) }}" class="text-center btn btn-primary mt-3">Download Result</a>
-            <div class="card border-0 shadow-lg">
+            <a href="{{ url_for('students.download_results_pdf', student_id=student.id, term=term, session_id=session_id) }}" class="btn btn-primary mb-3">Download PDF</a>
+            <div class="card border-0">
                 <div class="card-body">
                     <div class="school-header">
-                        <img src="{{ url_for('static', filename='images/school_logo.png') }}" alt="School Logo" class="img-fluid school-logo" width="60">
+                        <img src="{{ url_for('static', filename='images/school_logo.png') }}" alt="School Logo" class="school-logo">
                         <div class="school-info">
-                            <h1 class="card-title text-center text-uppercase">{{ school_name }}</h1>
-                            <p style="color: pink;" class="text-center card-text">6 OOMNNE DRIVE, ABAYI, ABA, ABIA STATE</p>
-                            <h2 class="text-center card-subtitle text-uppercase">REPORT SHEET FOR {{ term }} {{ session }} SESSION</h2>
+                            <h1 class="card-title text-uppercase">{{ school_name }}</h1>
+                            <p class="card-text">6 OOMNNE DRIVE, ABAYI, ABA, ABIA STATE</p>
+                            <h2 class="card-subtitle text-uppercase">Report Sheet for {{ term }} Term {{ session_year }} Academic Session</h2>
                         </div>
                     </div>
-                    <div class="table-responsive text-start card-body details">
-                        <table class="table  table-striped">
-                            <tr class="text-uppercase">
-                                <td>Name</td>
-                                <td>{{ student.first_name }} &nbsp;
-                                    {% if student.middle_name %}
-                                        {{student.middle_name[0]}}.
-                                    {% endif %}
-                                    &nbsp; {{ student.last_name }}
-                                </td>
-                                <td>Class</td>
+                    <div class="details">
+                        <table>
+                            <tr>
+                                <th>Name</th>
+                                <td>{{ student.first_name }} {% if student.middle_name %}{{ student.middle_name[0] }}.{% endif %} {{ student.last_name }}</td>
+                                <th>Class</th>
                                 <td>{{ class_name }}</td>
                             </tr>
-                            <tr class="text-uppercase">
-                                <td>Student ID</td>
-                                <td>{{student.reg_no}}</td>
-                                <td>Reopening Date</td>
-                                <td>{{next_term_begins}}</td>
+                            <tr>
+                                <th>Student ID</th>
+                                <td>{{ student.reg_no }}</td>
+                                <th>Reopening Date</th>
+                                <td>{{ next_term_begins if next_term_begins else 'N/A' }}</td>
                             </tr>
-                            <tr class="text-uppercase">
-                                <td>Gender</td>
+                            <tr>
+                                <th>Gender</th>
                                 <td>{{ student.gender }}</td>
-                                <td style="font-size: 9pt;">Last Term Average:</td>
-                                {% if last_term_average %}
-                                    <td>{{ last_term_average }}</td>
-                                {% else %}
-                                    <td>N/A</td>
-                                {% endif %}
+                                <th>Last Term Average</th>
+                                <td>{{ last_term_average if last_term_average is not none else 'N/A' }}</td>
                             </tr>
-                            <tr class="text-uppercase">
-                                <td style="font-size: 9pt;">Cummulative Average</td>
-                                <td>{{ cumulative_average }}</td>
-                                <td style="font-size: 9pt;">Average for the Term </td>
-                                <td>{{ average }}</td>
+                            <tr>
+                                <th>Cumulative Average</th>
+                                <td>{{ cumulative_average if cumulative_average is not none else 'N/A' }}</td>
+                                <th>Average for the Term</th>
+                                <td>{{ average if average is not none else 'N/A' }}</td>
                             </tr>
-                            {% if "Creche" in student_class or "Nursery" in student_class or "Basic" in student_class %}
-                            <tr class="text-uppercase">
-                                <td>Position in class</td>
-                                <td colspan="3">{{ position }}</td>
+                            {% if "Creche" in class_name or "Nursery" in class_name or "Basic" in class_name %}
+                            <tr>
+                                <th>Position in Class</th>
+                                <td colspan="3">{{ position if position else 'N/A' }}</td>
                             </tr>
                             {% endif %}
+                            <tr>
+                                <th>Principal's Remark</th>
+                                <td>{{ principal_remark if principal_remark else 'N/A' }}</td>
+                                <th>Teacher's Remark</th>
+                                <td>{{ teacher_remark if teacher_remark else 'N/A' }}</td>
+                            </tr>
                         </table>
                         <div class="table-responsive">
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>
                                         <th class="subject-column">Subjects</th>
-                                        <th class="text-center classwork-column">Class Work<br>(20)</th>
-                                        <th class="text-center summative-column">Summative Test<br>(20)</th>
-                                        <th class="text-center exam-column">Exam<br>(60)</th>
-                                        <th class="text-center total-column">Total<br>(100)</th>
-                                        <th class="text-center grade-column">Grade</th>
-                                        <th class="text-center remark-column">Remark</th>
+                                        <th class="classwork-column">Class Work (20)</th>
+                                        <th class="summative-column">Summative Test (20)</th>
+                                        <th class="exam-column">Exam (60)</th>
+                                        <th class="total-column">Total (100)</th>
+                                        <th class="grade-column">Grade</th>
+                                        <th class="remark-column">Remark</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                   {% for result in results %}
+                                    {% for result in results %}
                                         {% if result.total is not none %}
                                             <tr>
                                                 <td class="subject-column">{{ result.subject.name }}</td>
-                                                <td class="classwork-column" style="color: {{ 'red' if result.class_assessment is not none and result.class_assessment < 10 else '#333' }}">
-                                                    {{ result.class_assessment if result.class_assessment is not none else '-' }}
-                                                </td>
-                                                <td class="summative-column" style="color: {{ 'red' if result.summative_test is not none and result.summative_test < 10 else '#333' }}">
-                                                    {{ result.summative_test if result.summative_test is not none else '-' }}
-                                                </td>
-                                                <td class="exam-column" style="color: {{ 'red' if result.exam is not none and result.exam < 30 else '#333' }}">
-                                                    {{ result.exam if result.exam is not none else '-' }}
-                                                </td>
+                                                <td class="classwork-column" style="color: {{ 'red' if result.class_assessment is not none and result.class_assessment < 10 else 'var(--text)' }}">{{ result.class_assessment if result.class_assessment is not none else '-' }}</td>
+                                                <td class="summative-column" style="color: {{ 'red' if result.summative_test is not none and result.summative_test < 10 else 'var(--text)' }}">{{ result.summative_test if result.summative_test is not none else '-' }}</td>
+                                                <td class="exam-column" style="color: {{ 'red' if result.exam is not none and result.exam < 30 else 'var(--text)' }}">{{ result.exam if result.exam is not none else '-' }}</td>
                                                 <td class="total-column">{{ result.total if result.total is not none else '-' }}</td>
-                                                <td class="grade-column">{{ result.grade if result.grade  else '-' }}</td>
+                                                <td class="grade-column">{{ result.grade if result.grade else '-' }}</td>
                                                 <td class="remark-column">{{ result.remark.capitalize() if result.remark else '-' }}</td>
                                             </tr>
                                         {% endif %}
                                     {% endfor %}
                                     <tr>
                                         <td><strong>GRAND TOTAL</strong></td>
-                                        <td class="text-center">
-                                            <strong
-                                                >{{ grand_total.class_assessment
-                                                }}</strong
-                                            >
-                                        </td>
-                                        <td class="text-center">
-                                            <strong
-                                                >{{ grand_total.summative_test
-                                                }}</strong
-                                            >
-                                        </td>
-                                        <td class="text-center">
-                                            <strong>{{ grand_total.exam }}</strong>
-                                        </td>
-                                        <td class="text-center">
-                                            <strong>{{ grand_total.total }}</strong>
-                                        </td>
+                                        <td class="text-center"><strong>{{ grand_total.class_assessment if grand_total.class_assessment is not none else '-' }}</strong></td>
+                                        <td class="text-center"><strong>{{ grand_total.summative_test if grand_total.summative_test is not none else '-' }}</strong></td>
+                                        <td class="text-center"><strong>{{ grand_total.exam if grand_total.exam is not none else '-' }}</strong></td>
+                                        <td class="text-center"><strong>{{ grand_total.total if grand_total.total is not none else '-' }}</strong></td>
                                         <td colspan="2"></td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
-                        <div style="width: 100%;" class="table-responsive grading">
-                            <table style="width: 100%;" class="table table-bordered">
+                        <div class="grading">
+                            <table>
                                 <thead>
-                                    <tr class="text-center" style="font-size: 8pt;">
-                                        <th colspan="4">GRADE</th>
-                                    </tr>
-                                     <tr>
-                                        <th>100 - 95</th>
-                                        <th>94 - 80</th>
-                                        <th>79 - 70</th>
-                                        <th>69 - 65</th>
-                                        <th>64 - 60</th>
-                                        <th>59 - 50</th>
-                                        <th>49 - 40</th>
-                                        <th>39 - 30</th>
-                                        <th>29 - 0</th>
-                                    </tr>
+                                    <tr><th colspan="9">GRADE</th></tr>
+                                    <tr><th>100-95</th><th>94-80</th><th>79-70</th><th>69-65</th><th>64-60</th><th>59-50</th><th>49-40</th><th>39-30</th><th>29-0</th></tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>A+</td>
-                                        <td>A</td>
-                                        <td>B+</td>
-                                        <td>B</td>
-                                        <td>C+</td>
-                                        <td>C</td>
-                                        <td>D</td>
-                                        <td>E</td>
-                                        <td>F</td>
-                                    </tr>
+                                    <tr><td>A+</td><td>A</td><td>B+</td><td>B</td><td>C+</td><td>C</td><td>D</td><td>E</td><td>F</td></tr>
                                 </tbody>
                             </table>
                         </div>
-                    </div>
-                    <div class="table-responsive remarks mt-4">
-                        <table class="table">
-                            <tbody>
+                        <div class="remarks">
+                            <table>
                                 <tr>
                                     <td><strong>Date Issued:</strong></td>
-                                    <td>{{ date_issued }}</td>
+                                    <td>{{ date_issued if date_issued else 'N/A' }}</td>
                                     <td><strong>Date Printed:</strong></td>
                                     <td>{{ date_printed }}</td>
                                 </tr>
-                            </tbody>
-                        </table>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
-            <!--<button onclick="window.print()" class="btn btn-primary mt-3">Print</button>-->
-            <a href="{{ url_for('students.download_results_pdf', student_id=student.id, term=term, session=session) }}" class="text-center btn btn-primary mt-3">Download PDF</a>
         </div>
     </div>
 </div>

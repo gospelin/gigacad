@@ -1,61 +1,68 @@
 import os
 from dotenv import load_dotenv
+import logging
 
-# Load environment variables from the .env file
+logging.basicConfig(level=logging.WARNING)
+config_logger = logging.getLogger(__name__)
+sqlalchemy_logger = logging.getLogger('sqlalchemy.engine')
+sqlalchemy_logger.setLevel(logging.WARNING)
+
 basedir = os.getenv("BASEDIR", os.path.abspath(os.path.dirname(__file__)))
-load_dotenv(os.path.join(basedir, ".env"))
-
+env_path = os.path.join(basedir, ".env")
+if os.path.exists(env_path):
+    load_dotenv(env_path)
+else:
+    config_logger.warning(f"No .env file found at {env_path}. Using default values.")
 
 class Config:
-    """Base configuration."""
-
-    # Secret key for security, retrieved from the .env file or a default value
-    SECRET_KEY = os.environ.get("SECRET_KEY", "default_secret_key")
-
-    # Retrieve database connection details from environment variables
-    DB_USER = os.getenv("DB_USER", "your_mysql_username")
-    DB_PASSWORD = os.getenv("DB_PASSWORD", "your_mysql_password")
+    """Base configuration for the Flask application."""
+    SECRET_KEY = os.environ.get("SECRET_KEY") or os.urandom(32).hex()
+    DB_USER = os.getenv("DB_USER", "mysql_user")
+    DB_PASSWORD = os.getenv("DB_PASSWORD", "mysql_password")
     DB_HOST = os.getenv("DB_HOST", "localhost")
-    DB_NAME = os.getenv("DB_NAME", "auntyan1_school_database")
-
-    # Construct the MySQL connection string
-    SQLALCHEMY_DATABASE_URI = (
-        f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}"
-    )
-
-    # To prevent SQLAlchemy from tracking modifications to objects, which uses extra memory
+    DB_NAME = os.getenv("DB_NAME", "school_database")
+    LOG_DIR = os.getenv("LOG_DIR", os.path.join(os.path.abspath(os.path.dirname(__file__)), "logs"))
+    SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-
-    # Enable CSRF protection for Flask forms
+    SQLALCHEMY_ECHO = False
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        'pool_size': 5,
+        'max_overflow': 10,
+        'pool_timeout': 30,
+        'pool_recycle': 1800,
+        'pool_pre_ping': True
+    }
     WTF_CSRF_ENABLED = True
+    SCHOOL_NAME = os.getenv("SCHOOL_NAME", "Aunty Anne's International School")
+    REG_NO_PREFIX = os.getenv("REG_NO_PREFIX", "AAIS/0559/")
+    RECAPTCHA_PUBLIC_KEY = os.getenv("RECAPTCHA_SITE_KEY")
+    RECAPTCHA_PRIVATE_KEY = os.getenv("RECAPTCHA_SECRET_KEY")
+    PERMANENT_SESSION_LIFETIME = int(os.getenv("SESSION_LIFETIME", 86400))
 
+    def __init__(self):
+        if not self.SECRET_KEY or self.SECRET_KEY == "insecure_default_secret_key_please_change_me":
+            config_logger.warning("Using insecure default SECRET_KEY. Set SECRET_KEY in .env for security.")
+        if "mysql_user" in self.SQLALCHEMY_DATABASE_URI or "mysql_password" in self.SQLALCHEMY_DATABASE_URI:
+            config_logger.warning("Using default DB credentials. Set DB_USER and DB_PASSWORD in .env.")
 
 class DevelopmentConfig(Config):
-    """Development configuration."""
-
-    # DEBUG = True
-    DEBUG = False
-    SQLALCHEMY_ECHO = False  # Enables SQL logging for debugging purposes
-
+    DEBUG = True
+    SQLALCHEMY_ECHO = True
 
 class TestingConfig(Config):
-    """Testing configuration."""
-
     TESTING = True
-    # Use an in-memory SQLite database for testing purposes
     SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
-
+    WTF_CSRF_ENABLED = False
+    SQLALCHEMY_ENGINE_OPTIONS = {}
 
 class ProductionConfig(Config):
-    """Production configuration."""
-
     DEBUG = False
-    SERVER_NAME = "auntyannesschools.com.ng"
-    # SERVER_NAME = "176.74.18.130"
-    # MySQL URI is already set in the base Config class and will be used here
+    SQLALCHEMY_ECHO = os.getenv("SQL_LOGGING", "False").lower() == "true"
+    SERVER_NAME = os.getenv("SERVER_NAME", "auntyannesschools.com.ng")
+    SECRET_KEY = os.environ.get("SECRET_KEY")
+    if not SECRET_KEY:
+        raise ValueError("SECRET_KEY must be set in environment for production.")
 
-
-# Map the configuration classes to environment names
 config_by_name = {
     "development": DevelopmentConfig,
     "testing": TestingConfig,

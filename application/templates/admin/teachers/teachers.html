@@ -23,10 +23,6 @@
                     {{ form.last_name(class="form-control") }}
                 </div>
                 <div class="mb-3">
-                    <label for="email" class="form-label">Email</label>
-                    {{ form.email(class="form-control") }}
-                </div>
-                <div class="mb-3">
                     <label for="phone_number" class="form-label">Phone Number</label>
                     {{ form.phone_number(class="form-control") }}
                 </div>
@@ -52,9 +48,7 @@
                         <th>Employee ID</th>
                         <th>First Name</th>
                         <th>Last Name</th>
-                        <th>Email</th>
                         <th>Phone</th>
-                        <th>Section</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -65,11 +59,9 @@
                         <td>{{ teacher.employee_id }}</td>
                         <td>{{ teacher.first_name }}</td>
                         <td>{{ teacher.last_name }}</td>
-                        <td>{{ teacher.email }}</td>
                         <td>{{ teacher.phone_number }}</td>
-                        <td>{{ teacher.section }}</td>
                         <td>
-                            <button class="btn btn-warning btn-sm" 
+                            <button class="btn btn-warning btn-sm"
                                 onclick="editTeacher({{ teacher.id }}, '{{ teacher.first_name }}', '{{ teacher.last_name }}', '{{ teacher.email }}', '{{ teacher.phone_number }}', '{{ teacher.section }}')">
                                 Edit
                             </button>
@@ -97,9 +89,7 @@
         document.querySelector('input[name="id"]').value = id;
         document.querySelector('input[name="first_name"]').value = firstName;
         document.querySelector('input[name="last_name"]').value = lastName;
-        document.querySelector('input[name="email"]').value = email;
         document.querySelector('input[name="phone_number"]').value = phoneNumber;
-        document.querySelector('select[name="section"]').value = section;
     }
 </script>
 {% endblock scripts %}

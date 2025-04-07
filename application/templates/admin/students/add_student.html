@@ -1,72 +1,221 @@
-{% extends "admin/base.html" %} {% block content %}
+{% extends "admin/base.html" %}
+{% block content %}
+
+<!-- Load Tailwind CSS and Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
 <div style="margin-bottom: 40px" class="container mt-5">
     <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow-lg border-0 rounded-3">
-                <div class="card-header bg-primary text-white">
-                    <h2 class="mb-0">Add Student</h2>
+        <div class="col-md-12">
+            <!-- Header and Navigation -->
+            <div class="bg-purple-700 text-white p-4 rounded-t-lg flex justify-between items-center">
+                <h2 class="text-2xl font-bold">Biometric Portal</h2>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-white hover:underline">Settings</a>
+                    <div class="relative">
+                        <button class="flex items-center space-x-2 focus:outline-none">
+                            <span class="w-8 h-8 bg-gray-300 rounded-full"></span>
+                            <span class="text-sm">User</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div class="absolute right-0 mt-2 w-48 bg-white text-black rounded-md shadow-lg hidden">
+                            <a href="#" class="block px-4 py-2 hover:bg-gray-100">Logout</a>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body p-4">
-                    <form method="POST" autocomplete="off">
-                        {{ form.hidden_tag() }}
-                        <div class="form-group mb-3">
-                            {{ form.first_name.label(class="form-label fw-bold") }} 
-                            {{ form.first_name(class="form-control shadow-sm", placeholder="Enter first name") }}
+            </div>
+
+            <!-- Main Content -->
+            <div class="flex bg-gray-100">
+                <!-- Sidebar -->
+                <div class="w-1/5 bg-white p-4 border-r">
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-purple-700 hover:text-purple-900">Dashboard</a></li>
+                        <li><a href="#" class="text-purple-700 hover:text-purple-900">Students</a></li>
+                        <li><a href="#" class="text-purple-700 hover:text-purple-900">Register</a></li>
+                        <li><a href="#" class="text-purple-700 hover:text-purple-900">Manage</a></li>
+                        <li><a href="#" class="text-purple-700 hover:text-purple-900">Delisted Students</a></li>
+                        <li><a href="#" class="text-purple-700 hover:text-purple-900">View Attendance</a></li>
+                        <li><a href="#" class="text-purple-700 hover:text-purple-900">Take Attendance</a></li>
+                        <li><a href="#" class="text-purple-700 hover:text-purple-900">Transfer Student</a></li>
+                        <li><a href="#" class="text-purple-700 hover:text-purple-900">Staff</a></li>
+                        <li><a href="#" class="text-purple-700 hover:text-purple-900">EDC Exams</a></li>
+                        <li><a href="#" class="text-purple-700 hover:text-purple-900">Register Exams</a></li>
+                        <li><a href="#" class="text-purple-700 hover:text-purple-900">EDC Results</a></li>
+                        <li><a href="#" class="text-purple-700 hover:text-purple-900">State Payments</a></li>
+                        <li><a href="#" class="text-purple-700 hover:text-purple-900">Payment ID Cards</a></li>
+                        <li><a href="#" class="text-purple-700 hover:text-purple-900">General</a></li>
+                    </ul>
+                </div>
+
+                <!-- Main Panel -->
+                <div class="w-4/5 p-6">
+                    <!-- Tab Navigation -->
+                    <div class="flex space-x-4 mb-4">
+                        <button class="text-purple-700 border-b-2 border-purple-700 pb-2">Personal Info</button>
+                        <button class="text-gray-500 hover:text-gray-700 pb-2">Other Info</button>
+                    </div>
+
+                    <!-- Form Card -->
+                    <div class="card shadow-lg border-0 rounded-3">
+                        <div class="card-body p-4">
+                            <form method="POST" autocomplete="off" class="grid grid-cols-2 gap-6">
+                                {{ form.hidden_tag() }}
+
+                                <!-- Left Column -->
+                                <div>
+                                    <div class="form-group mb-3">
+                                        {{ form.last_name.label(class="form-label fw-bold text-gray-700") }}
+                                        {{ form.last_name(class="form-control shadow-sm", placeholder="Enter last name") }}
+                                        {% for error in form.last_name.errors %}
+                                            <span class="text-danger">{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="form-group mb-3">
+                                        {{ form.first_name.label(class="form-label fw-bold text-gray-700") }}
+                                        {{ form.first_name(class="form-control shadow-sm", placeholder="Enter first name") }}
+                                        {% for error in form.first_name.errors %}
+                                            <span class="text-danger">{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="form-group mb-3">
+                                        {{ form.middle_name.label(class="form-label fw-bold text-gray-700") }}
+                                        {{ form.middle_name(class="form-control shadow-sm", placeholder="Enter middle name") }}
+                                        {% for error in form.middle_name.errors %}
+                                            <span class="text-danger">{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="form-group mb-3">
+                                        {{ form.gender.label(class="form-label fw-bold text-gray-700") }}
+                                        {{ form.gender(class="form-control shadow-sm", placeholder="Select gender") }}
+                                        {% for error in form.gender.errors %}
+                                            <span class="text-danger">{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="form-group mb-3">
+                                        {{ form.date_of_birth.label(class="form-label fw-bold text-gray-700") }}
+                                        {{ form.date_of_birth(class="form-control shadow-sm", placeholder="Enter date of birth") }}
+                                        {% for error in form.date_of_birth.errors %}
+                                            <span class="text-danger">{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="form-group mb-3">
+                                        {{ form.state_of_origin.label(class="form-label fw-bold text-gray-700") }}
+                                        {{ form.state_of_origin(class="form-control shadow-sm", placeholder="Enter state of origin") }}
+                                    </div>
+                                    {#
+                                    <div class="form-group mb-3">
+                                        {{ form.nationality.label(class="form-label fw-bold text-gray-700") }}
+                                        {{ form.nationality(class="form-control shadow-sm", placeholder="Enter nationality") }}
+                                    </div
+                                    <div class="form-group mb-3">
+                                        {{ form.school_last_attended.label(class="form-label fw-bold text-gray-700") }}
+                                        {{ form.school_last_attended(class="form-control shadow-sm", placeholder="Enter school last attended") }}
+                                    </div>
+                                    <div class="form-group mb-3">
+                                        {{ form.abssin_number.label(class="form-label fw-bold text-gray-700") }}
+                                        {{ form.abssin_number(class="form-control shadow-sm", placeholder="Enter ABSSIN number") }}
+                                    </div>
+                                    #}
+                                </div>
+
+                                <!-- Right Column -->
+                                <div>
+                                    <div class="form-group mb-3">
+                                        {{ form.parent_phone_number.label(class="form-label fw-bold text-gray-700") }}
+                                        {{ form.parent_phone_number(class="form-control shadow-sm", placeholder="Enter parent's phone number") }}
+                                        {% for error in form.parent_phone_number.errors %}
+                                            <span class="text-danger">{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="form-group mb-3">
+                                        {{ form.address.label(class="form-label fw-bold text-gray-700") }}
+                                        {{ form.address(class="form-control shadow-sm", placeholder="Enter address") }}
+                                    </div>
+                                    {#
+                                    <div class="form-group mb-3">
+                                        {{ form.place_of_birth.label(class="form-label fw-bold text-gray-700") }}
+                                        {{ form.place_of_birth(class="form-control shadow-sm", placeholder="Enter place of birth") }}
+                                    </div>
+                                    #}
+                                    <div class="form-group mb-3">
+                                        {{ form.local_government_area.label(class="form-label fw-bold text-gray-700") }}
+                                        {{ form.local_government_area(class="form-control shadow-sm", placeholder="Enter local government area") }}
+                                    </div>
+                                    <div class="form-group mb-3">
+                                        {{ form.class_id.label(class="form-label fw-bold text-gray-700") }}
+                                        {{ form.class_id(class="form-control shadow-sm") }}
+                                    </div>
+                                    {#
+                                    <div class="form-group mb-3">
+                                        {{ form.year_of_admission.label(class="form-label fw-bold text-gray-700") }}
+                                        {{ form.year_of_admission(class="form-control shadow-sm", placeholder="Enter year of admission") }}
+                                    </div>
+                                    #}
+                                    <div class="form-group mb-3">
+                                        {{ form.term.label(class="form-label fw-bold text-gray-700") }}
+                                        {{ form.term(class="form-control shadow-sm") }}
+                                        {% for error in form.term.errors %}
+                                            <span class="text-danger">{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+
+                                <!-- Profile Picture Section -->
+                                <div class="col-span-2 text-center">
+                                    <h4 class="text-lg font-semibold text-gray-700 mb-2">Profile Picture</h4>
+                                    <div class="w-32 h-32 bg-gray-200 rounded-full mx-auto flex items-center justify-center mb-4">
+                                        <span class="text-gray-500">No Image</span>
+                                    </div>
+                                    <button type="button" class="btn btn-purple-700 text-white px-4 py-2 rounded">Browse...</button>
+                                    <button type="button" class="btn btn-outline-secondary px-4 py-2 rounded ml-2">Capture</button>
+                                </div>
+
+                                <!-- Submit Button -->
+                                <div class="col-span-2 text-center mt-4">
+                                    <button type="submit" class="btn btn-purple-700 text-white px-6 py-3 rounded shadow-sm">Add Student</button>
+                                </div>
+                            </form>
+                            <div class="text-center mt-2 text-gray-500">meet.google.com is sharing your screen. <button class="btn btn-danger ml-2">Stop Sharing</button> <button class="btn btn-link">Hide</button></div>
                         </div>
-                        <div class="form-group mb-3">
-                            {{ form.last_name.label(class="form-label fw-bold")}} 
-                            {{ form.last_name(class="form-control shadow-sm", placeholder="Enter last name") }}
-                        </div>
-                        <div class="form-group mb-3">
-                            {{ form.middle_name.label(class="form-label fw-bold") }} 
-                            {{ form.middle_name(class="form-control shadow-sm", placeholder="Enter middle name") }}
-                        </div>
-                        <div class="form-group mb-3">
-                            {{ form.gender.label(class="form-label fw-bold") }}
-                            {{ form.gender(class="form-control shadow-sm", placeholder="Select gender") }}
-                        </div>
-                        <div class="form-group mb-3">
-                            {{ form.date_of_birth.label(class="form-label fw-bold") }} 
-                            {{ form.date_of_birth(class="form-control shadow-sm", placeholder="Enter date of birth") }}
-                        </div>
-                        <div class="form-group mb-3">
-                            {{ form.parent_name.label(class="form-label fw-bold") }} 
-                            {{ form.parent_name(class="form-control shadow-sm", placeholder="Enter parent's name") }}
-                        </div>
-                        <div class="form-group mb-3">
-                            {{ form.parent_phone_number.label(class="form-label fw-bold") }} 
-                            {{ form.parent_phone_number(class="form-control shadow-sm", placeholder="Enter parent's phone number") }}
-                        </div>
-                        <div class="form-group mb-3">
-                            {{ form.address.label(class="form-label fw-bold") }}
-                            {{ form.address(class="form-control shadow-sm", placeholder="Enter address") }}
-                        </div>
-                        <div class="form-group mb-3">
-                            {{ form.parent_occupation.label(class="form-label fw-bold") }} 
-                            {{ form.parent_occupation(class="form-control shadow-sm", placeholder="Enter parent's occupation") }}
-                        </div>
-                        <div class="form-group mb-3">
-                            {{ form.class_id.label(class="form-label fw-bold") }} 
-                            {{ form.class_id(class="form-control shadow-sm", placeholder="Enter entry class") }}
-                        </div>
-                        <div class="form-group mb-3">
-                            {{ form.state_of_origin.label(class="form-label fw-bold") }} 
-                            {{ form.state_of_origin(class="form-control shadow-sm", placeholder="Enter state of origin") }}
-                        </div>
-                        <div class="form-group mb-3">
-                            {{ form.local_government_area.label(class="form-label fw-bold") }} 
-                            {{ form.local_government_area(class="form-control shadow-sm", placeholder="Enter local government area") }}
-                        </div>
-                        <div class="form-group mb-3">
-                            {{ form.religion.label(class="form-label fw-bold")}} 
-                            {{ form.religion(class="form-control shadow-sm", placeholder="Enter religion") }}
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100 shadow-sm">Add Student</button>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    /* Custom Styles */
+    .form-control {
+        font-family: 'Poppins', sans-serif;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 8px;
+    }
+    .btn-purple-700 {
+        background-color: #6b46c1;
+        border: none;
+    }
+    .btn-purple-700:hover {
+        background-color: #553c9a;
+    }
+    .card {
+        background-color: white;
+        border-radius: 0.75rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .form-label {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 500;
+    }
+    .fw-bold {
+        font-weight: 600;
+    }
+</style>
+
 {% endblock %}

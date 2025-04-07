@@ -1,118 +1,350 @@
 {% extends "student/base.html" %}
-
 {% block title %}Student Profile{% endblock %}
-
 {% block content %}
+<!-- Import Premium Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
 <style>
-    /* General Styles */
-    body {
-        font-family: 'Roboto', sans-serif;
-        background-color: #f4f6f9;
-        color: #333;
+    /* Root Variables for a Luxurious Theme */
+    :root {
+        --primary: #2a2a72; /* Deep indigo */
+        --secondary: #c678dd; /* Soft purple */
+        --accent: #f7d794; /* Warm gold */
+        --text: #1a1a1a; /* Rich black */
+        --background: #eef2f7; /* Light gray-blue */
+        --card-bg: #ffffff; /* Pure white */
+        --shadow: rgba(0, 0, 0, 0.15);
+        --gradient: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
     }
 
+    /* Reset and Base Styles */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Montserrat', sans-serif;
+        background: var(--background);
+        color: var(--text);
+        line-height: 1.8;
+        overflow-x: hidden;
+    }
+
+    /* Profile Container */
     .profile-container {
-        max-width: 1200px;
-        margin: 2rem auto;
-        background: #fff;
-        border-radius: 12px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        max-width: 1400px;
+        margin: 4rem auto;
+        background: var(--card-bg);
+        border-radius: 20px;
+        box-shadow: 0 10px 40px var(--shadow);
+        overflow: hidden;
+        position: relative;
+        animation: slideUp 0.8s ease-out;
+    }
+
+    /* Profile Header */
+    .profile-header {
+        background: var(--gradient);
+        padding: 4rem 3rem;
+        color: #fff;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 3rem;
+        position: relative;
         overflow: hidden;
     }
 
-    .profile-header {
-        display: flex;
-        flex-wrap: wrap;
-        background: linear-gradient(135deg, #6a11cb, #2575fc);
-        color: #fff;
-        padding: 2rem;
+    .profile-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.2), transparent);
+        opacity: 0.3;
+        transform: rotate(30deg);
     }
 
-    .profile-header img {
-        width: 150px;
-        height: 150px;
+    .profile-pic-wrapper {
+        position: relative;
+        z-index: 1;
+        transition: transform 0.3s ease;
+    }
+
+    .profile-pic-wrapper img {
+        width: 180px;
+        height: 180px;
         border-radius: 50%;
-        border: 4px solid #fff;
+        border: 6px solid rgba(255, 255, 255, 0.9);
         object-fit: cover;
-        margin-right: 1.5rem;
+        transition: all 0.4s ease;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
     }
 
-    .profile-header .profile-info {
-        flex: 1;
+    .profile-pic-wrapper:hover img {
+        transform: scale(1.05);
+        filter: brightness(1.1);
     }
 
-    .profile-header .profile-info h1 {
-        font-size: 2.5rem;
-        margin: 0;
+    .profile-pic-wrapper input[type="file"] {
+        display: none;
     }
 
-    .profile-header .profile-info p {
-        font-size: 1.2rem;
-        margin: 0.5rem 0;
-    }
-
-    .profile-header .profile-actions {
+    .profile-pic-actions {
         display: flex;
         gap: 1rem;
         margin-top: 1rem;
+        flex-wrap: wrap;
     }
 
-    .profile-header .profile-actions a {
-        padding: 0.75rem 1.5rem;
-        color: #fff;
+    .profile-info {
+        flex: 1;
+        z-index: 1;
+    }
+
+    .profile-info h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: 3.2rem;
+        font-weight: 700;
+        margin: 0;
+        letter-spacing: 1px;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .profile-info p {
+        font-size: 1.3rem;
+        font-weight: 300;
+        opacity: 0.9;
+        margin: 0.5rem 0;
+    }
+
+    .profile-actions {
+        margin-top: 2rem;
+        display: flex;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        padding: 0.9rem 2.5rem;
+        border-radius: 30px;
         text-decoration: none;
-        border-radius: 5px;
-        background: rgba(255, 255, 255, 0.2);
-        transition: background 0.3s ease;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+        font-size: 1.1rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
     }
 
-    .profile-header .profile-actions a:hover {
-        background: rgba(255, 255, 255, 0.4);
+    .btn-primary {
+        background: var(--accent);
+        color: var(--text);
     }
 
+    .btn-primary:hover {
+        background: #f1c40f;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-danger {
+        background: #ff6b6b;
+        color: #fff;
+    }
+
+    .btn-danger:hover {
+        background: #ff4757;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+    }
+
+    .btn:hover::after {
+        width: 300%;
+        height: 300%;
+    }
+
+    /* Profile Content */
     .profile-content {
-        padding: 2rem;
+        padding: 3rem;
+        background: var(--card-bg);
     }
 
     .profile-section {
-        margin-bottom: 2rem;
+        margin-bottom: 3rem;
     }
 
     .profile-section h2 {
-        font-size: 1.5rem;
-        color: #6a11cb;
-        margin-bottom: 1rem;
+        font-family: 'Playfair Display', serif;
+        font-size: 2.2rem;
+        color: var(--primary);
+        margin-bottom: 2rem;
+        position: relative;
+        padding-bottom: 0.5rem;
     }
 
-    .profile-section .info-grid {
+    .profile-section h2::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 60px;
+        height: 3px;
+        background: var(--accent);
+        border-radius: 2px;
+    }
+
+    .info-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 1.5rem;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
     }
 
     .info-item {
-        background: #f8f9fc;
-        padding: 1rem;
-        border-radius: 8px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        background: var(--card-bg);
+        padding: 1.8rem;
+        border-radius: 15px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+        transition: all 0.4s ease;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .info-item:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     }
 
     .info-item strong {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+        font-size: 1.2rem;
+        color: var(--primary);
         display: block;
-        color: #6a11cb;
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.8rem;
+    }
+
+    .info-item span {
+        font-weight: 300;
+        font-size: 1.1rem;
+    }
+
+    .editable:hover {
+        background: rgba(0, 0, 0, 0.03);
+        cursor: pointer;
+    }
+
+    /* Animations */
+    @keyframes slideUp {
+        from { opacity: 0; transform: translateY(50px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+        .profile-header {
+            padding: 2rem;
+            flex-direction: column;
+            text-align: center;
+            gap: 2rem;
+        }
+
+        .profile-pic-wrapper img {
+            width: 140px;
+            height: 140px;
+        }
+
+        .profile-info h1 {
+            font-size: 2.5rem;
+        }
+
+        .profile-info p {
+            font-size: 1.1rem;
+        }
+
+        .profile-actions {
+            justify-content: center;
+        }
+
+        .profile-content {
+            padding: 2rem;
+        }
+
+        .info-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .info-item {
+            padding: 1.5rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .profile-container {
+            margin: 2rem 1rem;
+            border-radius: 15px;
+        }
+
+        .profile-header {
+            padding: 1.5rem;
+        }
+
+        .profile-pic-wrapper img {
+            width: 120px;
+            height: 120px;
+        }
+
+        .profile-info h1 {
+            font-size: 2rem;
+        }
+
+        .btn {
+            padding: 0.7rem 1.8rem;
+            font-size: 1rem;
+        }
+
+        .profile-section h2 {
+            font-size: 1.8rem;
+        }
     }
 </style>
 
 <div class="profile-container">
     <div class="profile-header">
-        <img src="https://via.placeholder.com/150" alt="Profile Picture" class="img-thumbnail">
+        <div class="profile-pic-wrapper">
+            <img src="{{ student.profile_pic or 'https://via.placeholder.com/150' }}" alt="Profile Picture" id="profile-pic">
+            <input type="file" id="profile-pic-upload" accept="image/*">
+            <div class="profile-pic-actions">
+                <a href="#" id="upload-pic-btn" class="btn btn-primary">Upload Picture</a>
+                {% if student.profile_pic %}
+                <a href="#" id="remove-pic-btn" class="btn btn-danger">Remove Picture</a>
+                {% endif %}
+            </div>
+        </div>
         <div class="profile-info">
-            <h1>{{ student.first_name }}&nbsp;{{student.last_name}}</h1>
+            <h1>{{ student.first_name }} {{ student.middle_name or '' }} {{ student.last_name }}</h1>
             <p>Class: {{ class_name }}</p>
             <div class="profile-actions">
-                <a href="#">Edit Profile</a>
-                <a href="#">View Results</a>
+                <a href="{{ url_for('students.edit_profile', student_id=student.id) }}" class="btn btn-primary">Edit Profile</a>
+                <a href="{{ url_for('students.select_results', student_id=student.id) }}" class="btn btn-primary">View Results</a>
             </div>
         </div>
     </div>
@@ -121,21 +353,33 @@
         <div class="profile-section">
             <h2>Personal Information</h2>
             <div class="info-grid">
-                <div class="info-item">
-                    <strong>Full Name</strong>
-                    {{ student.first_name }}&nbsp;{{student.last_name}}
+                <div class="info-item editable" data-field="first_name">
+                    <strong>First Name</strong>
+                    <span>{{ student.first_name }}</span>
                 </div>
-                <div class="info-item">
-                    <strong>Date of Birth</strong>
-                    January 15, 2005
+                <div class="info-item editable" data-field="middle_name">
+                    <strong>Middle Name</strong>
+                    <span>{{ student.middle_name or 'Not provided' }}</span>
+                </div>
+                <div class="info-item editable" data-field="last_name">
+                    <strong>Last Name</strong>
+                    <span>{{ student.last_name }}</span>
                 </div>
                 <div class="info-item">
                     <strong>Gender</strong>
-                    {{student.gender}}
+                    <span>{{ student.gender }}</span>
                 </div>
                 <div class="info-item">
+                    <strong>Date of Birth</strong>
+                    <span>{{ student.date_of_birth.strftime('%B %d, %Y') if student.date_of_birth else 'Not provided' }}</span>
+                </div>
+                <div class="info-item editable" data-field="address">
                     <strong>Address</strong>
-                    123 Main Street, Springfield
+                    <span>{{ student.address or 'Not provided' }}</span>
+                </div>
+                <div class="info-item">
+                    <strong>Registration Number</strong>
+                    <span>{{ student.reg_no or 'Not assigned' }}</span>
                 </div>
             </div>
         </div>
@@ -143,25 +387,109 @@
         <div class="profile-section">
             <h2>Parent/Guardian Details</h2>
             <div class="info-grid">
-                <div class="info-item">
+                <div class="info-item editable" data-field="parent_name">
                     <strong>Parent's Name</strong>
-                    Jane Doe
+                    <span>{{ student.parent_name or 'Not provided' }}</span>
                 </div>
-                <div class="info-item">
+                <div class="info-item editable" data-field="parent_phone_number">
                     <strong>Contact Number</strong>
-                    +123 456 7890
+                    <span>{{ student.parent_phone_number or 'Not provided' }}</span>
                 </div>
-                <div class="info-item">
-                    <strong>Email</strong>
-                    jane.doe@example.com
-                </div>
-                <div class="info-item">
+                <div class="info-item editable" data-field="parent_occupation">
                     <strong>Occupation</strong>
-                    Engineer
+                    <span>{{ student.parent_occupation or 'Not provided' }}</span>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+    // Upload Profile Picture
+    $('#upload-pic-btn').on('click', function(e) {
+        e.preventDefault();
+        $('#profile-pic-upload').click();
+    });
+
+    $('#profile-pic-upload').on('change', function() {
+        const file = this.files[0];
+        if (file) {
+            const formData = new FormData();
+            formData.append('profile_pic', file);
+            formData.append('csrf_token', csrfToken);
+
+            $.ajax({
+                url: '{{ url_for("students.edit_profile", student_id=student.id) }}',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                headers: {
+                    'X-CSRF-Token': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                success: function(response) {
+                    $('#profile-pic').attr('src', '{{ student.profile_pic or "https://via.placeholder.com/150" }}?' + new Date().getTime()); // Force refresh image
+                    alert(response.message);
+                    location.reload(); // Optional: Reload to ensure all data is refreshed
+                },
+                error: function(xhr) {
+                    alert('Error uploading profile picture: ' + (xhr.responseJSON ? xhr.responseJSON.error : 'Unknown error'));
+                }
+            });
+        }
+    });
+
+    // Remove Profile Picture
+    $('#remove-pic-btn').on('click', function(e) {
+        e.preventDefault();
+        if (confirm('Are you sure you want to remove your profile picture?')) {
+            $.ajax({
+                url: '{{ url_for("students.remove_profile_pic", student_id=student.id) }}',
+                type: 'POST',
+                headers: {
+                    'X-CSRF-Token': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                data: { csrf_token: csrfToken },
+                success: function(response) {
+                    $('#profile-pic').attr('src', 'https://via.placeholder.com/150');
+                    $('#remove-pic-btn').remove();
+                    alert(response.message);
+                },
+                error: function(xhr) {
+                    alert('Error removing profile picture: ' + (xhr.responseJSON ? xhr.responseJSON.error : 'Unknown error'));
+                }
+            });
+        }
+    });
+
+    // Inline Editing
+    $('.editable').on('click', function() {
+        const field = $(this).data('field');
+        const currentValue = $(this).find('span').text();
+        const newValue = prompt(`Edit ${field.replace('_', ' ')}:`, currentValue);
+
+        if (newValue && newValue !== currentValue) {
+            $.ajax({
+                url: '{{ url_for("students.update_field", student_id=student.id) }}',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ field: field, value: newValue, csrf_token: csrfToken }),
+                headers: {
+                    'X-CSRF-Token': csrfToken
+                },
+                success: function(response) {
+                    $(`[data-field="${field}"] span`).text(newValue);
+                },
+                error: function(xhr) {
+                    alert('Error: ' + (xhr.responseJSON ? xhr.responseJSON.error : 'Unknown error'));
+                }
+            });
+        }
+    });
+</script>
 {% endblock %}

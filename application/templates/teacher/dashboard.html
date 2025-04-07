@@ -1,0 +1,215 @@
+{% extends 'teacher/base.html' %}
+
+{% block title %}Teacher Dashboard{% endblock %}
+
+{% block content %}
+    <div class="container mx-auto py-6">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold">Welcome, {{ teacher.first_name }} {{ teacher.last_name }}</h1>
+            <div class="space-x-2">
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#profileModal">
+                    <i class="fas fa-user mr-2"></i> Profile
+                </button>
+                <a href="{{ url_for('auth.logout') }}" class="btn btn-danger">
+                    <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                </a>
+            </div>
+        </div>
+
+        <!-- Overview -->
+        <section class="mb-8">
+            <h2 class="text-xl font-semibold mb-4">Overview</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <h3 class="text-lg font-medium">Classes Assigned</h3>
+                    <p class="text-2xl font-bold text-blue-600">{{ current_classes | length }}</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <h3 class="text-lg font-medium">Subjects Taught</h3>
+                    <p class="text-2xl font-bold text-green-600">{{ assigned_subjects | length }}</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <h3 class="text-lg font-medium">Pending Tasks</h3>
+                    <p class="text-2xl font-bold text-red-600">5</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Analytics -->
+        <section class="mb-8">
+            <h2 class="text-xl font-semibold mb-4">Class Performance Analytics</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <h3 class="text-lg font-medium mb-2">Average Scores by Subject</h3>
+                    <canvas id="subjectChart"></canvas>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <h3 class="text-lg font-medium mb-2">Performance Trend</h3>
+                    <canvas id="performanceChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Classes -->
+        <section class="mb-8">
+            <h2 class="text-xl font-semibold mb-4">My Classes</h2>
+            <div class="flex justify-between mb-4">
+                <input type="text" id="classSearch" class="form-control w-1/3" placeholder="Search classes...">
+                <button id="downloadClasses" class="btn btn-success">
+                    <i class="fas fa-download mr-2"></i> Download Report
+                </button>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow overflow-x-auto">
+                <table class="table table-bordered w-full">
+                    <thead>
+                        <tr>
+                            <th>Class</th>
+                            <th>Session</th>
+                            <th>Term</th>
+                            <th>Form Teacher</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="classTable">
+                        {% for assignment in assignments %}
+                        <tr>
+                            <td>{{ assignment[0].name }}</td>
+                            <td>{{ assignment[1].year }}</td>
+                            <td>{{ assignment[2] }}</td>
+                            <td>{{ 'Yes' if assignment[3] else 'No' }}</td>
+                            <td>
+                                <a href="{{ url_for('teachers.view_class', class_id=assignment[0].id, session_id=assignment[1].id, term=assignment[2]) }}"
+                                   class="text-blue-600 hover:underline" data-bs-toggle="tooltip" title="View Class">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="#" class="text-green-600 hover:underline ml-2" data-bs-toggle="tooltip" title="Update Results">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        
+        <!-- Subjects Section -->
+        <section id="subjects" class="mb-8">
+            <h2 class="text-2xl font-semibold mb-4">Assigned Subjects</h2>
+            <div class="card p-6 rounded-lg shadow-lg bg-white dark:bg-gray-800">
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Subject</th>
+                                <th>Average Score</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for subject in assigned_subjects %}
+                            <tr>
+                                <td>{{ subject.name }}</td>
+                                <td>85%</td> <!-- Placeholder; calculate from results -->
+                                <td>
+                                    <a href="#" class="text-blue-600 hover:underline" data-bs-toggle="tooltip" title="View Details">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Profile Modal -->
+        <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="profileModalLabel">Teacher Profile</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <img src="{{ url_for('static', filename='images/teacher_avatar.png') }}" alt="Avatar" class="w-24 h-24 rounded-full mb-4">
+                        <p><strong>Name:</strong> {{ teacher.first_name }} {{ teacher.last_name }}</p>
+                        <p><strong>Phone:</strong> {{ teacher.phone_number }}</p>
+                        <p><strong>Classes:</strong> {{ current_classes | length }}</p>
+                        <p><strong>Subjects:</strong> {{ assigned_subjects | length }}</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        // Tooltips
+        document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => new bootstrap.Tooltip(el));
+
+        // Charts
+        const subjectChart = new Chart(document.getElementById('subjectChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Mathematics', 'English', 'Science'],
+                datasets: [{
+                    label: 'Average Score',
+                    data: [85, 78, 92],
+                    backgroundColor: 'rgba(10, 37, 88, 0.5)',
+                    borderColor: 'rgba(10, 37, 88, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: { scales: { y: { beginAtZero: true, max: 100 } } }
+        });
+
+        const performanceChart = new Chart(document.getElementById('performanceChart'), {
+            type: 'line',
+            data: {
+                labels: ['Term 1', 'Term 2', 'Term 3'],
+                datasets: [{
+                    label: 'Class Average',
+                    data: [75, 82, 90],
+                    borderColor: 'rgba(10, 37, 88, 1)',
+                    fill: false
+                }]
+            },
+            options: { scales: { y: { beginAtZero: true, max: 100 } } }
+        });
+
+        // Class Search
+        document.getElementById('classSearch').addEventListener('input', function() {
+            const filter = this.value.toLowerCase();
+            document.querySelectorAll('#classTable tr').forEach(row => {
+                row.style.display = row.cells[0].textContent.toLowerCase().includes(filter) ? '' : 'none';
+            });
+        });
+
+        // Download Report
+        document.getElementById('downloadClasses').addEventListener('click', () => {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.text('Classes Report', 10, 10);
+            let y = 20;
+            document.querySelectorAll('#classTable tr').forEach(row => {
+                const cells = row.cells;
+                doc.text(`${cells[0].textContent} - ${cells[1].textContent} - ${cells[2].textContent}`, 10, y);
+                y += 10;
+            });
+            doc.save('classes_report.pdf');
+
+            const wb = XLSX.utils.table_to_book(document.querySelector('#classTable'), { sheet: "Classes" });
+            XLSX.writeFile(wb, 'classes_report.xlsx');
+        });
+
+        // Welcome Notification
+        toastr.info(`Welcome back, {{ teacher.first_name }}!`);
+    </script>
+{% endblock %}

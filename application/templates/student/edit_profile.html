@@ -1,0 +1,111 @@
+{% extends "student/base.html" %}
+{% block title %}Edit Profile{% endblock %}
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: #f5f7fa;
+    }
+
+    .edit-container {
+        max-width: 800px;
+        margin: 3rem auto;
+        background: #fff;
+        padding: 2rem;
+        border-radius: 16px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    }
+
+    h1 {
+        color: #5e35b1;
+        font-weight: 600;
+        margin-bottom: 2rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    label {
+        display: block;
+        font-weight: 600;
+        color: #212121;
+        margin-bottom: 0.5rem;
+    }
+
+    input, select {
+        width: 100%;
+        padding: 0.8rem;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 1rem;
+    }
+
+    .btn-submit {
+        background: #5e35b1;
+        color: #fff;
+        padding: 0.8rem 2rem;
+        border: none;
+        border-radius: 25px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+
+    .btn-submit:hover {
+        background: #4527a0;
+    }
+</style>
+
+<div class="edit-container">
+    <h1>Edit Profile</h1>
+    <form method="POST" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            <label for="first_name">First Name</label>
+            <input type="text" id="first_name" name="first_name" value="{{ student.first_name }}" required>
+        </div>
+        <div class="form-group">
+            <label for="middle_name">Middle Name</label>
+            <input type="text" id="middle_name" name="middle_name" value="{{ student.middle_name or '' }}">
+        </div>
+        <div class="form-group">
+            <label for="last_name">Last Name</label>
+            <input type="text" id="last_name" name="last_name" value="{{ student.last_name }}" required>
+        </div>
+        <div class="form-group">
+            <label for="gender">Gender</label>
+            <select id="gender" name="gender" required>
+                <option value="Male" {{ 'selected' if student.gender == 'Male' }}>Male</option>
+                <option value="Female" {{ 'selected' if student.gender == 'Female' }}>Female</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="date_of_birth">Date of Birth</label>
+            <input type="date" id="date_of_birth" name="date_of_birth" value="{{ student.date_of_birth.strftime('%Y-%m-%d') if student.date_of_birth else '' }}">
+        </div>
+        <div class="form-group">
+            <label for="address">Address</label>
+            <input type="text" id="address" name="address" value="{{ student.address or '' }}">
+        </div>
+        <div class="form-group">
+            <label for="parent_name">Parent's Name</label>
+            <input type="text" id="parent_name" name="parent_name" value="{{ student.parent_name or '' }}">
+        </div>
+        <div class="form-group">
+            <label for="parent_phone_number">Parent's Phone Number</label>
+            <input type="text" id="parent_phone_number" name="parent_phone_number" value="{{ student.parent_phone_number or '' }}">
+        </div>
+        <div class="form-group">
+            <label for="parent_occupation">Parent's Occupation</label>
+            <input type="text" id="parent_occupation" name="parent_occupation" value="{{ student.parent_occupation or '' }}">
+        </div>
+        <div class="form-group">
+            <label for="profile_pic">Profile Picture</label>
+            <input type="file" id="profile_pic" name="profile_pic" accept="image/*">
+        </div>
+        <button type="submit" class="btn-submit">Save Changes</button>
+    </form>
+</div>
+{% endblock %}

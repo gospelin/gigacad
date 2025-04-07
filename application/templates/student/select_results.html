@@ -1,129 +1,179 @@
 {% extends "student/base.html" %}
-{% block title %}Select Term and Session{% endblock %}
+{% block title %}AAIS | Result Selection{% endblock %}
 {% block content %}
 <style>
     :root {
-        --primary-blue: #0A2558;
-        --light-blue: #8f94fb;
-        --hover-blue: #081D45;
-        --dark-blue: #6d74c7;
-        --white: #ffffff;
-        --light-gray: #f8f9fa;
+        --primary: #2a2a72;
+        --secondary: #c678dd;
+        --accent: #f7d794;
+        --text: #1a1a1a;
+        --background: #eef2f7;
+        --card-bg: #ffffff;
+        --shadow: rgba(0, 0, 0, 0.15);
+        --gradient: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
     }
 
     .select-page-header {
-        background-color: var(--primary-blue);
-        color: var(--white);
-        padding: 20px;
-        border-radius: 8px 8px 0 0;
+        background: var(--gradient);
+        color: #fff;
+        padding: 2rem;
+        border-radius: 20px 20px 0 0;
         text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .select-page-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.2), transparent);
+        opacity: 0.3;
+        transform: rotate(30deg);
     }
 
     .select-page-header h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.8rem;
         margin: 0;
-        font-size: 2rem;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        position: relative;
+        z-index: 1;
     }
 
     .select-page-card {
-        border-radius: 0 0 8px 8px;
-        padding: 20px;
-        background-color: var(--light-gray);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        background: var(--card-bg);
+        border-radius: 0 0 20px 20px;
+        padding: 2.5rem;
+        box-shadow: 0 10px 40px var(--shadow);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .select-page-card h2 {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--primary);
+        margin-bottom: 2rem;
+        text-align: center;
     }
 
     .form-label {
+        font-family: 'Montserrat', sans-serif;
         font-weight: 600;
-        color: var(--dark-gray);
+        font-size: 1.2rem;
+        color: var(--text);
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control {
+        border-radius: 10px;
+        border: 2px solid rgba(0, 0, 0, 0.1);
+        padding: 0.8rem;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: var(--accent);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     }
 
     .btn-primary {
-        background-color: var(--primary-blue);
+        background: var(--accent);
         border: none;
+        padding: 0.9rem 2rem;
+        border-radius: 30px;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+        font-size: 1.1rem;
+        text-transform: uppercase;
+        color: var(--text);
+        transition: all 0.3s ease;
     }
 
     .btn-primary:hover {
-        background-color: var(--hover-blue);
-    }
-    
-    /* General Alert Styling */
-    .alert {
-        border-radius: 4px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        display: flex;
-        align-items: center;
-        padding: 1rem;
-        position: relative;
-        overflow: hidden;
-        margin-bottom: 1rem;
-    }
-    
-    .alert i {
-        font-size: 1.5rem;
-        margin-right: 10px;
-    }
-    
-    /* Success Alert */
-    .alert-success {
-        background-color: #d4edda;
-        border-left: 4px solid #28a745;
-        color: #155724;
-    }
-    
-    .alert-success i {
-        color: #28a745;
-    }
-    
-    /* Info Alert */
-    .alert-info {
-        background-color: #d1ecf1;
-        border-left: 4px solid #17a2b8;
-        color: #0c5460;
-    }
-    
-    .alert-info i {
-        color: #17a2b8;
-    }
-    
-    /* Warning Alert */
-    .alert-warning {
-        background-color: #fff3cd;
-        border-left: 4px solid #ffc107;
-        color: #856404;
-    }
-    
-    .alert-warning i {
-        color: #ffc107;
-    }
-    
-    /* Danger Alert */
-    .alert-danger {
-        background-color: #f8d7da;
-        border-left: 4px solid #dc3545;
-        color: #721c24;
-    }
-    
-    .alert-danger i {
-        color: #dc3545;
-    }
-    
-    /* Dismiss Button */
-    .alert .close {
-        position: absolute;
-        top: 0.5rem;
-        right: 0.5rem;
-        color: inherit;
-        opacity: 0.8;
-        text-shadow: none;
-    }
-    
-    .alert .close:hover {
-        opacity: 1;
+        background: #f1c40f;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
     }
 
-    
-    @media (max-width: 576px) {
+     /* Responsive Adjustments */
+    @media (max-width: 920px) {
+        .select-page-header {
+            padding: 1.5rem;
+        }
+
         .select-page-header h1 {
+            font-size: 2rem; /* Reduced header size */
+        }
+
+        .select-page-card {
+            padding: 1.5rem;
+        }
+
+        .select-page-card h2 {
             font-size: 1.5rem;
+        }
+
+        .form-label {
+            font-size: 1rem; /* Smaller labels */
+        }
+
+        .form-control {
+            font-size: 1rem; /* Smaller input text */
+            padding: 0.6rem; /* Reduced padding */
+        }
+
+        /* Stack form elements vertically */
+        .row.mb-3 {
+            flex-direction: column; /* Stack vertically */
+        }
+
+        .col-md-5,
+        .col-md-2 {
+            width: 100%; /* Full width for all columns */
+            margin-bottom: 1rem; /* Consistent spacing */
+        }
+
+        .btn-primary {
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .select-page-header {
+            padding: 1rem;
+        }
+
+        .select-page-header h1 {
+            font-size: 1.5rem; /* Further reduced for very small screens */
+        }
+
+        .select-page-card {
+            padding: 1rem;
+        }
+
+        .select-page-card h2 {
+            font-size: 1.3rem;
+        }
+
+        .form-label {
+            font-size: 0.9rem;
+        }
+
+        .form-control {
+            font-size: 0.9rem;
+            padding: 0.5rem;
+        }
+
+        .btn-primary {
+            padding: 0.7rem 1rem;
+            font-size: 0.9rem;
         }
     }
 </style>
@@ -134,32 +184,24 @@
     </div>
     <div class="row justify-content-center">
         <div class="col-lg-10">
-            <div
-                class="card shadow-sm select-page-card animate__animated animate__fadeInUp"
-            >
-                <div class="card-body">
-                    <div class="text-center mb-4">
-                        <h2>Select Term and Session</h2>
-                    </div>
-                    <form method="POST">
-                        {{ form.hidden_tag() }}
-                        <div class="row mb-3">
-                            <div class="col-md-5 mb-3">
-                                <label for="term" class="form-label">Select Term:</label>
-                                {{ form.term(class_='form-control') }}
-                            </div>
-                            <div class="col-md-5 mb-3">
-                                <label for="session" class="form-label">Select Session:</label>
-                                {{ form.session(class_='form-control') }}
-                            </div>
-                            <div class="col-md-2 d-flex align-items-end">
-                                <button type="submit" class="btn btn-primary w-100">
-                                    Load Results
-                                </button>
-                            </div>
+            <div class="select-page-card animate__animated animate__fadeInUp">
+                <h2>Select Term and Session</h2>
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    <div class="row mb-3">
+                        <div class="col-md-5 mb-3">
+                            <label for="term" class="form-label">Select Term:</label>
+                            {{ form.term(class_='form-control') }}
                         </div>
-                    </form>
-                </div>
+                        <div class="col-md-5 mb-3">
+                            <label for="session" class="form-label">Select Session:</label>
+                            {{ form.session(class_='form-control') }}
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary w-100">Load Results</button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

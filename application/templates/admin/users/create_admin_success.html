@@ -1,0 +1,11 @@
+{% extends "admin/base.html" %}
+{% block content %}
+    <div class="container mt-5">
+        <h2>Admin User Created</h2>
+        <p>Admin <strong>{{ username }}</strong> has been created successfully.</p>
+        <p>Please scan this QR code with Google Authenticator to set up MFA:</p>
+        <img src="{{ qr_code_url }}" alt="MFA QR Code" class="img-fluid mb-3">
+        <p>Or manually enter this secret: <strong>{{ mfa_secret }}</strong></p>
+        <a href="{{ url_for('admins.admin_dashboard') }}" class="btn btn-primary mt-3">Back to Dashboard</a>
+    </div>
+{% endblock %}

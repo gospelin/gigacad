@@ -1,0 +1,72 @@
+{% extends "teacher/base.html" %}
+<style>
+    /* Custom hover shadow effect */
+    .hover-shadow:hover {
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        transition: box-shadow 0.3s ease-in-out;
+    }
+
+    /* Smooth transitions for interactivity */
+    .btn {
+        transition: all 0.3s ease;
+    }
+
+    /* Subtle background gradient */
+    body {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        min-height: 100vh;
+    }
+
+    /* Card styling */
+    .card {
+        transition: transform 0.2s ease;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+    }
+
+    /* Table header styling */
+    .table-dark {
+        background-color: #343a40 !important;
+        color: white;
+    }
+</style>
+{% block content %}
+<div class="container mx-auto px-4 py-5">
+    <h1 class="display-5 fw-bold text-dark mb-5">Your Classes</h1>
+    <div class="card shadow-lg border-0 rounded-3">
+        <div class="card-body p-5">
+            {% if assignments %}
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th scope="col" class="py-3">Class</th>
+                                <th scope="col" class="py-3">Session</th>
+                                <th scope="col" class="py-3">Term</th>
+                                <th scope="col" class="py-3">Role</th>
+                                <th scope="col" class="py-3">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for cls, session, term, is_form_teacher in assignments %}
+                                <tr>
+                                    <td class="py-3">{{ cls.name }}</td>
+                                    <td class="py-3">{{ session.year }}</td>
+                                    <td class="py-3">{{ term }}</td>
+                                    <td class="py-3">{{ 'Form Teacher' if is_form_teacher else 'Subject Teacher' }}</td>
+                                    <td class="py-3">
+                                        <a href="{{ url_for('teachers.view_class', class_id=cls.id, session_id=session.id, term=term) }}" class="btn btn-outline-primary btn-sm rounded-pill">View</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-muted fst-italic">No classes assigned yet.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,82 +1,139 @@
-{% extends 'admin/base.html' %}
-
+{% extends "admin/base.html" %}
 {% block title %}Admin Dashboard{% endblock %}
-
 {% block content %}
-<div class="row">
-    <!-- Stats Cards -->
-    <div class="col-md-3">
-        <div class="card mb-3" style="background: var(--primary-blue); color: var(--white);">
-            <div class="card-body">
-                <h5 style="color: #fff;" class="card-title">Total Students</h5>
-                <p style="color: #fff;" class="card-text" id="total-students">234</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card mb-3" style="background: var(--dark-blue); color: var(--white);">
-            <div class="card-body">
-                <h5 style="color: #fff;" class="card-title">Total Teachers</h5>
-                <p style="color: #fff;" class="card-text" id="total-teachers">20</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card mb-3" style="background: var(--light-blue); color: var(--white);">
-            <div class="card-body">
-                <h5 style="color: var(--white);" class="card-title">Total Parents</h5>
-                <p style="color: var(--white);" class="card-text" id="total-parents">115</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card mb-3" style="background: var(--hover-blue); color: var(--white);">
-            <div class="card-body">
-                <h5 style="color: var(--white);" class="card-title">Total Classes</h5>
-                <p style="color: var(--white);" class="card-text" id="total-classes">10</p>
-            </div>
-        </div>
-    </div>
-</div>
+<style>
+    .dashboard-header {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.5rem;
+        color: var(--primary-blue);
+        margin-bottom: 2rem;
+        position: relative;
+        padding-bottom: 0.5rem;
+        text-align: center;
+    }
 
-<!-- Charts Section -->
-<div class="row">
-    <div class="col-md-6">
-        <div class="card mb-3" style="background: var(--light-background); border: 1px solid var(--border-gray);">
-            <div class="card-body">
-                <h5 class="card-title" style="color: var(--white);">Student Enrollment</h5>
+    .dashboard-header::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 4px;
+        background: var(--light-blue);
+        border-radius: 2px;
+    }
+
+    .stat-card {
+        background: var(--white);
+        border-radius: 15px;
+        box-shadow: 0 6px 20px var(--shadow);
+        transition: all 0.4s ease;
+        padding: 1.5rem;
+        height: 100%;
+        text-align: center;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .stat-card h5 {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--dark-gray);
+        margin-bottom: 1rem;
+    }
+
+    .stat-card p {
+        font-size: 2rem;
+        font-weight: 600;
+        color: var(--primary-blue);
+    }
+
+    .chart-card {
+        background: var(--white);
+        border-radius: 15px;
+        box-shadow: 0 6px 20px var(--shadow);
+        padding: 2rem;
+        margin-top: 2rem;
+    }
+
+    .chart-card h5 {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--primary-blue);
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    @media (max-width: 768px) {
+        .dashboard-header { font-size: 2rem; }
+        .stat-card { margin-bottom: 1.5rem; }
+        .chart-card { padding: 1.5rem; }
+        .chart-card h5 { font-size: 1.4rem; }
+    }
+
+    @media (max-width: 576px) {
+        .dashboard-header { font-size: 1.8rem; }
+        .stat-card h5 { font-size: 1.2rem; }
+        .stat-card p { font-size: 1.8rem; }
+    }
+</style>
+
+<div class="container">
+    <h1 class="dashboard-header animate__animated animate__fadeInDown">Admin Dashboard</h1>
+    <div class="row animate__animated animate__fadeInUp">
+        <div class="col-md-3 col-sm-6 mb-4">
+            <div class="stat-card">
+                <h5>Total Students</h5>
+                <p id="total-students">234</p>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-4">
+            <div class="stat-card">
+                <h5>Total Teachers</h5>
+                <p id="total-teachers">20</p>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-4">
+            <div class="stat-card">
+                <h5>Total Parents</h5>
+                <p id="total-parents">115</p>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-4">
+            <div class="stat-card">
+                <h5>Total Classes</h5>
+                <p id="total-classes">10</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="chart-card animate__animated animate__fadeInLeft">
+                <h5>Student Enrollment</h5>
                 <canvas id="studentChart"></canvas>
             </div>
         </div>
-    </div>
-    <div class="col-md-6">
-        <div class="card mb-3" style="background: var(--light-background); border: 1px solid var(--border-gray);">
-            <div class="card-body">
-                <h5 class="card-title" style="color: var(--white);">Teacher Distribution</h5>
+        <div class="col-md-6">
+            <div class="chart-card animate__animated animate__fadeInRight">
+                <h5>Teacher Distribution</h5>
                 <canvas id="teacherChart"></canvas>
             </div>
         </div>
     </div>
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
 {% endblock %}
 
 {% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
 <script>
     $(document).ready(function () {
-        // Sidebar toggle logic
-        $(".sidebar-toggler").on("click", function () {
-            $(".sidebar").toggleClass("open");
-        });
-
-        // Highlight active link
-        var path = window.location.pathname;
-        if (path.includes("dashboard")) {
-            $("#dashboard-link").addClass("active");
-        }
-
-        // Initialize Student Chart
         const studentChartCtx = document.getElementById("studentChart").getContext("2d");
         const studentChart = new Chart(studentChartCtx, {
             type: "bar",
@@ -92,15 +149,11 @@
             },
             options: {
                 responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                    },
-                },
-            },
+                scales: { y: { beginAtZero: true } },
+                plugins: { legend: { labels: { font: { family: 'Montserrat', size: 14 } } } }
+            }
         });
 
-        // Initialize Teacher Chart
         const teacherChartCtx = document.getElementById("teacherChart").getContext("2d");
         const teacherChart = new Chart(teacherChartCtx, {
             type: "pie",
@@ -113,28 +166,23 @@
                         "rgba(143, 148, 251, 0.7)",
                         "rgba(72, 201, 176, 0.7)",
                         "rgba(255, 159, 64, 0.7)",
-                        "rgba(255, 99, 132, 0.7)",
+                        "rgba(255, 99, 132, 0.7)"
                     ],
                     borderColor: [
                         "rgba(78, 84, 200, 1)",
                         "rgba(143, 148, 251, 1)",
                         "rgba(72, 201, 176, 1)",
                         "rgba(255, 159, 64, 1)",
-                        "rgba(255, 99, 132, 1)",
+                        "rgba(255, 99, 132, 1)"
                     ],
-                    borderWidth: 1,
-                }],
+                    borderWidth: 1
+                }]
             },
             options: {
                 responsive: true,
-                plugins: {
-                    legend: {
-                        position: "top",
-                    },
-                },
-            },
+                plugins: { legend: { position: "top", labels: { font: { family: 'Montserrat', size: 14 } } } }
+            }
         });
     });
 </script>
 {% endblock %}
->>>>>>> 02b43f95b0e9e406235682e39821112800525dca

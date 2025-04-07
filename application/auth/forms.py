@@ -1,64 +1,50 @@
-from flask_wtf import FlaskForm
+import re
+from flask_wtf import FlaskForm, RecaptchaField
 from wtforms import (
-    StringField,
-    SelectField,
-    DateField,
-    SubmitField,
-    PasswordField,
-    SelectMultipleField,
-    FloatField,
-    IntegerField,
-    HiddenField,
-    FieldList,
-    FormField,
-    BooleanField,
-    ValidationError
+    StringField, SelectField, DateField, SubmitField, PasswordField, SelectMultipleField,
+    FloatField, IntegerField, HiddenField, FieldList, FormField, BooleanField
 )
-from wtforms.validators import DataRequired, Length, Optional, NumberRange, Email
-from wtforms_sqlalchemy.fields import QuerySelectField
+from wtforms.validators import (
+    DataRequired, Length, Optional, NumberRange, EqualTo, ValidationError, Regexp
+)
+from wtforms_sqlalchemy.fields import QuerySelectField, QuerySelectMultipleField
+from application.models import Classes, Subject, Teacher, TermEnum, Session
+
 
 class StudentRegistrationForm(FlaskForm):
     first_name = StringField("First Name", validators=[DataRequired(), Length(max=50)])
     last_name = StringField("Last Name", validators=[DataRequired(), Length(max=50)])
     middle_name = StringField("Middle Name", validators=[Length(max=50)])
-    gender = SelectField(
-        "Gender",
-        choices=[("male", "Male"), ("female", "Female")],
-        validators=[DataRequired()],
-    )
+    gender = SelectField("Gender", choices=[("male", "Male"), ("female", "Female")], validators=[DataRequired()])
+    term = SelectField("Select Term", choices=[], validators=[DataRequired()], default="First Term")
     date_of_birth = DateField("Date of Birth", validators=[Optional()])
     parent_name = StringField("Parent Name", validators=[Length(max=70)])
     parent_phone_number = StringField(
-        "Parent Phone Number", validators=[Length(max=11)]
+        "Parent Phone Number",
+        validators=[
+            Optional(),  # Allows the field to be blank
+            Length(max=11),  # Limits length to 11 characters
+            Regexp(r'^\d{11}$', message="Must be an 11-digit phone number")  # Enforces 11 digits if provided
+        ]
     )
     address = StringField("Address", validators=[Length(max=255)])
     parent_occupation = StringField("Parent Occupation", validators=[Length(max=100)])
     class_id = SelectField("Current Class", coerce=int, validators=[DataRequired()])
     state_of_origin = StringField("State of Origin", validators=[Length(max=50)])
-    local_government_area = StringField(
-        "Local Government Area", validators=[Length(max=50)]
-    )
+    local_government_area = StringField("Local Government Area", validators=[Length(max=50)])
     religion = StringField("Religion", validators=[Length(max=50)])
+
     submit = SubmitField("Register")
 
 
+    def validate_reg_no(form, field):
+        if not re.match(r'^AAIS/\d{4}/\d{3}$', field.data):
+            raise ValidationError("Invalid registration number format.")
+
+
 class ResultForm(FlaskForm):
-    term = SelectField(
-        "Select Term",
-        choices=[
-            ("First Term", "First Term"),
-            ("Second Term", "Second Term"),
-            ("Third Term", "Third Term"),
-        ],
-        validators=[DataRequired()],
-        default="First Term",
-    )
-    session = SelectField(
-        "Select Session",
-        choices=[],
-        validators=[DataRequired()],
-        default="2024/2025",
-    )
+    session = SelectField("Session", coerce=int, validators=[DataRequired()])
+    term = SelectField("Term", choices=[(t.value, t.value) for t in TermEnum], validators=[DataRequired()])
     next_term_begins = StringField("Next Term Begins", validators=[Optional()])
     date_issued = StringField("Date Issued", validators=[Optional()])
     last_term_average = FloatField("Last Term Average", validators=[Optional()])
@@ -78,6 +64,7 @@ class StudentLoginForm(FlaskForm):
         "Password",
         validators=[DataRequired(message="This field is required.")],
     )
+    remember = BooleanField("Remember Me", default=False)
     submit = SubmitField("Login")
 
 class AdminLoginForm(FlaskForm):
@@ -92,6 +79,7 @@ class AdminLoginForm(FlaskForm):
         "Password",
         validators=[DataRequired(message="This field is required.")],
     )
+    remember = BooleanField("Remember Me", default=False)
     submit = SubmitField("Login")
 
 
@@ -99,12 +87,8 @@ class EditStudentForm(FlaskForm):
     first_name = StringField("First Name", validators=[DataRequired()])
     middle_name = StringField("Middle Name", validators=[Length(max=50)])
     last_name = StringField("Last Name", validators=[DataRequired()])
-    reg_no = StringField("Registration ID", validators=[DataRequired()])
-    gender = SelectField(
-        "Gender",
-        choices=[("male", "Male"), ("female", "Female")],
-        validators=[DataRequired()],
-    )
+    reg_no = StringField("Registration ID", validators=[DataRequired()], render_kw={"readonly": True})
+    gender = SelectField("Gender", choices=[("male", "Male"), ("female", "Female")], validators=[DataRequired()])
     class_id = SelectField("Current Class", coerce=int, validators=[DataRequired()])
     submit = SubmitField("Update")
 
@@ -179,7 +163,6 @@ class TeacherForm(FlaskForm):
     id = HiddenField("Teacher ID")
     first_name = StringField("First Name", validators=[DataRequired(), Length(max=50)])
     last_name = StringField("Last Name", validators=[DataRequired(), Length(max=50)])
-    email = StringField("Email", validators=[Optional(), Email(), Length(max=100)])
     phone_number = StringField("Phone Number", validators=[Optional(), Length(max=50)])
     section = SelectField(
         "Section",
@@ -211,11 +194,40 @@ class ManageResultsForm(FlaskForm):
     )
     submit = SubmitField("Save Results")
 
+class AdminCreationForm(FlaskForm):
+    username = StringField("Username", validators=[DataRequired(), Length(min=4, max=50)])
+    password = PasswordField("Password", validators=[
+        DataRequired(), Length(min=8), Regexp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$', message="Password must include uppercase, lowercase, and a number")
+    ])
+    confirm_password = PasswordField("Confirm Password", validators=[DataRequired(), EqualTo("password")])
+    can_manage_users = BooleanField("Can Manage Users")
+    can_manage_sessions = BooleanField("Can Manage Sessions")
+    can_manage_classes = BooleanField("Can Manage Classes")
+    can_manage_results = BooleanField("Can Manage Results")
+    can_manage_teachers = BooleanField("Can Manage Teachers")
+    can_view_reports = BooleanField("Can View Reports", default="checked")
+    recaptcha = RecaptchaField()
+    submit = SubmitField("Create Admin")
+
+class AdminEditForm(FlaskForm):
+    username = StringField("Username", validators=[DataRequired(), Length(min=4, max=50)])
+    password = PasswordField("New Password", validators=[
+        Optional(), Length(min=8), Regexp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$', message="Password must include uppercase, lowercase, and a number")
+    ])
+    confirm_password = PasswordField("Confirm New Password", validators=[Optional(), EqualTo("password")])
+    submit = SubmitField("Update Admin")
+
+class AdminPrivilegeEditForm(FlaskForm):
+    can_manage_users = BooleanField("Can Manage Users")
+    can_manage_sessions = BooleanField("Can Manage Sessions")
+    can_manage_classes = BooleanField("Can Manage Classes")
+    can_manage_results = BooleanField("Can Manage Results")
+    can_manage_teachers = BooleanField("Can Manage Teachers")
+    can_manage_subjects = BooleanField("Can Manage Subjects")
+    can_view_reports = BooleanField("Can View Reports", default="checked")
+    submit = SubmitField("Update Privileges")
 
 
-
-
-from application.models import Classes, Subject, Teacher
 
 # Helper functions for dynamic queries
 def get_classes():
@@ -227,22 +239,27 @@ def get_subjects():
 def get_teachers():
     return Teacher.query.order_by(Teacher.last_name).all()
 
+def get_sessions():
+    return Session.query.order_by(Session.year.desc()).all()
+
 class AssignSubjectToClassForm(FlaskForm):
-    class_name = QuerySelectField(
-        "Class",
+    classes = QuerySelectMultipleField(
+        "Classes",
         query_factory=get_classes,
         get_label="name",
         allow_blank=False,
         validators=[DataRequired()],
+        description="Select one or more classes to assign subjects to (hold Ctrl/Cmd to select multiple)."
     )
-    subject = QuerySelectField(
-        "Subject",
+    subjects = QuerySelectMultipleField(
+        "Subjects",
         query_factory=get_subjects,
         get_label="name",
         allow_blank=False,
         validators=[DataRequired()],
+        description="Select one or more subjects to assign to the selected classes (hold Ctrl/Cmd to select multiple)."
     )
-    submit = SubmitField("Assign Subject to Class")
+    submit = SubmitField("Assign Subjects to Classes")
 
 class AssignSubjectToTeacherForm(FlaskForm):
     teacher = QuerySelectField(
@@ -265,19 +282,31 @@ class AssignTeacherToClassForm(FlaskForm):
     teacher = QuerySelectField(
         "Teacher",
         query_factory=get_teachers,
-        get_label=lambda teacher: f"{teacher.last_name}, {teacher.first_name}",
+        get_label=lambda t: f"{t.last_name}, {t.first_name}",
         allow_blank=False,
-        validators=[DataRequired()],
+        validators=[DataRequired()]
     )
     class_name = QuerySelectField(
         "Class",
         query_factory=get_classes,
         get_label="name",
         allow_blank=False,
-        validators=[DataRequired()],
+        validators=[DataRequired()]
     )
-    is_form_teacher = BooleanField("Assign as Form Teacher")
-    submit = SubmitField("Assign Teacher to Class")
+    session = QuerySelectField(
+        "Session",
+        query_factory=get_sessions,
+        get_label="year",
+        allow_blank=False,
+        validators=[DataRequired()]
+    )
+    term = SelectField(
+        "Term",
+        choices=[(t.value, t.value) for t in TermEnum],
+        validators=[DataRequired()]
+    )
+    is_form_teacher = BooleanField("Assign as Form Teacher", default=False)
+    submit = SubmitField("Assign")
 
 
 

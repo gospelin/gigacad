@@ -1,0 +1,14 @@
+{% extends "admin/base.html" %}
+{% block content %}
+<div class="container mt-5">
+    <h1 class="session-header">Merge Subjects</h1>
+    <div class="session-card">
+        <p>This will merge duplicate subjects (e.g., "Mathematics" across sections) into single entries and update all results. Proceed?</p>
+        <form method="POST">
+            {{ form.hidden_tag() if form else '' }}
+            <button type="submit" class="btn btn-danger">Merge Subjects</button>
+            <a href="{{ url_for('admins.manage_subjects') }}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

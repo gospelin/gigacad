@@ -1,7 +1,7 @@
 {% extends 'admin/base.html' %}
 
 {% block title %}
-Manage Results
+Manage Results - {{ student.first_name }} {{ student.last_name }}
 {% endblock %}
 
 <style>
@@ -208,7 +208,7 @@ Manage Results
                     <div class="col-md-6">
                         <div class="input-group">
                             <span class="input-group-text">Academic Session:</span>
-                            <span class="form-control" aria-label="Academic Session">{{ session }}</span>
+                            <span class="form-control" aria-label="Academic Session">{{ session_year }}</span>
                         </div>
                     </div>
                 </div>
@@ -220,10 +220,12 @@ Manage Results
                                     <i class="bi bi-calendar3"></i> Reopening Date
                                 </span>
                             </label>
-                            <input type="text" id="next_term_begins"
+                            <input
+                                type="text"
+                                id="next_term_begins"
                                 name="next_term_begins"
                                 class="form-control"
-                                value="{{ next_term_begins if next_term_begins is not none else '' }}"
+                                value="{{ next_term_begins if next_term_begins else '' }}"
                             />
                         </div>
                     </div>
@@ -250,7 +252,7 @@ Manage Results
                     <div class="col-md-6">
                         <div class="input-group">
                             <span class="input-group-text">Grand Total:</span>
-                            <span class="form-control" aria-label="Grand Total">{{ grand_total if grand_total is not none else '' }}</span>
+                            <span class="form-control" aria-label="Grand Total">{{ grand_total.total if grand_total else '' }}</span>
                         </div>
                     </div>
                 </div>
@@ -302,108 +304,105 @@ Manage Results
                             <span class="form-control" aria-label="Principal Remark">{{ principal_remark if principal_remark is not none else '' }}</span>
                         </div>
                     </div>
-
                     <div class="col-md-6">
                         <div class="input-group">
                             <span class="input-group-text">Teacher Remark:</span>
-                            <span class="form-control" aria-label="Principal Remark">{{ teacher_remark if teacher_remark is not none else '' }}</span>
+                            <span class="form-control" aria-label="Teacher Remark">{{ teacher_remark if teacher_remark is not none else '' }}</span>
                         </div>
                     </div>
                 </div>
 
                 <div class="table-responsive">
-                        <table class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th>Subject</th>
-                                        <th>Class Assessment</th>
-                                        <th>Summative Test</th>
-                                        <th>Examination</th>
-                                        <th>Total</th>
-                                        <th>Grade</th>
-                                        <th>Remark</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for subject, subject_form in subject_results %}
-                                    <tr>
-                                        <!-- Hidden Input for Subject ID -->
-                                        <input
-                                            type="hidden"
-                                            name="subjects-{{ loop.index0 }}-subject_id"
-                                            value="{{ subject.id }}"
-                                            data-subject-id="{{ subject.id }}"
-                                        >
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Subject</th>
+                                <th>Class Assessment</th>
+                                <th>Summative Test</th>
+                                <th>Examination</th>
+                                <th>Total</th>
+                                <th>Grade</th>
+                                <th>Remark</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for subject, subject_form in subject_results %}
+                            <tr>
+                                <!-- Hidden Input for Subject ID -->
+                                <input
+                                    type="hidden"
+                                    name="subjects-{{ loop.index0 }}-subject_id"
+                                    value="{{ subject.id }}"
+                                    data-subject-id="{{ subject.id }}"
+                                >
 
-                                        <!-- Subject Name -->
-                                        <td>{{ subject.name }}</td>
+                                <!-- Subject Name -->
+                                <td>{{ subject.name }}</td>
 
-                                        <!-- Class Assessment -->
-                                        <td>
-                                            {{ subject_form.class_assessment(
-                                                id="class_assessment_{{ subject.id }}",
-                                                class="form-control result-input class-assessment",
-                                                value=results_dict.get(subject.id).class_assessment if results_dict.get(subject.id) is not none else ''
-                                            ) | safe }}
-                                            <input type="hidden" data-subject-id="{{ subject.id }}">
-                                        </td>
+                                <!-- Class Assessment -->
+                                <td>
+                                    {{ subject_form.class_assessment(
+                                        id="class_assessment_{{ subject.id }}",
+                                        class="form-control result-input class-assessment",
+                                        value=results_dict.get(subject.id).class_assessment if results_dict.get(subject.id) else ''
+                                    ) | safe }}
+                                    <input type="hidden" data-subject-id="{{ subject.id }}">
+                                </td>
 
-                                        <!-- Summative Test -->
-                                        <td>
-                                            {{ subject_form.summative_test(
-                                                id="summative_test_{{ subject.id }}",
-                                                class="form-control result-input summative-test",
-                                                value=results_dict.get(subject.id).summative_test if results_dict.get(subject.id) is not none else ''
-                                            ) | safe }}
-                                            <input type="hidden" data-subject-id="{{ subject.id }}">
-                                        </td>
+                                <!-- Summative Test -->
+                                <td>
+                                    {{ subject_form.summative_test(
+                                        id="summative_test_{{ subject.id }}",
+                                        class="form-control result-input summative-test",
+                                        value=results_dict.get(subject.id).summative_test if results_dict.get(subject.id) else ''
+                                    ) | safe }}
+                                    <input type="hidden" data-subject-id="{{ subject.id }}">
+                                </td>
 
-                                        <!-- Exam -->
-                                        <td>
-                                            {{ subject_form.exam(
-                                                id="exam_{{ subject.id }}",
-                                                class="form-control result-input exam",
-                                                value=results_dict.get(subject.id).exam if results_dict.get(subject.id) is not none else ''
-                                            ) | safe }}
-                                            <input type="hidden" data-subject-id="{{ subject.id }}">
-                                        </td>
+                                <!-- Exam -->
+                                <td>
+                                    {{ subject_form.exam(
+                                        id="exam_{{ subject.id }}",
+                                        class="form-control result-input exam",
+                                        value=results_dict.get(subject.id).exam if results_dict.get(subject.id) else ''
+                                    ) | safe }}
+                                    <input type="hidden" data-subject-id="{{ subject.id }}">
+                                </td>
 
+                                <!-- Total (read-only) -->
+                                <td>
+                                    {{ subject_form.total(
+                                        class="form-control total",
+                                        readonly=true,
+                                        value=results_dict.get(subject.id).total if results_dict.get(subject.id) else ''
+                                    ) }}
+                                </td>
 
-                                        <!-- Total (read-only) -->
-                                        <td>
-                                            {{ subject_form.total(
-                                                class="form-control total",
-                                                readonly=true,
-                                                value=results_dict.get(subject.id).total if results_dict.get(subject.id) is not none else ''
-                                            ) }}
-                                        </td>
+                                <!-- Grade (read-only) -->
+                                <td>
+                                    {{ subject_form.grade(
+                                        class="form-control grade",
+                                        readonly=true,
+                                        value=results_dict.get(subject.id).grade if results_dict.get(subject.id) else ''
+                                    ) }}
+                                </td>
 
-                                        <!-- Grade (read-only) -->
-                                        <td>
-                                            {{ subject_form.grade(
-                                                class="form-control grade",
-                                                readonly=true,
-                                                value=results_dict.get(subject.id).grade if results_dict.get(subject.id) else ''
-                                            ) }}
-                                        </td>
+                                <!-- Remark (read-only) -->
+                                <td>
+                                    {{ subject_form.remark(
+                                        class="form-control remark",
+                                        readonly=true,
+                                        value=results_dict.get(subject.id).remark if results_dict.get(subject.id) else ''
+                                    ) }}
+                                </td>
 
-                                        <!-- Remark (read-only) -->
-                                        <td>
-                                            {{ subject_form.remark(
-                                                class="form-control remark",
-                                                readonly=true,
-                                                value=results_dict.get(subject.id).remark if results_dict.get(subject.id) else ''
-                                            ) }}
-                                        </td>
-
-                                        <!-- Status Indicator -->
-                                        <td>
-                                            <span id="status_{{ subject.id }}" class="status-indicator"></span>
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-
+                                <!-- Status Indicator -->
+                                <td>
+                                    <span id="status_{{ subject.id }}" class="status-indicator"></span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
                     </table>
                 </div>
                 <div class="progress mb-4">
@@ -426,7 +425,6 @@ Manage Results
                     <i class="bi bi-arrow-left"></i> Back
                 </a>
             </div>
-
         </div>
     </div>
 </div>
@@ -436,112 +434,141 @@ Manage Results
 
 {% block scripts %}
 <script>
- // Get CSRF token from meta tag
-const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    // Get CSRF token from meta tag
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    const currentSession = {{ session | tojson }};
+    const updateUrl = '/admin/update_result_field';
 
-document.addEventListener("DOMContentLoaded", function () {
-    // Attach event listeners to update totals and progress bar
-    const progressBar = document.getElementById("resultProgressBar");
+    document.addEventListener("DOMContentLoaded", function () {
+        // Attach event listeners to update totals and progress bar
+        const progressBar = document.getElementById("resultProgressBar");
 
-    const updateProgress = () => {
-        const totalFields = document.querySelectorAll(".class-assessment, .summative-test, .exam").length;
-        let filledFields = 0;
+        const updateProgress = () => {
+            const totalFields = document.querySelectorAll(".class-assessment, .summative-test, .exam").length;
+            let filledFields = 0;
 
-        // Count filled input fields
-        document.querySelectorAll(".class-assessment, .summative-test, .exam").forEach((input) => {
-            if (input.value.trim() !== "") {
-                filledFields++;
-            }
-        });
+            // Count filled input fields
+            document.querySelectorAll(".class-assessment, .summative-test, .exam").forEach((input) => {
+                if (input.value.trim() !== "") {
+                    filledFields++;
+                }
+            });
 
-        // Calculate progress percentage
-        const progress = Math.round((filledFields / totalFields) * 100);
+            // Calculate progress percentage
+            const progress = Math.round((filledFields / totalFields) * 100);
 
-        // Update progress bar
-        progressBar.style.width = `${progress}%`;
-        progressBar.setAttribute("aria-valuenow", progress);
-        progressBar.textContent = `${progress}%`;
-    };
-
-    document.querySelectorAll("table tbody tr").forEach((row) => {
-        const classAssessmentField = row.querySelector(".class-assessment");
-        const summativeTestField = row.querySelector(".summative-test");
-        const examField = row.querySelector(".exam");
-        const totalField = row.querySelector(".total");
-
-        // Update the total field whenever any input changes
-        const updateTotal = () => {
-            const classAssessment = parseInt(classAssessmentField.value) || 0;
-            const summativeTest = parseInt(summativeTestField.value) || 0;
-            const exam = parseInt(examField.value) || 0;
-
-            // Calculate and set the total
-            totalField.value = classAssessment + summativeTest + exam;
-
-            // Update the progress bar
-            updateProgress();
+            // Update progress bar
+            progressBar.style.width = `${progress}%`;
+            progressBar.setAttribute("aria-valuenow", progress);
+            progressBar.textContent = `${progress}%`;
         };
 
-        // Attach event listeners to relevant fields
-        [classAssessmentField, summativeTestField, examField].forEach((field) => {
-            field.addEventListener("input", updateTotal);
+        document.querySelectorAll("table tbody tr").forEach((row) => {
+            const classAssessmentField = row.querySelector(".class-assessment");
+            const summativeTestField = row.querySelector(".summative-test");
+            const examField = row.querySelector(".exam");
+            const totalField = row.querySelector(".total");
+
+            // Update the total field whenever any input changes
+            const updateTotal = () => {
+                const classAssessment = parseInt(classAssessmentField.value) || 0;
+                const summativeTest = parseInt(summativeTestField.value) || 0;
+                const exam = parseInt(examField.value) || 0;
+
+                // Calculate and set the total
+                totalField.value = classAssessment + summativeTest + exam;
+
+                // Update the progress bar
+                updateProgress();
+            };
+
+            // Attach event listeners to relevant fields
+            [classAssessmentField, summativeTestField, examField].forEach((field) => {
+                field.addEventListener("input", updateTotal);
+            });
         });
+
+        // Initial update for progress bar in case fields are pre-filled
+        updateProgress();
     });
 
+    let saveTimeout;
 
-    // Initial update for progress bar in case fields are pre-filled
-    updateProgress();
-});
+    $(document).on("blur", ".result-input", function () {
+        clearTimeout(saveTimeout);
 
-let saveTimeout;
+        const $row = $(this).closest("tr");
+        const subjectId = $row.find("input[type='hidden'][data-subject-id]").val();
+        if (!subjectId) {
+            console.error("Subject ID is missing.");
+            return;
+        }
 
-$(document).on("blur", ".result-input", function () {
-    clearTimeout(saveTimeout);
+        const parseField = (value) => value.trim() === "" ? null : parseInt(value) || null;
 
-    const $row = $(this).closest("tr"); // Get the current table row
-    const subjectId = $row.find("input[type='hidden'][data-subject-id]").val();
-    if (!subjectId) {
-        console.error("Subject ID is missing.");
-        return; // Do not proceed
-    }
-    // Get values of all related fields in the current row
-    const classAssessment = $row.find(".class-assessment").val();
-    const summativeTest = $row.find(".summative-test").val();
-    const exam = $row.find(".exam").val();
-    const studentID = {{ student.id|tojson }}
+        const requestData = {
+            subject_id: subjectId,
+            student_id: {{ student.id | tojson }},
+            class_id: {{ class_record.id | tojson }},
+            class_assessment: parseField($row.find(".class-assessment").val()),
+            summative_test: parseField($row.find(".summative-test").val()),
+            exam: parseField($row.find(".exam").val()),
+            next_term_begins: $('#next_term_begins').val() || null,
+            position: $('#position').val() || null,
+            date_issued: $('#date_issued').val() || null,
+        };
 
-    const requestData = {
-        subject_id: subjectId,
-        student_id: studentID,
-        class_assessment: classAssessment,
-        summative_test: summativeTest,
-        exam: exam,
-        next_term_begins: $('#next_term_begins').val(),
-        position: $('#position').val(),
-        date_issued: $('#date_issued').val(),
-    };
-    console.log("Sending data:", requestData);
-    saveTimeout = setTimeout(() => {
-        $.ajax({
-            url: "/admin/update_result_field",
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken,
-            },
-            credentials: 'same-origin',
-            data: JSON.stringify(requestData),
-            success: function (response) {
-                console.log(response.message);
-                $row.find(".status-indicator").text("Saved").addClass("text-success").fadeOut(2000);
-            },
-            error: function (xhr) {
-                console.error("Error saving result:", xhr.responseJSON?.message || "Unknown error");
-                $row.find(".status-indicator").text("Error").addClass("text-danger").fadeOut(2000);
-            },
-        });
-    }, 300);
-});
+        console.log("Sending data:", requestData);
+        saveTimeout = setTimeout(() => {
+            $.ajax({
+                url: updateUrl,
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken,
+                },
+                data: JSON.stringify(requestData),
+                success: function (response) {
+                    console.log(response.message);
+                    $row.find(".status-indicator").text("Saved").addClass("text-success").fadeOut(2000);
+
+                    // Update subject-specific fields (total, grade, remark are inputs)
+                    $row.find(".total").val(response.total !== null ? response.total : '');
+                    $row.find(".grade").val(response.grade || '');
+                    $row.find(".remark").val(response.remark || '');
+
+                    // Update aggregated fields (principal/teacher remarks and totals are spans)
+                    if (response.principal_remark) {
+                        $('span[aria-label="Principal Remark"]').text(response.principal_remark);
+                    }
+                    if (response.teacher_remark) {
+                        $('span[aria-label="Teacher Remark"]').text(response.teacher_remark);
+                    }
+                    if (response.grand_total) {
+                        $('span[aria-label="Grand Total"]').text(response.grand_total);
+                    }
+                    if (response.term_average) {
+                        $('span[aria-label="Average for the Term"]').text(response.term_average);
+                    }
+                    if (response.cumulative_average) {
+                        $('span[aria-label="Cumulative Average"]').text(response.cumulative_average);
+                    }
+                    if (response.position) {
+                        $('#position').val(response.position);
+                    }
+                    if (response.next_term_begins) {
+                        $('#next_term_begins').val(response.next_term_begins);
+                    }
+                    if (response.date_issued) {
+                        $('#date_issued').val(response.date_issued);
+                    }
+                },
+                error: function (xhr) {
+                    console.error("Error saving result:", xhr.responseJSON?.message || "Unknown error");
+                    $row.find(".status-indicator").text("Error").addClass("text-danger").fadeOut(2000);
+                },
+            });
+        }, 300);
+    });
 </script>
-
 {% endblock scripts %}
