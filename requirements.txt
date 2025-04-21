@@ -1,93 +1,94 @@
-alembic==1.14.1
-async-timeout==5.0.1
-bcrypt==4.3.0
-bleach==6.1.0
-blinker==1.9.0
-boolean.py==4.0
-Brotli==1.1.0
-CacheControl==0.14.2
-cachelib==0.13.0
-cairocffi==1.7.1
-CairoSVG==2.7.1
+alembic==1.13.2
+# async-timeout==5.0.1  # Commented out: Not directly used by Flask app, may cause issues with Python 3.11
+bcrypt==4.2.0
+# bleach==6.1.0  # Commented out: Not directly used, potential compatibility issues
+blinker==1.8.2
+# boolean.py==4.0  # Commented out: Not directly used by Flask app
+# Brotli==1.1.0  # Commented out: Not directly used, dependency of weasyprint
+# CacheControl==0.14.2  # Commented out: Not directly used by Flask app
+# cachelib==0.13.0  # Commented out: Not directly used, potential conflict with Flask-Caching
+# cairocffi==1.7.1  # Commented out: Dependency of weasyprint, compatibility issues with Python 3.11
+# CairoSVG==2.7.1  # Commented out: Dependency of weasyprint, compatibility issues with Python 3.11
 certifi==2025.1.31
 cffi==1.16.0
 charset-normalizer==3.4.1
 click==8.1.7
-colorlog==6.9.0
-cryptography==44.0.2
-cssselect2==0.7.0
-cyclonedx-python-lib==8.9.0
-defusedxml==0.7.1
-Deprecated==1.2.18
-et-xmlfile==1.1.0
-exceptiongroup==1.2.1
-filelock==3.17.0
-Flask==3.1.0
+colorlog==6.8.2
+cryptography==43.0.1  # Downgraded to ensure compatibility with Python 3.9
+# cssselect2==0.7.0  # Commented out: Dependency of weasyprint, compatibility issues
+# cyclonedx-python-lib==8.9.0  # Commented out: Not directly used by Flask app
+# defusedxml==0.7.1  # Commented out: Dependency of weasyprint, not directly used
+# Deprecated==1.2.18  # Commented out: Not directly used by Flask app
+# et-xmlfile==1.1.0  # Commented out: Not directly used, dependency of openpyxl
+# exceptiongroup==1.2.1  # Commented out: Not directly used by Flask app
+# filelock==3.17.0  # Commented out: Not directly used by Flask app
+Flask==3.0.3
 Flask-Bcrypt==1.0.1
-Flask-Caching==2.3.1
-Flask-Limiter==3.10.1
+Flask-Caching==2.3.0
+Flask-Limiter==3.8.0
 Flask-Login==0.6.3
-Flask-Migrate==4.1.0
-Flask-SQLAlchemy==3.1.1
-Flask-WTF==1.2.2
-fonttools==4.53.0
+Flask-Migrate==4.0.7
+Flask-SQLAlchemy==3.0.5
+Flask-WTF==1.2.1
+# fonttools==4.53.0  # Commented out: Dependency of weasyprint, not directly used
 greenlet==3.0.3
-html5lib==1.1
+# html5lib==1.1  # Commented out: Not directly used by Flask app
 idna==3.7
 iniconfig==2.0.0
 itsdangerous==2.2.0
-Jinja2==3.1.6
-license-expression==30.4.1
-limits==4.0.1
-Mako==1.3.9
-markdown-it-py==3.0.0
+Jinja2==3.1.4
+# license-expression==30.4.1  # Commented out: Not directly used by Flask app
+limits==3.13.0
+Mako==1.3.5
+# markdown-it-py==3.0.0  # Commented out: Not directly used by Flask app
 MarkupSafe==2.1.5
-marshmallow==3.20.1
-mdurl==0.1.2
-msgpack==1.1.0
+# marshmallow==3.20.1  # Commented out: Not directly used by Flask app
+# mdurl==0.1.2  # Commented out: Not directly used, dependency of markdown-it-py
+# msgpack==1.1.0  # Commented out: Not directly used by Flask app
 mysqlclient==2.2.4
-openpyxl==3.1.5
-ordered-set==4.1.0
-packageurl-python==0.16.0
-packaging==24.2
-pillow==10.3.0
-pip-api==0.0.34
-pip-requirements-parser==32.0.1
-pip_audit==2.8.0
-platformdirs==4.3.6
+# openpyxl==3.1.5  # Commented out: Not directly used by Flask app
+# ordered-set==4.1.0  # Commented out: Not directly used by Flask app
+# packageurl-python-lib==0.16.0  # Commented out: Not directly used by Flask app
+packaging==24.1
+# pillow==10.3.0  # Commented out: Dependency of weasyprint, not directly used
+# pip-api==0.0.34  # Commented out: Not directly used by Flask app
+# pip-requirements-parser==32.0.1  # Commented out: Not directly used by Flask app
+# pip_audit==2.8.0  # Commented out: Not directly used by Flask app
+platformdirs==4.2.2
 pluggy==1.5.0
-psutil==7.0.0
-py-serializable==1.1.2
+psutil==6.0.0
+# py-serializable==1.1.2  # Commented out: Not directly used by Flask app
 pycparser==2.22
-pydyf==0.11.0
-Pygments==2.19.1
+# pydyf==0.11.0  # Commented out: Dependency of weasyprint, compatibility issues
+# Pygments==2.19.1  # Commented out: Not directly used by Flask app
 PyMySQL==1.1.1
-pyotp==2.9.0
-pyparsing==3.2.1
-pyphen==0.15.0
-pytest==8.3.4
+# pyotp==2.9.0  # Commented out: Not directly used by Flask app
+# pyparsing==3.2.1  # Commented out: Not directly used by Flask app
+# pyphen==0.15.0  # Commented out: Dependency of weasyprint, not directly used
+pytest==8.3.2
+pytest-mock==3.14.0  # Added explicitly for testing
 python-dotenv==1.0.1
-python-json-logger==3.3.0
-qrcode==8.0
-redis==5.2.1
-redislite==6.2.912183
+python-json-logger==2.0.7
+# qrcode==8.0  # Commented out: Not directly used by Flask app
+redis==5.0.8
+# redislite==6.2.912183  # Commented out: Not directly used, potential conflict with redis
 requests==2.32.3
-rich==13.9.4
-sentry-sdk==2.22.0
-six==1.17.0
-sortedcontainers==2.4.0
-SQLAlchemy==2.0.38
-tenacity==9.0.0
-tinycss2==1.4.0
-tinyhtml5==2.0.0
-toml==0.10.2
+# rich==13.9.4  # Commented out: Not directly used by Flask app
+# sentry-sdk==2.22.0  # Commented out: Not directly used by Flask app
+# six==1.17.0  # Commented out: Not needed for Python 3
+# sortedcontainers==2.4.0  # Commented out: Not directly used by Flask app
+SQLAlchemy==2.0.31  # Pinned to avoid breaking changes
+tenacity==8.5.0
+# tinycss2==1.4.0  # Commented out: Dependency of weasyprint, compatibility issues
+# tinyhtml5==2.0.0  # Commented out: Not directly used by Flask app
+# toml==0.10.2  # Commented out: Not directly used by Flask app
 tomli==2.0.1
 typing_extensions==4.12.2
-urllib3==2.2.3
-weasyprint==64.1
-webencodings==0.5.1
-Werkzeug==3.1.3
-wrapt==1.17.2
-WTForms==3.2.1
-WTForms-SQLAlchemy==0.4.2
-zopfli==0.2.3
+urllib3==2.2.2
+# weasyprint==64.1  # Commented out: Compatibility issues with Python 3.11
+# webencodings==0.5.1  # Commented out: Not directly used by Flask app
+Werkzeug==3.0.3
+# wrapt==1.17.2  # Commented out: Not directly used by Flask app
+WTForms==3.1.2
+# WTForms-SQLAlchemy==0.4.2  # Commented out: Not directly used by Flask app
+# zopfli==0.2.3  # Commented out: Dependency of weasyprint, compatibility issues
