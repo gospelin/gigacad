@@ -60,8 +60,11 @@ class ProductionConfig(Config):
     SQLALCHEMY_ECHO = os.getenv("SQL_LOGGING", "False").lower() == "true"
     SERVER_NAME = os.getenv("SERVER_NAME", "auntyannesschools.com.ng")
     SECRET_KEY = os.environ.get("SECRET_KEY")
-    if not SECRET_KEY:
-        raise ValueError("SECRET_KEY must be set in environment for production.")
+
+    @classmethod
+    def init_app(cls, app):
+        if not cls.SECRET_KEY:
+            raise ValueError("SECRET_KEY must be set in environment for production.")
 
 config_by_name = {
     "development": DevelopmentConfig,
