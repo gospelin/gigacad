@@ -135,6 +135,8 @@ The `create_app()` function initializes the application with:
 - Flask WTF
 - Flask Limiter
 - python-dotenv
+- pyotp (MFA)
+- qrcode (MFA QR codes)
 - colorlog / python-json-logger
 - tenacity
 - pytz
