@@ -4,15 +4,22 @@ GIGACAD is a robust, secure, and scalable Flask-based web application developed 
 
 ## Features
 
-- Secure user authentication with session protection
-- Environment-specific configuration (`development`, `testing`, `production`)
-- Robust logging with JSON formatting and Nigerian time localization
-- SQLAlchemy ORM for database interaction
-- Flask-Migrate for database migrations
-- CSRF protection using Flask-WTF
-- Rate limiting via Flask-Limiter
-- Structured application factory pattern
-- User-friendly error handling and retry mechanisms
+- **Role-Based Authentication**: Secure user authentication with MFA (TOTP) and strong session protection for admins, students, and teachers.
+- **Admin Dashboard**: Centralized interface with real-time metrics (e.g., student/teacher counts, active sessions).
+- **User Management**: Create, edit, and delete admin accounts with granular privilege controls (e.g., manage users, sessions, results).
+- **Session & Term Management**: Configure academic sessions and terms per user, with validation and audit logging.
+- **Student Management**: Register students, assign classes, and filter by enrollment, fee, or approval status with paginated, AJAX-enabled views.
+- **Security Features**:
+  - CSRF protection via Flask-WTF for all forms.
+  - Rate limiting (e.g., 10 admin creations per minute) with Flask-Limiter.
+  - Secure session cookies (HTTP-only, SameSite=Lax, secure in production).
+  - Input sanitization using `bleach` to prevent XSS attacks.
+  - Audit logging for critical actions (e.g., admin creation/deletion).
+- **Structured Logging**: JSON-formatted logs in Nigerian timezone (Africa/Lagos) with request context and error tracking.
+- **Database Management**: SQLAlchemy ORM with Flask-Migrate for schema migrations and robust error handling.
+- **Customizable UI**: Theme switching (light/dark) with cookie-based persistence.
+- **Extensible**: Modular blueprint structure for easy feature additions and API integrations.
+
 
 ## Project Structure
 
