@@ -44,11 +44,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-${{ matrix.python-version }}-
 
+      - name: Filter requirements.txt for CI/CD
+        run: |
+          # Create a temporary requirements file excluding commented lines
+          grep -vE '^\s*#' requirements.txt > requirements-ci.txt
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           python -m pip install flake8 pytest pytest-mock
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          if [ -f requirements-ci.txt ]; then pip install -r requirements-ci.txt; fi
 
       - name: Create log directory
         run: |
@@ -68,7 +73,7 @@ jobs:
 
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@3.2.1  # Specify exact version to fix "Missing download info" error
         with:
           name: test-results-${{ matrix.python-version }}
           path: |
