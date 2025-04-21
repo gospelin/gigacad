@@ -233,6 +233,4 @@ This project is licensed under the MIT License. See the LICENSE file for details
 
 ## Credits
 
-GIGACAD
-
-Engineered by Gospel Isaac
+Developed by Gospel Isaac
