@@ -19,7 +19,7 @@ from pythonjsonlogger import jsonlogger
 import colorlog
 from uuid import uuid4
 import json
-import pytz  # Added for timezone support
+import pytz
 
 # Initialize extensions globally
 db = SQLAlchemy()
@@ -40,9 +40,8 @@ class PrettyJsonFormatter(jsonlogger.JsonFormatter):
         super().__init__(*args, **kwargs)
 
     def format(self, record):
-        # Ensure asctime is populated and adjusted to Nigerian time
-        record.asctime = self.formatTime(record, self.datefmt)  # Populate asctime
-        nigeria_time = datetime.now(NIGERIA_TZ)  # Get current time in Nigeria
+        record.asctime = self.formatTime(record, self.datefmt)
+        nigeria_time = datetime.now(NIGERIA_TZ)
         log_record = self.process_log_record(record.__dict__.copy())
 
         if has_request_context():
@@ -55,10 +54,10 @@ class PrettyJsonFormatter(jsonlogger.JsonFormatter):
             log_record['endpoint'] = None
             log_record['url'] = None
             log_record['request_id'] = None
-        log_record['timestamp'] = nigeria_time.isoformat()  # Use Nigeria time
+        log_record['timestamp'] = nigeria_time.isoformat()
 
         filtered_record = {
-            'asctime': nigeria_time.strftime('%Y-%m-%d %H:%M:%S'),  # Adjust asctime to Nigeria time
+            'asctime': nigeria_time.strftime('%Y-%m-%d %H:%M:%S'),
             'name': log_record['name'],
             'levelname': log_record['levelname'],
             'pathname': log_record['pathname'],
@@ -105,12 +104,12 @@ def load_user(user_id):
 
 def datetimeformat(value, format_string="%d %B %Y"):
     if value == "now":
-        return datetime.now(NIGERIA_TZ).strftime(format_string)  # Adjusted to Nigeria time
+        return datetime.now(NIGERIA_TZ).strftime(format_string)
     return value.strftime(format_string) if hasattr(value, 'strftime') else value
 
 def setup_logging(app):
     """Configure advanced logging with pretty-printed JSON for files."""
-    log_dir = app.config.get("LOG_DIR", "/home/gigo/AAIS/logs")  # Adjusted for PythonAnywhere
+    log_dir = app.config.get("LOG_DIR", "/home/gigo/AAIS/logs")
     if not os.path.exists(log_dir):
         try:
             os.makedirs(log_dir)
@@ -143,20 +142,17 @@ def setup_logging(app):
         maxBytes=50480,
         backupCount=5
     )
-    file_handler.setLevel(logging.INFO)  # INFO for production
+    file_handler.setLevel(logging.INFO)
     file_handler.setFormatter(json_formatter)
 
-    # Add the file handler to the app logger
     app.logger.addHandler(file_handler)
     app.logger.setLevel(logging.INFO)
 
-    # Configure SQLAlchemy logger
     sqlalchemy_logger = logging.getLogger('sqlalchemy.engine')
     sqlalchemy_logger.handlers.clear()
     sqlalchemy_logger.addHandler(file_handler)
     sqlalchemy_logger.setLevel(logging.WARNING)
 
-    # Custom handler to redirect logging errors to flask_app.log
     class LoggingErrorHandler(logging.StreamHandler):
         def emit(self, record):
             if record.exc_info:
@@ -164,7 +160,7 @@ def setup_logging(app):
 
     error_handler = LoggingErrorHandler()
     error_handler.setLevel(logging.ERROR)
-    logging.getLogger('').addHandler(error_handler)  # Attach to root logger
+    logging.getLogger('').addHandler(error_handler)
 
     @app.before_request
     def add_request_id():
@@ -181,6 +177,10 @@ def create_app(config_name=None):
 
     env = os.getenv("FLASK_ENV", "default") if config_name is None else config_name
     app.config.from_object(config_by_name[env])
+    
+    # Call init_app for configuration-specific validation
+    if hasattr(config_by_name[env], "init_app"):
+        config_by_name[env].init_app(app)
 
     session_config = {
         "SESSION_COOKIE_HTTPONLY": True,
@@ -192,9 +192,6 @@ def create_app(config_name=None):
     }
     app.config.update(session_config)
     app.logger.debug(f"Session configuration applied: {session_config}")
-
-    # Set remember cookie lifetime (optional, defaults to 365 days in Flask-Login)
-    # app.config["REMEMBER_COOKIE_DURATION"] = 2592000
 
     db.init_app(app)
     migrate.init_app(app, db)
