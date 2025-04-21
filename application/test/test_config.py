@@ -1,3 +1,1 @@
-from application import create_app
-
-app = create_app(config_name="testing")
+from application import app
