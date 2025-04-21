@@ -6,12 +6,16 @@ from cryptography.fernet import Fernet
 import os
 import random
 import string
+import pytz
 
-# Encryption key setup
 key = os.getenv("ENCRYPTION_KEY") or Fernet.generate_key()
 cipher = Fernet(key)
 
-# Enums
+NIGERIA_TZ = pytz.timezone('Africa/Lagos')
+
+def nigeria_now():
+    return datetime.now(NIGERIA_TZ)
+
 class TermEnum(PyEnum):
     FIRST = "First"
     SECOND = "Second"
@@ -22,7 +26,6 @@ class RoleEnum(PyEnum):
     STUDENT = "student"
     TEACHER = "teacher"
 
-# Association Tables with CASCADE
 class_teacher = db.Table(
     "class_teacher",
     db.Column("class_id", db.Integer, db.ForeignKey("classes.id", ondelete="CASCADE"), primary_key=True),
@@ -44,7 +47,6 @@ teacher_subject = db.Table(
     db.Column("subject_id", db.Integer, db.ForeignKey("subject.id", ondelete="CASCADE"), primary_key=True),
 )
 
-# Models
 class Session(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     year = db.Column(db.String(20), unique=True, nullable=False)
@@ -60,7 +62,6 @@ class Session(db.Model):
 
     @staticmethod
     def get_current_session_and_term(include_term=False):
-        """Get the current session and term for the logged-in user, with fallback to legacy global session."""
         if not current_user.is_authenticated:
             return None, None if include_term else None
 
@@ -69,12 +70,10 @@ class Session(db.Model):
             session = Session.query.get(preference.session_id)
             term = TermEnum(preference.current_term) if preference.current_term else None
         else:
-            # Fallback to legacy global session during transition
             legacy_session = Session.query.filter_by(is_current=True).first()
             if legacy_session:
                 session = legacy_session
                 term = TermEnum(legacy_session.current_term) if legacy_session.current_term else TermEnum.FIRST
-                # Set this as the user's preference to avoid repeated fallback
                 preference = UserSessionPreference(
                     user_id=current_user.id,
                     session_id=session.id,
@@ -83,7 +82,6 @@ class Session(db.Model):
                 db.session.add(preference)
                 db.session.commit()
             else:
-                # No legacy session; default to latest session
                 session = Session.query.order_by(Session.year.desc()).first()
                 if not session:
                     return None, None if include_term else None
@@ -105,7 +103,7 @@ class StudentClassHistory(db.Model):
     class_id = db.Column(db.Integer, db.ForeignKey("classes.id", ondelete="CASCADE"), nullable=True)
     start_term = db.Column(db.Enum("First", "Second", "Third", name="termenum"), nullable=True, default="First")
     end_term = db.Column(db.Enum("First", "Second", "Third", name="termenum"), nullable=True)
-    join_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    join_date = db.Column(db.DateTime, nullable=False, default=nigeria_now)
     leave_date = db.Column(db.DateTime, nullable=True)
     is_active = db.Column(db.Boolean, nullable=False, default=True)
 
@@ -120,7 +118,6 @@ class StudentClassHistory(db.Model):
         return f"<StudentClassHistory Student: {self.student_id}, Class: {self.class_ref.name if self.class_ref else 'None'}, Session: {self.session.year}>"
 
     def is_active_in_term(self, session_id, term):
-        """Check if the student is active in the given session and term."""
         term_order = {TermEnum.FIRST.value: 1, TermEnum.SECOND.value: 2, TermEnum.THIRD.value: 3}
         start_order = term_order.get(self.start_term, 1)
         end_order = term_order.get(self.end_term, 4) if self.end_term else 4
@@ -132,29 +129,26 @@ class StudentClassHistory(db.Model):
                 start_order <= target_order <= end_order)
 
     def mark_as_left(self, term):
-        """Mark student as left starting from the given term in the current session."""
-        if term not in [t.value for t in TermEnum]:  # Validate against TermEnum values
+        if term not in [t.value for t in TermEnum]:
             raise ValueError(f"Invalid term: {term}")
 
         term_order = {TermEnum.FIRST.value: 1, TermEnum.SECOND.value: 2, TermEnum.THIRD.value: 3}
         start_order = term_order.get(self.start_term, 1)
         leave_order = term_order.get(term, 1)
 
-        # Only set is_active to False if leaving in or before start_term
         if leave_order <= start_order:
             self.is_active = False
         self.end_term = term
-        self.leave_date = datetime.utcnow()
+        self.leave_date = nigeria_now()
 
     def reenroll(self, session_id, class_id, term):
-        """Re-enroll a student in a new session or term."""
         if self.is_active and self.leave_date is None:
             raise ValueError("Student is already active")
         self.session_id = session_id
         self.class_id = class_id
         self.start_term = term
         self.end_term = None
-        self.join_date = datetime.utcnow()
+        self.join_date = nigeria_now()
         self.leave_date = None
         self.is_active = True
 
@@ -173,7 +167,7 @@ class Student(db.Model, UserMixin):
     state_of_origin = db.Column(db.String(50), nullable=True)
     local_government_area = db.Column(db.String(50), nullable=True)
     religion = db.Column(db.String(50), nullable=True)
-    date_registered = db.Column(db.DateTime, nullable=False, default=db.func.now())
+    date_registered = db.Column(db.DateTime, nullable=False, default=nigeria_now)
     approved = db.Column(db.Boolean, nullable=False, default=False)
     profile_pic = db.Column(db.String(255), nullable=True, default=None)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id", ondelete="CASCADE"), nullable=True)
@@ -183,7 +177,6 @@ class Student(db.Model, UserMixin):
     fee_payments = db.relationship("FeePayment", backref="student", lazy=True, cascade="save-update, merge", passive_deletes=True)
 
     def get_full_name(self):
-        """Return the student's full name."""
         names = [self.first_name]
         if self.middle_name:
             names.append(self.middle_name)
@@ -192,12 +185,10 @@ class Student(db.Model, UserMixin):
 
     @property
     def parent_phone_number(self):
-        """Decrypt and return the parent's phone number."""
         return cipher.decrypt(self._parent_phone_number.encode()).decode() if self._parent_phone_number else None
 
     @parent_phone_number.setter
     def parent_phone_number(self, value):
-        """Encrypt and set the parent's phone number."""
         self._parent_phone_number = cipher.encrypt(value.encode()).decode() if value else None
 
     def get_current_class(self):
@@ -205,7 +196,6 @@ class Student(db.Model, UserMixin):
         return latest_class.class_ref.name if latest_class else None
 
     def get_current_enrollment(self):
-        """Get the latest active enrollment for the current session."""
         current_session = Session.get_current_session()
         if not current_session:
             return None
@@ -217,11 +207,10 @@ class Student(db.Model, UserMixin):
         ).order_by(StudentClassHistory.join_date.desc()).first()
 
     def get_class_by_session_and_term(self, session_id, term):
-        """Get class for a specific session and term, expecting term as TermEnum."""
         enrollment = StudentClassHistory.query.filter_by(
             student_id=self.id,
             session_id=session_id,
-            start_term=term.value,  # Use string value for DB query
+            start_term=term.value,
             is_active=True,
             leave_date=None
         ).first()
@@ -240,7 +229,6 @@ class Student(db.Model, UserMixin):
 
     @classmethod
     def generate_reg_no(cls, session_year=None):
-        """Generate a unique registration number."""
         if not session_year:
             current_session = Session.get_current_session_and_term(include_term=False)
             session_year = current_session.year if current_session else datetime.now().year
@@ -287,15 +275,13 @@ class Teacher(db.Model):
     employee_id = db.Column(db.String(20), unique=True, nullable=False)
     section = db.Column(db.String(20), nullable=False)
 
-    classes = db.relationship("Classes", secondary="class_teacher", back_populates="teachers", lazy="dynamic")  # Fixed target and back_populates
+    classes = db.relationship("Classes", secondary="class_teacher", back_populates="teachers", lazy="dynamic")
     subjects = db.relationship("Subject", secondary="teacher_subject", back_populates="teachers", lazy="dynamic")
 
     def get_full_name(self):
-        """Return the teacher's full name."""
         return f"{self.first_name} {self.last_name}"
 
     def is_form_teacher_for_class(self, class_id):
-        # Adjusted to work with Classes relationship
         return any(ct.is_form_teacher for ct in db.session.query(class_teacher).filter_by(teacher_id=self.id, class_id=class_id).all())
 
 class Subject(db.Model):
@@ -328,7 +314,7 @@ class StudentTermSummary(db.Model):
     teacher_remark = db.Column(db.String(100), nullable=True)
     next_term_begins = db.Column(db.String(100), nullable=True)
     date_issued = db.Column(db.String(100), nullable=True)
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, nullable=False, default=nigeria_now)
 
     session = db.relationship("Session", backref="term_summaries", lazy=True)
 
@@ -350,7 +336,7 @@ class Result(db.Model):
     total = db.Column(db.Integer, nullable=True)
     grade = db.Column(db.String(5), nullable=True)
     remark = db.Column(db.String(100), nullable=True)
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, nullable=False, default=nigeria_now)
 
     session = db.relationship("Session", backref="results", lazy=True)
 
@@ -371,11 +357,9 @@ class User(db.Model, UserMixin):
     session_preference = db.relationship("UserSessionPreference", back_populates="user", uselist=False, lazy=True)
 
     def set_password(self, password):
-        """Set the user's password."""
         self.password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
 
     def check_password(self, password):
-        """Check if the provided password matches the stored hash."""
         return bcrypt.check_password_hash(self.password_hash, password)
 
 class AdminPrivilege(db.Model):
@@ -404,5 +388,6 @@ class AuditLog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id", ondelete="CASCADE"), nullable=False)
     action = db.Column(db.String(100), nullable=False)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    timestamp = db.Column(db.DateTime, default=nigeria_now, nullable=False)
+
     user = db.relationship("User", backref=db.backref("audit_logs", lazy=True, cascade="save-update, merge", passive_deletes=True))

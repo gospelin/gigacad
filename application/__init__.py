@@ -19,6 +19,7 @@ from pythonjsonlogger import jsonlogger
 import colorlog
 from uuid import uuid4
 import json
+import pytz  # Added for timezone support
 
 # Initialize extensions globally
 db = SQLAlchemy()
@@ -30,14 +31,20 @@ login_manager = LoginManager()
 login_manager.login_message_category = "alert-info"
 login_manager.session_protection = "strong"
 
+# Define Nigeria timezone (WAT, UTC+1)
+NIGERIA_TZ = pytz.timezone('Africa/Lagos')
+
 class PrettyJsonFormatter(jsonlogger.JsonFormatter):
     """Custom JSON formatter with pretty printing and request context."""
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
     def format(self, record):
-        # Create the log record dictionary
+        # Ensure asctime is populated and adjusted to Nigerian time
+        record.asctime = self.formatTime(record, self.datefmt)  # Populate asctime
+        nigeria_time = datetime.now(NIGERIA_TZ)  # Get current time in Nigeria
         log_record = self.process_log_record(record.__dict__.copy())
+
         if has_request_context():
             log_record['blueprint'] = request.blueprint or "no-blueprint"
             log_record['endpoint'] = request.endpoint or "no-endpoint"
@@ -48,25 +55,24 @@ class PrettyJsonFormatter(jsonlogger.JsonFormatter):
             log_record['endpoint'] = None
             log_record['url'] = None
             log_record['request_id'] = None
-        log_record['timestamp'] = datetime.utcnow().isoformat()
-        
-        # Filter out unwanted fields
+        log_record['timestamp'] = nigeria_time.isoformat()  # Use Nigeria time
+
         filtered_record = {
-            'asctime': log_record['asctime'],
+            'asctime': nigeria_time.strftime('%Y-%m-%d %H:%M:%S'),  # Adjust asctime to Nigeria time
             'name': log_record['name'],
             'levelname': log_record['levelname'],
             'pathname': log_record['pathname'],
             'lineno': log_record['lineno'],
             'funcName': log_record['funcName'],
-            'message': log_record['message'],
+            'message': record.getMessage(),
             'blueprint': log_record['blueprint'],
             'endpoint': log_record['endpoint'],
             'url': log_record['url'],
             'request_id': log_record['request_id'],
-            'timestamp': log_record['timestamp']
+            'timestamp': log_record['timestamp'],
+            'exc_info': str(record.exc_info) if record.exc_info else None
         }
-        
-        # Pretty-print with indentation
+
         return json.dumps(filtered_record, indent=2, ensure_ascii=False) + "\n"
 
 @login_manager.user_loader
@@ -99,7 +105,7 @@ def load_user(user_id):
 
 def datetimeformat(value, format_string="%d %B %Y"):
     if value == "now":
-        return datetime.now().strftime(format_string)
+        return datetime.now(NIGERIA_TZ).strftime(format_string)  # Adjusted to Nigeria time
     return value.strftime(format_string) if hasattr(value, 'strftime') else value
 
 def setup_logging(app):
@@ -117,7 +123,7 @@ def setup_logging(app):
 
     json_formatter = PrettyJsonFormatter(
         '%(asctime)s %(name)s %(levelname)s %(pathname)s %(lineno)d %(funcName)s %(message)s',
-        datefmt='%Y-%m-%dT%H:%M:%S'
+        datefmt='%Y-%m-%d %H:%M:%S'
     )
 
     color_formatter = colorlog.ColoredFormatter(
@@ -140,13 +146,25 @@ def setup_logging(app):
     file_handler.setLevel(logging.INFO)  # INFO for production
     file_handler.setFormatter(json_formatter)
 
+    # Add the file handler to the app logger
     app.logger.addHandler(file_handler)
     app.logger.setLevel(logging.INFO)
 
+    # Configure SQLAlchemy logger
     sqlalchemy_logger = logging.getLogger('sqlalchemy.engine')
     sqlalchemy_logger.handlers.clear()
     sqlalchemy_logger.addHandler(file_handler)
     sqlalchemy_logger.setLevel(logging.WARNING)
+
+    # Custom handler to redirect logging errors to flask_app.log
+    class LoggingErrorHandler(logging.StreamHandler):
+        def emit(self, record):
+            if record.exc_info:
+                app.logger.error("Logging error occurred", exc_info=record.exc_info)
+
+    error_handler = LoggingErrorHandler()
+    error_handler.setLevel(logging.ERROR)
+    logging.getLogger('').addHandler(error_handler)  # Attach to root logger
 
     @app.before_request
     def add_request_id():
@@ -174,9 +192,9 @@ def create_app(config_name=None):
     }
     app.config.update(session_config)
     app.logger.debug(f"Session configuration applied: {session_config}")
-    
+
     # Set remember cookie lifetime (optional, defaults to 365 days in Flask-Login)
-    # app.config["REMEMBER_COOKIE_DURATION"] = 2592000 
+    # app.config["REMEMBER_COOKIE_DURATION"] = 2592000
 
     db.init_app(app)
     migrate.init_app(app, db)
