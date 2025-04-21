@@ -6,6 +6,12 @@ on:
   pull_request:
     branches: ["main"]
 
+# Add permissions for the workflow
+permissions:
+  contents: write  # Required for actions/upload-artifact to upload artifacts
+  metadata: read
+  packages: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -73,7 +79,7 @@ jobs:
 
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@3.2.1  # Specify exact version to fix "Missing download info" error
+        uses: actions/upload-artifact@3.2.0  # Updated to the correct v3 release
         with:
           name: test-results-${{ matrix.python-version }}
           path: |
