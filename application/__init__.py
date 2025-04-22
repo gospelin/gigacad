@@ -15,10 +15,10 @@ from logging.handlers import RotatingFileHandler
 from sqlalchemy.exc import OperationalError
 from sqlalchemy import text
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
-from pythonjsonlogger import jsonlogger
+from pythonjsonlogger import json  # Updated import
 import colorlog
 from uuid import uuid4
-import json
+import json as pyjson
 import pytz
 
 # Initialize extensions globally
@@ -34,7 +34,7 @@ login_manager.session_protection = "strong"
 # Define Nigeria timezone (WAT, UTC+1)
 NIGERIA_TZ = pytz.timezone('Africa/Lagos')
 
-class PrettyJsonFormatter(jsonlogger.JsonFormatter):
+class PrettyJsonFormatter(json.JsonFormatter):  # Updated base class
     """Custom JSON formatter with pretty printing and request context."""
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -72,7 +72,7 @@ class PrettyJsonFormatter(jsonlogger.JsonFormatter):
             'exc_info': str(record.exc_info) if record.exc_info else None
         }
 
-        return json.dumps(filtered_record, indent=2, ensure_ascii=False) + "\n"
+        return pyjson.dumps(filtered_record, indent=2, ensure_ascii=False) + "\n"
 
 @login_manager.user_loader
 @retry(
@@ -176,6 +176,7 @@ def create_app(config_name=None):
     session_config = {
         "SESSION_COOKIE_HTTPONLY": True,
         "SESSION_COOKIE_SAMESITE": "Lax",
+        "PERMANENT_SESSION13": True,
         "PERMANENT_SESSION_LIFETIME": app.config.get("PERMANENT_SESSION_LIFETIME", 7776000),
         "SESSION_COOKIE_NAME": "session",
         "SESSION_COOKIE_PATH": "/",
@@ -192,6 +193,8 @@ def create_app(config_name=None):
     bcrypt.init_app(app)
     try:
         limiter.init_app(app)
+        if app.config.get("TESTING", False):
+            limiter.storage = "memory://"  # Explicitly use in-memory storage for tests
     except Exception as e:
         app.logger.error(f"Failed to initialize Flask-Limiter: {str(e)}", exc_info=True)
         raise RuntimeError("Failed to initialize Flask-Limiter.") from e
