@@ -188,7 +188,7 @@ def create_app(config_name=None):
     migrate.init_app(app, db)
     csrf.init_app(app)
     login_manager.init_app(app)
-    login_manager.login_view = "auth.login"
+    login_manager.login_view = "auth.login"  # Matches /portal
     bcrypt.init_app(app)
     try:
         limiter.init_app(app)
@@ -198,11 +198,11 @@ def create_app(config_name=None):
 
     setup_logging(app)
 
-    from application.auth import auth_bp
-    from application.admin import admin_bp
-    from application.main import main_bp
-    from application.student import student_bp
-    from application.teacher import teacher_bp
+    from application.auth.routes import auth_bp
+    from application.admins.routes import admin_bp
+    from application.main.routes import main_bp
+    from application.students.routes import student_bp
+    from application.teachers.routes import teacher_bp
 
     try:
         app.register_blueprint(auth_bp)
@@ -210,7 +210,7 @@ def create_app(config_name=None):
         app.register_blueprint(main_bp)
         app.register_blueprint(student_bp, url_prefix="/student")
         app.register_blueprint(teacher_bp, url_prefix="/teacher")
-        app.logger.info("Registered blueprints: auth, admin, main, student, teacher")
+        app.logger.info("Registered blueprints: auth, admins, main, students, teachers")
     except Exception as e:
         app.logger.error(f"Error registering blueprints: {str(e)}", exc_info=True)
         raise RuntimeError("Failed to register blueprints.") from e
@@ -238,7 +238,7 @@ def create_app(config_name=None):
         return render_template("errors/403.html"), 403
 
     with app.app_context():
-        if not app.config.get("TESTING", False):  # Skip for testing
+        if not app.config.get("TESTING", False):
             try:
                 db.session.execute(text("SELECT 1"))
                 app.logger.info("Database connection verified on startup")
