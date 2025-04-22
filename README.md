@@ -101,6 +101,11 @@ pip install -r requirements.txt
 Create a `.env` file in the root directory and add the following environment variables:
 
 ```
+cp .env.example .env
+nano .env  # Edit with your configuration
+```
+
+```
 FLASK_ENV=development
 SECRET_KEY=your-secret-key
 DB_USER=mysql_user
@@ -121,8 +126,15 @@ flask db upgrade
 
 ### 6. Run the Application
 
+### Development Mode
 ```bash
-flask run
+export FLASK_ENV=development
+flask run 
+```
+
+### Production Deployment
+```bash
+gunicorn -w 4 -b :5000 wsgi:app
 ```
 
 Visit `http://localhost:5000` in your browser.
