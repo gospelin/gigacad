@@ -269,19 +269,26 @@ Logs include the following structured fields:
 - `GET/POST /admin/students/<string:action>` - View/filter students
 
 
-## Contributing
+## Contributing	
 
 Contributions are welcome! Please follow these steps:
 
  - Fork the repository.
 
  - Create a feature branch 
-	```(git checkout -b feature/new-feature)```
+	```git
+	git checkout -b feature/new-feature
+	```
 
  - Commit changes 
-	```(git commit -m "Add new feature").```
+	```git
+	git commit -m "Add new feature"
+	```
 
-	- Push to the branch (git push origin feature/new-feature).
+ - Push to the branch 
+	```git
+	git push origin feature/new-feature
+	```
 	
  - Open a pull request.
 
