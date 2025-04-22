@@ -14,9 +14,11 @@ permissions:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
+    env:
+      FLASK_ENV: testing
+      SECRET_KEY: test-secret-key
+      DB_NAME: ":memory:"
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python 3.10
@@ -37,3 +39,8 @@ jobs:
     - name: Test with pytest
       run: |
         pytest
+    - name: Debug environment
+      run: |
+        echo "FLASK_ENV=$FLASK_ENV"
+        echo "SQLALCHEMY_DATABASE_URI=$SQLALCHEMY_DATABASE_URI"
+        env | sort
