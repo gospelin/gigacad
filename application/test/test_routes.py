@@ -75,9 +75,10 @@ def authenticated_user(app, client):
         logger.debug(f"Test user and student created: {user.username}")
 
         response = client.post(url_for("auth.login"), data={
-            "username": "testuser",
-            "password": "TestPassword123!"
-        }, follow_redirects=False)  # Avoid following redirects
+            "identifier": "testuser",
+            "password": "TestPassword123!",
+            "remember": True
+        }, follow_redirects=False)
         assert response.status_code == 302  # Expect redirect after login
         logger.debug("Test user logged in successfully")
         yield user
@@ -91,10 +92,9 @@ def test_app_creation(app):
 
 def test_index_route(client):
     """Test the main index route."""
-    response = client.get(url_for("main.index"), follow_redirects=False)
-    assert response.status_code in [200, 301, 302]  # Allow redirect
-    if response.status_code == 200:
-        assert b"Aunty Anne's International School" in response.data
+    response = client.get(url_for("main.index"))
+    assert response.status_code == 200
+    assert b"Aunty Anne's International School" in response.data
     logger.debug("Index route test passed")
 
 def test_auth_login_route_get(client):
@@ -129,26 +129,27 @@ def test_auth_login_route_post_valid(client, app):
         logger.debug("Valid user and student created for login test")
 
     response = client.post(url_for("auth.login"), data={
-        "username": "validuser",
-        "password": "ValidPass123!"
-    }, follow_redirects=False)  # Avoid redirect
+        "identifier": "validuser",
+        "password": "ValidPass123!",
+        "remember": True
+    }, follow_redirects=False)
     assert response.status_code == 302  # Expect redirect to dashboard
     logger.debug("Login route (POST, valid) test passed")
 
 def test_auth_login_route_post_invalid(client):
     """Test the login route with invalid credentials (POST request)."""
     response = client.post(url_for("auth.login"), data={
-        "username": "nonexistent",
+        "identifier": "nonexistent",
         "password": "WrongPass123!"
     }, follow_redirects=True)
     assert response.status_code == 200
-    assert b"Invalid credentials" in response.data or b"Login" in response.data
+    assert b"Invalid password" in response.data or b"User not found" in response.data
     logger.debug("Login route (POST, invalid) test passed")
 
 def test_auth_login_route_post_empty(client):
     """Test the login route with empty credentials (POST request)."""
     response = client.post(url_for("auth.login"), data={
-        "username": "",
+        "identifier": "",
         "password": ""
     }, follow_redirects=True)
     assert response.status_code == 200
@@ -159,7 +160,7 @@ def test_auth_logout_route(authenticated_user, client):
     """Test the logout route."""
     response = client.get(url_for("auth.logout"), follow_redirects=True)
     assert response.status_code == 200
-    assert b"Login" in response.data  # Expect redirect to login page
+    assert b"Login" in response.data
     with client.session_transaction() as session:
         assert "_user_id" not in session
     logger.debug("Logout route test passed")
@@ -167,40 +168,40 @@ def test_auth_logout_route(authenticated_user, client):
 def test_admin_route_unauthenticated(client):
     """Test access to admin route without authentication."""
     try:
-        response = client.get(url_for("admin.index"), follow_redirects=True)
+        response = client.get(url_for("admins.admin_dashboard"), follow_redirects=True)
         assert response.status_code == 200
         assert b"Login" in response.data
     except Exception:
-        pytest.skip("Admin index endpoint not defined")
+        pytest.skip("Admin dashboard endpoint not defined")
     logger.debug("Admin route (unauthenticated) test passed")
 
 def test_admin_route_authenticated(authenticated_user, client):
     """Test access to admin route with authentication."""
     try:
-        response = client.get(url_for("admin.index"), follow_redirects=True)
+        response = client.get(url_for("admins.admin_dashboard"), follow_redirects=True)
         assert response.status_code == 200 or response.status_code == 403
     except Exception:
-        pytest.skip("Admin index endpoint not defined")
+        pytest.skip("Admin dashboard endpoint not defined")
     logger.debug("Admin route (authenticated) test passed")
 
 def test_student_route_unauthenticated(client):
     """Test access to student route without authentication."""
     try:
-        response = client.get(url_for("student.index"), follow_redirects=True)
+        response = client.get(url_for("students.student_portal"), follow_redirects=True)
         assert response.status_code == 200
         assert b"Login" in response.data
     except Exception:
-        pytest.skip("Student index endpoint not defined")
+        pytest.skip("Student portal endpoint not defined")
     logger.debug("Student route (unauthenticated) test passed")
 
 def test_teacher_route_unauthenticated(client):
     """Test access to teacher route without authentication."""
     try:
-        response = client.get(url_for("teachers.profile"), follow_redirects=True)
+        response = client.get(url_for("teachers.teacher_dashboard"), follow_redirects=True)
         assert response.status_code == 200
         assert b"Login" in response.data
     except Exception:
-        pytest.skip("Teacher profile endpoint not defined")
+        pytest.skip("Teacher dashboard endpoint not defined")
     logger.debug("Teacher route (unauthenticated) test passed")
 
 def test_404_error(client):
@@ -213,10 +214,10 @@ def test_404_error(client):
 def test_403_error(client):
     """Test the 403 error page."""
     try:
-        response = client.get(url_for("admin.index"), follow_redirects=True)
+        response = client.get(url_for("admins.admin_dashboard"), follow_redirects=True)
         assert response.status_code == 403 or response.status_code == 200
     except Exception:
-        pytest.skip("Admin index endpoint not defined")
+        pytest.skip("Admin dashboard endpoint not defined")
     logger.debug("403 error test passed")
 
 @patch("application.db.session.execute")
@@ -227,25 +228,23 @@ def test_database_failure(mock_execute, client, app):
     with pytest.raises(RuntimeError, match="Database connection failed on startup"):
         with app.app_context():
             from application.__init__ import create_app
-            create_app(config_name="development")  # Use development to trigger DB check
+            create_app(config_name="development")
     logger.debug("Database failure test passed")
 
 def test_timezone_handling(client):
     """Test that the application uses Nigeria timezone (WAT, UTC+1)."""
-    response = client.get(url_for("main.index"), follow_redirects=False)
-    assert response.status_code in [200, 301, 302]
-    if response.status_code == 200:
-        nigeria_tz = pytz.timezone("Africa/Lagos")
-        current_time = datetime.now(nigeria_tz).strftime("%d %B %Y")
-        assert current_time.encode() in response.data
+    response = client.get(url_for("main.index"))
+    assert response.status_code == 200
+    nigeria_tz = pytz.timezone("Africa/Lagos")
+    current_time = datetime.now(nigeria_tz).strftime("%d %B %Y")
+    assert current_time.encode() in response.data
     logger.debug("Timezone handling test passed")
 
 def test_session_security(client, authenticated_user):
     """Test session security settings."""
-    response = client.get(url_for("main.index"), follow_redirects=False)
-    assert response.status_code in [200, 301, 302]
-    if response.status_code == 200:
-        assert "session" in response.headers["Set-Cookie"]
-        assert "HttpOnly" in response.headers["Set-Cookie"]
-        assert "SameSite=Lax" in response.headers["Set-Cookie"]
+    response = client.get(url_for("main.index"))
+    assert response.status_code == 200
+    assert "session" in response.headers["Set-Cookie"]
+    assert "HttpOnly" in response.headers["Set-Cookie"]
+    assert "SameSite=Lax" in response.headers["Set-Cookie"]
     logger.debug("Session security test passed")
