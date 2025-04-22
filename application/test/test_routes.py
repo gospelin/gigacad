@@ -26,10 +26,10 @@ def app():
     os.environ["FLASK_ENV"] = "testing"
     os.environ["SECRET_KEY"] = "test-secret-key"
     os.environ["DB_NAME"] = ":memory:"  # Use in-memory SQLite for testing
-    
+
     app = create_app(config_name="testing")
     logger.debug("Test app created with testing configuration")
-    
+
     with app.app_context():
         try:
             db.create_all()
@@ -64,7 +64,7 @@ def authenticated_user(app, client):
         db.session.add(user)
         db.session.commit()
         logger.debug(f"Test user created: {user.username}")
-        
+
         response = client.post(url_for("auth.login"), data={
             "username": "testuser",
             "password": "TestPassword123!"
@@ -200,10 +200,10 @@ def test_database_failure(mock_execute, client, app):
     """Test handling of database connection failure."""
     from sqlalchemy.exc import OperationalError
     mock_execute.side_effect = OperationalError("Database connection failed", None, None)
-    with app.app_context():
-        response = client.get(url_for("main.index"))
-        assert response.status_code == 500
-        assert b"Server Error" in response.data
+    with pytest.raises(RuntimeError, match="Database connection failed on startup"):
+        with app.app_context():
+            from application.__init__ import create_app
+            create_app(config_name="development")  # Use development to trigger DB check
     logger.debug("Database failure test passed")
 
 def test_timezone_handling(client):
