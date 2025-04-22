@@ -281,16 +281,14 @@ Contributions are welcome! Please follow these steps:
  - Commit changes 
 	```(git commit -m "Add new feature").```
 
-Push to the branch (git push origin feature/new-feature).
-
-Open a pull request.
-
-
-For bug reports or support, please contact the project maintainer or file an issue in the repository.
+	- Push to the branch (git push origin feature/new-feature).
+	
+ - Open a pull request.
 
 ### License
 
-This project is licensed under the MIT License. See the LICENSE file for details.
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
+
 
 ## Credits
 
