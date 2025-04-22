@@ -5,8 +5,8 @@ from flask_login import login_user, current_user, login_required, logout_user
 from sqlalchemy.exc import OperationalError
 from . import auth_bp
 from ..models import User, RoleEnum, AuditLog
-from ..helpers import db
-from ..auth.forms import StudentLoginForm, AdminLoginForm
+from .. import db
+from .forms import StudentLoginForm, AdminLoginForm
 import bleach
 from application import limiter
 import pyotp
@@ -31,7 +31,7 @@ def login():
         if form:
             username = bleach.clean(form.identifier.data if hasattr(form, 'identifier') else form.username.data)
             password = form.password.data
-            remember = form.remember.data  # Get the "Remember Me" value
+            remember = form.remember.data
 
             try:
                 user = User.query.filter_by(username=username).first()
@@ -45,7 +45,7 @@ def login():
                     flash("Account is inactive. Contact admin.", "alert-danger")
                     app.logger.warning(f"Inactive account login attempt: {username}")
                 else:
-                    login_user(user, remember=remember)  # Use remember value
+                    login_user(user, remember=remember)
                     app.logger.info(f"User {username} logged in successfully with remember={remember}.")
                     db.session.add(AuditLog(user_id=user.id, action="Logged in"))
                     db.session.commit()
@@ -109,20 +109,16 @@ def mfa_verify():
     return render_template("admin/mfa_verify.html", title="MFA Verification", qr_code_url=qr_code_url, mfa_secret=current_user.mfa_secret if not qr_code_url else None, form=form)
 
 @auth_bp.route("/logout")
+@login_required
 def logout():
-    if current_user.is_authenticated:
-        username = current_user.username
-        db.session.add(AuditLog(user_id=current_user.id, action="Logged out"))
-        db.session.commit()
-        app.logger.info(f"User {username} logged out.")
-    else:
-        app.logger.info("Logout attempt by unauthenticated user.")
-
+    username = current_user.username
+    db.session.add(AuditLog(user_id=current_user.id, action="Logged out"))
+    db.session.commit()
+    app.logger.info(f"User {username} logged out.")
     logout_user()
     session.pop('mfa_verified', None)
     session.pop('mfa_setup_complete', None)
     session.clear()
-
     response = redirect(url_for("auth.login"))
     response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
     response.headers['Pragma'] = 'no-cache'
@@ -151,4 +147,3 @@ def redirect_based_on_role(user):
     app.logger.warning(f"Invalid role detected for user {user.username}: {user.role}")
     flash("Invalid user role detected. Contact admin.", "alert-danger")
     return redirect(url_for("auth.login"))
-    
