@@ -54,6 +54,7 @@ class TestingConfig(Config):
     SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
     WTF_CSRF_ENABLED = False
     SQLALCHEMY_ENGINE_OPTIONS = {}
+    SERVER_NAME = "localhost"
 
 class ProductionConfig(Config):
     DEBUG = False
