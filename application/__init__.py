@@ -199,7 +199,7 @@ def create_app(config_name=None):
     setup_logging(app)
 
     from application.auth import auth_bp
-    from application.admin import admin_bp
+    from application.admin import auth_bp
     from application.main import main_bp
     from application.student import student_bp
     from application.teacher import teacher_bp
