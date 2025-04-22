@@ -1,11 +1,6 @@
 # GIGACAD
 
 
-![Python](https://img.shields.io/badge/python-3.8%2B-blue)
-![Flask](https://img.shields.io/badge/flask-3.0%2B-green)
-![MySQL](https://img.shields.io/badge/mysql-8.0%2B-orange)
-![License](https://img.shields.io/badge/license-MIT-brightgreen)
-
 GIGACAD is a robust, secure, and scalable Flask-based web application developed for managing academic operations such as student records, authentication, results, and sessional data for educational institutions. Designed for clarity, performance, and maintainability, it integrates advanced configuration, structured logging, CSRF protection, and environment-specific settings.
 
 ## Features
@@ -146,6 +141,11 @@ The `create_app()` function initializes the application with:
 - colorlog / python-json-logger
 - tenacity
 - pytz
+
+![Python](https://img.shields.io/badge/python-3.8%2B-blue)
+![Flask](https://img.shields.io/badge/flask-3.0%2B-green)
+![MySQL](https://img.shields.io/badge/mysql-8.0%2B-orange)
+![License](https://img.shields.io/badge/license-MIT-brightgreen)
 
 ## Testing Configuration
 
