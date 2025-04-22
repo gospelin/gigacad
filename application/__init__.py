@@ -153,15 +153,6 @@ def setup_logging(app):
     sqlalchemy_logger.addHandler(file_handler)
     sqlalchemy_logger.setLevel(logging.WARNING)
 
-    class LoggingErrorHandler(logging.StreamHandler):
-        def emit(self, record):
-            if record.exc_info:
-                app.logger.error("Logging error occurred", exc_info=record.exc_info)
-
-    error_handler = LoggingErrorHandler()
-    error_handler.setLevel(logging.ERROR)
-    logging.getLogger('').addHandler(error_handler)
-
     @app.before_request
     def add_request_id():
         request.request_id = str(uuid4())
@@ -177,7 +168,7 @@ def create_app(config_name=None):
 
     env = os.getenv("FLASK_ENV", "default") if config_name is None else config_name
     app.config.from_object(config_by_name[env])
-    
+
     # Call init_app for configuration-specific validation
     if hasattr(config_by_name[env], "init_app"):
         config_by_name[env].init_app(app)
@@ -247,12 +238,13 @@ def create_app(config_name=None):
         return render_template("errors/403.html"), 403
 
     with app.app_context():
-        try:
-            db.session.execute(text("SELECT 1"))
-            app.logger.info("Database connection verified on startup")
-        except OperationalError as e:
-            app.logger.error(f"Failed to connect to database on startup: {str(e)}", exc_info=True)
-            raise RuntimeError("Database connection failed on startup") from e
+        if not app.config.get("TESTING", False):  # Skip for testing
+            try:
+                db.session.execute(text("SELECT 1"))
+                app.logger.info("Database connection verified on startup")
+            except OperationalError as e:
+                app.logger.error(f"Failed to connect to database on startup: {str(e)}", exc_info=True)
+                raise RuntimeError("Database connection failed on startup") from e
 
     return app
 
