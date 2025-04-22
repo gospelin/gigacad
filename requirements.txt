@@ -91,3 +91,4 @@ wrapt==1.17.2
 WTForms==3.2.1
 WTForms-SQLAlchemy==0.4.2
 zopfli==0.2.3
+pytz==2024.1
