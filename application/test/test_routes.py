@@ -3,7 +3,7 @@ import logging
 from flask import url_for
 from flask_login import current_user
 from application import create_app, db
-from application.models import User
+from application.models import User, Student, RoleEnum
 from unittest.mock import patch
 from datetime import datetime
 import pytz
@@ -53,17 +53,29 @@ def client(app):
 
 @pytest.fixture
 def authenticated_user(app, client):
-    """Create and log in a test user."""
+    """Create and log in a test user with a linked Student record."""
     with app.app_context():
+        # Create User
         user = User(
             username="testuser",
-            email="testuser@example.com",
+            role=RoleEnum.STUDENT.value,
             active=True
         )
         user.set_password("TestPassword123!")
         db.session.add(user)
         db.session.commit()
-        logger.debug(f"Test user created: {user.username}")
+
+        # Create linked Student record
+        student = Student(
+            first_name="Test",
+            last_name="User",
+            gender="Male",
+            email="testuser@example.com",  # Email is in Student model
+            user_id=user.id
+        )
+        db.session.add(student)
+        db.session.commit()
+        logger.debug(f"Test user and student created: {user.username}")
 
         response = client.post(url_for("auth.login"), data={
             "username": "testuser",
@@ -100,15 +112,27 @@ def test_auth_login_route_get(client):
 def test_auth_login_route_post_valid(client, app):
     """Test the login route with valid credentials (POST request)."""
     with app.app_context():
+        # Create User
         user = User(
             username="validuser",
-            email="validuser@example.com",
+            role=RoleEnum.STUDENT.value,
             active=True
         )
         user.set_password("ValidPass123!")
         db.session.add(user)
         db.session.commit()
-        logger.debug("Valid user created for login test")
+
+        # Create linked Student record
+        student = Student(
+            first_name="Valid",
+            last_name="User",
+            gender="Male",
+            email="validuser@example.com",
+            user_id=user.id
+        )
+        db.session.add(student)
+        db.session.commit()
+        logger.debug("Valid user and student created for login test")
 
     response = client.post(url_for("auth.login"), data={
         "username": "validuser",
