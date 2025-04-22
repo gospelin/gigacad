@@ -11,7 +11,7 @@ def index():
     if current_app.config.get("TESTING", False):
         nigeria_tz = pytz.timezone("Africa/Lagos")
         current_time = datetime.now(nigeria_tz).strftime("%d %B %Y")
-        return render_template('layout.html', current_time=current_time)
+        return render_template('main/index.html', current_time=current_time)
     return redirect("https://auntyannesschools.com.ng", code=301)
 
 @main_bp.route("/about_us")
