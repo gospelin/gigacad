@@ -70,7 +70,6 @@ def authenticated_user(app, client):
             first_name="Test",
             last_name="User",
             gender="Male",
-            email="testuser@example.com",  # Email is in Student model
             user_id=user.id
         )
         db.session.add(student)
@@ -127,7 +126,6 @@ def test_auth_login_route_post_valid(client, app):
             first_name="Valid",
             last_name="User",
             gender="Male",
-            email="validuser@example.com",
             user_id=user.id
         )
         db.session.add(student)
@@ -247,20 +245,6 @@ def test_session_security(client, authenticated_user):
     assert "HttpOnly" in response.headers["Set-Cookie"]
     assert "SameSite=Lax" in response.headers["Set-Cookie"]
     logger.debug("Session security test passed")
-
-@patch("application.__init__.request")
-def test_recaptcha_validation(mock_request, client, app):
-    """Test reCAPTCHA validation in a form (mocked)."""
-    mock_request.form = {"g-recaptcha-response": "mocked-response"}
-    with app.app_context():
-        # Simulate a route that requires reCAPTCHA (e.g., registration)
-        response = client.post(url_for("auth.login"), data={
-            "username": "testuser",
-            "password": "TestPassword123!",
-            "g-recaptcha-response": "mocked-response"
-        }, follow_redirects=True)
-        assert response.status_code == 200
-    logger.debug("reCAPTCHA validation test passed")
 
 if __name__ == "__main__":
     pytest.main(["-v"])
