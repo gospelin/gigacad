@@ -3,23 +3,51 @@
 
 GIGACAD is a robust, secure, and scalable Flask-based web application developed for managing academic operations such as student records, authentication, results, and sessional data for educational institutions. Designed for clarity, performance, and maintainability, it integrates advanced configuration, structured logging, CSRF protection, and environment-specific settings.
 
-## Features
+# Key Features
 
-- **Role-Based Authentication**: Secure user authentication with MFA (TOTP) and strong session protection for admins, students, and teachers.
-- **Admin Dashboard**: Centralized interface with real-time metrics (e.g., student/teacher counts, active sessions).
-- **User Management**: Create, edit, and delete admin accounts with granular privilege controls (e.g., manage users, sessions, results).
-- **Session & Term Management**: Configure academic sessions and terms per user, with validation and audit logging.
-- **Student Management**: Register students, assign classes, and filter by enrollment, fee, or approval status with paginated, AJAX-enabled views.
-- **Security Features**:
-  - CSRF protection via Flask-WTF for all forms.
-  - Rate limiting (e.g., 10 admin creations per minute) with Flask-Limiter.
-  - Secure session cookies (HTTP-only, SameSite=Lax, secure in production).
-  - Input sanitization using `bleach` to prevent XSS attacks.
-  - Audit logging for critical actions (e.g., admin creation/deletion).
-- **Structured Logging**: JSON-formatted logs in Nigerian timezone (Africa/Lagos) with request context and error tracking.
-- **Database Management**: SQLAlchemy ORM with Flask-Migrate for schema migrations and robust error handling.
-- **Customizable UI**: Theme switching (light/dark) with cookie-based persistence.
+### 🛡️ Security & Authentication
+- **Multi-Factor Authentication (MFA)** with TOTP and QR code setup
+- **Role-based access control** (Admin, Teacher, Student)
+- CSRF protection via Flask-WTF for all forms
+- **Granular admin privileges** with 7 distinct permission levels
+- **Secure session management** with CSRF protection
+- **Password hashing** using Flask-Bcrypt
+- **Rate limiting** for API endpoints (10 requests/minute)
+
+### 👨‍💼 Admin Dashboard Features
+- **User Management**
+  - Create/edit/delete admin accounts
+  - Manage admin privileges (users, sessions, classes, results, teachers, subjects, reports)
+  - MFA enforcement for all admin accounts
+- **Student Management**
+  - Complete student registration with auto-generated registration numbers
+  - Class assignment and promotion tracking
+  - Detailed student profiles (personal info, parent contacts, academic history)
+- **Academic Management**
+  - Session and term configuration
+  - Class and subject management
+  - Teacher assignment to classes and subjects
+- **Data Security**
+  - Audit logging for all admin actions
+  - Secure headers (XSS protection, no-sniff, CSRF tokens)
+  - Theme preference persistence
 - **Extensible**: Modular blueprint structure for easy feature additions and API integrations.
+
+
+### 📊 Academic Features
+- **Result Management**
+  - Termly result entry and editing
+  - Broad sheet generation in Excel format
+  - Comprehensive student performance tracking
+- **Class Management**
+  - Hierarchical class organization
+  - Student promotion between classes
+  - Class-wide field updates
+- **Reporting**
+  - Filterable student lists (by enrollment, fee, approval status)
+  - Paginated data views
+  - Session-based academic tracking
+
 
 
 ## Project Structure
