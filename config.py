@@ -35,8 +35,6 @@ class Config:
     WTF_CSRF_ENABLED = True
     SCHOOL_NAME = os.getenv("SCHOOL_NAME", "Aunty Anne's International School")
     REG_NO_PREFIX = os.getenv("REG_NO_PREFIX", "AAIS/0559/")
-    RECAPTCHA_PUBLIC_KEY = os.getenv("RECAPTCHA_SITE_KEY")
-    RECAPTCHA_PRIVATE_KEY = os.getenv("RECAPTCHA_SECRET_KEY")
     PERMANENT_SESSION_LIFETIME = int(os.getenv("SESSION_LIFETIME", 86400))
 
     def __init__(self):
