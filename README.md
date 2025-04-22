@@ -254,22 +254,37 @@ Logs include the following structured fields:
 }
 ```
 
-## Development Tips
+## API Endpoints
 
-- Always use a virtual environment
-- Set a secure `SECRET_KEY` in production
-- Do not commit the `.env` file
-- Check log files regularly
-- Use `FLASK_ENV=development` for debugging
+### Admin Routes
+- `GET /admin/dashboard` - Admin dashboard
+- `POST /admin/set_theme` - Set user theme preference
+- `GET/POST /admin/create_admin` - Create new admin with MFA
+- `GET /admin/view_admins` - List all admin users
+- `GET/POST /admin/edit_admin/<int:user_id>` - Edit admin details
+- `GET/POST /admin/edit_admin_privileges/<int:user_id>` - Modify admin privileges
+- `POST /admin/delete_admin/<int:user_id>` - Delete admin account
+- `GET/POST /admin/manage_sessions` - Configure academic sessions
+- `GET/POST /admin/register/student` - Register new student
+- `GET/POST /admin/students/<string:action>` - View/filter students
 
-## Deployment Notes
 
-- Use a WSGI server like Gunicorn or uWSGI in production
-- Always enable HTTPS in production
-- On PythonAnywhere, logs are redirected to standard error
-- Set `PYTHONANYWHERE=true` in `.env` if using PythonAnywhere
+## Contributing
 
-## Support
+Contributions are welcome! Please follow these steps:
+
+ - Fork the repository.
+
+ - Create a feature branch 
+	```(git checkout -b feature/new-feature)```
+
+ - Commit changes 
+	```(git commit -m "Add new feature").```
+
+Push to the branch (git push origin feature/new-feature).
+
+Open a pull request.
+
 
 For bug reports or support, please contact the project maintainer or file an issue in the repository.
 
