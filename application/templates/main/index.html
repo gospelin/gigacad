@@ -4,7 +4,12 @@
     <title>Aunty Anne's International School</title>
 </head>
 <body>
-    <h1>Aunty Anne's International School</h1>
-    <p>Current time: {{ current_time }}</p>
+    <h1>Welcome to Aunty Anne's International School</h1>
+    <p>Current Time: {{ current_time }}</p>
+    {% if current_user.is_authenticated %}
+        <p>Hello, {{ current_user.username }}!</p>
+    {% else %}
+        <p>Please <a href="{{ url_for('auth.login') }}">log in</a>.</p>
+    {% endif %}
 </body>
 </html>
