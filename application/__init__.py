@@ -15,7 +15,7 @@ from logging.handlers import RotatingFileHandler
 from sqlalchemy.exc import OperationalError
 from sqlalchemy import text
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
-from pythonjsonlogger import json  # Updated import
+from pythonjsonlogger import json
 import colorlog
 from uuid import uuid4
 import json as pyjson
@@ -34,7 +34,7 @@ login_manager.session_protection = "strong"
 # Define Nigeria timezone (WAT, UTC+1)
 NIGERIA_TZ = pytz.timezone('Africa/Lagos')
 
-class PrettyJsonFormatter(json.JsonFormatter):  # Updated base class
+class PrettyJsonFormatter(json.JsonFormatter):
     """Custom JSON formatter with pretty printing and request context."""
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -176,7 +176,6 @@ def create_app(config_name=None):
     session_config = {
         "SESSION_COOKIE_HTTPONLY": True,
         "SESSION_COOKIE_SAMESITE": "Lax",
-        "PERMANENT_SESSION13": True,
         "PERMANENT_SESSION_LIFETIME": app.config.get("PERMANENT_SESSION_LIFETIME", 7776000),
         "SESSION_COOKIE_NAME": "session",
         "SESSION_COOKIE_PATH": "/",
@@ -184,6 +183,10 @@ def create_app(config_name=None):
     }
     app.config.update(session_config)
     app.logger.debug(f"Session configuration applied: {session_config}")
+
+    # Configure Flask-Limiter storage
+    if app.config.get("TESTING", False):
+        app.config["RATELIMIT_STORAGE_URI"] = "memory://"
 
     db.init_app(app)
     migrate.init_app(app, db)
@@ -193,8 +196,6 @@ def create_app(config_name=None):
     bcrypt.init_app(app)
     try:
         limiter.init_app(app)
-        if app.config.get("TESTING", False):
-            limiter.storage = "memory://"  # Explicitly use in-memory storage for tests
     except Exception as e:
         app.logger.error(f"Failed to initialize Flask-Limiter: {str(e)}", exc_info=True)
         raise RuntimeError("Failed to initialize Flask-Limiter.") from e
