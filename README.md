@@ -296,7 +296,6 @@ Contributions are welcome! Please follow these steps:
 
 This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
 
-
 ## Credits
 
 Developed by Gospel Isaac
