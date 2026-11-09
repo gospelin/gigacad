@@ -192,7 +192,7 @@ def create_app(config_name=None):
     migrate.init_app(app, db)
     csrf.init_app(app)
     login_manager.init_app(app)
-    login_manager.login_view = "auth.login"  # Matches /portal
+    login_manager.login_view = "auth.login"
     bcrypt.init_app(app)
     try:
         limiter.init_app(app)
