@@ -82,3 +82,5 @@ build/
 *.cache
 *.pid
 *.sock
+
+migrations/
