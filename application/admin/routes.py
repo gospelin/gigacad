@@ -20,10 +20,24 @@ from ..helpers import (
     get_students_query, save_class_wide_fields, apply_filters_to_students_query, require_session_and_term, handle_db_errors
 )
 from ..auth.forms import (
-    EditStudentForm, ResultForm, SubjectForm, DeleteForm, SessionForm, ApproveForm, classForm,
-    ClassesForm, ManageResultsForm, StudentRegistrationForm, TeacherForm, AdminCreationForm,
-    AdminEditForm, AdminPrivilegeEditForm, AssignSubjectToClassForm, AssignSubjectToTeacherForm,
-    AssignTeacherToClassForm
+    EditStudentForm,
+    ResultForm,
+    SubjectForm,
+    DeleteForm,
+    SessionForm,
+    ApproveForm,
+    classForm,
+    ClassesForm,
+    ManageResultsForm,
+    StudentRegistrationForm,
+    TeacherForm,
+    AdminCreationForm,
+    AdminEditForm,
+    AdminPrivilegeEditForm,
+    AssignSubjectToClassForm,
+    AssignSubjectToTeacherForm,
+    AssignTeacherToClassForm,
+    EditClassSubjectsForm,
 )
 import bleach
 from marshmallow import Schema, fields, ValidationError, validates_schema
@@ -1074,25 +1088,61 @@ def assign_subject_to_class():
         flash("Database error occurred while loading data.", "alert-danger")
         classes_with_subjects = {}
 
+    # if form.validate_on_submit():
+    #     selected_classes = form.classes.data
+    #     selected_subjects = form.subjects.data
+    #     try:
+    #         changes_made = False
+    #         class_objects = Classes.query.filter(Classes.id.in_(selected_classes)).all()
+    #         subject_objects = Subject.query.filter(Subject.id.in_(selected_subjects)).all()
+    #         for class_ in class_objects:
+    #             for subject in subject_objects:
+    #                 if subject not in class_.subjects:
+    #                     class_.subjects.append(subject)
+    #                     changes_made = True
+    #                     app.logger.info(f"Assigned subject {subject.id} to class {class_.id} by user {current_user.username}")
+    #         if changes_made:
+    #             db.session.commit()
+    #             flash(f"Assigned {len(selected_subjects)} subject(s) to {len(selected_classes)} class(es) successfully!", "alert-success")
+    #         else:
+    #             flash("No new assignments were made; all selected subjects were already assigned.", "alert-warning")
+    #         return redirect(url_for("admins.assign_subject_to_class"))
+    #     except OperationalError as e:
+    #         db.session.rollback()
+    #         app.logger.error(f"Database error during bulk assignment: {str(e)}")
+    #         flash("Database error occurred.", "alert-danger")
+
     if form.validate_on_submit():
-        selected_classes = form.classes.data
-        selected_subjects = form.subjects.data
+        selected_classes = form.classes.data or []      # list of Classes objects
+        selected_subjects = form.subjects.data or []    # list of Subject objects
+
         try:
             changes_made = False
-            class_objects = Classes.query.filter(Classes.id.in_(selected_classes)).all()
-            subject_objects = Subject.query.filter(Subject.id.in_(selected_subjects)).all()
-            for class_ in class_objects:
-                for subject in subject_objects:
+
+            for class_ in selected_classes:
+                for subject in selected_subjects:
                     if subject not in class_.subjects:
                         class_.subjects.append(subject)
                         changes_made = True
-                        app.logger.info(f"Assigned subject {subject.id} to class {class_.id} by user {current_user.username}")
+                        app.logger.info(
+                            f"Assigned subject {subject.id} to class {class_.id} "
+                            f"by user {current_user.username}"
+                        )
+
             if changes_made:
                 db.session.commit()
-                flash(f"Assigned {len(selected_subjects)} subject(s) to {len(selected_classes)} class(es) successfully!", "alert-success")
+                flash(
+                    f"Assigned {len(selected_subjects)} subject(s) to "
+                    f"{len(selected_classes)} class(es) successfully!",
+                    "alert-success",
+                )
             else:
-                flash("No new assignments were made; all selected subjects were already assigned.", "alert-warning")
+                flash(
+                    "No new assignments were made; all selected subjects were already assigned.",
+                    "alert-warning",
+                )
             return redirect(url_for("admins.assign_subject_to_class"))
+
         except OperationalError as e:
             db.session.rollback()
             app.logger.error(f"Database error during bulk assignment: {str(e)}")
@@ -1134,31 +1184,65 @@ def remove_subject_from_class():
         flash("Database error occurred during removal.", "alert-danger")
     return redirect(url_for("admins.assign_subject_to_class", form=form))
 
+# @admin_bp.route("/edit_subject_assignment/<class_name>", methods=["GET", "POST"])
+# @login_required
+# def edit_subject_assignment(class_name):
+#     """Edit subject assignments for a specific class."""
+#     class_ = Classes.query.filter_by(name=class_name).first_or_404()
+#     form = AssignSubjectToClassForm()
+
+#     # if request.method == "GET":
+#     #     form.classes.data = [class_.id]
+#     #     form.subjects.data = [subject.id for subject in class_.subjects.all()]
+
+#     if request.method == "GET":
+#         form.classes.data = [class_]
+#         form.subjects.data = list(class_.subjects)
+
+#     if form.validate_on_submit():
+#         selected_subjects = form.subjects.data
+#         try:
+#             subject_objects = Subject.query.filter(Subject.id.in_(selected_subjects)).all()
+#             class_.subjects.clear()
+#             for subject in subject_objects:
+#                 class_.subjects.append(subject)
+#             db.session.commit()
+#             flash(f"Updated subjects for {class_name} successfully.", "alert-success")
+#             return redirect(url_for("admins.assign_subject_to_class"))
+#         except OperationalError as e:
+#             db.session.rollback()
+#             app.logger.error(f"Database error updating subjects for class {class_.id}: {str(e)}")
+#             flash("Database error occurred.", "alert-danger")
+#     return render_template(
+#         "admin/subjects/edit_subject_assignment.html",
+#         form=form,
+#         class_name=class_name
+#     )
+
 @admin_bp.route("/edit_subject_assignment/<class_name>", methods=["GET", "POST"])
 @login_required
 def edit_subject_assignment(class_name):
     """Edit subject assignments for a specific class."""
     class_ = Classes.query.filter_by(name=class_name).first_or_404()
-    form = AssignSubjectToClassForm()
+    form = EditClassSubjectsForm()
 
     if request.method == "GET":
-        form.classes.data = [class_.id]
-        form.subjects.data = [subject.id for subject in class_.subjects.all()]
+        form.subjects.data = list(class_.subjects)
 
     if form.validate_on_submit():
-        selected_subjects = form.subjects.data
+        selected_subjects = form.subjects.data or []
+
         try:
-            subject_objects = Subject.query.filter(Subject.id.in_(selected_subjects)).all()
-            class_.subjects.clear()
-            for subject in subject_objects:
-                class_.subjects.append(subject)
+            # Completely replace the subjects for this class
+            class_.subjects = selected_subjects
             db.session.commit()
-            flash(f"Updated subjects for {class_name} successfully.", "alert-success")
+            flash(f"Subjects for {class_name} updated successfully.", "alert-success")
             return redirect(url_for("admins.assign_subject_to_class"))
         except OperationalError as e:
             db.session.rollback()
             app.logger.error(f"Database error updating subjects for class {class_.id}: {str(e)}")
             flash("Database error occurred.", "alert-danger")
+
     return render_template(
         "admin/subjects/edit_subject_assignment.html",
         form=form,
@@ -2244,7 +2328,6 @@ def get_student_stats_by_class(class_name):
     })
 
 
-
 # @admin_bp.route("/search_students", methods=["GET"])
 # @login_required
 # def search_students():
@@ -2529,5 +2612,3 @@ def get_student(student_id):
 #     except OperationalError as e:
 #         app.logger.error(f"Database error fetching student {student_id}: {str(e)}")
 #         return jsonify({"error": "Database error occurred"}), 500
-
-

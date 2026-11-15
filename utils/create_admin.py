@@ -32,8 +32,8 @@ def create_or_update_admin_user():
     app = create_app('production')
 
     with app.app_context():
-        username = "teacher"
-        password = "Password@123"  # Ensure this meets your password policy
+        username = "admin"
+        password = "Tripled121"  # Ensure this meets your password policy
 
         try:
             # Check if the admin user exists

@@ -228,7 +228,6 @@ class AdminPrivilegeEditForm(FlaskForm):
     submit = SubmitField("Update Privileges")
 
 
-
 # Helper functions for dynamic queries
 def get_classes():
     return Classes.query.order_by(Classes.hierarchy).all()
@@ -309,12 +308,6 @@ class AssignTeacherToClassForm(FlaskForm):
     submit = SubmitField("Assign")
 
 
-
-
-
-
-
-
 # Form for assigning subjects to a teacher
 class AssignSubjectsForm(FlaskForm):
     subject = SelectField('Subject', coerce=int, choices=[], validate_choice=False)
@@ -332,3 +325,15 @@ class AssignClassesForm(FlaskForm):
     def __init__(self, *args, **kwargs):
         super(AssignClassesForm, self).__init__(*args, **kwargs)
         self.class_name.choices = [(class_.id, class_.name) for class_ in Classes.query.all()]
+
+
+class EditClassSubjectsForm(FlaskForm):
+    subjects = QuerySelectMultipleField(
+        "Subjects",
+        query_factory=get_subjects,
+        get_label="name",
+        allow_blank=True,  # allow removing all subjects
+        validators=[],  # no DataRequired so user can clear the list
+        description="Select the subjects that should be assigned to this class.",
+    )
+    submit = SubmitField("Update Subjects")
