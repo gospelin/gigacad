@@ -395,6 +395,9 @@
     {% else %}
         <p class="text-muted fst-italic">No students enrolled.</p>
     {% endif %}
+
+    {# Pagination Section (currently commented out) #}
+    {#
     <h2 class="h4 fw-semibold text-muted mt-5 mb-4">Subjects</h2>
     {% if subjects %}
         <ul class="list-group list-group-flush">
@@ -405,6 +408,7 @@
     {% else %}
         <p class="text-muted fst-italic">No subjects available.</p>
     {% endif %}
+    #}
     <a href="{{ url_for('teachers.broadsheet', class_id=cls.id, session_id=session.id, term=term) }}" class="btn btn-primary mt-3">View Broadsheet</a>
 
     <div class="text-center mt-2">
