@@ -1,3 +1,4 @@
+{# 
 {% extends "teacher/base.html" %}
 {% block content %}
 
@@ -481,6 +482,444 @@ $(document).on("blur", ".date-input", function () {
     };
 
     sendClassWideUpdateRequest($input, requestData);
+});
+</script>
+{% endblock %}
+
+#}
+
+{% extends "teacher/base.html" %}
+
+{% block title %}Broadsheet – {{ cls.name }}{% endblock %}
+
+{% block content %}
+<style>
+    .table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin-top: 1rem;
+        border-radius: 0.5rem;
+        border: 1px solid #dee2e6;
+    }
+
+    .table {
+        table-layout: auto;
+        width: 100%;
+        min-width: 1100px; /* keeps readability while allowing scroll */
+        margin-bottom: 0;
+    }
+
+    .table th,
+    .table td {
+        text-align: center;
+        vertical-align: middle;
+        font-size: 0.82rem;
+        padding: 0.4rem 0.35rem;
+        min-width: 68px;
+        max-width: 110px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .subjects-col {
+        position: sticky;
+        left: 0;
+        background-color: #f8f9fa;
+        z-index: 3;
+        text-align: left !important;
+        min-width: 130px;
+        max-width: 160px;
+        font-weight: 500;
+        padding-left: 0.75rem !important;
+        box-shadow: 2px 0 4px rgba(0,0,0,0.04);
+    }
+
+    .status-indicator {
+        min-width: 36px;
+        max-width: 48px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    input[type="number"],
+    input[type="text"] {
+        padding: 0.25rem 0.3rem;
+        font-size: 0.82rem;
+        text-align: center;
+        width: 100%;
+        max-width: 78px;
+        margin: 0 auto;
+    }
+
+    /* Mobile refinements */
+    @media (max-width: 767.98px) {
+        .table th,
+        .table td {
+            font-size: 0.75rem;
+            padding: 0.3rem 0.25rem;
+            min-width: 56px;
+        }
+
+        .subjects-col {
+            min-width: 110px;
+            max-width: 130px;
+            font-size: 0.72rem;
+            padding-left: 0.5rem !important;
+        }
+
+        input[type="number"],
+        input[type="text"] {
+            font-size: 0.75rem;
+            max-width: 64px;
+            padding: 0.2rem;
+        }
+
+        .status-indicator {
+            font-size: 0.7rem;
+            min-width: 30px;
+        }
+    }
+
+    @media (max-width: 575.98px) {
+        .table th,
+        .table td {
+            font-size: 0.7rem;
+            padding: 0.25rem 0.2rem;
+            min-width: 50px;
+        }
+
+        .subjects-col {
+            min-width: 95px;
+            max-width: 115px;
+            font-size: 0.68rem;
+        }
+
+        input[type="number"],
+        input[type="text"] {
+            font-size: 0.7rem;
+            max-width: 56px;
+        }
+    }
+</style>
+
+<div class="container-fluid px-0">
+    <!-- Header -->
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2 mb-3">
+        <div>
+            <h1 class="h5 mb-1 fw-bold">Broadsheet</h1>
+            <p class="mb-0 text-muted small">
+                {{ cls.name }} · {{ session.year }} · {{ term }}
+            </p>
+        </div>
+    </div>
+
+    {% if broadsheet_data %}
+    <form method="POST" action="{{ url_for('teachers.update_broadsheet', class_id=cls.id, session_id=session.id, term=term) }}">
+        {{ form.hidden_tag() }}
+
+        <!-- Class-wide dates (stack on mobile) -->
+        <div class="row g-3 mb-3">
+            <div class="col-12 col-md-6">
+                <label for="next_term_begins" class="form-label small fw-medium">Next Term Begins</label>
+                <input type="text"
+                       id="next_term_begins"
+                       name="next_term_begins"
+                       class="form-control form-control-sm date-input next-term-begins"
+                       value="{{ broadsheet_data[0].next_term_begins if broadsheet_data[0].next_term_begins else '' }}"
+                       data-class-id="{{ cls.id }}"
+                       placeholder="Select date">
+            </div>
+            <div class="col-12 col-md-6">
+                <label for="date_issued" class="form-label small fw-medium">Date Issued</label>
+                <input type="text"
+                       id="date_issued"
+                       name="date_issued"
+                       class="form-control form-control-sm date-input date-issued"
+                       value="{{ broadsheet_data[0].date_issued if broadsheet_data[0].date_issued else '' }}"
+                       data-class-id="{{ cls.id }}"
+                       placeholder="Select date">
+            </div>
+        </div>
+
+        <div class="table-container bg-white">
+            <table class="table table-bordered table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="subjects-col" rowspan="2">Subjects</th>
+                        {% for student_data in broadsheet_data %}
+                        <th colspan="5" class="text-center">
+                            {{ student_data.student.first_name }} {{ student_data.student.last_name }}
+                        </th>
+                        {% endfor %}
+                        <th rowspan="2">Class Avg</th>
+                    </tr>
+                    <tr>
+                        {% for student in students %}
+                        <th>C/A</th>
+                        <th>S/T</th>
+                        <th>Exam</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for subject in subjects %}
+                    <tr data-subject-id="{{ subject.id }}">
+                        <td class="subjects-col">{{ subject.name }}</td>
+                        {% for student_data in broadsheet_data %}
+                        {% set result = student_data.results.get(subject.id) %}
+                        <td>
+                            <input type="number"
+                                   name="results[{{ student_data.student.id }}][{{ subject.id }}][class_assessment]"
+                                   value="{{ result.class_assessment if result and result.class_assessment is not none else '' }}"
+                                   class="form-control form-control-sm result-input class-assessment"
+                                   min="0" max="20"
+                                   data-student-id="{{ student_data.student.id }}"
+                                   data-subject-id="{{ subject.id }}"
+                                   data-class-id="{{ cls.id }}">
+                        </td>
+                        <td>
+                            <input type="number"
+                                   name="results[{{ student_data.student.id }}][{{ subject.id }}][summative_test]"
+                                   value="{{ result.summative_test if result and result.summative_test is not none else '' }}"
+                                   class="form-control form-control-sm result-input summative-test"
+                                   min="0" max="20"
+                                   data-student-id="{{ student_data.student.id }}"
+                                   data-subject-id="{{ subject.id }}"
+                                   data-class-id="{{ cls.id }}">
+                        </td>
+                        <td>
+                            <input type="number"
+                                   name="results[{{ student_data.student.id }}][{{ subject.id }}][exam]"
+                                   value="{{ result.exam if result and result.exam is not none else '' }}"
+                                   class="form-control form-control-sm result-input exam"
+                                   min="0" max="60"
+                                   data-student-id="{{ student_data.student.id }}"
+                                   data-subject-id="{{ subject.id }}"
+                                   data-class-id="{{ cls.id }}">
+                        </td>
+                        <td class="total" data-student-id="{{ student_data.student.id }}">
+                            {{ result.total if result and result.total is not none else '' }}
+                        </td>
+                        <td class="status-indicator" data-student-id="{{ student_data.student.id }}"></td>
+                        {% endfor %}
+                        <td>{{ subject_averages[subject.id]['average'] if subject_averages[subject.id]['average'] is not none else 'N/A' }}</td>
+                    </tr>
+                    {% endfor %}
+
+                    <!-- Summary rows -->
+                    <tr class="table-light fw-medium">
+                        <td class="subjects-col">Grand Total</td>
+                        {% for student_data in broadsheet_data %}
+                        <td colspan="5" class="grand-total" data-student-id="{{ student_data.student.id }}">
+                            {{ student_data.grand_total if student_data.grand_total is not none else '' }}
+                        </td>
+                        {% endfor %}
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="subjects-col">Average</td>
+                        {% for student_data in broadsheet_data %}
+                        <td colspan="5" class="term-average" data-student-id="{{ student_data.student.id }}">
+                            {{ student_data.average if student_data.average is not none else '' }}
+                        </td>
+                        {% endfor %}
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="subjects-col">Cumulative Avg</td>
+                        {% for student_data in broadsheet_data %}
+                        <td colspan="5" class="cumulative-average" data-student-id="{{ student_data.student.id }}">
+                            {{ student_data.cumulative_average if student_data.cumulative_average is not none else '' }}
+                        </td>
+                        {% endfor %}
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="subjects-col">Position</td>
+                        {% for student_data in broadsheet_data %}
+                        <td colspan="4">
+                            <input type="text"
+                                   class="form-control form-control-sm position-input position"
+                                   value="{{ student_data.position if student_data.position is not none else '' }}"
+                                   data-student-id="{{ student_data.student.id }}"
+                                   data-class-id="{{ cls.id }}"
+                                   data-subject-id="{{ subjects[0].id if subjects else '' }}">
+                        </td>
+                        <td class="status-indicator" data-student-id="{{ student_data.student.id }}"></td>
+                        {% endfor %}
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="subjects-col">Principal Remark</td>
+                        {% for student_data in broadsheet_data %}
+                        <td colspan="5" class="principal-remark text-start small" data-student-id="{{ student_data.student.id }}">
+                            {{ student_data.principal_remark if student_data.principal_remark else '' }}
+                        </td>
+                        {% endfor %}
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="subjects-col">Teacher Remark</td>
+                        {% for student_data in broadsheet_data %}
+                        <td colspan="5" class="teacher-remark text-start small" data-student-id="{{ student_data.student.id }}">
+                            {{ student_data.teacher_remark if student_data.teacher_remark else '' }}
+                        </td>
+                        {% endfor %}
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="d-flex flex-wrap gap-2 mt-3">
+            <button type="submit" class="btn btn-primary btn-sm">
+                <i class="fas fa-save me-1"></i> Save All Changes
+            </button>
+        </div>
+    </form>
+    {% else %}
+    <div class="bg-white p-4 rounded-3 shadow-sm text-center text-muted">
+        No broadsheet data available for this class/session/term.
+    </div>
+    {% endif %}
+
+    <!-- Navigation buttons -->
+    <div class="d-flex flex-column flex-sm-row gap-2 mt-4">
+        <a href="{{ url_for('teachers.view_class', class_id=cls.id, session_id=session.id, term=term) }}"
+           class="btn btn-outline-primary btn-sm">
+            <i class="fas fa-arrow-left me-1"></i> Back to Class
+        </a>
+        <a href="{{ url_for('teachers.broadsheet_select') }}"
+           class="btn btn-outline-secondary btn-sm">
+            Back to Selection
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+let saveTimeout;
+
+// Student-specific update
+function sendUpdateRequest($input, requestData) {
+    clearTimeout(saveTimeout);
+    saveTimeout = setTimeout(() => {
+        $.ajax({
+            url: "{{ url_for('teachers.update_broadsheet_field', session_id=session.id, term=term) }}",
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken,
+            },
+            data: JSON.stringify(requestData),
+            success: function (response) {
+                const studentId = requestData.student_id;
+                const $status = $input.closest('tr').find(`.status-indicator[data-student-id="${studentId}"]`);
+                $status.text("✓").css("color", "green");
+                setTimeout(() => $status.css("color", ""), 2000);
+
+                if ($input.hasClass("result-input")) {
+                    $input.closest('tr').find(`.total[data-student-id="${studentId}"]`)
+                         .text(response.total !== null ? response.total : '');
+                }
+
+                $(`.grand-total[data-student-id="${studentId}"]`).text(response.grand_total ?? '');
+                $(`.term-average[data-student-id="${studentId}"]`).text(response.term_average ?? '');
+                $(`.cumulative-average[data-student-id="${studentId}"]`).text(response.cumulative_average ?? '');
+                $(`.position[data-student-id="${studentId}"]`).val(response.position ?? '');
+                $(`.principal-remark[data-student-id="${studentId}"]`).text(response.principal_remark || '');
+                $(`.teacher-remark[data-student-id="${studentId}"]`).text(response.teacher_remark || '');
+            },
+            error: function (xhr) {
+                const $status = $input.closest('tr').find(`.status-indicator[data-student-id="${requestData.student_id}"]`);
+                $status.text("✗").css("color", "red");
+                setTimeout(() => $status.css("color", ""), 2000);
+            },
+        });
+    }, 300);
+}
+
+// Class-wide update
+function sendClassWideUpdateRequest($input, requestData) {
+    clearTimeout(saveTimeout);
+    saveTimeout = setTimeout(() => {
+        $.ajax({
+            url: "{{ url_for('teachers.update_broadsheet_class_fields', session_id=session.id, term=term) }}",
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken,
+            },
+            data: JSON.stringify(requestData),
+            success: function () {
+                const $status = $('.status-indicator').first();
+                $status.text("✓").css("color", "green");
+                setTimeout(() => $status.css("color", ""), 2000);
+            },
+            error: function () {
+                const $status = $('.status-indicator').first();
+                $status.text("✗").css("color", "red");
+                setTimeout(() => $status.css("color", ""), 2000);
+            },
+        });
+    }, 300);
+}
+
+// Result inputs
+$(document).on("blur", ".result-input", function () {
+    const $input = $(this);
+    const $row = $input.closest("tr");
+    const studentId = $input.data("student-id");
+    const subjectId = $input.data("subject-id");
+    const classId = $input.data("class-id");
+
+    if (!studentId || !subjectId || !classId) return;
+
+    const parseField = (val) => val.trim() === "" ? null : parseInt(val) || null;
+
+    const requestData = {
+        student_id: studentId,
+        subject_id: subjectId,
+        class_id: classId,
+        class_assessment: parseField($row.find(`.class-assessment[data-student-id="${studentId}"]`).val()),
+        summative_test: parseField($row.find(`.summative-test[data-student-id="${studentId}"]`).val()),
+        exam: parseField($row.find(`.exam[data-student-id="${studentId}"]`).val()),
+        position: null
+    };
+
+    sendUpdateRequest($input, requestData);
+});
+
+// Position input
+$(document).on("blur", ".position-input", function () {
+    const $input = $(this);
+    const studentId = $input.data("student-id");
+    const classId = $input.data("class-id");
+    if (!studentId || !classId) return;
+
+    sendUpdateRequest($input, {
+        student_id: studentId,
+        class_id: classId,
+        position: $input.val().trim()
+    });
+});
+
+// Date inputs
+$(document).on("blur", ".date-input", function () {
+    const $input = $(this);
+    const classId = $input.data("class-id");
+    if (!classId) return;
+
+    sendClassWideUpdateRequest($input, {
+        class_id: classId,
+        next_term_begins: $input.hasClass("next-term-begins") ? $input.val().trim() : null,
+        date_issued: $input.hasClass("date-issued") ? $input.val().trim() : null
+    });
 });
 </script>
 {% endblock %}
