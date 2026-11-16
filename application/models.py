@@ -284,18 +284,58 @@ class Teacher(db.Model):
     def is_form_teacher_for_class(self, class_id):
         return any(ct.is_form_teacher for ct in db.session.query(class_teacher).filter_by(teacher_id=self.id, class_id=class_id).all())
 
+# class Subject(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     name = db.Column(db.String(100), nullable=False, unique=True)
+#     section = db.Column(db.String(100), nullable=True)
+#     deactivated = db.Column(db.Boolean, nullable=False, default=False)
+
+#     classes = db.relationship("Classes", secondary="class_subject", back_populates="subjects", lazy="dynamic")
+#     teachers = db.relationship("Teacher", secondary="teacher_subject", back_populates="subjects", lazy="dynamic")
+#     results = db.relationship("Result", backref="subject", lazy=True)
+
+#     def __repr__(self):
+#         return f"<Subject {self.name}>"
+
+
 class Subject(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False, unique=True)
     section = db.Column(db.String(100), nullable=True)
     deactivated = db.Column(db.Boolean, nullable=False, default=False)
 
-    classes = db.relationship("Classes", secondary="class_subject", back_populates="subjects", lazy="dynamic")
-    teachers = db.relationship("Teacher", secondary="teacher_subject", back_populates="subjects", lazy="dynamic")
+    classes = db.relationship(
+        "Classes", secondary="class_subject", back_populates="subjects", lazy="dynamic"
+    )
+    teachers = db.relationship(
+        "Teacher",
+        secondary="teacher_subject",
+        back_populates="subjects",
+        lazy="dynamic",
+    )
     results = db.relationship("Result", backref="subject", lazy=True)
 
     def __repr__(self):
         return f"<Subject {self.name}>"
+
+    # ---------- helpers ----------
+    def get_sections(self):
+        """Return list of sections for this subject."""
+        if not self.section:
+            return []
+        return [s.strip() for s in self.section.split(",") if s.strip()]
+
+    def set_sections(self, sections):
+        """Set sections from a list or string."""
+        if not sections:
+            self.section = None
+            return
+        if isinstance(sections, str):
+            sections = [s.strip() for s in sections.split(",") if s.strip()]
+        # remove duplicates and keep stable order
+        cleaned = sorted(set(s.strip() for s in sections if s.strip()))
+        self.section = ",".join(cleaned) if cleaned else None
+
 
 class StudentTermSummary(db.Model):
     id = db.Column(db.Integer, primary_key=True)

@@ -93,10 +93,25 @@ class EditStudentForm(FlaskForm):
     submit = SubmitField("Update")
 
 
+# class SubjectForm(FlaskForm):
+#     name = StringField("Name (comma-separated)", validators=[DataRequired()])
+#     section = SelectMultipleField(
+#         "Section",
+#         choices=[
+#             ("Nursery", "Nursery"),
+#             ("Basic", "Basic"),
+#             ("Secondary", "Secondary"),
+#             ("Senior Secondary", "Senior Secondary"),
+#         ],
+#         validators=[DataRequired()],
+#     )
+#     submit = SubmitField("Save Subject")
+
+
 class SubjectForm(FlaskForm):
-    name = StringField("Name (comma-separated)", validators=[DataRequired()])
+    name = StringField("Name", validators=[DataRequired(), Length(max=100)])
     section = SelectMultipleField(
-        "Section",
+        "Section(s)",
         choices=[
             ("Nursery", "Nursery"),
             ("Basic", "Basic"),
@@ -104,8 +119,9 @@ class SubjectForm(FlaskForm):
             ("Senior Secondary", "Senior Secondary"),
         ],
         validators=[DataRequired()],
-    )  # Change to SelectMultipleField
-    submit = SubmitField("Add Subject")
+        description="Hold Ctrl/Cmd (or use Select2) to select multiple sections",
+    )
+    submit = SubmitField("Save Subject")
 
 
 class DeleteForm(FlaskForm):

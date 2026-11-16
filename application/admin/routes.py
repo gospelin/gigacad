@@ -960,29 +960,40 @@ def delete_student_class_record(class_name, student_id, action):
 def manage_subjects():
     """Manage subjects (add, deactivate)."""
     form = SubjectForm()
+
     if form.validate_on_submit():
-        subjects_input = form.name.data
-        subject_names = [name.strip() for name in subjects_input.split(",")]
+        subject_names = [name.strip() for name in form.name.data.split(",") if name.strip()]
+        selected_sections = form.section.data or []
+
         try:
-            for subject_name in subject_names:
-                for section in form.section.data:
-                    if not Subject.query.filter_by(name=subject_name, section=section, deactivated=False).first():
-                        subject = Subject(name=subject_name, section=section)
-                        db.session.add(subject)
-                    else:
-                        flash(f"Subject '{subject_name}' already exists!", "alert-warning")
+            for name in subject_names:
+                subject = Subject.query.filter_by(name=name, deactivated=False).first()
+
+                if subject:
+                    # Merge new sections into the existing ones
+                    current_sections = set(subject.get_sections())
+                    current_sections.update(selected_sections)
+                    subject.set_sections(list(current_sections))
+                else:
+                    # Create new subject with all selected sections
+                    subject = Subject(name=name)
+                    subject.set_sections(selected_sections)
+                    db.session.add(subject)
+
             db.session.commit()
-            flash("Subject(s) added successfully!", "alert-success")
+            flash("Subject(s) saved successfully!", "alert-success")
             return redirect(url_for("admins.manage_subjects"))
+
         except IntegrityError as e:
             db.session.rollback()
             app.logger.error(f"Integrity error adding subjects: {str(e)}")
-            flash("Failed to add subjects: Duplicate name/section.", "alert-danger")
+            flash("Failed to add subjects: A subject with that name already exists.", "alert-danger")
         except OperationalError as e:
             db.session.rollback()
             app.logger.error(f"Database error adding subjects: {str(e)}")
             flash("Database error occurred.", "alert-danger")
 
+    # Deactivate logic (unchanged)
     if request.method == "POST" and "deactivate_subject_id" in request.form:
         try:
             subject_id = int(request.form.get("deactivate_subject_id"))
@@ -1001,10 +1012,13 @@ def manage_subjects():
             app.logger.error(f"Database error deactivating subject: {str(e)}")
             flash("Database error occurred.", "alert-danger")
 
-    subjects = Subject.query.order_by(Subject.section).all()
-    subjects_by_section = {subject.section: [] for subject in subjects}
+    # Display – group by the first section or show all sections
+    subjects = Subject.query.filter_by(deactivated=False).order_by(Subject.name).all()
+    subjects_by_section = {}
     for subject in subjects:
-        subjects_by_section[subject.section].append(subject)
+        sections = subject.get_sections() or ["Unassigned"]
+        for sec in sections:
+            subjects_by_section.setdefault(sec, []).append(subject)
 
     delete_form = DeleteForm()
     return render_template(
@@ -1017,24 +1031,41 @@ def manage_subjects():
 @admin_bp.route("/edit_subject/<int:subject_id>", methods=["GET", "POST"])
 @login_required
 def edit_subject(subject_id):
-    """Edit an existing subject."""
+    """Edit an existing subject (name + multiple sections)."""
     subject = Subject.query.get_or_404(subject_id)
     form = SubjectForm(obj=subject)
+
+    # Pre-select current sections on GET
+    if request.method == "GET":
+        form.section.data = subject.get_sections()
+
     if form.validate_on_submit():
         try:
+            # Prevent renaming to a name that already exists
+            conflict = Subject.query.filter(
+                Subject.name == form.name.data,
+                Subject.id != subject.id,
+                Subject.deactivated == False
+            ).first()
+            if conflict:
+                flash("Another subject with this name already exists.", "alert-danger")
+                return render_template("admin/subjects/edit_subject.html", form=form, subject=subject)
+
             subject.name = form.name.data
-            subject.section = form.section.data
+            subject.set_sections(form.section.data)   # list → comma-separated string
             db.session.commit()
             flash("Subject updated successfully!", "alert-success")
             return redirect(url_for("admins.manage_subjects"))
+
         except IntegrityError as e:
             db.session.rollback()
             app.logger.error(f"Integrity error updating subject {subject_id}: {str(e)}")
-            flash("Update failed: Duplicate name/section.", "alert-danger")
+            flash("Update failed: Duplicate name.", "alert-danger")
         except OperationalError as e:
             db.session.rollback()
             app.logger.error(f"Database error updating subject {subject_id}: {str(e)}")
             flash("Database error occurred.", "alert-danger")
+
     return render_template("admin/subjects/edit_subject.html", form=form, subject=subject)
 
 @admin_bp.route("/delete_subject/<int:subject_id>", methods=["POST"])

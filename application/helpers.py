@@ -21,7 +21,7 @@ def require_session_and_term(f):
         current_session, current_term = Session.get_current_session_and_term(include_term=True)
         if not current_session or not current_term:
             flash("No current session or term available.", "alert-danger")
-            return redirect(url_for("admin.manage_sessions"))
+            return redirect(url_for("admins.manage_sessions"))
         return f(current_session, current_term, *args, **kwargs)
     return decorated_function
 
