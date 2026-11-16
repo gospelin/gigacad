@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="description" content="Teacher Dashboard for managing classes, students, and results.">
     <meta name="keywords" content="Teacher Dashboard, School Management, Classes, Students, Results">
     <meta name="author" content="Aunty Anne's International School">
@@ -43,6 +43,11 @@
             --hover-blue: #081D45;
             --light-gray: #f8f9fa;
             --white: #ffffff;
+            --sidebar-width: 280px;
+        }
+
+        * {
+            box-sizing: border-box;
         }
 
         body {
@@ -50,60 +55,73 @@
             background-color: var(--light-gray);
             margin: 0;
             padding: 0;
+            overflow-x: hidden;
         }
 
+        /* ========== SIDEBAR ========== */
         .sidebar {
             position: fixed;
             top: 0;
             left: 0;
-            width: 280px;
-            height: 100vh;
+            width: var(--sidebar-width);
+            height: 100%;
+            height: 100dvh;
             background: var(--primary-blue);
-            transition: width 0.3s ease;
-            overflow-y: auto;
-            z-index: 1000;
-        }
-
-        .sidebar.active {
-            width: 80px;
+            z-index: 1050;
+            transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
 
         .sidebar .logo-details {
-            height: 80px;
+            height: 70px;
+            min-height: 70px;
             display: flex;
             align-items: center;
-            padding: 0 20px;
+            padding: 0 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .sidebar .logo-details i {
-            font-size: 28px;
+            font-size: 24px;
             color: var(--white);
-            min-width: 60px;
+            min-width: 40px;
             text-align: center;
         }
 
         .sidebar .logo-details .logo_name {
             color: var(--white);
-            font-size: 20px;
+            font-size: 16px;
             font-weight: 600;
+            white-space: nowrap;
         }
 
         .sidebar .nav-links {
-            padding: 10px 0;
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 12px 0;
+            margin: 0;
+            list-style: none;
+            -webkit-overflow-scrolling: touch;
         }
 
         .sidebar .nav-links li {
             list-style: none;
+            margin: 2px 8px;
         }
 
         .sidebar .nav-links li a {
             display: flex;
             align-items: center;
-            height: 50px;
-            padding: 0 20px;
+            min-height: 48px;          /* Good touch target */
+            padding: 10px 14px;
             text-decoration: none;
             color: var(--white);
-            transition: background 0.3s ease;
+            border-radius: 8px;
+            transition: background 0.2s ease;
+            font-size: 14px;
         }
 
         .sidebar .nav-links li a:hover,
@@ -112,110 +130,124 @@
         }
 
         .sidebar .nav-links li i {
-            min-width: 60px;
+            min-width: 32px;
             text-align: center;
-            font-size: 18px;
+            font-size: 16px;
+            margin-right: 12px;
         }
 
         .sidebar .nav-links li a .links_name {
-            font-size: 15px;
             font-weight: 400;
             white-space: nowrap;
         }
 
-        .sidebar.active .nav-links li a .links_name {
-            display: none;
-        }
-
         .sidebar .nav-links .log_out {
-            position: absolute;
-            bottom: 20px;
-            width: 100%;
+            margin-top: auto;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 8px;
+            margin-left: 8px;
+            margin-right: 8px;
+            margin-bottom: 12px;
         }
 
+        /* Overlay for mobile */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1040;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar-overlay.show {
+            display: block;
+            opacity: 1;
+        }
+
+        /* ========== MAIN CONTENT ========== */
         .home-section {
-            margin-left: 280px;
+            margin-left: var(--sidebar-width);
             min-height: 100vh;
+            min-height: 100dvh;
             background: var(--light-gray);
             transition: margin-left 0.3s ease;
-            padding: 20px;
-        }
-
-        .sidebar.active ~ .home-section {
-            margin-left: 60px;
         }
 
         .home-section nav {
-            position: fixed;
+            position: sticky;
             top: 0;
-            left: 280px;
-            width: calc(100% - 280px);
-            height: 80px;
+            height: 70px;
             background: var(--white);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 20px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-            z-index: 999;
-        }
-
-        .sidebar.active ~ .home-section nav {
-            left: 60px;
-            width: calc(100% - 80px);
+            padding: 0 16px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+            z-index: 100;
+            gap: 12px;
         }
 
         .home-section nav .sidebar-button {
             display: flex;
             align-items: center;
-            font-size: 24px;
+            font-size: 18px;
+            font-weight: 500;
+            gap: 10px;
+            min-width: 0;
         }
 
         .home-section nav .sidebar-button i {
-            font-size: 30px;
+            font-size: 22px;
             cursor: pointer;
-            margin-right: 10px;
+            color: var(--primary-blue);
+            padding: 6px;
         }
 
         .home-section nav .search-box {
             position: relative;
             height: 40px;
-            max-width: 400px;
+            max-width: 320px;
             width: 100%;
+            flex: 1;
         }
 
         .home-section nav .search-box input {
             height: 100%;
             width: 100%;
-            padding: 0 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            padding: 0 14px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
             outline: none;
+            font-size: 14px;
         }
 
         .home-section nav .profile-details {
             display: flex;
             align-items: center;
             background: var(--light-gray);
-            padding: 5px 10px;
-            border-radius: 5px;
+            padding: 4px 10px;
+            border-radius: 8px;
+            gap: 8px;
+            flex-shrink: 0;
         }
 
         .home-section nav .profile-details img {
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             object-fit: cover;
         }
 
         .home-section nav .profile-details .admin_name {
-            margin: 0 10px;
             font-weight: 500;
+            font-size: 14px;
+            white-space: nowrap;
         }
 
         .home-section .home-content {
-            padding-top: 100px;
+            padding: 20px 16px 40px;
         }
 
         .btn-primary {
@@ -228,67 +260,151 @@
             border-color: var(--hover-blue);
         }
 
-        /* Alerts */
         .alert {
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            padding: 15px;
-            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+            padding: 12px 16px;
+            margin-bottom: 16px;
         }
 
-        /* Responsive Design */
-        @media (max-width: 768px) {
+        /* ========== DESKTOP (>= 992px) ========== */
+        @media (min-width: 992px) {
             .sidebar {
-                width: 60px;
+                transform: translateX(0);
             }
 
-            .sidebar.active {
-                width: 220px;
+            .sidebar-overlay {
+                display: none !important;
             }
 
             .home-section {
-                margin-left: 60px;
+                margin-left: var(--sidebar-width);
             }
 
-            .sidebar.active ~ .home-section {
-                margin-left: 220px;
+            .sidebar-button .sidebarBtn {
+                display: none; /* Hide hamburger on desktop */
+            }
+        }
+
+        /* ========== TABLET & MOBILE (< 992px) ========== */
+        @media (max-width: 991.98px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: min(280px, 85vw);
+                box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .home-section {
+                margin-left: 0;
+            }
+
+            .home-section nav .search-box {
+                display: none;
+            }
+
+            .home-section nav .profile-details .admin_name {
+                display: none;
+            }
+
+            .home-section .home-content {
+                padding: 16px 12px 32px;
+            }
+        }
+
+        /* Extra small phones */
+        @media (max-width: 400px) {
+            .sidebar {
+                width: 85vw;
             }
 
             .home-section nav {
-                left: 60px;
-                width: calc(100% - 60px);
+                padding: 0 12px;
             }
 
-            .sidebar.active ~ .home-section nav {
-                left: 220px;
-                width: calc(100% - 220px);
-            }
-
-            .home-section nav .search-box,
-            .home-section nav .profile-details .admin_name {
-                display: none;
+            .home-section nav .sidebar-button span.dashboard {
+                font-size: 16px;
             }
         }
     </style>
 </head>
 <body>
+    <!-- Mobile Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
     <!-- Sidebar -->
-    <div class="sidebar">
+    <div class="sidebar" id="sidebar">
         <div class="logo-details">
             <i class="fas fa-chalkboard-teacher"></i>
             <span class="logo_name">Teacher Dashboard</span>
         </div>
         <ul class="nav-links">
-            <li><a href="{{ url_for('teachers.teacher_dashboard') }}" class="{% if request.endpoint == 'teachers.teacher_dashboard' %}active{% endif %}"><i class="fas fa-tachometer-alt"></i><span class="links_name">Dashboard</span></a></li>
-            <li><a href="{{ url_for('main.index') }}"><i class="fas fa-home"></i><span class="links_name">Home</span></a></li>
-            <li><a href="{{ url_for('teachers.profile') }}"><i class="fas fa-user"></i><span class="links_name">Profile</span></a></li>
-            <li><a href="{{ url_for('teachers.view_classes') }}"><i class="fas fa-list"></i><span class="links_name">View Classes</span></a></li>
-            <li><a href="{{ url_for('teachers.manage_students_select') }}"><i class="fas fa-users"></i><span class="links_name">Manage Students</span></a></li>
-            <li><a href="{{ url_for('teachers.view_subjects') }}"><i class="fas fa-book"></i><span class="links_name">View Subjects</span></a></li>
-            <li><a href="{{ url_for('teachers.manage_results_select') }}"><i class="fas fa-file-alt"></i><span class="links_name">Manage Results</span></a></li>
-            <li><a href="{{ url_for('teachers.broadsheet_select') }}"><i class="fas fa-table"></i><span class="links_name">Broadsheet</span></a></li>
-            <li><a href="#"><i class="fas fa-cog"></i><span class="links_name">Settings</span></a></li>
-            <li class="log_out"><a href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt"></i><span class="links_name">Log Out</span></a></li>
+            <li>
+                <a href="{{ url_for('teachers.teacher_dashboard') }}" 
+                   class="{% if request.endpoint == 'teachers.teacher_dashboard' %}active{% endif %}">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span class="links_name">Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('main.index') }}">
+                    <i class="fas fa-home"></i>
+                    <span class="links_name">Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('teachers.profile') }}">
+                    <i class="fas fa-user"></i>
+                    <span class="links_name">Profile</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('teachers.view_classes') }}">
+                    <i class="fas fa-list"></i>
+                    <span class="links_name">View Classes</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('teachers.manage_students_select') }}">
+                    <i class="fas fa-users"></i>
+                    <span class="links_name">Manage Students</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('teachers.view_subjects') }}">
+                    <i class="fas fa-book"></i>
+                    <span class="links_name">View Subjects</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('teachers.manage_results_select') }}">
+                    <i class="fas fa-file-alt"></i>
+                    <span class="links_name">Manage Results</span>
+                </
+                    <span class="links_name">Manage Results</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('teachers.broadsheet_select') }}">
+                    <i class="fas fa-table"></i>
+                    <span class="links_name">Broadsheet</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <i class="fas fa-cog"></i>
+                    <span class="links_name">Settings</span>
+                </a>
+            </li>
+            <li class="log_out">
+                <a href="{{ url_for('auth.logout') }}">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span class="links_name">Log Out</span>
+                </a>
+            </li>
         </ul>
     </div>
 
@@ -296,7 +412,7 @@
     <section class="home-section">
         <nav>
             <div class="sidebar-button">
-                <i class="fas fa-bars sidebarBtn"></i>
+                <i class="fas fa-bars sidebarBtn" id="sidebarBtn"></i>
                 <span class="dashboard">Dashboard</span>
             </div>
             <div class="search-box">
@@ -305,7 +421,6 @@
             <div class="profile-details">
                 <img src="{{ url_for('static', filename='images/profile.jpg') }}" alt="Profile">
                 <span class="admin_name">{{ current_user.first_name }} {{ current_user.last_name }}</span>
-                <i class="fas fa-chevron-down"></i>
             </div>
         </nav>
 
@@ -327,13 +442,45 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.0/dist/jquery.min.js"></script>
     <script>
-        const sidebar = document.querySelector(".sidebar");
-        const sidebarBtn = document.querySelector(".sidebarBtn");
+        const sidebar = document.getElementById('sidebar');
+        const sidebarBtn = document.getElementById('sidebarBtn');
+        const overlay = document.getElementById('sidebarOverlay');
 
-        sidebarBtn.addEventListener("click", () => {
-            sidebar.classList.toggle("active");
-            sidebarBtn.classList.toggle("fa-bars");
-            sidebarBtn.classList.toggle("fa-times");
+        function openSidebar() {
+            sidebar.classList.add('open');
+            overlay.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeSidebar() {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+
+        function toggleSidebar() {
+            if (sidebar.classList.contains('open')) {
+                closeSidebar();
+            } else {
+                openSidebar();
+            }
+        }
+
+        sidebarBtn.addEventListener('click', toggleSidebar);
+        overlay.addEventListener('click', closeSidebar);
+
+        // Close sidebar when a nav link is clicked (mobile)
+        document.querySelectorAll('.sidebar .nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth < 992) {
+                    closeSidebar();
+                }
+            });
+        });
+
+        // Close on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeSidebar();
         });
 
         // Toastr Configuration
