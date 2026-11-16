@@ -18,10 +18,6 @@
             min-height: 100dvh;
         }
 
-        body.dark-mode {
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-        }
-
         .login-card {
             background: #ffffff;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
@@ -151,14 +147,7 @@
         </div>
 
         <!-- Body -->
-        <div class="p-6 sm:p-8 relative">
-            <!-- Dark Mode Toggle -->
-            <button id="darkModeToggle" 
-                    class="absolute top-4 right-4 p-2 text-gray-500 hover:text-amber-600 transition-colors"
-                    aria-label="Toggle dark mode">
-                <i class="fas fa-moon text-lg"></i>
-            </button>
-
+        <div class="p-6 sm:p-8">
             <!-- Student / Admin Toggle -->
             <div class="flex mb-6 bg-gray-100 rounded-xl p-1">
                 <button id="studentLoginBtn" 
@@ -322,7 +311,6 @@
             const adminBtn = document.getElementById('adminLoginBtn');
             const studentForm = document.getElementById('studentLoginForm');
             const adminForm = document.getElementById('adminLoginForm');
-            const darkModeToggle = document.getElementById('darkModeToggle');
 
             const studentIdField = document.getElementById('studentId');
             const studentPasswordField = document.getElementById('studentPasswordField');
@@ -422,21 +410,6 @@
                     if (spinner) spinner.classList.remove('hidden');
                     if (text) text.textContent = 'Please wait...';
                 });
-            });
-
-            // Dark mode
-            if (localStorage.getItem('darkMode') === 'true') {
-                document.body.classList.add('dark-mode');
-                darkModeToggle.querySelector('i').classList.replace('fa-moon', 'fa-sun');
-            }
-
-            darkModeToggle.addEventListener('click', () => {
-                document.body.classList.toggle('dark-mode');
-                const isDark = document.body.classList.contains('dark-mode');
-                const icon = darkModeToggle.querySelector('i');
-                icon.classList.toggle('fa-moon', !isDark);
-                icon.classList.toggle('fa-sun', isDark);
-                localStorage.setItem('darkMode', isDark);
             });
         });
     </script>
