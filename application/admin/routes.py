@@ -1611,6 +1611,18 @@ def broadsheet(class_name, action):
         class_id=class_record.id,
         session_id=current_session.id
     )
+
+    class_is_released = False
+    if broadsheet_data:
+        # Check the first student's term summary
+        first_summary = StudentTermSummary.query.filter_by(
+            student_id=broadsheet_data[0]["student"].id,
+            term=current_term.value,
+            session_id=current_session.id,
+            class_id=class_record.id
+        ).first()
+        class_is_released = first_summary.is_released if first_summary else False
+
     return render_template(
         "admin/results/broadsheet.html",
         students=students,
@@ -1622,8 +1634,9 @@ def broadsheet(class_name, action):
         current_session=current_session.id,
         session_year=current_session.year,
         current_term=current_term.value,
+        class_is_released=class_is_released,
         form=form,
-        action=action
+        action=action,
     )
 
 @admin_bp.route("/update-broadsheet/<string:class_name>/<string:action>", methods=["POST"])
@@ -1712,6 +1725,71 @@ def update_broadsheet(class_name, action):
         app.logger.error(f"Database error updating broadsheet for {class_name}: {str(e)}")
         flash("Database error occurred.", "alert-danger")
     return redirect(url_for('admins.broadsheet', class_name=class_name, action=action))
+
+
+@admin_bp.route("/release_class_results/<string:class_name>", methods=["POST"])
+@login_required
+def release_class_results(class_name):
+    """Toggle (Release / Hide) results for an entire class."""
+    if not current_user.privileges or not current_user.privileges.can_manage_results:
+        flash("You do not have permission to release/hide results.", "alert-danger")
+        return redirect(url_for("admins.admin_dashboard"))
+
+    class_name = unquote(class_name).strip()
+    current_session, current_term = Session.get_current_session_and_term(include_term=True)
+    
+    if not current_session or not current_term:
+        flash("No current session or term set.", "alert-danger")
+        return redirect(url_for("admins.broadsheet", class_name=class_name, action="view"))
+
+    class_record = Classes.query.filter_by(name=class_name).first_or_404()
+
+    # Get all active students in this class for the current session
+    student_ids = [
+        h.student_id for h in StudentClassHistory.query.filter_by(
+            session_id=current_session.id,
+            class_id=class_record.id,
+            is_active=True,
+            leave_date=None
+        ).all()
+    ]
+
+    if not student_ids:
+        flash("No active students found in this class.", "alert-warning")
+        return redirect(url_for("admins.broadsheet", class_name=class_name, action="view"))
+
+    # Fetch existing term summaries
+    summaries = StudentTermSummary.query.filter(
+        StudentTermSummary.student_id.in_(student_ids),
+        StudentTermSummary.session_id == current_session.id,
+        StudentTermSummary.term == current_term.value,
+        StudentTermSummary.class_id == class_record.id
+    ).all()
+
+    if not summaries:
+        flash("No term summaries found for this class. Enter some results first.", "alert-warning")
+        return redirect(url_for("admins.broadsheet", class_name=class_name, action="view"))
+
+    # Determine current state from the first record (or majority)
+    # We assume all should be in the same state
+    current_state = summaries[0].is_released
+    new_state = not current_state
+
+    # Apply the toggle
+    for summary in summaries:
+        summary.is_released = new_state
+
+    action_text = "Released" if new_state else "Hidden"
+    db.session.add(AuditLog(
+        user_id=current_user.id,
+        action=f"{action_text} results for class {class_name} "
+               f"({current_term.value} {current_session.year}) - {len(summaries)} students"
+    ))
+    db.session.commit()
+
+    flash(f"Results successfully {action_text.lower()} for {len(summaries)} student(s) in {class_name}.", 
+          "alert-success")
+    return redirect(url_for("admins.broadsheet", class_name=class_name, action="view"))
 
 @admin_bp.route("/download_broadsheet/<string:class_name>/<string:action>", methods=["GET"])
 @login_required

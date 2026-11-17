@@ -329,6 +329,23 @@
         <a href="{{ url_for('admins.students_by_class', class_name=class_name, action=action) }}" class="btn btn-primary mt-3">Back to Students</a>
         <a href="{{ url_for('admins.select_class', action=action) }}" class="btn btn-primary mt-3">Back to Classes</a>
     </div>
+
+    <form method="POST" 
+        action="{{ url_for('admins.release_class_results', class_name=class_name) }}"
+        onsubmit="return confirm('Are you sure you want to {{ "hide" if class_is_released else "release" }} results for the entire class?');">
+        
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        
+        {% if class_is_released %}
+            <button type="submit" class="btn btn-warning">
+                <i class="fas fa-eye-slash"></i> Hide Class Results
+            </button>
+        {% else %}
+            <button type="submit" class="btn btn-success">
+                <i class="fas fa-unlock"></i> Release Class Results
+            </button>
+        {% endif %}
+    </form>
 </div>
 {% endblock %}
 

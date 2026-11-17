@@ -1,0 +1,44 @@
+{% extends "student/base.html" %}
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow-lg border-0" style="max-width: 700px; margin: 0 auto; border-radius: 16px;">
+        <div class="card-body text-center p-5">
+            <h3 class="mb-3">{{ school_name }}</h3>
+            <h5 class="text-muted mb-4">{{ term }} Term · {{ session_year }}</h5>
+            <p class="lead">
+                <strong>{{ student.first_name }} {{ student.last_name }}</strong><br>
+                Class: {{ class_name }}
+            </p>
+
+            {% if not results_exist %}
+                <div class="alert alert-secondary mt-4">
+                    <h4 class="alert-heading">Results not yet available</h4>
+                    <p class="mb-0">No results have been recorded for this term yet.</p>
+                </div>
+
+            {% elif not is_released %}
+                <div class="alert alert-warning mt-4">
+                    <h4 class="alert-heading">Results not yet available</h4>
+                    <p class="mb-0">Your results are being processed and will be released soon.</p>
+                </div>
+
+            {% else %}
+                <div class="alert alert-success mt-4">
+                    <h4 class="alert-heading">Your result is available!</h4>
+                    <p>You can now download your official report sheet.</p>
+                </div>
+                <a href="{{ url_for('students.download_results_pdf', student_id=student.id, term=term, session_id=session_id) }}"
+                   class="btn btn-primary btn-lg mt-3 px-5">
+                    Download Result (PDF)
+                </a>
+            {% endif %}
+
+            <div class="mt-4">
+                <a href="{{ url_for('students.select_results', student_id=student.id) }}" class="btn btn-outline-secondary">
+                    ← Choose another term
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

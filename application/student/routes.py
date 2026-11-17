@@ -200,6 +200,113 @@ def select_results(student_id):
         return redirect(url_for("main.index"))
 
 
+# @student_bp.route("/view_results/<int:student_id>", methods=["GET"])
+# @login_required
+# def view_results(student_id):
+#     try:
+#         student = Student.query.get_or_404(student_id)
+#         if current_user.id != student.user_id:
+#             flash("You are not authorized to view these results.", "alert-danger")
+#             app.logger.warning(f"Unauthorized results access by {current_user.username} for student_id {student_id}")
+#             return redirect(url_for("main.index"))
+
+#         # Get term and session_id from query parameters
+#         term = request.args.get("term")
+#         session_id = request.args.get("session_id", type=int)
+
+#         # Redirect to select_results if term or session_id is missing or invalid
+#         if not term or not session_id or term not in [t.value for t in TermEnum]:
+#             flash("Please select a term and session to view results.", "alert-info")
+#             return redirect(url_for("students.select_results", student_id=student.id))
+
+#         session_obj = Session.query.get_or_404(session_id)
+
+#         # Check fee payment status for students (admins bypass this)
+#         if current_user.role != RoleEnum.ADMIN.value:
+#             fee_payment = FeePayment.query.filter_by(
+#                 student_id=student.id,
+#                 session_id=session_id,
+#                 term=term
+#             ).first()
+#             if not fee_payment or not fee_payment.has_paid_fee:
+#                 flash(f"You must pay your fees for {term} Term, {session_obj.year} to view your results.", "alert-warning")
+#                 app.logger.info(f"Student {student_id} denied result access due to unpaid fees for {term}, {session_obj.year}")
+#                 return redirect(url_for("students.student_portal"))
+
+#         # Fetch class name for the session
+#         class_name = student.get_class_by_session(session_obj.year)
+#         if not class_name:
+#             flash(f"{student.first_name} {student.last_name} is not in any class as at {session_obj.year}", "alert-info")
+#             return redirect(url_for("students.select_results", student_id=student.id))
+
+#         # Fetch results for the selected term and session
+#         results = Result.query.filter_by(
+#             student_id=student.id,
+#             term=term,
+#             session_id=session_obj.id
+#         ).all()
+
+#         if not results:
+#             flash(f"No results found for {term} in {session_obj.year}", "alert-info")
+#             return redirect(url_for("students.select_results", student_id=student.id))
+
+#         # Calculate grand_total from results
+#         grand_total = {
+#             "class_assessment": sum(result.class_assessment or 0 for result in results),
+#             "summative_test": sum(result.summative_test or 0 for result in results),
+#             "exam": sum(result.exam or 0 for result in results),
+#             "total": sum(result.total or 0 for result in results),
+#         }
+
+#         # Fetch term summary for aggregates
+#         term_summary = StudentTermSummary.query.filter_by(
+#             student_id=student.id,
+#             term=term,
+#             session_id=session_obj.id
+#         ).first()
+
+#         # Extract summary data, defaulting to calculated values if not in summary
+#         average = term_summary.term_average if term_summary else (grand_total["total"] / len(results) if results else 0)
+#         cumulative_average = term_summary.cumulative_average if term_summary else None
+#         last_term_average = term_summary.last_term_average if term_summary else None
+#         subjects_offered = term_summary.subjects_offered if term_summary else len(results)
+#         position = term_summary.position if term_summary else None
+#         principal_remark = term_summary.principal_remark if term_summary else None
+#         teacher_remark = term_summary.teacher_remark if term_summary else None
+#         next_term_begins = term_summary.next_term_begins if term_summary else None
+#         date_issued = term_summary.date_issued if term_summary else None
+#         date_printed = datetime.now().strftime("%dth %B, %Y")
+
+#         # Log successful access
+#         app.logger.info(f"Results viewed for student_id: {student_id}, term: {term}, session_id: {session_id}")
+#         return render_template(
+#             "student/view_results.html",
+#             title=f"{student.first_name}_{student.last_name}_{term}_{session_obj.year}_Result",
+#             student=student,
+#             results=results,
+#             term=term,
+#             session_id=session_obj.id,
+#             session_year=session_obj.year,
+#             grand_total=grand_total,
+#             average=average,
+#             cumulative_average=cumulative_average,
+#             last_term_average=last_term_average,
+#             subjects_offered=subjects_offered,
+#             position=position,
+#             principal_remark=principal_remark,
+#             teacher_remark=teacher_remark,
+#             next_term_begins=next_term_begins,
+#             date_issued=date_issued,
+#             date_printed=date_printed,
+#             class_name=class_name,
+#             school_name=app.config.get("SCHOOL_NAME", "Aunty Anne's Int'l School"),
+#         )
+#     except OperationalError as e:
+#         app.logger.error(f"Database error viewing results for student_id {student_id}: {str(e)}")
+#         flash("Database error occurred. Please try again.", "alert-danger")
+#         return redirect(url_for("students.select_results", student_id=student_id))
+
+
 @student_bp.route("/view_results/<int:student_id>", methods=["GET"])
 @login_required
 def view_results(student_id):
@@ -207,104 +314,68 @@ def view_results(student_id):
         student = Student.query.get_or_404(student_id)
         if current_user.id != student.user_id:
             flash("You are not authorized to view these results.", "alert-danger")
-            app.logger.warning(f"Unauthorized results access by {current_user.username} for student_id {student_id}")
             return redirect(url_for("main.index"))
 
-        # Get term and session_id from query parameters
         term = request.args.get("term")
         session_id = request.args.get("session_id", type=int)
 
-        # Redirect to select_results if term or session_id is missing or invalid
         if not term or not session_id or term not in [t.value for t in TermEnum]:
             flash("Please select a term and session to view results.", "alert-info")
             return redirect(url_for("students.select_results", student_id=student.id))
 
         session_obj = Session.query.get_or_404(session_id)
 
-        # Check fee payment status for students (admins bypass this)
+        # Fee check (unchanged)
         if current_user.role != RoleEnum.ADMIN.value:
             fee_payment = FeePayment.query.filter_by(
-                student_id=student.id,
-                session_id=session_id,
-                term=term
+                student_id=student.id, session_id=session_id, term=term
             ).first()
             if not fee_payment or not fee_payment.has_paid_fee:
-                flash(f"You must pay your fees for {term} Term, {session_obj.year} to view your results.", "alert-warning")
-                app.logger.info(f"Student {student_id} denied result access due to unpaid fees for {term}, {session_obj.year}")
+                flash(
+                    f"You must pay your fees for {term} Term, {session_obj.year} to access your results.",
+                    "alert-warning",
+                )
                 return redirect(url_for("students.student_portal"))
 
-        # Fetch class name for the session
         class_name = student.get_class_by_session(session_obj.year)
         if not class_name:
-            flash(f"{student.first_name} {student.last_name} is not in any class as at {session_obj.year}", "alert-info")
+            flash(
+                f"{student.first_name} is not assigned to any class for {session_obj.year}.",
+                "alert-info",
+            )
             return redirect(url_for("students.select_results", student_id=student.id))
 
-        # Fetch results for the selected term and session
-        results = Result.query.filter_by(
-            student_id=student.id,
-            term=term,
-            session_id=session_obj.id
-        ).all()
-
-        if not results:
-            flash(f"No results found for {term} in {session_obj.year}", "alert-info")
-            return redirect(url_for("students.select_results", student_id=student.id))
-
-        # Calculate grand_total from results
-        grand_total = {
-            "class_assessment": sum(result.class_assessment or 0 for result in results),
-            "summative_test": sum(result.summative_test or 0 for result in results),
-            "exam": sum(result.exam or 0 for result in results),
-            "total": sum(result.total or 0 for result in results),
-        }
-
-        # Fetch term summary for aggregates
+        # Check if results exist and are released
         term_summary = StudentTermSummary.query.filter_by(
-            student_id=student.id,
-            term=term,
-            session_id=session_obj.id
+            student_id=student.id, term=term, session_id=session_obj.id
         ).first()
 
-        # Extract summary data, defaulting to calculated values if not in summary
-        average = term_summary.term_average if term_summary else (grand_total["total"] / len(results) if results else 0)
-        cumulative_average = term_summary.cumulative_average if term_summary else None
-        last_term_average = term_summary.last_term_average if term_summary else None
-        subjects_offered = term_summary.subjects_offered if term_summary else len(results)
-        position = term_summary.position if term_summary else None
-        principal_remark = term_summary.principal_remark if term_summary else None
-        teacher_remark = term_summary.teacher_remark if term_summary else None
-        next_term_begins = term_summary.next_term_begins if term_summary else None
-        date_issued = term_summary.date_issued if term_summary else None
-        date_printed = datetime.now().strftime("%dth %B, %Y")
+        results_exist = (
+            Result.query.filter_by(
+                student_id=student.id, term=term, session_id=session_obj.id
+            ).first()
+            is not None
+        )
 
-        # Log successful access
-        app.logger.info(f"Results viewed for student_id: {student_id}, term: {term}, session_id: {session_id}")
+        is_released = term_summary.is_released if term_summary else False
+
         return render_template(
-            "student/view_results.html",
-            title=f"{student.first_name}_{student.last_name}_{term}_{session_obj.year}_Result",
+            "student/result_status.html",  # ← new simple template
             student=student,
-            results=results,
             term=term,
             session_id=session_obj.id,
             session_year=session_obj.year,
-            grand_total=grand_total,
-            average=average,
-            cumulative_average=cumulative_average,
-            last_term_average=last_term_average,
-            subjects_offered=subjects_offered,
-            position=position,
-            principal_remark=principal_remark,
-            teacher_remark=teacher_remark,
-            next_term_begins=next_term_begins,
-            date_issued=date_issued,
-            date_printed=date_printed,
             class_name=class_name,
+            results_exist=results_exist,
+            is_released=is_released,
             school_name=app.config.get("SCHOOL_NAME", "Aunty Anne's Int'l School"),
         )
+
     except OperationalError as e:
-        app.logger.error(f"Database error viewing results for student_id {student_id}: {str(e)}")
+        app.logger.error(f"Database error in view_results: {str(e)}")
         flash("Database error occurred. Please try again.", "alert-danger")
         return redirect(url_for("students.select_results", student_id=student_id))
+
 
 @student_bp.route("/download_results_pdf/<int:student_id>", methods=["GET", "POST"])
 @login_required
@@ -366,6 +437,10 @@ def download_results_pdf(student_id):
             term=term,
             session_id=session_obj.id
         ).first()
+
+        if not term_summary or not term_summary.is_released:
+            flash("Results are not yet available for download.", "alert-warning")
+            return redirect(url_for("students.view_results", student_id=student.id, term=term, session_id=session_id))
 
         last_term_average = term_summary.last_term_average if term_summary else None
         average = term_summary.term_average if term_summary else None
@@ -571,5 +646,3 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-

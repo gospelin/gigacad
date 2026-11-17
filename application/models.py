@@ -354,6 +354,7 @@ class StudentTermSummary(db.Model):
     teacher_remark = db.Column(db.String(100), nullable=True)
     next_term_begins = db.Column(db.String(100), nullable=True)
     date_issued = db.Column(db.String(100), nullable=True)
+    is_released = db.Column(db.Boolean, nullable=False, default=False)
     created_at = db.Column(db.DateTime, nullable=False, default=nigeria_now)
 
     session = db.relationship("Session", backref="term_summaries", lazy=True)
