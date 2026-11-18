@@ -247,7 +247,7 @@ def generate_principal_remark(average, student=None):
             f"{first_name}, a tough term—extra support can help you overcome these struggles.",
             f"Very concerning, {full_name}! Act now to avoid falling further behind."
         ],
-        0: [
+        1: [
             f"Unacceptable performance, {full_name}. Take your studies seriously from now on.",
             f"{first_name}, drastic improvement is needed to progress in your academics.",
             f"This is not satisfactory, {full_name}! Immediate action is required to improve.",
