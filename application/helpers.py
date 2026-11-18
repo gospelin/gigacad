@@ -351,7 +351,7 @@ def generate_teacher_remark(average, student=None):
             f"{first_name}, a challenging term—seek help to boost your understanding.",
             f"Poor showing, {full_name}! Act quickly to improve your academics."
         ],
-        0: [
+        1: [
             f"Unacceptable, {full_name}. Urgent attention to your studies is required.",
             f"{first_name}, a very poor performance—take your academics seriously now!",
             f"This is concerning, {full_name}! Take your studies more seriously.",
