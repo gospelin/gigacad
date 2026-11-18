@@ -206,26 +206,66 @@ class Student(db.Model, UserMixin):
             leave_date=None
         ).order_by(StudentClassHistory.join_date.desc()).first()
 
+    # def get_class_by_session_and_term(self, session_id, term):
+    #     enrollment = StudentClassHistory.query.filter_by(
+    #         student_id=self.id,
+    #         session_id=session_id,
+    #         start_term=term.value,
+    #         is_active=True,
+    #         leave_date=None
+    #     ).first()
+    #     return enrollment.class_ref.name if enrollment else None
+
     def get_class_by_session_and_term(self, session_id, term):
-        enrollment = StudentClassHistory.query.filter_by(
-            student_id=self.id,
-            session_id=session_id,
-            start_term=term.value,
-            is_active=True,
-            leave_date=None
-        ).first()
-        return enrollment.class_ref.name if enrollment else None
+        term_value = term.value if hasattr(term, "value") else term
+        term_order = {"First": 1, "Second": 2, "Third": 3}
+        target = term_order.get(term_value, 1)
+
+        candidates = [
+            e for e in self.class_history
+            if e.session_id == session_id
+        ]
+        for e in sorted(candidates, key=lambda x: x.join_date, reverse=True):
+            start = term_order.get(e.start_term, 1)
+            end   = term_order.get(e.end_term, 4) if e.end_term else 4
+            if start <= target <= end:
+                return e.class_ref.name if e.class_ref else None
+        return None
+
+    # def get_class_by_session(self, session_year):
+    #     session_obj = Session.query.filter_by(year=session_year).first()
+    #     if not session_obj:
+    #         print(f"Session {session_year} not found!")
+    #         return None
+    #     class_history_entry = next(
+    #         (entry for entry in self.class_history if entry.session_id == session_obj.id and entry.is_active),
+    #         None
+    #     )
+    #     return class_history_entry.class_ref.name if class_history_entry else None
 
     def get_class_by_session(self, session_year):
+        """Return the class name the student belonged to in a given academic year.
+        Works for both current and historical (promoted) enrolments.
+        """
         session_obj = Session.query.filter_by(year=session_year).first()
         if not session_obj:
-            print(f"Session {session_year} not found!")
             return None
-        class_history_entry = next(
-            (entry for entry in self.class_history if entry.session_id == session_obj.id and entry.is_active),
+
+        # Prefer the currently-active enrolment for that session
+        entry = next(
+            (e for e in self.class_history
+            if e.session_id == session_obj.id and e.is_active and e.leave_date is None),
             None
         )
-        return class_history_entry.class_ref.name if class_history_entry else None
+
+        # Fall back to the most recent closed enrolment for that session
+        if not entry:
+            candidates = [e for e in self.class_history if e.session_id == session_obj.id]
+            if candidates:
+                # most recent by join_date (or leave_date)
+                entry = max(candidates, key=lambda e: e.join_date or e.leave_date or datetime.min)
+
+        return entry.class_ref.name if entry and entry.class_ref else None
 
     @classmethod
     def generate_reg_no(cls, session_year=None):
