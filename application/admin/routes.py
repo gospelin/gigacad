@@ -422,60 +422,125 @@ def add_student():
         current_term=current_term.value if current_term else "None"
     )
 
+# @admin_bp.route("/students/<string:action>", methods=["GET", "POST"])
+# @login_required
+# @require_session_and_term
+# @handle_db_errors
+# def students(current_session, current_term, action):
+#     """View and filter students across all classes."""
+#     page = request.args.get('page', 1, type=int)
+#     per_page = 10
+#     enrollment_status = request.args.get('enrollment_status', 'active')
+#     fee_status = request.args.get('fee_status', '')
+#     approval_status = request.args.get('approval_status', '')
+#     term = request.args.get('term', current_term.value)
+
+#     students_query = get_students_query(current_session, term)
+#     students_query = apply_filters_to_students_query(
+#         students_query, enrollment_status, fee_status, approval_status, current_session, current_term, term
+#     )
+#     students_query = students_query.order_by(Classes.hierarchy, Student.first_name.asc())
+#     paginated_students = students_query.paginate(page=page, per_page=per_page, error_out=False)
+#     students_classes = group_students_by_class(paginated_students.items)
+#     form = DeleteForm()
+#     classes = Classes.query.order_by(Classes.hierarchy).all()
+#     sessions = Session.query.order_by(Session.year.desc()).all()
+
+#     if request.args.get('ajax', type=bool):
+#         return render_template(
+#             "ajax/students/pagination.html",
+#             students_classes=students_classes,
+#             pagination=paginated_students,
+#             action=action,
+#             session=current_session,
+#             current_term=current_term.value,
+#             form=form,
+#             enrollment_status=enrollment_status,
+#             fee_status=fee_status,
+#             approval_status=approval_status,
+#             classes=classes,
+#             sessions=sessions
+#         )
+#     return render_template(
+#         "admin/students/view_students.html",
+#         students_classes=students_classes,
+#         pagination=paginated_students,
+#         current_session=current_session.year,
+#         session=current_session,
+#         current_term=current_term.value,
+#         action=action,
+#         form=form,
+#         enrollment_status=enrollment_status,
+#         fee_status=fee_status,
+#         approval_status=approval_status,
+#         classes=classes,
+#         sessions=sessions
+#     )
+
+
 @admin_bp.route("/students/<string:action>", methods=["GET", "POST"])
 @login_required
 @require_session_and_term
 @handle_db_errors
 def students(current_session, current_term, action):
     """View and filter students across all classes."""
-    page = request.args.get('page', 1, type=int)
+    page = request.args.get("page", 1, type=int)
     per_page = 10
-    enrollment_status = request.args.get('enrollment_status', 'active')
-    fee_status = request.args.get('fee_status', '')
-    approval_status = request.args.get('approval_status', '')
-    term = request.args.get('term', current_term.value)
+    enrollment_status = request.args.get("enrollment_status", "active")
+    fee_status = request.args.get("fee_status", "")
+    approval_status = request.args.get("approval_status", "")
+    term = request.args.get("term", current_term.value)
 
-    students_query = get_students_query(current_session, term)
-    students_query = apply_filters_to_students_query(
-        students_query, enrollment_status, fee_status, approval_status, current_session, current_term, term
+    global_current = Session.get_current_session()
+    viewing_live = (
+        global_current is not None and current_session.id == global_current.id
     )
-    students_query = students_query.order_by(Classes.hierarchy, Student.first_name.asc())
-    paginated_students = students_query.paginate(page=page, per_page=per_page, error_out=False)
+
+    # Tell get_students_query explicitly whether to filter on is_active/leave_date
+    students_query = get_students_query(current_session, term, only_active=viewing_live)
+    students_query = apply_filters_to_students_query(
+        students_query,
+        enrollment_status,
+        fee_status,
+        approval_status,
+        current_session,
+        current_term,
+        term,
+    )
+    students_query = students_query.order_by(
+        Classes.hierarchy, Student.first_name.asc()
+    )
+    paginated_students = students_query.paginate(
+        page=page, per_page=per_page, error_out=False
+    )
     students_classes = group_students_by_class(paginated_students.items)
     form = DeleteForm()
     classes = Classes.query.order_by(Classes.hierarchy).all()
     sessions = Session.query.order_by(Session.year.desc()).all()
 
-    if request.args.get('ajax', type=bool):
-        return render_template(
-            "ajax/students/pagination.html",
-            students_classes=students_classes,
-            pagination=paginated_students,
-            action=action,
-            session=current_session,
-            current_term=current_term.value,
-            form=form,
-            enrollment_status=enrollment_status,
-            fee_status=fee_status,
-            approval_status=approval_status,
-            classes=classes,
-            sessions=sessions
-        )
-    return render_template(
-        "admin/students/view_students.html",
+    ctx = dict(
         students_classes=students_classes,
         pagination=paginated_students,
-        current_session=current_session.year,
+        action=action,
         session=current_session,
         current_term=current_term.value,
-        action=action,
         form=form,
         enrollment_status=enrollment_status,
         fee_status=fee_status,
         approval_status=approval_status,
         classes=classes,
-        sessions=sessions
+        sessions=sessions,
+        viewing_live=viewing_live,
     )
+
+    if request.args.get("ajax", type=bool):
+        return render_template("ajax/students/pagination.html", **ctx)
+    return render_template(
+        "admin/students/view_students.html",
+        current_session=current_session.year,
+        **ctx,
+    )
+
 
 @admin_bp.route("/edit_student/<int:student_id>/<string:action>", methods=["GET", "POST"])
 @login_required
@@ -2788,59 +2853,161 @@ def approve(student_id):
             flash("Database error occurred.", "alert-danger")
     return render_template("admin/students/approve.html", form=form, student=student)
 
-@admin_bp.route('/stats', methods=['GET'])
+# @admin_bp.route('/stats', methods=['GET'])
+# @login_required
+# def get_stats():
+#     current_session, current_term = Session.get_current_session_and_term(include_term=True)
+#     term = request.args.get('term', current_term.value)
+#     term_order = {t.value: i for i, t in enumerate(TermEnum, 1)}
+#     target_term_order = term_order.get(term, 1)
+
+#     students_query = get_students_query(current_session, term).filter(
+#         StudentClassHistory.is_active == True,
+#         StudentClassHistory.leave_date.is_(None),
+#         case(
+#             *[(StudentClassHistory.start_term == t.value, i) for i, t in enumerate(TermEnum, 1)],
+#             else_=1
+#         ) <= target_term_order,
+#         or_(
+#             StudentClassHistory.end_term.is_(None),
+#             case(
+#                 *[(StudentClassHistory.end_term == t.value, i) for i, t in enumerate(TermEnum, 1)],
+#                 else_=4
+#             ) >= target_term_order
+#         )
+#     )
+#     total_students = students_query.count()
+#     approved_students = students_query.filter(Student.approved == True).count()
+#     fees_paid = FeePayment.query.filter_by(
+#         session_id=current_session.id,
+#         term=term,
+#         has_paid_fee=True
+#     ).join(Student).join(StudentClassHistory).filter(
+#         StudentClassHistory.session_id == current_session.id,
+#         StudentClassHistory.is_active == True,
+#         StudentClassHistory.leave_date.is_(None),
+#         case(
+#             *[(StudentClassHistory.start_term == t.value, i) for i, t in enumerate(TermEnum, 1)],
+#             else_=1
+#         ) <= target_term_order,
+#         or_(
+#             StudentClassHistory.end_term.is_(None),
+#             case(
+#                 *[(StudentClassHistory.end_term == t.value, i) for i, t in enumerate(TermEnum, 1)],
+#                 else_=4
+#             ) >= target_term_order
+#         )
+#     ).count()
+#     fees_unpaid = total_students - fees_paid
+
+#     return jsonify({
+#         "total_students": total_students,
+#         "approved_students": approved_students,
+#         "fees_paid": fees_paid,
+#         "fees_unpaid": fees_unpaid
+#     })
+
+
+@admin_bp.route("/stats", methods=["GET"])
 @login_required
 def get_stats():
-    current_session, current_term = Session.get_current_session_and_term(include_term=True)
-    term = request.args.get('term', current_term.value)
-    term_order = {t.value: i for i, t in enumerate(TermEnum, 1)}
+    current_session, current_term = Session.get_current_session_and_term(
+        include_term=True
+    )
+    term = request.args.get("term", current_term.value)
     target_term_order = term_order.get(term, 1)
 
-    students_query = get_students_query(current_session, term).filter(
-        StudentClassHistory.is_active == True,
-        StudentClassHistory.leave_date.is_(None),
+    global_current = Session.get_current_session()
+    viewing_live = (
+        global_current is not None and current_session.id == global_current.id
+    )
+
+    # Same logic as students route: only_active auto-detects live
+    students_query = get_students_query(current_session, term)
+
+    # Apply the term-range filter again explicitly (safe — matches subq) but
+    # do NOT add is_active/leave_date unless live.
+    conditions = [
+        StudentClassHistory.session_id == current_session.id,
         case(
-            *[(StudentClassHistory.start_term == t.value, i) for i, t in enumerate(TermEnum, 1)],
-            else_=1
-        ) <= target_term_order,
+            *[
+                (StudentClassHistory.start_term == t.value, i)
+                for i, t in enumerate(TermEnum, 1)
+            ],
+            else_=1,
+        )
+        <= target_term_order,
         or_(
             StudentClassHistory.end_term.is_(None),
             case(
-                *[(StudentClassHistory.end_term == t.value, i) for i, t in enumerate(TermEnum, 1)],
-                else_=4
-            ) >= target_term_order
+                *[
+                    (StudentClassHistory.end_term == t.value, i)
+                    for i, t in enumerate(TermEnum, 1)
+                ],
+                else_=4,
+            )
+            >= target_term_order,
+        ),
+    ]
+    if viewing_live:
+        conditions.extend(
+            [
+                StudentClassHistory.is_active == True,
+                StudentClassHistory.leave_date.is_(None),
+            ]
         )
-    )
+    students_query = students_query.filter(*conditions)
+
     total_students = students_query.count()
     approved_students = students_query.filter(Student.approved == True).count()
-    fees_paid = FeePayment.query.filter_by(
-        session_id=current_session.id,
-        term=term,
-        has_paid_fee=True
-    ).join(Student).join(StudentClassHistory).filter(
-        StudentClassHistory.session_id == current_session.id,
-        StudentClassHistory.is_active == True,
-        StudentClassHistory.leave_date.is_(None),
-        case(
-            *[(StudentClassHistory.start_term == t.value, i) for i, t in enumerate(TermEnum, 1)],
-            else_=1
-        ) <= target_term_order,
-        or_(
-            StudentClassHistory.end_term.is_(None),
-            case(
-                *[(StudentClassHistory.end_term == t.value, i) for i, t in enumerate(TermEnum, 1)],
-                else_=4
-            ) >= target_term_order
-        )
-    ).count()
-    fees_unpaid = total_students - fees_paid
 
-    return jsonify({
-        "total_students": total_students,
-        "approved_students": approved_students,
-        "fees_paid": fees_paid,
-        "fees_unpaid": fees_unpaid
-    })
+    fee_q = (
+        FeePayment.query.filter_by(
+            session_id=current_session.id,
+            term=term,
+            has_paid_fee=True,
+        )
+        .join(Student)
+        .join(StudentClassHistory)
+        .filter(
+            StudentClassHistory.session_id == current_session.id,
+            case(
+                *[
+                    (StudentClassHistory.start_term == t.value, i)
+                    for i, t in enumerate(TermEnum, 1)
+                ],
+                else_=1,
+            )
+            <= target_term_order,
+            or_(
+                StudentClassHistory.end_term.is_(None),
+                case(
+                    *[
+                        (StudentClassHistory.end_term == t.value, i)
+                        for i, t in enumerate(TermEnum, 1)
+                    ],
+                    else_=4,
+                )
+                >= target_term_order,
+            ),
+        )
+    )
+    if viewing_live:
+        fee_q = fee_q.filter(
+            StudentClassHistory.is_active == True,
+            StudentClassHistory.leave_date.is_(None),
+        )
+    fees_paid = fee_q.count()
+
+    return jsonify(
+        {
+            "total_students": total_students,
+            "approved_students": approved_students,
+            "fees_paid": fees_paid,
+            "fees_unpaid": total_students - fees_paid,
+        }
+    )
+
 
 @admin_bp.route('/toggle_fee_status/<int:student_id>', methods=['POST'])
 @login_required

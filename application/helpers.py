@@ -1013,9 +1013,94 @@ def group_students_by_class(students):
 #     return students_query
 
 
+# def get_students_query(current_session, term=None, only_active=None):
+#     """
+#     Return students enrolled in the given session.
+
+#     only_active:
+#         None  → auto-detect (True only when current_session is the global current session)
+#         True  → only currently open enrolments (live roster)
+#         False → include historical (closed) memberships for that session
+#     """
+#     term_order = {t.value: i for i, t in enumerate(TermEnum, 1)}
+#     global_current, global_term = Session.get_current_session_and_term(
+#         include_term=True
+#     )
+
+#     if only_active is None:
+#         only_active = (
+#             global_current is not None and current_session.id == global_current.id
+#         )
+
+#     target_term = (
+#         term if term else (global_term.value if global_term else TermEnum.FIRST.value)
+#     )
+#     target_term_order = term_order.get(target_term, 1)
+
+#     # Latest enrolment per student *within this session*
+#     latest_enrollment_subquery = (
+#         db.session.query(
+#             StudentClassHistory.student_id,
+#             func.max(StudentClassHistory.join_date).label("latest_join"),
+#         )
+#         .filter(StudentClassHistory.session_id == current_session.id)
+#         .group_by(StudentClassHistory.student_id)
+#         .subquery("latest_enrollment")
+#     )
+
+#     # Base join conditions that always apply
+#     history_conditions = [
+#         Student.id == StudentClassHistory.student_id,
+#         StudentClassHistory.session_id == current_session.id,
+#         StudentClassHistory.join_date == latest_enrollment_subquery.c.latest_join,
+#         case(
+#             *[
+#                 (StudentClassHistory.start_term == t.value, i)
+#                 for i, t in enumerate(TermEnum, 1)
+#             ],
+#             else_=1,
+#         )
+#         <= target_term_order,
+#         or_(
+#             StudentClassHistory.end_term.is_(None),
+#             case(
+#                 *[
+#                     (StudentClassHistory.end_term == t.value, i)
+#                     for i, t in enumerate(TermEnum, 1)
+#                 ],
+#                 else_=4,
+#             )
+#             >= target_term_order,
+#         ),
+#     ]
+
+#     # Only force “currently open” when we are looking at the live session
+#     if only_active:
+#         history_conditions.extend(
+#             [
+#                 StudentClassHistory.is_active == True,
+#                 StudentClassHistory.leave_date.is_(None),
+#             ]
+#         )
+
+#     query = (
+#         db.session.query(Student, Classes.name.label("class_name"), Classes.hierarchy)
+#         .join(
+#             latest_enrollment_subquery,
+#             Student.id == latest_enrollment_subquery.c.student_id,
+#             isouter=True,
+#         )
+#         .join(StudentClassHistory, and_(*history_conditions), isouter=True)
+#         .join(Classes, StudentClassHistory.class_id == Classes.id, isouter=True)
+#     )
+
+#     return query.options(
+#         joinedload(Student.fee_payments), joinedload(Student.class_history)
+#     )
+
 def get_students_query(current_session, term=None, only_active=None):
     """
-    Return students enrolled in the given session.
+    Return students enrolled in the given session for the target term.
 
     only_active:
         None  → auto-detect (True only when current_session is the global current session)
@@ -1023,9 +1108,7 @@ def get_students_query(current_session, term=None, only_active=None):
         False → include historical (closed) memberships for that session
     """
     term_order = {t.value: i for i, t in enumerate(TermEnum, 1)}
-    global_current, global_term = Session.get_current_session_and_term(
-        include_term=True
-    )
+    global_current, global_term = Session.get_current_session_and_term(include_term=True)
 
     if only_active is None:
         only_active = (
@@ -1037,57 +1120,63 @@ def get_students_query(current_session, term=None, only_active=None):
     )
     target_term_order = term_order.get(target_term, 1)
 
-    # Latest enrolment per student *within this session*
-    latest_enrollment_subquery = (
+    # Per-student, latest enrolment in THIS session that *covers* target_term.
+    # This is what makes historical viewing correct after promotion.
+    covering_history_subq = (
         db.session.query(
-            StudentClassHistory.student_id,
-            func.max(StudentClassHistory.join_date).label("latest_join"),
+            StudentClassHistory.student_id.label("student_id"),
+            func.max(StudentClassHistory.join_date).label("join_date"),
         )
-        .filter(StudentClassHistory.session_id == current_session.id)
+        .filter(
+            StudentClassHistory.session_id == current_session.id,
+            case(
+                *[(StudentClassHistory.start_term == t.value, i)
+                  for i, t in enumerate(TermEnum, 1)],
+                else_=1,
+            ) <= target_term_order,
+            or_(
+                StudentClassHistory.end_term.is_(None),
+                case(
+                    *[(StudentClassHistory.end_term == t.value, i)
+                      for i, t in enumerate(TermEnum, 1)],
+                    else_=4,
+                ) >= target_term_order,
+            ),
+        )
         .group_by(StudentClassHistory.student_id)
-        .subquery("latest_enrollment")
+        .subquery("covering_history")
     )
 
-    # Base join conditions that always apply
     history_conditions = [
         Student.id == StudentClassHistory.student_id,
         StudentClassHistory.session_id == current_session.id,
-        StudentClassHistory.join_date == latest_enrollment_subquery.c.latest_join,
+        StudentClassHistory.join_date == covering_history_subq.c.join_date,
         case(
-            *[
-                (StudentClassHistory.start_term == t.value, i)
-                for i, t in enumerate(TermEnum, 1)
-            ],
+            *[(StudentClassHistory.start_term == t.value, i)
+              for i, t in enumerate(TermEnum, 1)],
             else_=1,
-        )
-        <= target_term_order,
+        ) <= target_term_order,
         or_(
             StudentClassHistory.end_term.is_(None),
             case(
-                *[
-                    (StudentClassHistory.end_term == t.value, i)
-                    for i, t in enumerate(TermEnum, 1)
-                ],
+                *[(StudentClassHistory.end_term == t.value, i)
+                  for i, t in enumerate(TermEnum, 1)],
                 else_=4,
-            )
-            >= target_term_order,
+            ) >= target_term_order,
         ),
     ]
 
-    # Only force “currently open” when we are looking at the live session
     if only_active:
-        history_conditions.extend(
-            [
-                StudentClassHistory.is_active == True,
-                StudentClassHistory.leave_date.is_(None),
-            ]
-        )
+        history_conditions.extend([
+            StudentClassHistory.is_active == True,
+            StudentClassHistory.leave_date.is_(None),
+        ])
 
     query = (
         db.session.query(Student, Classes.name.label("class_name"), Classes.hierarchy)
         .join(
-            latest_enrollment_subquery,
-            Student.id == latest_enrollment_subquery.c.student_id,
+            covering_history_subq,
+            Student.id == covering_history_subq.c.student_id,
             isouter=True,
         )
         .join(StudentClassHistory, and_(*history_conditions), isouter=True)
@@ -1099,16 +1188,166 @@ def get_students_query(current_session, term=None, only_active=None):
     )
 
 
+# def apply_filters_to_students_query(
+#     students_query,
+#     enrollment_status,
+#     fee_status,
+#     approval_status,
+#     current_session,
+#     current_term,
+#     term=None,
+# ):
+#     """Apply filters. Respects historical vs live session automatically."""
+#     term_order = {t.value: i for i, t in enumerate(TermEnum, 1)}
+#     global_current = Session.get_current_session()
+#     viewing_live = (
+#         global_current is not None and current_session.id == global_current.id
+#     )
+
+#     target_term = term if term else current_term.value
+#     target_term_order = term_order.get(target_term, 1)
+
+#     if enrollment_status == "active":
+#         # When viewing a past year we still want the historical “active at that time”
+#         # membership, so we do **not** force is_active/leave_date unless we are
+#         # on the live session.
+#         conditions = [
+#             StudentClassHistory.session_id == current_session.id,
+#             case(
+#                 *[
+#                     (StudentClassHistory.start_term == t.value, i)
+#                     for i, t in enumerate(TermEnum, 1)
+#                 ],
+#                 else_=1,
+#             )
+#             <= target_term_order,
+#             or_(
+#                 StudentClassHistory.end_term.is_(None),
+#                 case(
+#                     *[
+#                         (StudentClassHistory.end_term == t.value, i)
+#                         for i, t in enumerate(TermEnum, 1)
+#                     ],
+#                     else_=4,
+#                 )
+#                 >= target_term_order,
+#             ),
+#         ]
+#         if viewing_live:
+#             conditions.extend(
+#                 [
+#                     StudentClassHistory.is_active == True,
+#                     StudentClassHistory.leave_date.is_(None),
+#                 ]
+#             )
+#         students_query = students_query.filter(*conditions)
+
+#     elif enrollment_status == "inactive":
+#         # Keep your existing inactive logic (it already works for past years)
+#         base_session = Session.query.filter_by(year="2023/2024").first()
+#         base_session_id = base_session.id if base_session else current_session.id
+
+#         session_student_count = (
+#             db.session.query(func.count(StudentClassHistory.id))
+#             .filter(StudentClassHistory.session_id == current_session.id)
+#             .scalar()
+#             or 0
+#         )
+
+#         no_record_subquery = (
+#             ~exists()
+#             .where(
+#                 and_(
+#                     StudentClassHistory.student_id == Student.id,
+#                     StudentClassHistory.session_id == current_session.id,
+#                     StudentClassHistory.is_active == True,
+#                     StudentClassHistory.leave_date.is_(None),
+#                     case(
+#                         *[
+#                             (StudentClassHistory.start_term == t.value, i)
+#                             for i, t in enumerate(TermEnum, 1)
+#                         ],
+#                         else_=1,
+#                     )
+#                     <= target_term_order,
+#                     or_(
+#                         StudentClassHistory.end_term.is_(None),
+#                         case(
+#                             *[
+#                                 (StudentClassHistory.end_term == t.value, i)
+#                                 for i, t in enumerate(TermEnum, 1)
+#                             ],
+#                             else_=4,
+#                         )
+#                         >= target_term_order,
+#                     ),
+#                 )
+#             )
+#             .correlate(Student)
+#         )
+
+#         students_query = (
+#             db.session.query(
+#                 Student, Classes.name.label("class_name"), Classes.hierarchy
+#             )
+#             .join(
+#                 StudentClassHistory,
+#                 StudentClassHistory.student_id == Student.id,
+#                 isouter=True,
+#             )
+#             .join(Classes, StudentClassHistory.class_id == Classes.id, isouter=True)
+#             .filter(
+#                 or_(
+#                     and_(
+#                         StudentClassHistory.session_id >= base_session_id,
+#                         or_(
+#                             StudentClassHistory.is_active == False,
+#                             and_(
+#                                 StudentClassHistory.leave_date.isnot(None),
+#                                 case(
+#                                     *[
+#                                         (StudentClassHistory.end_term == t.value, i)
+#                                         for i, t in enumerate(TermEnum, 1)
+#                                     ],
+#                                     else_=0,
+#                                 )
+#                                 <= target_term_order,
+#                             ),
+#                         ),
+#                     ),
+#                     and_(no_record_subquery, session_student_count > 10),
+#                 )
+#             )
+#         )
+
+#     # Fee & approval filters (unchanged)
+#     if enrollment_status != "inactive" and fee_status:
+#         students_query = students_query.outerjoin(
+#             FeePayment,
+#             and_(
+#                 FeePayment.student_id == Student.id,
+#                 FeePayment.session_id == current_session.id,
+#                 FeePayment.term == target_term,
+#             ),
+#         )
+#         if fee_status == "paid":
+#             students_query = students_query.filter(FeePayment.has_paid_fee == True)
+#         elif fee_status == "unpaid":
+#             students_query = students_query.filter(
+#                 or_(FeePayment.has_paid_fee == False, FeePayment.id.is_(None))
+#             )
+
+#     if approval_status:
+#         students_query = students_query.filter(
+#             Student.approved == (approval_status == "approved")
+#         )
+
+#     return students_query
+
 def apply_filters_to_students_query(
-    students_query,
-    enrollment_status,
-    fee_status,
-    approval_status,
-    current_session,
-    current_term,
-    term=None,
+    students_query, enrollment_status, fee_status, approval_status,
+    current_session, current_term, term=None,
 ):
-    """Apply filters. Respects historical vs live session automatically."""
     term_order = {t.value: i for i, t in enumerate(TermEnum, 1)}
     global_current = Session.get_current_session()
     viewing_live = (
@@ -1119,119 +1358,62 @@ def apply_filters_to_students_query(
     target_term_order = term_order.get(target_term, 1)
 
     if enrollment_status == "active":
-        # When viewing a past year we still want the historical “active at that time”
-        # membership, so we do **not** force is_active/leave_date unless we are
-        # on the live session.
         conditions = [
             StudentClassHistory.session_id == current_session.id,
             case(
-                *[
-                    (StudentClassHistory.start_term == t.value, i)
-                    for i, t in enumerate(TermEnum, 1)
-                ],
+                *[(StudentClassHistory.start_term == t.value, i)
+                  for i, t in enumerate(TermEnum, 1)],
                 else_=1,
-            )
-            <= target_term_order,
+            ) <= target_term_order,
             or_(
                 StudentClassHistory.end_term.is_(None),
                 case(
-                    *[
-                        (StudentClassHistory.end_term == t.value, i)
-                        for i, t in enumerate(TermEnum, 1)
-                    ],
+                    *[(StudentClassHistory.end_term == t.value, i)
+                      for i, t in enumerate(TermEnum, 1)],
                     else_=4,
-                )
-                >= target_term_order,
+                ) >= target_term_order,
             ),
         ]
         if viewing_live:
-            conditions.extend(
-                [
-                    StudentClassHistory.is_active == True,
-                    StudentClassHistory.leave_date.is_(None),
-                ]
-            )
+            conditions.extend([
+                StudentClassHistory.is_active == True,
+                StudentClassHistory.leave_date.is_(None),
+            ])
         students_query = students_query.filter(*conditions)
 
     elif enrollment_status == "inactive":
-        # Keep your existing inactive logic (it already works for past years)
-        base_session = Session.query.filter_by(year="2023/2024").first()
-        base_session_id = base_session.id if base_session else current_session.id
-
-        session_student_count = (
-            db.session.query(func.count(StudentClassHistory.id))
-            .filter(StudentClassHistory.session_id == current_session.id)
-            .scalar()
-            or 0
-        )
-
-        no_record_subquery = (
-            ~exists()
-            .where(
-                and_(
-                    StudentClassHistory.student_id == Student.id,
-                    StudentClassHistory.session_id == current_session.id,
-                    StudentClassHistory.is_active == True,
-                    StudentClassHistory.leave_date.is_(None),
-                    case(
-                        *[
-                            (StudentClassHistory.start_term == t.value, i)
-                            for i, t in enumerate(TermEnum, 1)
-                        ],
-                        else_=1,
-                    )
-                    <= target_term_order,
-                    or_(
-                        StudentClassHistory.end_term.is_(None),
-                        case(
-                            *[
-                                (StudentClassHistory.end_term == t.value, i)
-                                for i, t in enumerate(TermEnum, 1)
-                            ],
-                            else_=4,
-                        )
-                        >= target_term_order,
-                    ),
-                )
-            )
-            .correlate(Student)
-        )
-
-        students_query = (
-            db.session.query(
-                Student, Classes.name.label("class_name"), Classes.hierarchy
-            )
-            .join(
-                StudentClassHistory,
+        # Keep the existing covering_history_subq join, just filter it.
+        active_exists = exists().where(
+            and_(
                 StudentClassHistory.student_id == Student.id,
-                isouter=True,
-            )
-            .join(Classes, StudentClassHistory.class_id == Classes.id, isouter=True)
-            .filter(
+                StudentClassHistory.session_id == current_session.id,
+                StudentClassHistory.is_active == True,
+                StudentClassHistory.leave_date.is_(None),
+                case(
+                    *[(StudentClassHistory.start_term == t.value, i)
+                      for i, t in enumerate(TermEnum, 1)],
+                    else_=1,
+                ) <= target_term_order,
                 or_(
-                    and_(
-                        StudentClassHistory.session_id >= base_session_id,
-                        or_(
-                            StudentClassHistory.is_active == False,
-                            and_(
-                                StudentClassHistory.leave_date.isnot(None),
-                                case(
-                                    *[
-                                        (StudentClassHistory.end_term == t.value, i)
-                                        for i, t in enumerate(TermEnum, 1)
-                                    ],
-                                    else_=0,
-                                )
-                                <= target_term_order,
-                            ),
-                        ),
-                    ),
-                    and_(no_record_subquery, session_student_count > 10),
-                )
+                    StudentClassHistory.end_term.is_(None),
+                    case(
+                        *[(StudentClassHistory.end_term == t.value, i)
+                          for i, t in enumerate(TermEnum, 1)],
+                        else_=4,
+                    ) >= target_term_order,
+                ),
             )
-        )
+        ).correlate(Student)
 
-    # Fee & approval filters (unchanged)
+        has_history = exists().where(
+            and_(
+                StudentClassHistory.student_id == Student.id,
+                StudentClassHistory.session_id == current_session.id,
+            )
+        ).correlate(Student)
+
+        students_query = students_query.filter(has_history, ~active_exists)
+
     if enrollment_status != "inactive" and fee_status:
         students_query = students_query.outerjoin(
             FeePayment,
@@ -1254,7 +1436,6 @@ def apply_filters_to_students_query(
         )
 
     return students_query
-
 
 def get_class_students_query(session, class_id, term=None, only_active=None):
     """
