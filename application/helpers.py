@@ -14,6 +14,7 @@ from . import db
 from .models import Student, Session, Subject, Result, StudentTermSummary, class_teacher, Classes, Teacher, TermEnum, StudentClassHistory, FeePayment, class_subject
 from application.auth.forms import SubjectResultForm
 
+
 def require_session_and_term(f):
     """Decorator to ensure a current session and term are available."""
     @wraps(f)
@@ -1253,3 +1254,58 @@ def apply_filters_to_students_query(
         )
 
     return students_query
+
+
+def get_class_students_query(session, class_id, term=None, only_active=None):
+    """
+    Returns StudentClassHistory rows for a class in a given session.
+
+    only_active:
+        None  → auto (True only when session is the global current session)
+        True  → force live-roster filter
+        False → include historical closed records
+    """
+    
+    global_current = Session.get_current_session()
+    if only_active is None:
+        only_active = global_current is not None and session.id == global_current.id
+
+    term_order = {t.value: i for i, t in enumerate(TermEnum, 1)}
+    target_term = term or (
+        Session.get_current_session_and_term(include_term=True)[1].value
+        if Session.get_current_session_and_term(include_term=True)[1]
+        else TermEnum.FIRST.value
+    )
+    target_order = term_order.get(target_term, 1)
+
+    q = StudentClassHistory.query.join(Student).filter(
+        StudentClassHistory.session_id == session.id,
+        StudentClassHistory.class_id == class_id,
+        case(
+            *[
+                (StudentClassHistory.start_term == t.value, i)
+                for i, t in enumerate(TermEnum, 1)
+            ],
+            else_=1,
+        )
+        <= target_order,
+        or_(
+            StudentClassHistory.end_term.is_(None),
+            case(
+                *[
+                    (StudentClassHistory.end_term == t.value, i)
+                    for i, t in enumerate(TermEnum, 1)
+                ],
+                else_=4,
+            )
+            >= target_order,
+        ),
+    )
+
+    if only_active:
+        q = q.filter(
+            StudentClassHistory.is_active == True,
+            StudentClassHistory.leave_date.is_(None),
+        )
+
+    return q.order_by(Student.last_name.asc(), Student.first_name.asc())

@@ -56,6 +56,8 @@ import re
 # Request Hooks
 # ------------------------------
 
+term_order = {t.value: i for i, t in enumerate(TermEnum, 1)}
+
 @admin_bp.before_request
 def admin_before_request():
     """Ensure user is authenticated and has admin privileges before processing requests."""
@@ -784,6 +786,102 @@ def select_class(action):
 #         return redirect(url_for("admins.select_class", action=action))
 
 
+# @admin_bp.route(
+#     "/students_by_class/<string:class_name>/<string:action>", methods=["GET", "POST"]
+# )
+# @login_required
+# def students_by_class(class_name, action):
+#     """View students in a specific class (supports both live and historical sessions)."""
+#     class_name = unquote(class_name).strip()
+#     current_session, current_term = Session.get_current_session_and_term(
+#         include_term=True
+#     )
+#     if not current_session or not current_term:
+#         flash("No current session or term available.", "alert-danger")
+#         return redirect(url_for("admins.select_class", action=action))
+
+#     class_record = Classes.query.filter_by(name=class_name).first()
+#     if not class_record:
+#         return jsonify({"error": f"Class '{class_name}' not found."}), 404
+
+#     form = DeleteForm()
+#     page = request.args.get("page", 1, type=int)
+#     per_page = 5
+#     term = request.args.get("term", current_term.value)
+
+#     term_order = {t.value: i for i, t in enumerate(TermEnum, 1)}
+#     target_term_order = term_order.get(term, 1)
+
+#     # Decide whether we are looking at the live roster or a historical year
+#     global_current = Session.get_current_session()
+#     viewing_live = (
+#         global_current is not None and current_session.id == global_current.id
+#     )
+
+#     try:
+#         student_histories_query = (
+#             db.session.query(StudentClassHistory)
+#             .join(Student, StudentClassHistory.student_id == Student.id)
+#             .filter(
+#                 StudentClassHistory.session_id == current_session.id,
+#                 StudentClassHistory.class_id == class_record.id,
+#                 case(
+#                     *[
+#                         (StudentClassHistory.start_term == t.value, i)
+#                         for i, t in enumerate(TermEnum, 1)
+#                     ],
+#                     else_=1,
+#                 )
+#                 <= target_term_order,
+#                 or_(
+#                     StudentClassHistory.end_term.is_(None),
+#                     case(
+#                         *[
+#                             (StudentClassHistory.end_term == t.value, i)
+#                             for i, t in enumerate(TermEnum, 1)
+#                         ],
+#                         else_=4,
+#                     )
+#                     >= target_term_order,
+#                 ),
+#             )
+#         )
+
+#         # Only enforce “currently open” enrolment when viewing the live session
+#         if viewing_live:
+#             student_histories_query = student_histories_query.filter(
+#                 StudentClassHistory.is_active == True,
+#                 StudentClassHistory.leave_date.is_(None),
+#             )
+
+#         student_histories_query = student_histories_query.order_by(
+#             Student.last_name.asc()
+#         )
+
+#         student_histories_pagination = student_histories_query.paginate(
+#             page=page, per_page=per_page, error_out=False
+#         )
+#         students = [history.student for history in student_histories_pagination.items]
+
+#         return render_template(
+#             "admin/classes/students_by_class.html",
+#             students=students,
+#             session_year=current_session.year,
+#             current_session=current_session,
+#             class_name=class_name,
+#             form=form,
+#             current_term=current_term.value,
+#             action=action,
+#             pagination=student_histories_pagination,
+#         )
+#     except OperationalError as e:
+#         app.logger.error(
+#             f"Database error fetching students for class {class_name}: {str(e)}"
+#         )
+#         flash("Database error occurred while fetching students.", "alert-danger")
+#         return redirect(url_for("admins.select_class", action=action))
+
+
 @admin_bp.route(
     "/students_by_class/<string:class_name>/<string:action>", methods=["GET", "POST"]
 )
@@ -853,7 +951,7 @@ def students_by_class(class_name, action):
             )
 
         student_histories_query = student_histories_query.order_by(
-            Student.last_name.asc()
+            Student.last_name.asc(), Student.first_name.asc()
         )
 
         student_histories_pagination = student_histories_query.paginate(
@@ -1665,31 +1763,144 @@ def update_result_field():
         app.logger.error(f"Database error in update_result_field: {str(e)}")
         return jsonify({"status": "error", "message": "Database error occurred."}), 500
 
-@admin_bp.route("/broadsheet/<string:class_name>/<string:action>", methods=["GET", "POST"])
+# @admin_bp.route("/broadsheet/<string:class_name>/<string:action>", methods=["GET", "POST"])
+# @login_required
+# def broadsheet(class_name, action):
+#     """Generate and display a broadsheet for a class."""
+#     class_name = unquote(class_name).strip()
+#     form = classForm()
+#     current_session, current_term = Session.get_current_session_and_term(include_term=True)
+#     if not current_session or not current_term:
+#         flash("Current session or term not set.", "alert-danger")
+#         return redirect(url_for("admins.students_by_class", class_name=class_name, action=action))
+
+#     class_record = Classes.query.filter_by(name=class_name).first_or_404()
+#     student_class_histories = (
+#         StudentClassHistory.query.filter(
+#             StudentClassHistory.session_id == current_session.id,
+#             StudentClassHistory.class_id == class_record.id,
+#             StudentClassHistory.is_active == True,
+#             StudentClassHistory.leave_date.is_(None)
+#         ).options(joinedload(StudentClassHistory.student)).all()
+#     )
+#     students = [history.student for history in student_class_histories]
+#     subjects = get_subjects_by_class_name(class_record.id)
+
+#     if not students or not subjects:
+#         flash(f"No active students or subjects for {class_name}.", "alert-info")
+#         return render_template(
+#             "admin/results/broadsheet.html",
+#             students=[],
+#             subjects=[],
+#             broadsheet_data=[],
+#             subject_averages={},
+#             class_name=class_name,
+#             action=action
+#         )
+
+#     broadsheet_data, subject_averages = prepare_broadsheet_data(
+#         students=students,
+#         subjects=subjects,
+#         term=current_term.value,
+#         session_year=current_session.year,
+#         class_id=class_record.id,
+#         session_id=current_session.id
+#     )
+
+#     class_is_released = False
+#     if broadsheet_data:
+#         # Check the first student's term summary
+#         first_summary = StudentTermSummary.query.filter_by(
+#             student_id=broadsheet_data[0]["student"].id,
+#             term=current_term.value,
+#             session_id=current_session.id,
+#             class_id=class_record.id
+#         ).first()
+#         class_is_released = first_summary.is_released if first_summary else False
+
+#     return render_template(
+#         "admin/results/broadsheet.html",
+#         students=students,
+#         subjects=subjects,
+#         broadsheet_data=broadsheet_data,
+#         subject_averages=subject_averages,
+#         class_name=class_name,
+#         class_record=class_record,
+#         current_session=current_session.id,
+#         session_year=current_session.year,
+#         current_term=current_term.value,
+#         class_is_released=class_is_released,
+#         form=form,
+#         action=action,
+#     )
+
+
+@admin_bp.route(
+    "/broadsheet/<string:class_name>/<string:action>", methods=["GET", "POST"]
+)
 @login_required
 def broadsheet(class_name, action):
-    """Generate and display a broadsheet for a class."""
+    """Generate and display a broadsheet for a class (works for live + historical sessions)."""
     class_name = unquote(class_name).strip()
     form = classForm()
-    current_session, current_term = Session.get_current_session_and_term(include_term=True)
+    current_session, current_term = Session.get_current_session_and_term(
+        include_term=True
+    )
     if not current_session or not current_term:
         flash("Current session or term not set.", "alert-danger")
-        return redirect(url_for("admins.students_by_class", class_name=class_name, action=action))
+        return redirect(
+            url_for("admins.students_by_class", class_name=class_name, action=action)
+        )
 
     class_record = Classes.query.filter_by(name=class_name).first_or_404()
-    student_class_histories = (
-        StudentClassHistory.query.filter(
-            StudentClassHistory.session_id == current_session.id,
-            StudentClassHistory.class_id == class_record.id,
-            StudentClassHistory.is_active == True,
-            StudentClassHistory.leave_date.is_(None)
-        ).options(joinedload(StudentClassHistory.student)).all()
+
+    # Key change: detect live vs historical
+    global_current = Session.get_current_session()
+    viewing_live = (
+        global_current is not None and current_session.id == global_current.id
     )
+
+    # Build the base query with term-range logic
+    student_histories_query = StudentClassHistory.query.filter(
+        StudentClassHistory.session_id == current_session.id,
+        StudentClassHistory.class_id == class_record.id,
+        case(
+            *[
+                (StudentClassHistory.start_term == t.value, i)
+                for i, t in enumerate(TermEnum, 1)
+            ],
+            else_=1,
+        )
+        <= term_order.get(current_term.value, 1),
+        or_(
+            StudentClassHistory.end_term.is_(None),
+            case(
+                *[
+                    (StudentClassHistory.end_term == t.value, i)
+                    for i, t in enumerate(TermEnum, 1)
+                ],
+                else_=4,
+            )
+            >= term_order.get(current_term.value, 1),
+        ),
+    ).options(joinedload(StudentClassHistory.student))
+
+    # Only restrict to currently active students when viewing the live session
+    if viewing_live:
+        student_histories_query = student_histories_query.filter(
+            StudentClassHistory.is_active == True,
+            StudentClassHistory.leave_date.is_(None),
+        )
+
+    student_class_histories = student_histories_query.all()
     students = [history.student for history in student_class_histories]
     subjects = get_subjects_by_class_name(class_record.id)
 
     if not students or not subjects:
-        flash(f"No active students or subjects for {class_name}.", "alert-info")
+        flash(
+            f"No students or subjects found for {class_name} in this session.",
+            "alert-info",
+        )
         return render_template(
             "admin/results/broadsheet.html",
             students=[],
@@ -1697,7 +1908,7 @@ def broadsheet(class_name, action):
             broadsheet_data=[],
             subject_averages={},
             class_name=class_name,
-            action=action
+            action=action,
         )
 
     broadsheet_data, subject_averages = prepare_broadsheet_data(
@@ -1706,17 +1917,16 @@ def broadsheet(class_name, action):
         term=current_term.value,
         session_year=current_session.year,
         class_id=class_record.id,
-        session_id=current_session.id
+        session_id=current_session.id,
     )
 
     class_is_released = False
     if broadsheet_data:
-        # Check the first student's term summary
         first_summary = StudentTermSummary.query.filter_by(
             student_id=broadsheet_data[0]["student"].id,
             term=current_term.value,
             session_id=current_session.id,
-            class_id=class_record.id
+            class_id=class_record.id,
         ).first()
         class_is_released = first_summary.is_released if first_summary else False
 
@@ -1735,6 +1945,7 @@ def broadsheet(class_name, action):
         form=form,
         action=action,
     )
+
 
 @admin_bp.route("/update-broadsheet/<string:class_name>/<string:action>", methods=["POST"])
 @login_required
@@ -1824,6 +2035,121 @@ def update_broadsheet(class_name, action):
     return redirect(url_for('admins.broadsheet', class_name=class_name, action=action))
 
 
+# @admin_bp.route("/release_class_results/<string:class_name>", methods=["POST"])
+# @login_required
+# def release_class_results(class_name):
+#     """Toggle (Release / Hide) results for an entire class."""
+#     if not current_user.privileges or not current_user.privileges.can_manage_results:
+#         flash("You do not have permission to release/hide results.", "alert-danger")
+#         return redirect(url_for("admins.admin_dashboard"))
+
+#     class_name = unquote(class_name).strip()
+#     current_session, current_term = Session.get_current_session_and_term(include_term=True)
+
+#     if not current_session or not current_term:
+#         flash("No current session or term set.", "alert-danger")
+#         return redirect(url_for("admins.broadsheet", class_name=class_name, action="view"))
+
+#     class_record = Classes.query.filter_by(name=class_name).first_or_404()
+
+#     # Get all active students in this class for the current session
+#     student_ids = [
+#         h.student_id for h in StudentClassHistory.query.filter_by(
+#             session_id=current_session.id,
+#             class_id=class_record.id,
+#             is_active=True,
+#             leave_date=None
+#         ).all()
+#     ]
+
+#     if not student_ids:
+#         flash("No active students found in this class.", "alert-warning")
+#         return redirect(url_for("admins.broadsheet", class_name=class_name, action="view"))
+
+#     # Fetch existing term summaries
+#     summaries = StudentTermSummary.query.filter(
+#         StudentTermSummary.student_id.in_(student_ids),
+#         StudentTermSummary.session_id == current_session.id,
+#         StudentTermSummary.term == current_term.value,
+#         StudentTermSummary.class_id == class_record.id
+#     ).all()
+
+#     if not summaries:
+#         flash("No term summaries found for this class. Enter some results first.", "alert-warning")
+#         return redirect(url_for("admins.broadsheet", class_name=class_name, action="view"))
+
+#     # Determine current state from the first record (or majority)
+#     # We assume all should be in the same state
+#     current_state = summaries[0].is_released
+#     new_state = not current_state
+
+#     # Apply the toggle
+#     for summary in summaries:
+#         summary.is_released = new_state
+
+#     action_text = "Released" if new_state else "Hidden"
+#     db.session.add(AuditLog(
+#         user_id=current_user.id,
+#         action=f"{action_text} results for class {class_name} "
+#                f"({current_term.value} {current_session.year}) - {len(summaries)} students"
+#     ))
+#     db.session.commit()
+
+#     flash(f"Results successfully {action_text.lower()} for {len(summaries)} student(s) in {class_name}.",
+#           "alert-success")
+#     return redirect(url_for("admins.broadsheet", class_name=class_name, action="view"))
+
+# @admin_bp.route("/download_broadsheet/<string:class_name>/<string:action>", methods=["GET"])
+# @login_required
+# def download_broadsheet(class_name, action):
+#     """Download a broadsheet as an Excel file."""
+#     class_name = unquote(class_name).strip()
+#     if not re.match(r'^[a-zA-Z0-9-_ ]+$', class_name):
+#         flash("Invalid class name.", "alert-danger")
+#         return redirect(url_for("admins.broadsheet", class_name=class_name, action=action))
+
+#     current_session, current_term = Session.get_current_session_and_term(include_term=True)
+#     if not current_session or not current_term:
+#         flash("No current session or term set.", "alert-danger")
+#         return redirect(url_for("admins.broadsheet", class_name=class_name, action=action))
+
+#     class_record = Classes.query.filter_by(name=class_name).first_or_404()
+
+#     student_class_histories = (
+#         StudentClassHistory.query.filter(
+#             StudentClassHistory.session_id == current_session.id,
+#             StudentClassHistory.class_id == class_record.id,
+#             StudentClassHistory.is_active == True,
+#             StudentClassHistory.leave_date.is_(None)
+#         ).options(joinedload(StudentClassHistory.student)).all()
+#     )
+#     students = [history.student for history in student_class_histories]
+#     subjects = get_subjects_by_class_name(class_record.id)
+
+#     if not students or not subjects:
+#         flash(f"No active students or subjects found for {class_name}.", "alert-info")
+#         return redirect(url_for("admins.broadsheet", class_name=class_name, action=action))
+
+#     broadsheet_data, subject_averages = prepare_broadsheet_data(
+#         students=students,
+#         subjects=subjects,
+#         term=current_term.value,
+#         session_year=current_session.year,
+#         class_id=class_record.id,
+#         session_id=current_session.id
+#     )
+#     output = generate_excel_broadsheet(class_name, current_term.value, current_session.year, broadsheet_data, subjects, subject_averages)
+
+#     filename = f"Broadsheet_{class_name}_{current_term.value}_{current_session.year}.xlsx"
+#     db.session.add(AuditLog(user_id=current_user.id, action=f"Downloaded broadsheet for {class_name}"))
+#     db.session.commit()
+#     return Response(
+#         output,
+#         mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+#         headers={"Content-Disposition": f"attachment;filename={filename}"}
+#     )
+
+
 @admin_bp.route("/release_class_results/<string:class_name>", methods=["POST"])
 @login_required
 def release_class_results(class_name):
@@ -1833,42 +2159,82 @@ def release_class_results(class_name):
         return redirect(url_for("admins.admin_dashboard"))
 
     class_name = unquote(class_name).strip()
-    current_session, current_term = Session.get_current_session_and_term(include_term=True)
-    
+    current_session, current_term = Session.get_current_session_and_term(
+        include_term=True
+    )
+
     if not current_session or not current_term:
         flash("No current session or term set.", "alert-danger")
-        return redirect(url_for("admins.broadsheet", class_name=class_name, action="view"))
+        return redirect(
+            url_for("admins.broadsheet", class_name=class_name, action="view")
+        )
 
     class_record = Classes.query.filter_by(name=class_name).first_or_404()
 
-    # Get all active students in this class for the current session
-    student_ids = [
-        h.student_id for h in StudentClassHistory.query.filter_by(
-            session_id=current_session.id,
-            class_id=class_record.id,
-            is_active=True,
-            leave_date=None
-        ).all()
-    ]
+    # Detect live vs historical session
+    global_current = Session.get_current_session()
+    viewing_live = (
+        global_current is not None and current_session.id == global_current.id
+    )
+
+    # Build the base query with term-range logic (same as broadsheet route)
+    student_histories_query = StudentClassHistory.query.filter(
+        StudentClassHistory.session_id == current_session.id,
+        StudentClassHistory.class_id == class_record.id,
+        case(
+            *[
+                (StudentClassHistory.start_term == t.value, i)
+                for i, t in enumerate(TermEnum, 1)
+            ],
+            else_=1,
+        )
+        <= term_order.get(current_term.value, 1),
+        or_(
+            StudentClassHistory.end_term.is_(None),
+            case(
+                *[
+                    (StudentClassHistory.end_term == t.value, i)
+                    for i, t in enumerate(TermEnum, 1)
+                ],
+                else_=4,
+            )
+            >= term_order.get(current_term.value, 1),
+        ),
+    )
+
+    # Only restrict to currently active students when viewing the live session
+    if viewing_live:
+        student_histories_query = student_histories_query.filter(
+            StudentClassHistory.is_active == True,
+            StudentClassHistory.leave_date.is_(None),
+        )
+
+    student_ids = [h.student_id for h in student_histories_query.all()]
 
     if not student_ids:
-        flash("No active students found in this class.", "alert-warning")
-        return redirect(url_for("admins.broadsheet", class_name=class_name, action="view"))
+        flash("No students found in this class for this session/term.", "alert-warning")
+        return redirect(
+            url_for("admins.broadsheet", class_name=class_name, action="view")
+        )
 
     # Fetch existing term summaries
     summaries = StudentTermSummary.query.filter(
         StudentTermSummary.student_id.in_(student_ids),
         StudentTermSummary.session_id == current_session.id,
         StudentTermSummary.term == current_term.value,
-        StudentTermSummary.class_id == class_record.id
+        StudentTermSummary.class_id == class_record.id,
     ).all()
 
     if not summaries:
-        flash("No term summaries found for this class. Enter some results first.", "alert-warning")
-        return redirect(url_for("admins.broadsheet", class_name=class_name, action="view"))
+        flash(
+            "No term summaries found for this class. Enter some results first.",
+            "alert-warning",
+        )
+        return redirect(
+            url_for("admins.broadsheet", class_name=class_name, action="view")
+        )
 
     # Determine current state from the first record (or majority)
-    # We assume all should be in the same state
     current_state = summaries[0].is_released
     new_state = not current_state
 
@@ -1877,46 +2243,96 @@ def release_class_results(class_name):
         summary.is_released = new_state
 
     action_text = "Released" if new_state else "Hidden"
-    db.session.add(AuditLog(
-        user_id=current_user.id,
-        action=f"{action_text} results for class {class_name} "
-               f"({current_term.value} {current_session.year}) - {len(summaries)} students"
-    ))
+    db.session.add(
+        AuditLog(
+            user_id=current_user.id,
+            action=f"{action_text} results for class {class_name} "
+            f"({current_term.value} {current_session.year}) - {len(summaries)} students",
+        )
+    )
     db.session.commit()
 
-    flash(f"Results successfully {action_text.lower()} for {len(summaries)} student(s) in {class_name}.", 
-          "alert-success")
+    flash(
+        f"Results successfully {action_text.lower()} for {len(summaries)} student(s) in {class_name}.",
+        "alert-success",
+    )
     return redirect(url_for("admins.broadsheet", class_name=class_name, action="view"))
 
-@admin_bp.route("/download_broadsheet/<string:class_name>/<string:action>", methods=["GET"])
+
+@admin_bp.route(
+    "/download_broadsheet/<string:class_name>/<string:action>", methods=["GET"]
+)
 @login_required
 def download_broadsheet(class_name, action):
-    """Download a broadsheet as an Excel file."""
+    """Download a broadsheet as an Excel file (works for live + historical sessions)."""
     class_name = unquote(class_name).strip()
-    if not re.match(r'^[a-zA-Z0-9-_ ]+$', class_name):
+    if not re.match(r"^[a-zA-Z0-9-_ ]+$", class_name):
         flash("Invalid class name.", "alert-danger")
-        return redirect(url_for("admins.broadsheet", class_name=class_name, action=action))
+        return redirect(
+            url_for("admins.broadsheet", class_name=class_name, action=action)
+        )
 
-    current_session, current_term = Session.get_current_session_and_term(include_term=True)
+    current_session, current_term = Session.get_current_session_and_term(
+        include_term=True
+    )
     if not current_session or not current_term:
         flash("No current session or term set.", "alert-danger")
-        return redirect(url_for("admins.broadsheet", class_name=class_name, action=action))
+        return redirect(
+            url_for("admins.broadsheet", class_name=class_name, action=action)
+        )
 
     class_record = Classes.query.filter_by(name=class_name).first_or_404()
-    student_class_histories = (
-        StudentClassHistory.query.filter(
-            StudentClassHistory.session_id == current_session.id,
-            StudentClassHistory.class_id == class_record.id,
-            StudentClassHistory.is_active == True,
-            StudentClassHistory.leave_date.is_(None)
-        ).options(joinedload(StudentClassHistory.student)).all()
+
+    # Detect live vs historical session
+    global_current = Session.get_current_session()
+    viewing_live = (
+        global_current is not None and current_session.id == global_current.id
     )
+
+    # Build the base query with term-range logic (same as broadsheet route)
+    student_histories_query = StudentClassHistory.query.filter(
+        StudentClassHistory.session_id == current_session.id,
+        StudentClassHistory.class_id == class_record.id,
+        case(
+            *[
+                (StudentClassHistory.start_term == t.value, i)
+                for i, t in enumerate(TermEnum, 1)
+            ],
+            else_=1,
+        )
+        <= term_order.get(current_term.value, 1),
+        or_(
+            StudentClassHistory.end_term.is_(None),
+            case(
+                *[
+                    (StudentClassHistory.end_term == t.value, i)
+                    for i, t in enumerate(TermEnum, 1)
+                ],
+                else_=4,
+            )
+            >= term_order.get(current_term.value, 1),
+        ),
+    ).options(joinedload(StudentClassHistory.student))
+
+    # Only restrict to currently active students when viewing the live session
+    if viewing_live:
+        student_histories_query = student_histories_query.filter(
+            StudentClassHistory.is_active == True,
+            StudentClassHistory.leave_date.is_(None),
+        )
+
+    student_class_histories = student_histories_query.all()
     students = [history.student for history in student_class_histories]
     subjects = get_subjects_by_class_name(class_record.id)
 
     if not students or not subjects:
-        flash(f"No active students or subjects found for {class_name}.", "alert-info")
-        return redirect(url_for("admins.broadsheet", class_name=class_name, action=action))
+        flash(
+            f"No students or subjects found for {class_name} in this session.",
+            "alert-info",
+        )
+        return redirect(
+            url_for("admins.broadsheet", class_name=class_name, action=action)
+        )
 
     broadsheet_data, subject_averages = prepare_broadsheet_data(
         students=students,
@@ -1924,18 +2340,32 @@ def download_broadsheet(class_name, action):
         term=current_term.value,
         session_year=current_session.year,
         class_id=class_record.id,
-        session_id=current_session.id
+        session_id=current_session.id,
     )
-    output = generate_excel_broadsheet(class_name, current_term.value, current_session.year, broadsheet_data, subjects, subject_averages)
+    output = generate_excel_broadsheet(
+        class_name,
+        current_term.value,
+        current_session.year,
+        broadsheet_data,
+        subjects,
+        subject_averages,
+    )
 
-    filename = f"Broadsheet_{class_name}_{current_term.value}_{current_session.year}.xlsx"
-    db.session.add(AuditLog(user_id=current_user.id, action=f"Downloaded broadsheet for {class_name}"))
+    filename = (
+        f"Broadsheet_{class_name}_{current_term.value}_{current_session.year}.xlsx"
+    )
+    db.session.add(
+        AuditLog(
+            user_id=current_user.id, action=f"Downloaded broadsheet for {class_name}"
+        )
+    )
     db.session.commit()
     return Response(
         output,
         mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        headers={"Content-Disposition": f"attachment;filename={filename}"}
+        headers={"Content-Disposition": f"attachment;filename={filename}"},
     )
+
 
 @admin_bp.route("/update_broadsheet_field", methods=["POST"])
 @login_required
