@@ -720,12 +720,80 @@ def select_class(action):
         return redirect(url_for("admins.students_by_class", class_name=class_name, action=action))
     return render_template("admin/classes/select_class.html", class_form=class_form, action=action)
 
-@admin_bp.route("/students_by_class/<string:class_name>/<string:action>", methods=["GET", "POST"])
+# @admin_bp.route("/students_by_class/<string:class_name>/<string:action>", methods=["GET", "POST"])
+# @login_required
+# def students_by_class(class_name, action):
+#     """View students in a specific class."""
+#     class_name = unquote(class_name).strip()
+#     current_session, current_term = Session.get_current_session_and_term(include_term=True)
+#     if not current_session or not current_term:
+#         flash("No current session or term available.", "alert-danger")
+#         return redirect(url_for("admins.select_class", action=action))
+
+#     class_record = Classes.query.filter_by(name=class_name).first()
+#     if not class_record:
+#         return jsonify({"error": f"Class '{class_name}' not found."}), 404
+
+#     form = DeleteForm()
+#     page = request.args.get('page', 1, type=int)
+#     per_page = 5
+#     term = request.args.get('term', current_term.value)
+#     term_order = {t.value: i for i, t in enumerate(TermEnum, 1)}
+#     target_term_order = term_order.get(term, 1)
+
+#     try:
+#         student_histories_query = (
+#             db.session.query(StudentClassHistory)
+#             .join(Student, StudentClassHistory.student_id == Student.id)
+#             .filter(
+#                 StudentClassHistory.session_id == current_session.id,
+#                 StudentClassHistory.class_id == class_record.id,
+#                 StudentClassHistory.is_active == True,
+#                 StudentClassHistory.leave_date.is_(None),
+#                 case(
+#                     *[(StudentClassHistory.start_term == t.value, i) for i, t in enumerate(TermEnum, 1)],
+#                     else_=1
+#                 ) <= target_term_order,
+#                 or_(
+#                     StudentClassHistory.end_term.is_(None),
+#                     case(
+#                         *[(StudentClassHistory.end_term == t.value, i) for i, t in enumerate(TermEnum, 1)],
+#                         else_=4
+#                     ) >= target_term_order
+#                 )
+#             )
+#             .order_by(Student.last_name.asc())
+#         )
+#         student_histories_pagination = student_histories_query.paginate(page=page, per_page=per_page, error_out=False)
+#         students = [history.student for history in student_histories_pagination.items]
+
+#         return render_template(
+#             "admin/classes/students_by_class.html",
+#             students=students,
+#             session_year=current_session.year,
+#             current_session=current_session,
+#             class_name=class_name,
+#             form=form,
+#             current_term=current_term.value,
+#             action=action,
+#             pagination=student_histories_pagination
+#         )
+#     except OperationalError as e:
+#         app.logger.error(f"Database error fetching students for class {class_name}: {str(e)}")
+#         flash("Database error occurred while fetching students.", "alert-danger")
+#         return redirect(url_for("admins.select_class", action=action))
+
+
+@admin_bp.route(
+    "/students_by_class/<string:class_name>/<string:action>", methods=["GET", "POST"]
+)
 @login_required
 def students_by_class(class_name, action):
-    """View students in a specific class."""
+    """View students in a specific class (supports both live and historical sessions)."""
     class_name = unquote(class_name).strip()
-    current_session, current_term = Session.get_current_session_and_term(include_term=True)
+    current_session, current_term = Session.get_current_session_and_term(
+        include_term=True
+    )
     if not current_session or not current_term:
         flash("No current session or term available.", "alert-danger")
         return redirect(url_for("admins.select_class", action=action))
@@ -735,11 +803,18 @@ def students_by_class(class_name, action):
         return jsonify({"error": f"Class '{class_name}' not found."}), 404
 
     form = DeleteForm()
-    page = request.args.get('page', 1, type=int)
+    page = request.args.get("page", 1, type=int)
     per_page = 5
-    term = request.args.get('term', current_term.value)
+    term = request.args.get("term", current_term.value)
+
     term_order = {t.value: i for i, t in enumerate(TermEnum, 1)}
     target_term_order = term_order.get(term, 1)
+
+    # Decide whether we are looking at the live roster or a historical year
+    global_current = Session.get_current_session()
+    viewing_live = (
+        global_current is not None and current_session.id == global_current.id
+    )
 
     try:
         student_histories_query = (
@@ -748,23 +823,42 @@ def students_by_class(class_name, action):
             .filter(
                 StudentClassHistory.session_id == current_session.id,
                 StudentClassHistory.class_id == class_record.id,
-                StudentClassHistory.is_active == True,
-                StudentClassHistory.leave_date.is_(None),
                 case(
-                    *[(StudentClassHistory.start_term == t.value, i) for i, t in enumerate(TermEnum, 1)],
-                    else_=1
-                ) <= target_term_order,
+                    *[
+                        (StudentClassHistory.start_term == t.value, i)
+                        for i, t in enumerate(TermEnum, 1)
+                    ],
+                    else_=1,
+                )
+                <= target_term_order,
                 or_(
                     StudentClassHistory.end_term.is_(None),
                     case(
-                        *[(StudentClassHistory.end_term == t.value, i) for i, t in enumerate(TermEnum, 1)],
-                        else_=4
-                    ) >= target_term_order
-                )
+                        *[
+                            (StudentClassHistory.end_term == t.value, i)
+                            for i, t in enumerate(TermEnum, 1)
+                        ],
+                        else_=4,
+                    )
+                    >= target_term_order,
+                ),
             )
-            .order_by(Student.last_name.asc())
         )
-        student_histories_pagination = student_histories_query.paginate(page=page, per_page=per_page, error_out=False)
+
+        # Only enforce “currently open” enrolment when viewing the live session
+        if viewing_live:
+            student_histories_query = student_histories_query.filter(
+                StudentClassHistory.is_active == True,
+                StudentClassHistory.leave_date.is_(None),
+            )
+
+        student_histories_query = student_histories_query.order_by(
+            Student.last_name.asc()
+        )
+
+        student_histories_pagination = student_histories_query.paginate(
+            page=page, per_page=per_page, error_out=False
+        )
         students = [history.student for history in student_histories_pagination.items]
 
         return render_template(
@@ -776,12 +870,15 @@ def students_by_class(class_name, action):
             form=form,
             current_term=current_term.value,
             action=action,
-            pagination=student_histories_pagination
+            pagination=student_histories_pagination,
         )
     except OperationalError as e:
-        app.logger.error(f"Database error fetching students for class {class_name}: {str(e)}")
+        app.logger.error(
+            f"Database error fetching students for class {class_name}: {str(e)}"
+        )
         flash("Database error occurred while fetching students.", "alert-danger")
         return redirect(url_for("admins.select_class", action=action))
+
 
 @admin_bp.route("/promote_student/<string:class_name>/<int:student_id>/<string:action>", methods=["POST"])
 @login_required
